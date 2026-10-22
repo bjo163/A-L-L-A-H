@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Badge, buttonClassName, Icon, IconText, MangaEffect, MangaOrbit, MangaSfx, MetricGrid, Panel, SectionHeading } from "@empire/ui";
+import { Badge, buttonClassName, Icon, IconText, MangaEffect, MetricGrid, Panel, PortalOrbitHero, SectionHeading } from "@empire/ui";
 import { Explorer } from "../components/Explorer";
 import { getPortalLanguage } from "../lib/i18n";
 
@@ -86,27 +86,27 @@ export default async function Home() {
     { n: "04", title: "Aksi", text: "Keputusan dijalankan manusia, dicatat, dan dapat ditinjau kembali." },
   ];
   return <>
-    <MangaEffect as="section" reveal className="hero eol-container" aria-label={en?"Introducing A-L-L-A-H":"Pengenalan A-L-L-A-H"}>
-      <div className="hero-copy">
-        <p className="eyebrow"><span className="eyebrow-bar"/> EMPIRE OF THE LIGHT <span className="slash">/</span> GENESIS 05</p>
-        <h1>{en?<>LIVE.<br/><span className="outline-word">LEARN.</span><br/><em>ACT.</em></>:<>HIDUP.<br/><span className="outline-word">BELAJAR.</span><br/><em>BERTINDAK.</em></>}</h1>
-        <p className="hero-lede"><strong>A-L-L-A-H — Accountable Life, Learning &amp; Action Hub</strong> — {en?"is a proposed hub connecting people, knowledge, and technology through processes that can be examined.":"adalah rancangan hub untuk menghubungkan manusia, pengetahuan, dan teknologi melalui proses yang dapat diperiksa."}</p>
-        <div className="hero-buttons"><Link className={buttonClassName("primary", "btn")} href="#ekosistem"><IconText icon="arrowDownRight">{en?"Explore the ecosystem":"Jelajahi ekosistem"}</IconText></Link><Link className={buttonClassName("secondary", "btn")} href="/roadmap"><IconText icon="arrowRight">{en?"See real status":"Lihat status nyata"}</IconText></Link></div>
-        <p className="hero-clarity"><span className="pulse-dot"/> {en?"DESIGN & RESEARCH":"RANCANGAN &amp; RISET"} <span className="dot-sep">·</span> {en?"NO CLAIM THAT HARDWARE IS INSTALLED":"BUKAN KLAIM PERANGKAT SUDAH TERPASANG"}</p>
-      </div>
-      <MangaEffect panel speedLines spin className="hero-visual" role="img" aria-label={en?"A-L-L-A-H system map: sources and evidence connect to ARSY, 100CENTER reviews, and ZIIL protects rights and safety":"Peta hubungan A-L-L-A-H: sumber dan bukti terhubung ke ARSY, 100CENTER meninjau, dan ZIIL menjaga hak serta keselamatan"}>
-        <div className="visual-stars"/><MangaOrbit variant="primary" className="orbit orbit-one"/><MangaOrbit variant="secondary" className="orbit orbit-two"/><MangaOrbit variant="tertiary" className="orbit orbit-three"/><div className="orbital-axis"/><div className="core-halo"/>
-        <MangaSfx className="hero-sfx" text={en?"ZAP!":"JRENG!"}/>
-        <span className="hero-stamp" aria-hidden="true">{en?"HUMAN POWER":"KUASA MANUSIA"}</span>
-        <div className="visual-core"><div className="core-symbol">A</div><span>A-L-L-A-H</span><small>{en?"HUMAN · LEARNING · ACTION HUB":"HUB MANUSIA · BELAJAR · AKSI"}</small></div>
-        <div className="satellite satellite-a"><span className="sat-point"/> {en?"SOURCES":"SUMBER"} <small>UNILEX · {en?"EVIDENCE":"BUKTI"}</small></div>
-        <div className="satellite satellite-b"><span className="sat-point"/> ARSY <small>AGENCY · {en?"ORCHESTRATION":"ORKESTRASI"}</small></div>
-        <div className="satellite satellite-c"><span className="sat-point"/> 100CENTER <small>{en?"HUMAN REVIEW":"REVIEW MANUSIA"}</small></div>
-        <div className="satellite satellite-d"><span className="sat-point"/> ZIIL <small>{en?"RIGHTS · SAFETY":"HAK · KESELAMATAN"}</small></div>
-        <div className="visual-coordinates">{en?"SOURCES → ANALYSIS → REVIEW → DECISION":"SUMBER → ANALISIS → TINJAUAN → KEPUTUSAN"}<br/>{en?"MANDATE & EVIDENCE SET SYSTEM BOUNDARIES":"MANDAT &amp; BUKTI MENJAGA BATAS SISTEM"}</div><div className="visual-floor"/>
-      </MangaEffect>
-      <div className="hero-watermark" aria-hidden="true">A<span>05</span></div>
-    </MangaEffect>
+    <PortalOrbitHero
+      ariaLabel={en ? "Introducing A-L-L-A-H" : "Pengenalan A-L-L-A-H"}
+      visualLabel={en ? "A-L-L-A-H system map: sources and evidence connect to ARSY, 100CENTER reviews, and ZIIL protects rights and safety" : "Peta hubungan A-L-L-A-H: sumber dan bukti terhubung ke ARSY, 100CENTER meninjau, dan ZIIL menjaga hak serta keselamatan"}
+      eyebrow={<>EMPIRE OF THE LIGHT <span className="slash">/</span> GENESIS 05</>}
+      title={en ? <>LIVE.<br/><span className="outline-word">LEARN.</span><br/><em>ACT.</em></> : <>HIDUP.<br/><span className="outline-word">BELAJAR.</span><br/><em>BERTINDAK.</em></>}
+      description={<><strong>A-L-L-A-H — Accountable Life, Learning &amp; Action Hub</strong> — {en ? "is a proposed hub connecting people, knowledge, and technology through processes that can be examined." : "adalah rancangan hub untuk menghubungkan manusia, pengetahuan, dan teknologi melalui proses yang dapat diperiksa."}</>}
+      actions={<><Link className={buttonClassName("primary", "btn")} href="#ekosistem"><IconText icon="arrowDownRight">{en ? "Explore the ecosystem" : "Jelajahi ekosistem"}</IconText></Link><Link className={buttonClassName("secondary", "btn")} href="/roadmap"><IconText icon="arrowRight">{en ? "See real status" : "Lihat status nyata"}</IconText></Link></>}
+      clarity={<>{en ? "DESIGN & RESEARCH" : "RANCANGAN & RISET"} <span className="dot-sep">·</span> {en ? "NO CLAIM THAT HARDWARE IS INSTALLED" : "BUKAN KLAIM PERANGKAT SUDAH TERPASANG"}</>}
+      centerLabel={en ? "HUMAN" : "HUB MANUSIA"}
+      centerCaption={en ? "LEARNING · ACTION HUB" : "BELAJAR · AKSI"}
+      satellites={[
+        { id: "sources", label: en ? "SOURCES" : "SUMBER", caption: <>UNILEX · {en ? "EVIDENCE" : "BUKTI"}</> },
+        { id: "arsy", label: "ARSY", caption: <>AGENCY · {en ? "ORCHESTRATION" : "ORKESTRASI"}</> },
+        { id: "operators", label: "100CENTER", caption: en ? "HUMAN REVIEW" : "REVIEW MANUSIA" },
+        { id: "ziil", label: "ZIIL", caption: en ? "RIGHTS · SAFETY" : "HAK · KESELAMATAN" },
+      ]}
+      coordinates={<>{en ? "SOURCES → ANALYSIS → REVIEW → DECISION" : "SUMBER → ANALISIS → TINJAUAN → KEPUTUSAN"}<br/>{en ? "MANDATE & EVIDENCE SET SYSTEM BOUNDARIES" : "MANDAT & BUKTI MENJAGA BATAS SISTEM"}</>}
+      stamp={en ? "HUMAN POWER" : "KUASA MANUSIA"}
+      soundEffect={en ? "ZAP!" : "JRENG!"}
+      watermark={<>A<span>05</span></>}
+    />
 
     <section className="stat-band" aria-label={en ? "Blueprint summary" : "Ringkasan blueprint"}><div className="eol-container"><MetricGrid profile="editorial" items={markers.map((m) => ({ value: m.number, label: m.label }))} /></div></section>
 

@@ -68,6 +68,8 @@ export { MangaOrbit } from "./patterns/MangaOrbit";
 export type { MangaOrbitProps, MangaOrbitVariant } from "./patterns/MangaOrbit";
 export { MangaTelemetryHero } from "./patterns/MangaTelemetryHero";
 export type { MangaTelemetryHeroProps } from "./patterns/MangaTelemetryHero";
+export { PortalOrbitHero } from "./patterns/PortalOrbitHero";
+export type { OrbitSatellite, PortalOrbitHeroProps } from "./patterns/PortalOrbitHero";
 export { SectionHeading } from "./patterns/SectionHeading";
 export type { SectionHeadingProps } from "./patterns/SectionHeading";
 export { Heading, Metadata, Text } from "./patterns/Typography";
