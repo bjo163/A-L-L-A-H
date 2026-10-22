@@ -467,7 +467,7 @@ Owner: Command Center maintainer. Dependensi: C02–C11. Gate: delapan view, aut
 - [x] **UI-C13-01** — Migrasikan login dan pemulihan sesi ke AuthLayout dan BrandLockup.
 - [x] **UI-C13-02** — Migrasikan remember-me, login errors dan health feedback.
 - [x] **UI-C13-03** — Migrasikan sidebar/operator identity, nav, logout dan mobile shell.
-- [ ] **UI-C13-04** — Migrasikan topbar, breadcrumb, pencarian, sync dan timestamp.
+- [x] **UI-C13-04** — Migrasikan topbar, breadcrumb, pencarian, sync dan timestamp.
 - [ ] **UI-C13-05** — Migrasikan overview hero, metrics, module list dan activity preview.
 - [ ] **UI-C13-06** — Migrasikan World header, region cards, sensors dan feed.
 - [ ] **UI-C13-07** — Integrasikan map adapter, fallback daftar dan state kegagalan; jangan tampilkan loading tanpa akhir.
@@ -707,6 +707,7 @@ Status penerimaan + tanggal:
 | UI-C13-02 | Login Command Center memakai shared `Checkbox` untuk remember-me, shared `Notice` untuk error, dan shared `Button`/status values untuk health feedback API/database; native checked state dan form submission tetap dimiliki app. | `pnpm --filter @empire/command-center typecheck` lulus setelah consumer migration. |
 | UI-C09-03 | Package menyediakan `NavItem` dengan current/disabled/native button semantics, optional icon dan badge, serta `NavGroup` untuk label dan grouping. | UI typecheck lulus; consumer Command Center memakai `NavItem` untuk seluruh view switcher. |
 | UI-C13-03 | Command Center view switcher memakai shared `NavItem`; sidebar tetap memiliki `BrandLockup`, operator identity, connection status, logout action, dan responsive shell yang dimiliki product stylesheet. | UI dan Command Center typecheck lulus setelah migrasi `App.tsx`. |
+| UI-C13-04 | Topbar Command Center memakai shared `Breadcrumbs` dan `SearchField`; sync button, API link, timestamp, query state, dan refresh behavior tetap app-owned. Search clear action dan keyboard shortcut hint tersedia melalui package contract. | `pnpm --filter @empire/ui typecheck` dan `pnpm --filter @empire/command-center typecheck` lulus setelah migrasi. |
 | UI-C10-01 | `DataTable<Row>` menyediakan typed columns/cell renderer, semantic caption, `scope="col"`, numeric alignment (`start`/`center`/`end`), stable `rowKey`, and table-level empty row. Wrapper memberi horizontal overflow tanpa mengubah table semantics. | `pnpm --filter @empire/ui typecheck` lulus. Consumer migration, caption copy, and narrow-table behavior review masih terbuka pada UI-C10-02/UI-C15-04. |
 | UI-C10-02 | `DataTable` memberi wrapper overflow horizontal yang focusable (`tabIndex=0`) dengan `role=region` dan configurable `responsiveLabel`; markup tetap table semantic, sehingga narrow viewport memiliki scroll berlabel tanpa memalsukan card layout. | `pnpm --filter @empire/ui typecheck` lulus setelah responsive label ditambahkan. Consumer label localization dan browser narrow-table review masih terbuka pada UI-C15-04. |
 | UI-C10-03 | `Pagination` controlled menerima `page`, `totalPages`, dan `onPageChange`, clamps invalid values, disables previous/next pada boundary, dan mengumumkan current/total melalui `aria-live`. | `pnpm --filter @empire/ui typecheck` lulus setelah pattern baru. Consumer total/availability mapping dan keyboard/browser review masih terbuka pada UI-C15-04. |
