@@ -22,7 +22,10 @@ function signature(tenantId: string, documentId: string, expires: string, key: s
 const uuid = (value: unknown): value is string => typeof value === "string" && /^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(value);
 
 export async function documentStorageRoutes(app: FastifyInstance) {
-  app.post<{ Params: { id: string } }>("/v1/documents/:id/content", { preHandler: [requireSession, requirePermission("work:write"), requireTenant] }, async (request, reply) => {
+  app.post<{ Params: { id: string } }>("/v1/documents/:id/content", {
+    config: { rateLimit: { max: 10, timeWindow: "1 minute" } },
+    preHandler: [requireSession, requirePermission("work:write"), requireTenant],
+  }, async (request, reply) => {
     const doc = await DocumentModel.query().where({ id: request.params.id, tenant_id: request.tenantId!, status: "active" }).first();
     if (!doc) return reply.code(404).send({ status: "not_found", message: "Dokumen tidak ditemukan." });
     if (doc.storageProvider === "local-private" && doc.storageKey !== "pending") return reply.code(409).send({ status: "conflict", message: "Dokumen sudah memiliki berkas; buat record dokumen baru untuk versi lain." });
@@ -49,7 +52,10 @@ export async function documentStorageRoutes(app: FastifyInstance) {
     }
   });
 
-  app.post<{ Params: { id: string } }>("/v1/documents/:id/download-link", { preHandler: [requireSession, requirePermission("work:read"), requireTenant] }, async (request, reply) => {
+  app.post<{ Params: { id: string } }>("/v1/documents/:id/download-link", {
+    config: { rateLimit: { max: 30, timeWindow: "1 minute" } },
+    preHandler: [requireSession, requirePermission("work:read"), requireTenant],
+  }, async (request, reply) => {
     if (env.FILE_STORAGE_SIGNING_SECRET.length < 32) return reply.code(503).send({ status: "unavailable", message: "Konfigurasi signing secret harus berisi sedikitnya 32 karakter." });
     const doc = await DocumentModel.query().where({ id: request.params.id, tenant_id: request.tenantId!, status: "active" }).first();
     if (!doc) return reply.code(404).send({ status: "not_found", message: "Dokumen tidak ditemukan." });
@@ -60,7 +66,10 @@ export async function documentStorageRoutes(app: FastifyInstance) {
     return { url: `/v1/documents/${encodeURIComponent(doc.id)}/content?expires=${expires}&signature=${sig}`, expiresAt: new Date(Number(expires) * 1000).toISOString() };
   });
 
-  app.get<{ Params: { id: string }; Querystring: { expires?: string; signature?: string } }>("/v1/documents/:id/content", { schema: { security: [] } }, async (request, reply) => {
+  app.get<{ Params: { id: string }; Querystring: { expires?: string; signature?: string } }>("/v1/documents/:id/content", {
+    config: { rateLimit: { max: 30, timeWindow: "1 minute" } },
+    schema: { security: [] },
+  }, async (request, reply) => {
     const { expires, signature: supplied } = request.query;
     if (env.FILE_STORAGE_SIGNING_SECRET.length < 32 || !expires || !/^\d{10}$/.test(expires) || Number(expires) < Math.floor(Date.now() / 1000) || !supplied || !/^[a-f0-9]{64}$/.test(supplied)) return reply.code(401).send({ status: "unauthorized", message: "Tautan unduh tidak valid atau kedaluwarsa." });
     const doc = uuid(request.params.id) ? await DocumentModel.query().where({ id: request.params.id, status: "active", storage_provider: "local-private" }).first() : null;

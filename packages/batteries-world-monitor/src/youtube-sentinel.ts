@@ -1383,6 +1383,9 @@ function parseYtInitialData(
  * can inspect or run standalone.
  */
 export function generateBrowserAutomationSnippet(query: string = "cek khodam"): string {
+  const queryLiteral = JSON.stringify(query)
+    .replaceAll("\u2028", "\\u2028")
+    .replaceAll("\u2029", "\\u2029");
   return `/**
  * Empire of the Light — YouTube Tauhid Sentinel Browser Crawler
  * Runner: Playwright / Chromium Headless (Tanpa AI)
@@ -1390,7 +1393,7 @@ export function generateBrowserAutomationSnippet(query: string = "cek khodam"): 
 import { chromium } from "playwright";
 
 async function runSentinelCrawler() {
-  const query = "${query.replace(/"/g, '\\"')}";
+  const query = ${queryLiteral};
   const browser = await chromium.launch({ headless: true });
   const page = await browser.newPage();
   

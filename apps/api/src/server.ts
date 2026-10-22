@@ -1,4 +1,5 @@
 import cors from "@fastify/cors";
+import rateLimit from "@fastify/rate-limit";
 import swagger from "@fastify/swagger";
 import Fastify from "fastify";
 import type { FastifyInstance } from "fastify";
@@ -116,6 +117,10 @@ export async function buildServer() {
     await app.register(cors, {
       origin: env.CORS_ORIGIN.split(",").map((origin) => origin.trim()),
       credentials: true,
+    });
+    await app.register(rateLimit, {
+      max: 600,
+      timeWindow: "1 minute",
     });
     await app.register(swagger, {
       openapi: {

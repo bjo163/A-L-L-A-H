@@ -59,7 +59,7 @@ export async function executeScheduledYoutubeSweep(
           try {
             await persistItemsToDB(scanResult.items, scanResult.crawlerMode ?? "auto");
           } catch (dbErr) {
-            console.warn(`[YouTube Sentinel Scheduler] DB persist warning for query "${query}":`, dbErr);
+            console.warn("[YouTube Sentinel Scheduler] DB persist warning:", dbErr);
           }
         }
 
@@ -81,7 +81,7 @@ export async function executeScheduledYoutubeSweep(
         }
       }
     } catch (err) {
-      console.error(`[YouTube Sentinel Scheduler] Error running query "${query}":`, err);
+      console.error("[YouTube Sentinel Scheduler] Error running query:", err);
     }
   }
 

@@ -51,9 +51,15 @@ for (const [name, attribute] of Object.entries(expectedIconRoot)) {
 }
 const iconStrokeToken = (await read("src/tokens.css")).match(/--eol-icon-stroke:\s*([\d.]+)\s*;/)?.[1];
 if (!iconStrokeToken || Number(iconStrokeToken) !== family?.strokeWidth) errors.push(`icon family ${family?.name ?? "(unnamed)"}: --eol-icon-stroke must match the asset manifest stroke width`);
-const pathRegistry = iconSource.match(/const paths:[\s\S]*?= \{([\s\S]*?)\n\};\n\ntype IconProps/)?.[1]
-  ?? iconSource.match(/((?:function [A-Za-z]+Glyph\(\): ReactNode \{[\s\S]*?\}\n)+)\nconst glyphs:/)?.[1]
-  ?? "";
+const pathsObjectStart = iconSource.indexOf("const paths:");
+const pathsObjectEnd = iconSource.indexOf("\n};\n\ntype IconProps", pathsObjectStart);
+const glyphFunctionsStart = iconSource.indexOf("\nfunction ");
+const glyphRegistryEnd = iconSource.indexOf("\nconst glyphs:", glyphFunctionsStart);
+const pathRegistry = pathsObjectStart >= 0 && pathsObjectEnd > pathsObjectStart
+  ? iconSource.slice(pathsObjectStart, pathsObjectEnd)
+  : glyphFunctionsStart >= 0 && glyphRegistryEnd > glyphFunctionsStart
+    ? iconSource.slice(glyphFunctionsStart, glyphRegistryEnd)
+    : "";
 if (!pathRegistry) errors.push("icon path definitions could not be inspected for per-icon stroke overrides");
 else if (/\b(?:stroke|strokeWidth|strokeLinecap|strokeLinejoin)\s*[:=]/.test(pathRegistry)) errors.push(`icon family ${family?.name ?? "(unnamed)"}: individual paths override the shared stroke family`);
 if (/\b(?:id|href|xlinkHref|mask|filter)\s*=|<(?:defs|symbol|linearGradient|radialGradient|mask|filter|pattern)\b|url\s*\(/i.test(pathRegistry)) errors.push("icon path definitions must remain definition-free so repeated icons cannot collide through IDs, masks, filters, or paint references");
