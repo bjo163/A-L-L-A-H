@@ -9,7 +9,7 @@ import type {
   YoutubeViolationCategory,
   YoutubeWorkflowStatus,
 } from "@empire/batteries-world-monitor";
-import { Badge, Button, DataTable, type DataTableColumn, EmptyState, MetricGrid, Panel, StatusIndicator, DocumentIcon, DownloadIcon, CopyIcon, IconText, SparkIcon, WarningIcon, AuditIcon, ModulesIcon, CheckIcon, GlobeIcon, ActivityIcon, AgentIcon, ArrowUpRightIcon, ClockIcon, HistoryIcon, KnowledgeIcon, PlusIcon, SettingsIcon, SourceIcon } from "@empire/ui";
+import { Badge, Button, DataTable, type DataTableColumn, EmptyState, MetricGrid, Panel, StatusIndicator, DocumentIcon, DownloadIcon, CopyIcon, IconText, SparkIcon, WarningIcon, AuditIcon, ModulesIcon, CheckIcon, GlobeIcon, ActivityIcon, AgentIcon, ArrowUpRightIcon, ClockIcon, HistoryIcon, KnowledgeIcon, PlusIcon, SettingsIcon, SourceIcon, CloseIcon } from "@empire/ui";
 import { MotionRegion } from "@empire/ui/client";
 
 const api = createApiClient(import.meta.env.VITE_API_ORIGIN || "http://127.0.0.1:4000");
@@ -1006,7 +1006,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                 <h3>Laporkan Konten ke YouTube Trust &amp; Safety</h3>
               </div>
               <Button variant="secondary" onClick={() => setActiveModal(null)}>
-                Tutup ✕
+                <IconText icon={<CloseIcon />}>Tutup</IconText>
               </Button>
             </div>
 
@@ -1069,7 +1069,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                 <h3>Bantahan Ilmiah &amp; Edukasi Syar&apos;iyyah</h3>
               </div>
               <Button variant="secondary" onClick={() => setActiveModal(null)}>
-                Tutup ✕
+                <IconText icon={<CloseIcon />}>Tutup</IconText>
               </Button>
             </div>
 
@@ -1142,7 +1142,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                 <h3>Amplifikasi Dakwah &amp; Nilai Kebijaksanaan</h3>
               </div>
               <Button variant="secondary" onClick={() => setActiveModal(null)}>
-                Tutup ✕
+                <IconText icon={<CloseIcon />}>Tutup</IconText>
               </Button>
             </div>
 
@@ -1235,7 +1235,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                 <h3>Skrip Browser Automation (Playwright / Chromium)</h3>
               </div>
               <Button variant="secondary" onClick={() => setActiveModal(null)}>
-                Tutup ✕
+                <IconText icon={<CloseIcon />}>Tutup</IconText>
               </Button>
             </div>
 
