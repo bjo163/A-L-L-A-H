@@ -13,7 +13,12 @@
 
 ### Changed
 
+- Restrict `IconGlyphProps` to `className`, `size`, `label`, and `directional`; `DomainSymbolProps` to `name`, `size`, and `className`; and `LogoMarkProps` to `className`. Consumers should put interactions on a containing control rather than the SVG.
 - Decorative `MangaOrbit` rings are static to avoid perpetual animation of artwork that conveys no changing state; the no-longer-meaningful ring `variant` prop was removed. `MangaEffect.spin` was removed because its pseudo-element had no generated content and never produced a visible effect. Loading and active-state indicators retain their motion. Consumers should remove the obsolete props; neither changed the visible result after this cleanup.
+
+### Security
+
+- SVG source validation now rejects JSX prop spreads inside vectors, namespaced/external references, external `url()` attributes, inline event handlers, and inline styles. Generated asset validation also blocks `feImage`; regenerated Orbit output exposes only a class-name prop.
 
 ### Consumer migration notes
 

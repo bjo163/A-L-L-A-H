@@ -14,7 +14,7 @@ const viewBox = rootMatch[1].match(/\bviewBox="([^"]+)"/i)?.[1];
 if (viewBox !== "0 0 72 72") throw new Error(`Orbit master must use viewBox 0 0 72 72; received ${viewBox ?? "none"}`);
 const markup = rootMatch[2].trim();
 const jsx = markup.replace(/\b(stroke|stroke-width|stroke-linecap|stroke-linejoin|fill-rule|clip-rule|clip-path|color-interpolation-filters)=/g, (_, name) => `${name.replace(/-([a-z])/g, (_match, letter) => letter.toUpperCase())}=`);
-const component = `import type { SVGProps } from "react";\n\n/** Generated from assets/source/brand/orbit.svg. Do not edit by hand. */\nexport function OrbitMark(props: SVGProps<SVGSVGElement>) {\n  return <svg aria-hidden="true" focusable="false" viewBox="${viewBox}" fill="none" {...props}>${jsx}</svg>;\n}\n`;
+const component = `/** Generated from assets/source/brand/orbit.svg. Do not edit by hand. */\nexport function OrbitMark({ className }: { className?: string } = {}) {\n  return <svg aria-hidden="true" className={className} focusable="false" viewBox="${viewBox}" fill="none">${jsx}</svg>;\n}\n`;
 const brandColor = "#f1b84b";
 const standaloneMarkup = markup.replaceAll("currentColor", brandColor).replace(/\s+/g, " ").trim();
 const svg = (size, label = "Empire of the Light") => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" width="${size}" height="${size}" role="img" aria-label="${label}"><title>${label}</title>${standaloneMarkup}</svg>\n`;

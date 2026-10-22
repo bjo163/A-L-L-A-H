@@ -1,6 +1,7 @@
 export { Badge } from "./primitives/Badge";
 export type { BadgeProps, BadgeTone } from "./primitives/Badge";
 export { LogoMark } from "./brand/BrandConcepts";
+export type { LogoMarkProps } from "./brand/BrandConcepts";
 export { BrandLockup } from "./brand/BrandConcepts";
 export type { BrandLockupProps } from "./brand/BrandConcepts";
 export {

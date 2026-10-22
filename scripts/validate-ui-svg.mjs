@@ -7,6 +7,8 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const sourceRoot = resolve(root, "packages/ui/src");
 const errors = [];
 const files = [];
+const svgElementNames = new Set(["svg", "g", "path", "circle", "ellipse", "rect", "line", "polyline", "polygon", "defs", "lineargradient", "radialgradient", "stop", "clippath", "mask", "filter", "fegaussianblur", "feblend", "fecolormatrix", "text", "tspan", "title", "desc", "use", "image", "feimage", "foreignobject", "style"]);
+const disallowedSvgElements = new Set(["script", "use", "image", "feimage", "foreignobject", "style", "iframe", "object", "embed"]);
 
 async function walk(directory) {
   for (const entry of await readdir(directory, { withFileTypes: true })) {
@@ -16,10 +18,15 @@ async function walk(directory) {
   }
 }
 
+function propertyName(property) {
+  if (!ts.isJsxAttribute(property)) return "";
+  if (ts.isIdentifier(property.name)) return property.name.text.toLowerCase();
+  if (ts.isJsxNamespacedName(property.name)) return `${property.name.namespace.text}:${property.name.name.text}`.toLowerCase();
+  return "";
+}
+
 function attribute(opening, name) {
-  return opening.attributes.properties.find((property) =>
-    ts.isJsxAttribute(property) && ts.isIdentifier(property.name) && property.name.text === name
-  );
+  return opening.attributes.properties.find((property) => propertyName(property).replaceAll(":", "") === name.toLowerCase());
 }
 
 await walk(sourceRoot);
@@ -35,43 +42,54 @@ for (const path of files) {
 
   function inspectSvgAttributes(opening, currentSvgPath, isRoot = false) {
     const tag = ts.isIdentifier(opening.tagName) ? opening.tagName.text.toLowerCase() : "";
-    if (!isRoot && ["script", "use", "image", "feimage", "foreignobject", "iframe", "object", "embed"].includes(tag)) errors.push(`${currentSvgPath}: disallowed SVG element <${tag}>`);
+    if (disallowedSvgElements.has(tag)) errors.push(`${currentSvgPath}: disallowed SVG element <${tag}>`);
     if (isRoot) {
       if (!attribute(opening, "viewBox")) errors.push(`${currentSvgPath}: SVG requires a viewBox`);
       if (!attribute(opening, "aria-hidden") && !attribute(opening, "role")) errors.push(`${currentSvgPath}: SVG must be decorative or expose an accessible role`);
       if (!attribute(opening, "focusable")) errors.push(`${currentSvgPath}: SVG must define focusable=false`);
     }
     for (const property of opening.attributes.properties) {
-        if (!ts.isJsxAttribute(property) || !ts.isIdentifier(property.name)) continue;
-        const name = property.name.text.toLowerCase();
-        if (["href", "xlinkhref", "dangerouslysetinnerhtml"].includes(name)) errors.push(`${currentSvgPath}: disallowed SVG attribute ${property.name.text}`);
-        if (/^on[a-z]/i.test(name)) errors.push(`${currentSvgPath}: inline SVG event handler ${property.name.text} is not allowed`);
-        if (name === "style" && property.initializer) {
-          const text = property.initializer.getText(sourceFile);
-          if (/url\s*\(\s*["']?(?!#)/i.test(text)) errors.push(`${currentSvgPath}: SVG style contains a non-fragment URL reference`);
-        }
+      if (ts.isJsxSpreadAttribute(property)) {
+        errors.push(`${currentSvgPath}: spread props on SVG elements prevent external-reference validation`);
+        continue;
+      }
+      const name = propertyName(property);
+      if (!name) continue;
+      if (["href", "xlinkhref", "dangerouslysetinnerhtml"].includes(name.replaceAll(":", ""))) errors.push(`${currentSvgPath}: disallowed SVG attribute ${name}`);
+      if (/^on[a-z]/i.test(name)) errors.push(`${currentSvgPath}: inline SVG event handler ${name} is not allowed`);
+      if (name === "style") errors.push(`${currentSvgPath}: SVG inline style is not allowed; use package stylesheet rules`);
+      const valueText = ts.isJsxAttribute(property) ? property.initializer?.getText(sourceFile) ?? "" : "";
+      if (/url\s*\(\s*["']?(?!#)/i.test(valueText)) errors.push(`${currentSvgPath}: SVG attribute ${name} contains a non-fragment URL reference`);
     }
   }
 
   function visit(node, inSvg = false, currentSvgPath = "") {
     if (ts.isJsxElement(node)) {
+      const tag = ts.isIdentifier(node.openingElement.tagName) ? node.openingElement.tagName.text.toLowerCase() : "";
       const isRoot = isSvgTag(node.openingElement.tagName);
       if (isRoot) {
         svgCount += 1;
         currentSvgPath = `${relativePath}:${sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1}`;
       }
       const svgContext = inSvg || isRoot;
-      if (svgContext) inspectSvgAttributes(node.openingElement, currentSvgPath, isRoot);
+      if (svgContext || svgElementNames.has(tag)) {
+        if (!currentSvgPath) currentSvgPath = `${relativePath}:${sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1}`;
+        inspectSvgAttributes(node.openingElement, currentSvgPath, isRoot);
+      }
       node.children.forEach((child) => visit(child, svgContext, currentSvgPath));
       return;
     }
     if (ts.isJsxSelfClosingElement(node)) {
+      const tag = ts.isIdentifier(node.tagName) ? node.tagName.text.toLowerCase() : "";
       const isRoot = isSvgTag(node.tagName);
       if (isRoot) {
         svgCount += 1;
         currentSvgPath = `${relativePath}:${sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1}`;
       }
-      if (inSvg || isRoot) inspectSvgAttributes(node, currentSvgPath, isRoot);
+      if (inSvg || isRoot || svgElementNames.has(tag)) {
+        if (!currentSvgPath) currentSvgPath = `${relativePath}:${sourceFile.getLineAndCharacterOfPosition(node.getStart(sourceFile)).line + 1}`;
+        inspectSvgAttributes(node, currentSvgPath, isRoot);
+      }
       return;
     }
     ts.forEachChild(node, (child) => visit(child, inSvg, currentSvgPath));

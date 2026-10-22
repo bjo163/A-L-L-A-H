@@ -1,8 +1,6 @@
-import type { SVGProps } from "react";
-
 /** Generated from assets/source/brand/orbit.svg. Do not edit by hand. */
-export function OrbitMark(props: SVGProps<SVGSVGElement>) {
-  return <svg aria-hidden="true" focusable="false" viewBox="0 0 72 72" fill="none" {...props}><g stroke="currentColor" strokeLinecap="round">
+export function OrbitMark({ className }: { className?: string } = {}) {
+  return <svg aria-hidden="true" className={className} focusable="false" viewBox="0 0 72 72" fill="none"><g stroke="currentColor" strokeLinecap="round">
     <circle cx="36" cy="36" r="9" fill="currentColor" stroke="none" />
     <ellipse cx="36" cy="36" rx="29" ry="12" strokeWidth="2.5" transform="rotate(-35 36 36)" />
     <ellipse cx="36" cy="36" rx="29" ry="12" strokeWidth="2.5" opacity=".75" transform="rotate(35 36 36)" />

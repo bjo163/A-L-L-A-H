@@ -1,4 +1,4 @@
-import type { ComponentType, ReactNode, SVGProps } from "react";
+import type { ComponentType, ReactNode } from "react";
 
 /** Original, stroke-based Empire icon set. Decorative unless a label is given. */
 export const iconNames = [
@@ -134,12 +134,8 @@ const glyphs: Record<IconName, ComponentType> = {
   output: OutputGlyph,
 };
 
-type ForbiddenIconProps =
-  | "aria-hidden" | "aria-label" | "role" | "focusable"
-  | "fill" | "stroke" | "strokeWidth" | "strokeLinecap" | "strokeLinejoin"
-  | "viewBox" | "width" | "height" | "style";
-
-export type IconGlyphProps = Omit<SVGProps<SVGSVGElement>, ForbiddenIconProps> & {
+export type IconGlyphProps = {
+  className?: string;
   size?: number;
   label?: string;
   directional?: boolean;
@@ -147,12 +143,12 @@ export type IconGlyphProps = Omit<SVGProps<SVGSVGElement>, ForbiddenIconProps> &
 export type IconProps = IconGlyphProps & { name: IconName };
 export type IconComponent = ComponentType<IconGlyphProps>;
 
-function IconSvg({ glyph, size = 20, label, directional = false, ...props }: IconGlyphProps & { glyph: ReactNode }) {
+function IconSvg({ glyph, size = 20, label, directional = false, className }: IconGlyphProps & { glyph: ReactNode }) {
   return (
     <svg
       aria-hidden={label ? undefined : true}
       aria-label={label}
-      className={props.className ? `eol-icon ${props.className}` : "eol-icon"}
+      className={className ? `eol-icon ${className}` : "eol-icon"}
       data-directional={directional ? "true" : undefined}
       fill="none"
       focusable="false"
@@ -164,7 +160,6 @@ function IconSvg({ glyph, size = 20, label, directional = false, ...props }: Ico
       strokeWidth="var(--eol-icon-stroke)"
       viewBox="0 0 24 24"
       width={size}
-      {...props}
     >
       {glyph}
     </svg>

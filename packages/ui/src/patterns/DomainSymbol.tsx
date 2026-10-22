@@ -1,4 +1,4 @@
-import type { ReactNode, SVGProps } from "react";
+import type { ReactNode } from "react";
 
 export const domainSymbolNames = ["arsy", "heliogrid", "qrealm", "forge", "cosmos", "ziil"] as const;
 export type DomainSymbolName = (typeof domainSymbolNames)[number];
@@ -12,17 +12,14 @@ const symbolPaths: Record<DomainSymbolName, ReactNode> = {
   ziil: <><path d="M12 2.5 20 6v5.4c0 4.7-3.2 8-8 10.1-4.8-2.1-8-5.4-8-10.1V6l8-3.5Z"/><path d="m8 12.2 2.6 2.6 5.6-5.6"/></>,
 };
 
-export type DomainSymbolProps = Omit<SVGProps<SVGSVGElement>,
-  | "aria-hidden" | "role" | "focusable"
-  | "fill" | "stroke" | "strokeWidth" | "strokeLinecap" | "strokeLinejoin"
-  | "viewBox" | "width" | "height" | "style"
-> & {
+export type DomainSymbolProps = {
   name: DomainSymbolName;
   size?: number;
+  className?: string;
 };
 
 /** Decorative, single-family domain glyph. Keep the domain name visible beside it. */
-export function DomainSymbol({ name, size = 24, className, ...props }: DomainSymbolProps) {
+export function DomainSymbol({ name, size = 24, className }: DomainSymbolProps) {
   return <svg
     aria-hidden="true"
     className={className ? `eol-domain-symbol ${className}` : "eol-domain-symbol"}
@@ -36,6 +33,5 @@ export function DomainSymbol({ name, size = 24, className, ...props }: DomainSym
     strokeWidth="var(--eol-icon-stroke)"
     viewBox="0 0 24 24"
     width={size}
-    {...props}
   >{symbolPaths[name]}</svg>;
 }

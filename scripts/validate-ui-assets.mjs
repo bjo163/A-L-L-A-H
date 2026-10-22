@@ -10,7 +10,7 @@ const errors = [];
 const read = (path) => readFile(resolve(uiRoot, path), "utf8");
 function svgSafetyErrors(markup, label) {
   const findings = [];
-  if (/<\s*(script|foreignObject|image|use|iframe|object|embed)\b/i.test(markup)) findings.push(`${label}: disallowed active, embedded, or reference-based SVG element`);
+  if (/<\s*(script|foreignObject|image|feImage|use|iframe|object|embed)\b/i.test(markup)) findings.push(`${label}: disallowed active, embedded, or reference-based SVG element`);
   if (/\son[a-z0-9:_-]+\s*=/i.test(markup)) findings.push(`${label}: inline SVG event handler is not allowed`);
   if (/\b(?:href|xlink:href)\s*=\s*(["']?)(?!#)[^\s>]+/i.test(markup)) findings.push(`${label}: SVG reference must not point outside the vector`);
   if (/url\s*\(\s*["']?(?!#)[^)]+\)/i.test(markup)) findings.push(`${label}: SVG CSS URL must be a local fragment reference`);

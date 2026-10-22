@@ -1,6 +1,7 @@
-import type { ReactNode, SVGProps } from "react";
+import type { ReactNode } from "react";
 import { Badge } from "../primitives/Badge";
 import { buttonClassName } from "../primitives/Button";
+import { classNames } from "../primitives/classNames";
 import { Panel } from "../primitives/Panel";
 import { TextField } from "../primitives/TextField";
 import { OrbitMark } from "./OrbitMark.generated";
@@ -11,8 +12,10 @@ export type BrandConcept = "aperture" | "orbit" | "monogram";
  * Shared working mark for product shells. Orbit is provisional: the brand
  * concept and final logo system remain subject to the C02 review gate.
  */
-export function LogoMark(props: SVGProps<SVGSVGElement>) {
-  return <BrandConceptMark concept="orbit" className="eol-logo-mark" {...props} />;
+export type LogoMarkProps = { className?: string };
+
+export function LogoMark({ className }: LogoMarkProps = {}) {
+  return <BrandConceptMark concept="orbit" className={classNames("eol-logo-mark", className)} />;
 }
 
 export type BrandLockupProps = {
@@ -45,18 +48,15 @@ const conceptNames: Record<BrandConcept, string> = {
 };
 
 /** Early vector identity studies; the Orbit working mark is provisional. */
-export function BrandConceptMark({
-  concept,
-  ...props
-}: SVGProps<SVGSVGElement> & { concept: BrandConcept }) {
-  if (concept === "orbit") return <OrbitMark {...props} />;
+export function BrandConceptMark({ concept, className }: LogoMarkProps & { concept: BrandConcept }) {
+  if (concept === "orbit") return <OrbitMark className={className} />;
   return (
     <svg
       aria-hidden="true"
+      className={className}
       focusable="false"
       viewBox="0 0 72 72"
       fill="none"
-      {...props}
     >
       {concept === "aperture" ? (
         <g stroke="currentColor" strokeWidth="3" strokeLinejoin="round">
