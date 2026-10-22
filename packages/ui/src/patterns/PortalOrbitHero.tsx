@@ -44,7 +44,7 @@ export function PortalOrbitHero({
       <span className="hero-stamp" aria-hidden="true">{stamp}</span>
       <div className="visual-core"><div className="core-symbol">A</div><span>A-L-L-A-H</span><small>{centerLabel} · {centerCaption}</small></div>
       {satellites.map((satellite, index) => <div className={`satellite satellite-${String.fromCharCode(97 + index)}`} key={satellite.id}>
-        <span className="sat-point"/> {satellite.label} <small>{satellite.caption}</small>
+        <span className="sat-point" aria-hidden="true"/> {satellite.label} <small>{satellite.caption}</small>
       </div>)}
       <div className="visual-coordinates">{coordinates}</div><div className="visual-floor" aria-hidden="true"/>
     </MangaEffect>

@@ -37,8 +37,8 @@ export function MangaTelemetryHero({
         <span>{pulse}</span>
         <MangaOrbit className="eol-manga-telemetry-hero__ring eol-manga-telemetry-hero__ring--inner" />
         <MangaOrbit className="eol-manga-telemetry-hero__ring eol-manga-telemetry-hero__ring--outer" />
-        <i />
-        <b />
+        <i aria-hidden="true" />
+        <b aria-hidden="true" />
       </div>
     </MangaEffect>
   );
