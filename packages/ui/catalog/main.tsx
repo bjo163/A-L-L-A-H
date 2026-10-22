@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { BrandConcepts } from "../src/brand/BrandConcepts";
-import { Badge, BrandLockup, Button, buttonClassName, ConfirmDialog, EmptyState, ErrorState, FieldError, FieldLabel, HelpText, Icon, IconText, iconGroups, LoadingState, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MetricGrid, Notice, Panel, RegionSummary, SectionHeading, SelectField, Skeleton, StatusIndicator, Switch, Tabs, TextArea, TextField } from "../src";
+import { Badge, BrandLockup, Button, buttonClassName, ConfirmDialog, Container, EmptyState, ErrorState, FieldError, FieldLabel, HelpText, Icon, IconText, iconGroups, LoadingState, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MetricGrid, Notice, Panel, RegionSummary, SectionHeading, SelectField, Skeleton, StatusIndicator, Switch, Tabs, TextArea, TextField } from "../src";
 import "../src/ui.css";
 import "./catalog.css";
 
@@ -259,6 +259,11 @@ function Catalog() {
             { value: "06", label: "Technology domains" },
             { value: "01", label: "Human decision authority" },
           ]} />
+          <div className="catalog-container-examples" aria-label="Container width presets">
+            <Container size="reading"><span>Reading · 48rem</span></Container>
+            <Container size="content"><span>Content · 76rem</span></Container>
+            <Container size="workspace"><span>Workspace · 90rem</span></Container>
+          </div>
           <MangaLoadingState className="catalog-manga-loading" eyebrow="ATLAS" label="Loading system map…" sfx="ZIP!" />
         </Panel>
         <Panel className="catalog-card">

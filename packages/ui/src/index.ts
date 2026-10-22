@@ -58,6 +58,8 @@ export { MangaTelemetryHero } from "./patterns/MangaTelemetryHero";
 export type { MangaTelemetryHeroProps } from "./patterns/MangaTelemetryHero";
 export { SectionHeading } from "./patterns/SectionHeading";
 export type { SectionHeadingProps } from "./patterns/SectionHeading";
+export { Container } from "./patterns/Container";
+export type { ContainerProps, ContainerSize } from "./patterns/Container";
 export { StatusIndicator } from "./patterns/StatusIndicator";
 export { MapFrame, MapLegend, RegionSummary } from "./patterns/MapPatterns";
 export type { MapFrameState, MapLegendItem, MapStatus, RegionSummaryMetric } from "./patterns/MapPatterns";

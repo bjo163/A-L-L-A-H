@@ -104,6 +104,8 @@ body { margin: 0; min-width: 0; }
 .catalog-field-demo { display: grid; gap: 8px; max-width: 620px; }
 .catalog-field-demo .eol-field-label:not(:first-child) { margin-top: 12px; }
 .catalog-composition { display: grid; gap: 24px; }
+.catalog-container-examples { display: grid; gap: 8px; padding: 12px 0; border-block: 1px solid var(--eol-color-border); }
+.catalog-container-examples .eol-container { padding: 6px 10px; border: 1px dashed var(--eol-color-accent-border); color: var(--eol-color-text-muted); font: var(--eol-font-size-xs)/var(--eol-line-height-normal) var(--eol-font-mono); }
 .catalog-map-patterns { display: grid; grid-template-columns: 1fr; gap: 16px; }
 .catalog-map-stage { min-height: 220px; background: radial-gradient(ellipse at 50% 55%, var(--eol-palette-dark-ink-600), var(--eol-palette-dark-ink-950)); }
 .catalog-map-state-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 13rem), 1fr)); gap: 12px; }

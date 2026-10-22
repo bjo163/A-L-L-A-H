@@ -108,6 +108,9 @@
   --eol-workspace-width: 90rem;
   --eol-sidebar-width: 15rem;
   --eol-layout-gutter: var(--eol-space-6);
+  --eol-layout-container-gutter-wide: 2.5rem;
+  --eol-layout-container-gutter-medium: 1.625rem;
+  --eol-layout-container-gutter-narrow: 1.0625rem;
   --eol-layout-grid-gap: var(--eol-space-4);
   --eol-layout-grid-min: 16rem;
   --eol-size-icon-sm: 1rem;

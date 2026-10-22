@@ -1,0 +1,10 @@
+.eol-container {
+  --eol-container-gutter: var(--eol-layout-container-gutter-wide);
+  width: min(var(--eol-container-width, 76rem), calc(100% - 2 * var(--eol-container-gutter)));
+  margin-inline: auto;
+}
+.eol-container--reading { --eol-container-width: 48rem; }
+.eol-container--content { --eol-container-width: 76rem; }
+.eol-container--workspace { --eol-container-width: 90rem; }
+@media (max-width: 68.75rem) { .eol-container { --eol-container-gutter: var(--eol-layout-container-gutter-medium); } }
+@media (max-width: 35.625rem) { .eol-container { --eol-container-gutter: var(--eol-layout-container-gutter-narrow); } }
