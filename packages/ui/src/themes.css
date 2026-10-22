@@ -22,6 +22,12 @@
   --eol-color-focus: var(--eol-palette-dark-cyan);
   --eol-color-gold: var(--eol-palette-light-lime);
   --eol-color-danger: var(--eol-palette-dark-danger);
+  --eol-system-arsy: var(--eol-palette-system-arsy);
+  --eol-system-heliogrid: var(--eol-palette-system-heliogrid);
+  --eol-system-qrealm: var(--eol-palette-system-qrealm);
+  --eol-system-forge: var(--eol-palette-system-forge);
+  --eol-system-knowledge: var(--eol-palette-system-knowledge);
+  --eol-system-ziil: var(--eol-palette-system-ziil);
   --eol-map-status-nominal: var(--eol-palette-map-status-nominal);
   --eol-map-status-advisory: var(--eol-palette-map-status-advisory);
   --eol-map-status-alert: var(--eol-palette-map-status-alert);
@@ -89,6 +95,12 @@
   --eol-color-accent-subtle: var(--eol-color-surface-selected);
   --eol-color-focus: var(--eol-palette-light-cyan);
   --eol-color-danger: var(--eol-palette-light-danger);
+  --eol-system-arsy: var(--eol-palette-system-arsy);
+  --eol-system-heliogrid: var(--eol-palette-system-heliogrid);
+  --eol-system-qrealm: var(--eol-palette-system-qrealm);
+  --eol-system-forge: var(--eol-palette-system-forge);
+  --eol-system-knowledge: var(--eol-palette-system-knowledge);
+  --eol-system-ziil: var(--eol-palette-system-ziil);
   --eol-status-neutral-foreground: var(--eol-palette-status-neutral-light-foreground);
   --eol-status-neutral-surface: var(--eol-palette-status-neutral-light-surface);
   --eol-status-neutral-border: var(--eol-palette-status-neutral-light-border);

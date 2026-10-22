@@ -94,9 +94,15 @@ html[data-theme="light"] .site-header .brand-sigil .sigil-core { background: var
 .flow-arrow { border: 2px solid var(--eol-manga-ink) !important; border-radius: var(--eol-radius-none) !important; background: var(--eol-manga-highlight) !important; color: var(--eol-manga-ink) !important; box-shadow: 2px 2px 0 var(--eol-manga-ink); }
 .plane-row { border-block-end: 2px solid var(--eol-manga-ink) !important; }
 .plane-row:hover { background: var(--eol-manga-highlight) !important; }
-.explorer-visual { background-color: color-mix(in srgb, var(--system-color) 20%, var(--eol-manga-paper)); background-image: radial-gradient(color-mix(in srgb, var(--eol-manga-ink) 21%, transparent) .8px, transparent .8px), repeating-conic-gradient(from 265deg at 50% 50%, transparent 0deg 7deg, color-mix(in srgb, var(--eol-manga-ink) 8%, transparent) 7.2deg 7.7deg, transparent 8deg 14deg); background-size: 8px 8px, 100% 100%; }
-.explore-ring { border: 2px dashed var(--system-color) !important; opacity: .72 !important; box-shadow: none !important; }
-.explore-core { border: 3px solid var(--eol-manga-ink) !important; border-radius: var(--eol-radius-none) !important; background: var(--system-color) !important; color: var(--eol-manga-ink) !important; box-shadow: 5px 5px 0 var(--eol-manga-ink) !important; }
+.explorer-visual { background-color: color-mix(in srgb, var(--system-color, var(--eol-color-accent)) 20%, var(--eol-manga-paper)); background-image: radial-gradient(color-mix(in srgb, var(--eol-manga-ink) 21%, transparent) .8px, transparent .8px), repeating-conic-gradient(from 265deg at 50% 50%, transparent 0deg 7deg, color-mix(in srgb, var(--eol-manga-ink) 8%, transparent) 7.2deg 7.7deg, transparent 8deg 14deg); background-size: 8px 8px, 100% 100%; }
+.explorer-detail[data-system="arsy"] { --system-color: var(--eol-system-arsy); }
+.explorer-detail[data-system="heliogrid"] { --system-color: var(--eol-system-heliogrid); }
+.explorer-detail[data-system="qrealm"] { --system-color: var(--eol-system-qrealm); }
+.explorer-detail[data-system="forge"] { --system-color: var(--eol-system-forge); }
+.explorer-detail[data-system="knowledge"] { --system-color: var(--eol-system-knowledge); }
+.explorer-detail[data-system="ziil"] { --system-color: var(--eol-system-ziil); }
+.explore-ring { border: 2px dashed var(--system-color, var(--eol-color-accent)) !important; opacity: .72 !important; box-shadow: none !important; }
+.explore-core { border: 3px solid var(--eol-manga-ink) !important; border-radius: var(--eol-radius-none) !important; background: var(--system-color, var(--eol-color-accent)) !important; color: var(--eol-manga-ink) !important; box-shadow: 5px 5px 0 var(--eol-manga-ink) !important; }
 .stack-kernel { border: 3px solid var(--eol-manga-ink) !important; border-radius: var(--eol-radius-none) !important; background: var(--eol-manga-highlight) !important; color: var(--eol-manga-ink) !important; box-shadow: 4px 4px 0 var(--eol-manga-ink) !important; }
 .stacks-orbit { filter: drop-shadow(4px 4px 0 var(--eol-manga-ink)); }
 

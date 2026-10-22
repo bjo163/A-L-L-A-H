@@ -232,7 +232,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
           <div className="event-list event-list-large">
             {visibleFeeds.map((feed) => (
               <article key={feed.id} className="event-row event-row-expanded">
-                <span className="event-marker">◉</span>
+                <span className="event-marker"><Icon name="activity" size={16}/></span>
                 <div className="event-main">
                   <div className="event-title">
                     <strong>{feed.title}</strong>

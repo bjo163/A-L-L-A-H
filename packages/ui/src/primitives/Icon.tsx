@@ -7,15 +7,15 @@ export const iconNames = [
   "info", "success", "warning", "error", "pending", "user", "team", "lock", "agent",
   "modules", "knowledge", "evidence", "history", "audit", "approval", "document", "source",
   "copy", "download", "plus", "edit", "sun", "moon", "chevronDown", "chevronLeft",
-  "chevronRight", "arrowLeft", "arrowRight", "arrowUpRight", "arrowDownRight", "check",
+  "chevronRight", "arrowLeft", "arrowRight", "arrowUpRight", "arrowDownRight", "check", "activity", "input", "output",
 ] as const;
 
 export type IconName = (typeof iconNames)[number];
 
 export const iconGroups: ReadonlyArray<{ label: string; names: readonly IconName[] }> = [
-  { label: "Navigation", names: ["home", "menu", "close", "externalLink", "chevronDown", "chevronLeft", "chevronRight", "arrowLeft", "arrowRight", "arrowUpRight", "arrowDownRight"] },
+  { label: "Navigation", names: ["home", "menu", "close", "externalLink", "chevronDown", "chevronLeft", "chevronRight", "arrowLeft", "arrowRight", "arrowUpRight", "arrowDownRight", "input", "output"] },
   { label: "Actions", names: ["search", "filter", "refresh", "settings", "command", "logOut", "copy", "download", "plus", "edit"] },
-  { label: "Status", names: ["info", "success", "warning", "error", "pending", "check"] },
+  { label: "Status", names: ["info", "success", "warning", "error", "pending", "check", "activity"] },
   { label: "Identity & access", names: ["users", "directory", "user", "team", "lock"] },
   { label: "Product & operations", names: ["globe", "spark", "agent", "modules", "knowledge", "evidence", "history", "clock", "audit", "approval", "document", "source", "sun", "moon", "arrows"] },
 ];
@@ -68,6 +68,9 @@ const paths: Record<IconName, ReactNode> = {
   arrowUpRight: <><path d="M7 17 17 7M8 7h9v9"/></>,
   arrowDownRight: <><path d="m7 7 10 10M17 8v9H8"/></>,
   check: <path d="m5 12 4 4L19 6"/>,
+  activity: <path d="M3 12h4l3-8 4 16 3-8h4"/>,
+  input: <><path d="M4 12h13m-5-5 5 5-5 5"/><path d="M20 5v14"/></>,
+  output: <><path d="M20 12H7m5 5-5-5 5-5"/><path d="M4 5v14"/></>,
 };
 
 type IconProps = Omit<SVGProps<SVGSVGElement>, "aria-hidden" | "aria-label" | "role"> & {

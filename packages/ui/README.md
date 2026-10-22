@@ -22,6 +22,7 @@ The centralization blueprint tracks the remaining migration and acceptance work.
 - `MapFrame`, `MapLegend`, and `RegionSummary` for map source states and shared map information patterns.
 - `Badge` for maturity and status labels.
 - `Icon`, `iconNames`, and `iconGroups` for the original shared 24px SVG stroke family. Icons are decorative by default; `label` is for an SVG that carries meaning without an adjacent accessible name.
+- `activity`, `input`, and `output` are available as semantic names in the shared icon registry; add new glyphs to a named group and the catalog together.
 - `Notice` for user-facing information that needs clear emphasis.
 - `LoadingState`, `EmptyState`, and `ErrorState` for distinct resource states.
 - `Skeleton` for decorative placeholders while content loads.
