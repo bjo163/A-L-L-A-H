@@ -18,6 +18,8 @@ export { ErrorState } from "./primitives/ErrorState";
 export type { ErrorStateProps } from "./primitives/ErrorState";
 export { FieldError } from "./primitives/FieldError";
 export type { FieldErrorProps } from "./primitives/FieldError";
+export { Field } from "./primitives/Field";
+export type { FieldProps } from "./primitives/Field";
 export { FieldLabel } from "./primitives/FieldLabel";
 export type { FieldLabelProps } from "./primitives/FieldLabel";
 export { HelpText } from "./primitives/HelpText";

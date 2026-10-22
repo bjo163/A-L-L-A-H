@@ -36,6 +36,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .eol-text { margin: 0; color: var(--eol-color-text); line-height: var(--eol-line-height-relaxed); }
 .eol-text--muted { color: var(--eol-color-text-muted); }
 .eol-metadata { color: var(--eol-color-text-muted); font: var(--eol-font-weight-medium) var(--eol-font-size-2xs)/var(--eol-line-height-normal) var(--eol-font-mono); letter-spacing: var(--eol-letter-spacing-label); }
+.eol-field { display: grid; gap: var(--eol-space-2); min-width: 0; }
 .eol-icon-button { display: inline-grid; flex: none; place-items: center; border: var(--eol-border-width) solid var(--eol-color-border); border-radius: var(--eol-radius-sm); background: var(--eol-color-surface); color: var(--eol-color-text-subtle); cursor: pointer; }
 .eol-icon-button:hover { border-color: var(--eol-color-accent-border); color: var(--eol-color-accent-strong); background: var(--eol-color-accent-subtle); }
 .eol-icon-button--sm { width: 1.75rem; height: 1.75rem; }.eol-icon-button--md { width: 2.25rem; height: 2.25rem; }.eol-icon-button--lg { width: 2.75rem; height: 2.75rem; }
