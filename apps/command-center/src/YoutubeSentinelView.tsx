@@ -338,13 +338,22 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               }}
             />
             <div style={{ minWidth: 0, flex: 1 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4 }}>
+              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4, flexWrap: "wrap" }}>
                 {item.isNew && (
                   <Badge tone="success">✨ BARU</Badge>
                 )}
                 <span className="sentinel-card-source-pill" style={{ position: "static", fontSize: 9, padding: "1px 5px" }}>
                   {item.sourceType}
                 </span>
+                {item.transcriptAnalyzed ? (
+                  <span style={{ fontSize: 9, padding: "1px 6px", background: "rgba(59, 130, 246, 0.2)", color: "#60a5fa", border: "1px solid #3b82f6", borderRadius: 3, fontWeight: 700 }}>
+                    📝 Transkrip Lengkap
+                  </span>
+                ) : (
+                  <span style={{ fontSize: 9, padding: "1px 6px", background: "rgba(107, 114, 128, 0.15)", color: "var(--eol-color-text-muted)", borderRadius: 3 }}>
+                    📄 Metadata
+                  </span>
+                )}
               </div>
               <a
                 href={item.url}
@@ -355,6 +364,30 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               >
                 {item.title}
               </a>
+              {item.matchedRules && item.matchedRules.length > 0 && (
+                <div style={{ display: "flex", gap: 4, marginTop: 4, flexWrap: "wrap" }}>
+                  {item.matchedRules.slice(0, 2).map((r, idx) => (
+                    <span
+                      key={idx}
+                      style={{
+                        fontSize: 10,
+                        padding: "1px 5px",
+                        background: r.weight > 0 ? "rgba(239, 68, 68, 0.15)" : "rgba(34, 197, 94, 0.15)",
+                        color: r.weight > 0 ? "#f87171" : "#4ade80",
+                        border: `1px solid ${r.weight > 0 ? "rgba(239, 68, 68, 0.3)" : "rgba(34, 197, 94, 0.3)"}`,
+                        borderRadius: 2,
+                      }}
+                    >
+                      {r.weight > 0 ? `⚠️ ${r.label}` : `🛡️ ${r.label}`}
+                    </span>
+                  ))}
+                  {item.matchedRules.length > 2 && (
+                    <span style={{ fontSize: 10, color: "var(--eol-color-text-muted)", alignSelf: "center" }}>
+                      +{item.matchedRules.length - 2} lagi
+                    </span>
+                  )}
+                </div>
+              )}
               <div style={{ display: "flex", gap: 8, marginTop: 4, fontSize: 11, color: "var(--eol-color-text-muted)" }}>
                 {item.durationText && <span>⏱️ {item.durationText}</span>}
                 {item.publishedAt && <span>📅 {item.publishedAt}</span>}

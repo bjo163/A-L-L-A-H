@@ -145,6 +145,8 @@ export interface YoutubeMonitoredItem {
   lastActionAt?: string;
   sourceType: "live_search" | "browser_automation" | "feed_crawl" | "verified_seed" | "innertube_client";
   isNew?: boolean;
+  transcriptAnalyzed?: boolean;
+  transcriptSnippet?: string;
 }
 
 export type YoutubeCrawlerEngine = "innertube" | "playwright" | "auto";

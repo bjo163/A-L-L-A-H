@@ -120,22 +120,47 @@ const HEURISTIC_RULES: HeuristicRuleDefinition[] = [
     weight: 40,
     regex: /\b(larung\s+sesaji|sesajen\s+pantai\s+selatan|persembahan\s+kepala\s+kerbau|sesajen\s+ratu\s+kidul|ritual\s+gunung\s+kawi)\b/i,
   },
+
+  // 7. Praktik Klenik Berkedok Agama / Syirik Kontemporer
+  {
+    id: "RULE_DUKUN_KEDOK_AGAMA",
+    category: "UMUM_SYIRIK",
+    label: "Dukun / Supranatural Berkedok Karomah / Gelar Agama",
+    weight: 40,
+    regex: /\b(ustadz\s+sakti|kyai\s+paranormal|gus\s+sakti|ilmu\s+laduni\s+instan|wirid\s+penarik\s+uang\s+milyaran|ijazah\s+uang\s+gaib|amalan\s+pesugihan)\b/i,
+  },
+  {
+    id: "RULE_RAMALAN_WETON_JODOH_KEMATIAN",
+    category: "DUKUN_RAMALAN",
+    label: "Hitungan Weton Mistis & Ramalan Sial / Kematian",
+    weight: 30,
+    regex: /\b(ramalan\s+weton\s+jodoh|weton\s+pembawa\s+sial|ruwatan\s+buang\s+sial|ruwat\s+sengkolo|mandi\s+kembang\s+buang\s+sial|hari\s+naas\s+weton)\b/i,
+  },
+  {
+    id: "RULE_PENASIHAT_SPIRITUAL_TRANSFER_ENERGI",
+    category: "UMUM_SYIRIK",
+    label: "Transfer Energi Gaib / Buka Aura Mistis",
+    weight: 35,
+    regex: /\b(buka\s+aura\s+pengasihan|transfer\s+energi\s+gaib|pengijazahan\s+ilmu\s+kebal|mandi\s+aura\s+pemikat|penyelerasan\s+khodam)\b/i,
+  },
 ];
 
 // Commercial / Practitioner Modifiers (Boosts severity)
 const TRANSACTIONAL_MODIFIERS = [
-  { label: "Permintaan Mahar / Tarif Gaib", regex: /\b(mahar\s+seikhlasnya|mahar\s+tingkat|biaya\s+mahar|transfer\s+mahar)\b/i, boost: 20 },
-  { label: "Layanan Jarak Jauh / Hubungi WA", regex: /\b(hubungi\s+wa|wa\s+08|jarak\s+jauh\s+ampuh|konsultasi\s+wa|dm\s+instagram)\b/i, boost: 20 },
-  { label: "Jaminan Pasti Berhasil / Instan", regex: /\b(dijamin\s+ampuh|garansi\s+uang\s+kembali|pasti\s+cair|100%\s+berhasil|langsung\s+terbukti)\b/i, boost: 15 },
+  { label: "Permintaan Mahar / Tarif Gaib", regex: /\b(mahar\s+seikhlasnya|mahar\s+tingkat|biaya\s+mahar|transfer\s+mahar|mahar\s+kesepakatan)\b/i, boost: 20 },
+  { label: "Layanan Jarak Jauh / Hubungi WA", regex: /\b(hubungi\s+wa|wa\s+08|wa\.me\/\d+|jarak\s+jauh\s+ampuh|konsultasi\s+wa|dm\s+instagram|admin\s+pendaftaran\s+wa)\b/i, boost: 20 },
+  { label: "Jaminan Pasti Berhasil / Garansi Gaib", regex: /\b(dijamin\s+ampuh|garansi\s+uang\s+kembali|pasti\s+cair|100%\s+berhasil|langsung\s+terbukti|terbukti\s+nyata)\b/i, boost: 15 },
+  { label: "Klaim Tanpa Resiko / Tanpa Tumbal Palsu", regex: /\b(tanpa\s+tumbal|aman\s+tanpa\s+efek\s+samping|pesugihan\s+halal|pesugihan\s+putih\s+islami)\b/i, boost: 15 },
 ];
 
 // Anti False-Positive: Refutation, Educational & Syar'i Counter Markers
 const DAKWAH_REFUTATION_MARKERS = [
-  { label: "Bantahan Bahaya Syirik", regex: /\b(bahaya\s+syirik|hukum\s+syirik|dosa\s+syirik|syirik\s+akbar)\b/i },
-  { label: "Membongkar Trik Penipuan Dukun", regex: /\b(membongkar\s+trik|bongkar\s+trik|penipuan\s+dukun|trik\s+santet|bongkar\s+rahasia\s+dukun|pesugihan\s+palsu)\b/i },
-  { label: "Ruqyah Syar'iyyah & Penawar Sihir", regex: /\b(ruqyah\s+syar'iyyah|ruqyah\s+mandiri|ayat\s+penawar\s+sihir|cara\s+menghilangkan\s+santet\s+secara\s+islami)\b/i },
-  { label: "Kajian Ustadz / Sunnah / MUI", regex: /\b(ustadz|kajian\s+sunnah|fatwa\s+mui|buya\s+yahya|ustadz\s+khalid|ustadz\s+adi\s+hidayat|ceramah\s+tauhid|kajian\s+islam)\b/i },
-  { label: "Peringatan Waspada Penipuan", regex: /\b(awas\s+tertipu|jangan\s+percaya\s+dukun|larangan\s+memakai\s+jimat|taubat\s+dari\s+sihir)\b/i },
+  { label: "Bantahan Bahaya Syirik", regex: /\b(bahaya\s+syirik|hukum\s+syirik|dosa\s+syirik|syirik\s+akbar|syirik\s+asghar|pembatal\s+keislaman)\b/i },
+  { label: "Membongkar Trik Penipuan Dukun", regex: /\b(membongkar\s+trik|bongkar\s+trik|penipuan\s+dukun|trik\s+santet|bongkar\s+rahasia\s+dukun|pesugihan\s+palsu|pesulap\s+merah|bongkar\s+kedok)\b/i },
+  { label: "Ruqyah Syar'iyyah & Penawar Sihir", regex: /\b(ruqyah\s+syar'iyyah|ruqyah\s+mandiri|ayat\s+penawar\s+sihir|cara\s+menghilangkan\s+santet\s+secara\s+islami|terapi\s+al-quran)\b/i },
+  { label: "Kajian Ustadz / Sunnah / MUI", regex: /\b(ustadz|kajian\s+sunnah|fatwa\s+mui|buya\s+yahya|ustadz\s+khalid|ustadz\s+adi\s+hidayat|syafiq\s+riza|firanda|ceramah\s+tauhid|kajian\s+islam|tanya\s+jawab\s+islam)\b/i },
+  { label: "Peringatan Waspada Penipuan", regex: /\b(awas\s+tertipu|jangan\s+percaya\s+dukun|larangan\s+memakai\s+jimat|taubat\s+dari\s+sihir|hukum\s+mendatangi\s+tukang\s+ramal)\b/i },
+  { label: "Klarifikasi / Berita Kriminal Perdukunan", regex: /\b(polisi\s+tangkap\s+dukun|dukun\s+ditangkap|korban\s+penipuan\s+dukun|kasus\s+dukun\s+cabul|modus\s+dukun)\b/i },
 ];
 
 // Quran & Sunnah Theological Dalil Matrix
@@ -214,6 +239,7 @@ export function evaluateVideoText(params: {
   title: string;
   description?: string;
   channelTitle?: string;
+  transcript?: string;
 }): {
   category: YoutubeViolationCategory;
   riskLevel: YoutubeRiskLevel;
@@ -221,10 +247,12 @@ export function evaluateVideoText(params: {
   confidence: number;
   isRefutation: boolean;
   matchedRules: YoutubeMatchedRule[];
+  transcriptExcerpt?: string;
 } {
-  const corpus = `${params.title} ${params.description ?? ""} ${params.channelTitle ?? ""}`.trim();
+  const corpus = `${params.title} ${params.description ?? ""} ${params.channelTitle ?? ""} ${params.transcript ?? ""}`.trim();
   const matchedRules: YoutubeMatchedRule[] = [];
   const categoryScores: Partial<Record<YoutubeViolationCategory, number>> = {};
+  let transcriptExcerpt: string | undefined = undefined;
 
   // 1. Check for refutation / dakwah counter markers
   let refutationScore = 0;
@@ -346,12 +374,14 @@ export function buildMonitoredItem(raw: {
   durationText?: string;
   thumbnailUrl?: string;
   description?: string;
+  transcript?: string;
   sourceType?: YoutubeMonitoredItem["sourceType"];
 }): YoutubeMonitoredItem {
   const analysis = evaluateVideoText({
     title: raw.title,
     description: raw.description,
     channelTitle: raw.channelTitle,
+    transcript: raw.transcript,
   });
 
   const guidance = TAUHID_DALIL_MATRIX[analysis.category] ?? TAUHID_DALIL_MATRIX.UMUM_SYIRIK;
@@ -412,6 +442,8 @@ export function buildMonitoredItem(raw: {
     workflowStatus: analysis.riskScore >= 70 ? "PENDING_REVIEW" : "VERIFIED_SYIRIK",
     scannedAt: new Date().toISOString(),
     sourceType: raw.sourceType ?? "verified_seed",
+    transcriptAnalyzed: Boolean(raw.transcript && raw.transcript.length > 0),
+    transcriptSnippet: raw.transcript ? raw.transcript.slice(0, 300) : undefined,
   };
 }
 
@@ -700,6 +732,7 @@ export interface CrawledVideoData {
   viewCountText?: string;
   durationText?: string;
   publishedText?: string;
+  transcript?: string;
 }
 
 /**
@@ -882,6 +915,7 @@ export async function scanYoutube(params: YoutubeScanQuery): Promise<YoutubeScan
             viewCountText: data.viewCountText,
             durationText: data.durationText,
             publishedAt: data.publishedText,
+            transcript: data.transcript,
             sourceType: "innertube_client",
           });
           const isBrandNew = youtubeSentinelRepo.upsertItem(item);
