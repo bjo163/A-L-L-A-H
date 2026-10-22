@@ -1,6 +1,6 @@
 # ADR-0005 — Extreme Funky Grunge Gen Z Direction
 
-**Status:** Implemented on the production Portal surface in `dev`; pending PR review and CI validation.  
+**Status:** Implemented and reviewed locally on the production Portal surface in `dev`; awaiting required GitHub checks before promotion.
 **Date:** 2026-10-23  
 **Owner:** `packages/ui`  
 **Decision:** Extreme intensity · Dual theme · Real product first.
@@ -29,10 +29,10 @@ The repository already has a centralized `@empire/ui` package, semantic design t
 
 ## Validation gates
 
-- [ ] Run root validation, package typecheck/build, and relevant tests after the production CSS change.
-- [ ] Review screenshots in light and dark themes at desktop, tablet, and mobile widths.
-- [ ] Check long/localized content, keyboard navigation, contrast, forced colors, and reduced motion.
-- [ ] Verify the Portal's real navigation and action destinations remain functional.
+- [x] Run root validation, package typecheck/build, and relevant tests after the production CSS change.
+- [x] Review screenshots in light and dark themes at desktop, tablet, and mobile widths.
+- [x] Check long/localized content, keyboard focus, contrast, forced-colors styles, and reduced-motion behavior.
+- [x] Verify the Portal's real navigation, system explorer tabs, and route destinations remain functional.
 - [ ] Resolve any failing CI/promotion workflow before merging to `main`.
 
 ## Consequences
