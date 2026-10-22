@@ -20,7 +20,7 @@ git push origin dev
 ```
 
 CI rejects PRs to `main` from any branch other than this repository's `dev`.
-The main branch requires Branch policy and Quality checks before merging.
+The repository setup script makes Branch policy, Quality checks, and CodeQL required before merging.
 Review and merge remain deliberate; green CI does not automatically promote unfinished work.
 
 ## Checks
@@ -56,6 +56,16 @@ No production deployment or database migration is automatic because no deploymen
 Dependency update branches are intentionally not created while the two-branch rule applies; handle audit findings on `dev`.
 
 ## Repository settings
+
+Run once with an authenticated GitHub CLI admin account:
+
+```sh
+node scripts/configure-repository.mjs --dry-run
+node scripts/configure-repository.mjs
+```
+
+This installs branch protection, restricts merge methods, and enables vulnerability alerts.
+Workflow YAML alone does **not** prevent a direct push or merge of failed checks; GitHub branch protection must also be installed.
 
 Keep `main` as default, permit merge commits only, disable automatic branch deletion,
 require Branch policy and Quality checks on `main`, block deletion/force push on both branches,
