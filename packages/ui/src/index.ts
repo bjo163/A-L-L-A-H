@@ -86,6 +86,8 @@ export { DataTable } from "./patterns/DataTable";
 export type { DataTableColumn, DataTableProps } from "./patterns/DataTable";
 export { Pagination } from "./patterns/Pagination";
 export type { PaginationProps } from "./patterns/Pagination";
+export { FilterBar } from "./patterns/FilterBar";
+export type { FilterBarProps } from "./patterns/FilterBar";
 export { Grid, Inline, Stack } from "./patterns/Layout";
 export type { GridProps, InlineProps, LayoutSpace, StackProps } from "./patterns/Layout";
 export { StatusIndicator } from "./patterns/StatusIndicator";
