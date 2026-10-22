@@ -2,8 +2,7 @@ import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { BrandConcepts } from "../src/brand/BrandConcepts";
 import { Badge, Button, buttonClassName, ConfirmDialog, EmptyState, ErrorState, FieldError, FieldLabel, HelpText, Icon, iconGroups, LoadingState, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, Notice, Panel, SectionHeading, SelectField, Skeleton, StatGrid, Switch, Tabs, TextArea, TextField } from "../src";
-import "../src/styles.css";
-import "../src/manga-theme.css";
+import "../src/ui.css";
 import "./catalog.css";
 
 function Catalog() {

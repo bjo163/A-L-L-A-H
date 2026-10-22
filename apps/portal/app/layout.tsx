@@ -3,10 +3,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { PrimaryNavigation } from "../components/PrimaryNavigation";
 import { getPortalLanguage, text } from "../lib/i18n";
-import "@empire/ui/styles.css";
-import "@empire/ui/manga-theme.css";
-import "./globals.css";
-import "./manga-theme.css";
+import "@empire/ui/portal.css";
 
 export async function generateMetadata(): Promise<Metadata> {
   const language = await getPortalLanguage();

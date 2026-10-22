@@ -5,8 +5,9 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./styles.css": "./src/styles.css",
-    "./manga-theme.css": "./src/manga-theme.css"
+    "./ui.css": "./src/ui.css",
+    "./portal.css": "./src/portal.css",
+    "./command-center.css": "./src/command-center.css"
   },
   "scripts": {
     "build": "tsc --noEmit",

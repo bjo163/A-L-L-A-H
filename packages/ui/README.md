@@ -28,8 +28,8 @@ This is a planned migration. The current implementation and historical guidance 
 - `HelpText` and `FieldError` for supporting and validation text connected with native `aria-describedby` IDs.
 - `Tabs` for controlled tab lists with roving focus, orientation-aware arrow keys, Home/End, disabled tabs, and linked panels.
 - `ConfirmDialog` for consequential decisions using native modal semantics, a verified Tab/Shift+Tab focus cycle, and Escape behavior.
-- `styles.css` for the `--eol-*` design tokens and primitive styles.
-- `manga-theme.css` for the shared manga palette and semantic color aliases.
+- `ui.css` as the official shared stylesheet entry for tokens, component styles, and the shared theme.
+- `portal.css` and `command-center.css` for package-owned product composition; Command Center loads the vendor MapLibre stylesheet between the shared and product entries.
 - `buttonClassName` for styling Next.js Link or an anchor with the shared action variants.
 
 ## Component contract
@@ -68,6 +68,10 @@ Promote a pattern when a real consumer workflow needs it, its interaction or acc
 
 `@empire/ui` is private and changes ship with this workspace; it has no independent published semver contract. Additive compatible changes can land with their consumer. For a breaking change, update all consumers, catalog examples, and this contract in the same change and include migration notes. If consumers ever need a staggered migration, retain the old export with a deprecation note for one migration cycle, then remove it only after a repository-wide usage check. Revisit public semver and a formal deprecation window before publishing the package independently.
 
+### Stylesheet ownership and order
+
+`ui.css` is the common public stylesheet entry; it imports the token/component base then the shared theme. `portal.css` composes that entry before `products/portal-globals.css` and `products/portal-manga.css`. Command Center imports the same `ui.css`, then the MapLibre vendor stylesheet, then the package-owned `command-center.css`. This preserves the pre-migration cascade order. Consumers import these exported paths only; implementation CSS under `src/` is private to the package. Portal and Command Center no longer contain product stylesheet files. Remaining inline styles and application class hooks are still migration work and are not treated as completed by this file move.
+
 The primitives have no internal state or browser effects, except `ConfirmDialog`, which synchronizes a controlled `open` prop with the native dialog lifecycle. In Next.js App Router, `Tabs` and `Switch` need a Client Component owner because they require callbacks; `Button`, form controls, and layout primitives can render from a Server Component when no client event handler is passed. A `Button` click handler or controlled form event belongs to a Client Component. `ConfirmDialog` declares its own client boundary, but its callbacks must still be created by a client owner because functions cannot cross the Server-to-Client Component boundary. Static primitives and `buttonClassName` can be used in server-rendered UI. Form controls preserve native HTML validation and do not replace server-side validation. CSS is imported once by each consuming app. The package targets React 19, matching the applications; the portal uses Next.js transpilation and Vite consumes the workspace TypeScript source.
 
 ### Token layers
@@ -89,9 +93,9 @@ The catalog uses static, fabricated examples and local-only interactions. It mak
 
 `styles.css` self-hosts Space Grotesk Variable (Latin, Latin Extended, and Vietnamese subsets) and DM Mono 400/500 (Latin subset) through Fontsource packages. The fonts use `font-display: swap`; system sans/mono stacks remain fallbacks. This avoids Google Fonts runtime requests and keeps both applications consistent. The selected WOFF2 assets total about 78 KB before transfer compression; unicode ranges let browsers fetch only matching Space Grotesk subsets. The SIL Open Font License 1.1 texts are kept in `licenses/` beside this package's font dependencies.
 
-Apps import the stylesheet once in their entry point and keep page layout, navigation, and domain-specific composition in the app. This package does not own product data, routes, authentication, API access, or domain workflows.
+Portal imports `@empire/ui/portal.css`, which composes the shared entry and Portal presentation. Command Center imports `@empire/ui/ui.css`, its opt-in MapLibre vendor stylesheet, then `@empire/ui/command-center.css` so the original cascade order stays intact. All authored product presentation CSS now lives under `packages/ui/src/products/`; apps keep routing, product data, authentication, API access, permissions, and domain workflows. The former `styles.css` and `manga-theme.css` package subpaths were removed; those implementation files are internal to the public stylesheet entries.
 
-The portal and command center have different jobs and established visual treatments. Shared tokens establish a common palette and component behavior; each app can keep local layout and presentation where its context requires it.
+Portal and Command Center can have distinct editorial and operational compositions, but their authored visual rules and shared primitives are owned by the same package. Product-specific styles are package entries, not app-local copies.
 
 ### Current consumer map
 

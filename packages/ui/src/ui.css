@@ -1,0 +1,3 @@
+/* Shared public entry: keep the historical cascade order while consuming the package theme. */
+@import "./styles.css";
+@import "./manga-theme.css";

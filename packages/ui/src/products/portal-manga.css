@@ -1,4 +1,4 @@
-/* Shared color and manga tokens live in @empire/ui/manga-theme.css. */
+/* Shared color and manga tokens are imported first by the Portal stylesheet entry. */
 html[data-theme="light"] body {
   background-color: var(--eol-color-background) !important;
   background-image: radial-gradient(color-mix(in srgb, var(--eol-manga-ink) 12%, transparent) .8px, transparent .8px) !important;
