@@ -72,10 +72,17 @@ for (const path of new Set([...actualGenerated.keys(), ...expectedGenerated.keys
   else if (actualGenerated.get(path) !== expectedGenerated.get(path)) errors.push(`generated asset hash drift: ${path}`);
 }
 if (!manifest.generatedAssetPolicy?.includes("inline SVG")) errors.push("generated asset policy must document the current inline-SVG source strategy");
+if (manifest.generatedFiles.length > 0 && !manifest.generatedAssetPolicy?.includes("assets:generate")) errors.push("generated assets require a documented deterministic generation command");
+for (const asset of manifest.generatedFiles) {
+  if (!asset.path.endsWith(".svg")) continue;
+  const contents = await readFile(resolve(uiRoot, asset.path), "utf8").catch(() => "");
+  if (!contents.startsWith("<svg ") || !contents.includes("viewBox=\"0 0 72 72\"")) errors.push(`generated SVG requires a 72-unit master viewBox: ${asset.path}`);
+  if (/<(?:script|foreignObject|image|use)\b/i.test(contents) || /\b(?:href|xlink:href)=/i.test(contents)) errors.push(`generated SVG contains an external or unsafe element/reference: ${asset.path}`);
+}
 
 if (errors.length) {
   console.error(`UI asset manifest validation failed (${errors.length}):\n- ${errors.join("\n- ")}`);
   process.exitCode = 1;
 } else {
-  console.log(`UI asset manifest valid: ${manifest.vectors.icons.names.length} icons, ${manifest.vectors.brandConcepts.names.length} brand concepts, ${manifest.fonts.length} licensed font packages; no generated files expected.`);
+  console.log(`UI asset manifest valid: ${manifest.vectors.icons.names.length} icons, ${manifest.vectors.brandConcepts.names.length} brand concepts, ${manifest.fonts.length} licensed font packages, ${manifest.generatedFiles.length} generated files.`);
 }

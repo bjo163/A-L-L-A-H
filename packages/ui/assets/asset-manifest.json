@@ -1,23 +1,122 @@
 {
   "schemaVersion": 1,
-  "generatedAssetPolicy": "UI assets are authored as inline SVG components; generated binary/vector outputs are not currently checked in.",
+  "generatedAssetPolicy": "Brand concepts are authored as inline SVG components; the provisional Orbit concept in src/brand/BrandConcepts.tsx is the sole editable source for generated mark/favicon/app-icon SVGs. Outputs are deterministic and regenerated with pnpm --filter @empire/ui assets:generate. Final identity approval is tracked in UI-C02.",
   "generatedAssetDirectory": "assets/generated",
   "vectors": {
     "icons": {
       "source": "src/primitives/Icon.tsx",
       "inventoryExport": "iconNames",
-      "names": ["home", "globe", "spark", "users", "directory", "clock", "arrows", "menu", "search", "filter", "refresh", "settings", "command", "logOut", "externalLink", "close", "info", "success", "warning", "error", "pending", "user", "team", "lock", "agent", "modules", "knowledge", "evidence", "history", "audit", "approval", "document", "source", "copy", "download", "plus", "edit", "sun", "moon", "chevronDown", "chevronLeft", "chevronRight", "arrowLeft", "arrowRight", "arrowUp", "arrowUpRight", "arrowDownRight", "check", "activity", "input", "output", "chevronUp"]
+      "names": [
+        "home",
+        "globe",
+        "spark",
+        "users",
+        "directory",
+        "clock",
+        "arrows",
+        "menu",
+        "search",
+        "filter",
+        "refresh",
+        "settings",
+        "command",
+        "logOut",
+        "externalLink",
+        "close",
+        "info",
+        "success",
+        "warning",
+        "error",
+        "pending",
+        "user",
+        "team",
+        "lock",
+        "agent",
+        "modules",
+        "knowledge",
+        "evidence",
+        "history",
+        "audit",
+        "approval",
+        "document",
+        "source",
+        "copy",
+        "download",
+        "plus",
+        "edit",
+        "sun",
+        "moon",
+        "chevronDown",
+        "chevronLeft",
+        "chevronRight",
+        "arrowLeft",
+        "arrowRight",
+        "arrowUp",
+        "arrowUpRight",
+        "arrowDownRight",
+        "check",
+        "activity",
+        "input",
+        "output",
+        "chevronUp"
+      ]
     },
     "brandConcepts": {
       "source": "src/brand/BrandConcepts.tsx",
       "inventoryType": "BrandConcept",
-      "names": ["aperture", "orbit", "monogram"],
+      "names": [
+        "aperture",
+        "orbit",
+        "monogram"
+      ],
       "status": "Orbit is a provisional working mark; final identity requires C02 review."
     }
   },
   "fonts": [
-    { "package": "@fontsource-variable/space-grotesk", "version": "5.3.0", "license": "SIL Open Font License 1.1", "licenseFile": "licenses/SPACE-GROTESK-OFL-1.1.txt", "imports": ["@fontsource-variable/space-grotesk/wght.css"] },
-    { "package": "@fontsource/dm-mono", "version": "5.3.0", "license": "SIL Open Font License 1.1", "licenseFile": "licenses/DM-MONO-OFL-1.1.txt", "imports": ["@fontsource/dm-mono/latin-400.css", "@fontsource/dm-mono/latin-500.css"] }
+    {
+      "package": "@fontsource-variable/space-grotesk",
+      "version": "5.3.0",
+      "license": "SIL Open Font License 1.1",
+      "licenseFile": "licenses/SPACE-GROTESK-OFL-1.1.txt",
+      "imports": [
+        "@fontsource-variable/space-grotesk/wght.css"
+      ]
+    },
+    {
+      "package": "@fontsource/dm-mono",
+      "version": "5.3.0",
+      "license": "SIL Open Font License 1.1",
+      "licenseFile": "licenses/DM-MONO-OFL-1.1.txt",
+      "imports": [
+        "@fontsource/dm-mono/latin-400.css",
+        "@fontsource/dm-mono/latin-500.css"
+      ]
+    }
   ],
-  "generatedFiles": []
+  "generatedFiles": [
+    {
+      "path": "assets/generated/brand/empire-mark.svg",
+      "sha256": "9554f9b73ba0d3d5ff55aaf20f82e298f49679fc8e7ea290895d016e078d8477"
+    },
+    {
+      "path": "assets/generated/icons/favicon.svg",
+      "sha256": "9e2a9209cd2ac87650be6357f5a968c11c2c02bb53410d5f20123e1a72aa1662"
+    },
+    {
+      "path": "assets/generated/icons/app-icon-32.svg",
+      "sha256": "9e2a9209cd2ac87650be6357f5a968c11c2c02bb53410d5f20123e1a72aa1662"
+    },
+    {
+      "path": "assets/generated/icons/app-icon-48.svg",
+      "sha256": "f86b7f9a3d367473f48f2ac3a882630d024680f40dc67482eef6b94cd8bd1d00"
+    },
+    {
+      "path": "assets/generated/icons/app-icon-192.svg",
+      "sha256": "293347c7b46be439f99194a4ef003d947e73c7480a649bf55d1aeafb88e3a91b"
+    },
+    {
+      "path": "assets/generated/icons/app-icon-512.svg",
+      "sha256": "79ffc79d3880ea1e7d7e5f20cb42e21b9d2c6a5b4b4e29e95b80dfe07ce75778"
+    }
+  ]
 }

@@ -13,6 +13,7 @@
   "scripts": {
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
+    "assets:generate": "node scripts/generate-brand-assets.mjs",
     "catalog": "vite --config catalog/vite.config.ts --host 127.0.0.1 --port 4173",
     "catalog:build": "vite build --config catalog/vite.config.ts"
   },
