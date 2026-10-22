@@ -5,6 +5,14 @@ import ts from "typescript";
 const root = process.cwd();
 const appRoots = ["apps/portal", "apps/command-center"];
 const forbidden = [/packages\/ui\/src/, /@empire\/ui\/src/];
+const requiredStylesheetEntries = new Map([
+  ["apps/portal", new Set(["@empire/ui/portal.css"])],
+  ["apps/command-center", new Set([
+    "@empire/ui/ui.css",
+    "@empire/ui/adapters/maplibre.css",
+    "@empire/ui/command-center.css",
+  ])],
+]);
 const files = [];
 const packageStyles = [];
 function walk(path) {
@@ -19,10 +27,33 @@ function walk(path) {
 for (const app of appRoots) walk(join(root, app));
 const appStyles = files.filter((file) => /\.(css|scss)$/.test(file));
 if (appStyles.length) throw new Error(`Consumer stylesheet found: ${appStyles.map((file) => relative(root, file)).join(", ")}`);
+const stylesheetImports = new Map([...requiredStylesheetEntries.keys()].map((app) => [app, new Map()]));
 for (const file of files) {
   const source = readFileSync(file, "utf8");
   if (forbidden.some((pattern) => pattern.test(source))) throw new Error(`Forbidden UI boundary import in ${relative(root, file)}`);
+  const consumer = relative(root, file).replaceAll("\\", "/");
+  const app = [...requiredStylesheetEntries.keys()].find((candidate) => consumer.startsWith(`${candidate}/`));
+  if (!app) continue;
+  const sourceFile = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, file.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS);
+  for (const statement of sourceFile.statements) {
+    if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier)) continue;
+    const specifier = statement.moduleSpecifier.text;
+    if (!/^@empire\/ui\/(?:ui|portal|command-center|adapters\/maplibre)\.css$/.test(specifier)) continue;
+    const imports = stylesheetImports.get(app);
+    imports.set(specifier, (imports.get(specifier) ?? 0) + 1);
+  }
 }
+const stylesheetErrors = [];
+for (const [app, required] of requiredStylesheetEntries) {
+  const imports = stylesheetImports.get(app);
+  for (const entry of required) {
+    if (imports.get(entry) !== 1) stylesheetErrors.push(`${app} must import ${entry} exactly once (found ${imports.get(entry) ?? 0})`);
+  }
+  for (const entry of imports.keys()) {
+    if (!required.has(entry)) stylesheetErrors.push(`${app} imports an unapproved or duplicate UI stylesheet entry: ${entry}`);
+  }
+}
+if (stylesheetErrors.length) throw new Error(`UI stylesheet entry contract failed:\n- ${stylesheetErrors.join("\n- ")}`);
 
 function walkPackageStyles(path) {
   for (const entry of readdirSync(path)) {
