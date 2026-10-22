@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Badge, buttonClassName, Icon, IconText, MangaEffect, MetricGrid, Panel, PortalOrbitHero, SectionHeading } from "@empire/ui";
+import { Badge, buttonClassName, Icon, IconText, IdentityCardGroup, MangaEffect, MetricGrid, Panel, PortalOrbitHero, SectionHeading } from "@empire/ui";
 import { Explorer } from "../components/Explorer";
 import { getPortalLanguage } from "../lib/i18n";
 
@@ -112,11 +112,11 @@ export default async function Home() {
 
     <section className="section eol-container" id="identitas">
       <div className="section-intro"><p className="eyebrow">01 / {en?"WHAT IS A-L-L-A-H?":"APA ITU A-L-L-A-H?"}</p><h2>{en?<>A HUB FOR <em>LIFE, LEARNING, AND ACTION.</em></>:<>HUB UNTUK <em>HIDUP, BELAJAR, DAN BERTINDAK.</em></>}</h2><p>{en?"A-L-L-A-H is a project acronym, not a claim of divine authority. The system is designed to help people work with clear sources, inspectable evidence, and decisions made by those with authority.":"Nama A-L-L-A-H adalah akronim proyek, bukan klaim otoritas ilahi. Sistem ini dirancang agar teknologi membantu manusia bekerja dengan sumber yang jelas, bukti yang bisa diperiksa, dan keputusan yang tetap berada pada orang yang berwenang."}</p></div>
-      <div className="identity-row">
-        <Panel as="article" manga className="identity-main"><span className="panel-label">{en?"THE HUB":"HUB UTAMA"}</span><h3>A-L-L-A-H</h3><p><b>Accountable Life, Learning &amp; Action Hub</b></p><p>{en?"A proposed platform for accountable knowledge, journeys, missions, learning, and action.":"Rancangan platform untuk pengetahuan, perjalanan, misi, pembelajaran, dan aksi yang dapat dipertanggungjawabkan."}</p></Panel>
-        <Panel as="article" manga className="identity-side arsy-identity"><span className="panel-label">{en?"AGENCY & ORCHESTRATION LAYER":"LAPISAN AGENCY &amp; ORKESTRASI"}</span><h3>ARSY</h3><p className="arsy-expansion">Agent Reality System Yard &amp; Orchestration</p><p>{en?"Coordinates agents, tools, context, and task handoffs within human mandates. AI models are a basic component; ARSY orchestrates the wider system.":"Mengatur agen, alat, konteks, dan perpindahan tugas dalam batas mandat manusia. Model AI adalah komponen dasar; ARSY mengorkestrasi keseluruhan sistem."}</p><Link href="/systems#arsy"><IconText icon="arrowUpRight">{en?"Explore ARSY design":"Lihat rancangan ARSY"}</IconText></Link></Panel>
-        <Panel as="article" manga className="identity-side"><span className="panel-label">{en?"OPERATOR WORKSPACE":"RUANG KERJA OPERATOR"}</span><h3>100CENTER</h3><p>{en?"Operations interface for reviewing missions, research, readiness, approvals, and audit trails according to access.":"Antarmuka operasi untuk meninjau misi, riset, kesiapan, persetujuan, dan jejak audit sesuai akses."}</p></Panel>
-      </div>
+      <IdentityCardGroup items={[
+        { id: "hub", featured: true, label: en ? "THE HUB" : "HUB UTAMA", title: "A-L-L-A-H", lead: <b>Accountable Life, Learning &amp; Action Hub</b>, description: en ? "A proposed platform for accountable knowledge, journeys, missions, learning, and action." : "Rancangan platform untuk pengetahuan, perjalanan, misi, pembelajaran, dan aksi yang dapat dipertanggungjawabkan." },
+        { id: "arsy", className: "arsy-identity", label: en ? "AGENCY & ORCHESTRATION LAYER" : "LAPISAN AGENCY & ORKESTRASI", title: "ARSY", descriptor: "Agent Reality System Yard & Orchestration", description: en ? "Coordinates agents, tools, context, and task handoffs within human mandates. AI models are a basic component; ARSY orchestrates the wider system." : "Mengatur agen, alat, konteks, dan perpindahan tugas dalam batas mandat manusia. Model AI adalah komponen dasar; ARSY mengorkestrasi keseluruhan sistem.", actions: <Link href="/systems#arsy"><IconText icon="arrowUpRight">{en ? "Explore ARSY design" : "Lihat rancangan ARSY"}</IconText></Link> },
+        { id: "operators", label: en ? "OPERATOR WORKSPACE" : "RUANG KERJA OPERATOR", title: "100CENTER", description: en ? "Operations interface for reviewing missions, research, readiness, approvals, and audit trails according to access." : "Antarmuka operasi untuk meninjau misi, riset, kesiapan, persetujuan, dan jejak audit sesuai akses." },
+      ]} />
       <MangaEffect as="aside" panel className="principle-strip"><span>{en?"CORE PRINCIPLE":"PRINSIP INTI"}</span><p>{en?"AI assists · sources provide context · evidence supports · people decide":"AI membantu · sumber memberi konteks · bukti mendukung · manusia memutuskan"}</p><Link href="/systems#tata-kelola"><IconText icon="arrowUpRight">{en?"Explore boundaries & governance":"Lihat batas dan tata kelola"}</IconText></Link></MangaEffect>
     </section>
 

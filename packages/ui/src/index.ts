@@ -70,6 +70,8 @@ export { MangaTelemetryHero } from "./patterns/MangaTelemetryHero";
 export type { MangaTelemetryHeroProps } from "./patterns/MangaTelemetryHero";
 export { PortalOrbitHero } from "./patterns/PortalOrbitHero";
 export type { OrbitSatellite, PortalOrbitHeroProps } from "./patterns/PortalOrbitHero";
+export { IdentityCardGroup } from "./patterns/IdentityCardGroup";
+export type { IdentityCardGroupProps, IdentityCardItem } from "./patterns/IdentityCardGroup";
 export { SectionHeading } from "./patterns/SectionHeading";
 export type { SectionHeadingProps } from "./patterns/SectionHeading";
 export { Heading, Metadata, Text } from "./patterns/Typography";
