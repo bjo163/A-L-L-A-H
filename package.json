@@ -8,7 +8,8 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "validate": "node scripts/validate.mjs && node scripts/validate-monorepo.mjs && node scripts/validate-batteries-dna.mjs",
+    "validate": "node scripts/validate.mjs && node scripts/validate-monorepo.mjs && node scripts/validate-batteries-dna.mjs && node scripts/validate-ui-boundary.mjs",
+    "world-monitor:runtime-smoke": "pnpm --filter @empire/api exec tsx src/scripts/world-monitor-runtime-smoke.ts",
     "module:test": "node --test packages/module-kit/test/*.test.mjs",
     "dna:generate": "node scripts/generate-batteries-dna.mjs",
     "dna:validate": "node scripts/validate-batteries-dna.mjs",
