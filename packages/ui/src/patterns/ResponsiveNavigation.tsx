@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useId, useRef, useState, type MouseEvent, type ReactNode } from "react";
+import { useEffect, useId, useRef, useState, type KeyboardEvent, type MouseEvent, type ReactNode } from "react";
 import { classNames } from "../primitives/classNames";
 
 export type ResponsiveNavigationProps = {
@@ -21,22 +21,23 @@ export function ResponsiveNavigation({
   const [open, setOpen] = useState(false);
   const linksId = useId();
   const toggleRef = useRef<HTMLButtonElement>(null);
-  const wasOpen = useRef(false);
 
   useEffect(() => {
     setOpen(false);
   }, [resetKey]);
 
-  useEffect(() => {
-    if (wasOpen.current && !open) toggleRef.current?.focus();
-    wasOpen.current = open;
-  }, [open]);
-
   function closeOnLink(event: MouseEvent<HTMLElement>) {
     if (event.target instanceof Element && event.target.closest("a")) setOpen(false);
   }
 
-  return <nav className={classNames("portal-nav", open && "is-open", className)} aria-label={label}>
+  function closeOnEscape(event: KeyboardEvent<HTMLElement>) {
+    if (event.key !== "Escape" || !open || event.defaultPrevented) return;
+    event.preventDefault();
+    setOpen(false);
+    toggleRef.current?.focus();
+  }
+
+  return <nav className={classNames("portal-nav", open && "is-open", className)} aria-label={label} onKeyDown={closeOnEscape}>
     <button ref={toggleRef} className={classNames("nav-toggle", toggleClassName)} type="button" aria-expanded={open} aria-controls={linksId} aria-label={open ? closeLabel : openLabel} onClick={() => setOpen((value) => !value)}>
       <span className="nav-toggle-icon" aria-hidden="true"><i/><i/><i/></span>
       <span>{open ? closeLabel : openLabel}</span>

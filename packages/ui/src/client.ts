@@ -5,6 +5,8 @@ export type { ConfirmDialogProps, ConfirmDialogTone } from "./primitives/Confirm
 
 export { ResponsiveNavigation } from "./patterns/ResponsiveNavigation";
 export type { ResponsiveNavigationProps } from "./patterns/ResponsiveNavigation";
+export { PageNavigationFocus } from "./patterns/PageNavigationFocus";
+export type { PageNavigationFocusProps } from "./patterns/PageNavigationFocus";
 export { ResponsiveTabs } from "./patterns/ResponsiveTabs";
 export type { ResponsiveTabsProps } from "./patterns/ResponsiveTabs";
 export { ThemeControl } from "./patterns/ThemeControl";

@@ -5,6 +5,7 @@ import { Button } from "../primitives/Button";
 import { CloseIcon, MenuIcon } from "../primitives/Icon";
 import { classNames } from "../primitives/classNames";
 import { SkipLink } from "./Navigation";
+import { focusNavigationHeading } from "./navigationFocus";
 
 export type WorkspaceShellProps = {
   navigation: ReactNode;
@@ -33,18 +34,7 @@ export function WorkspaceShell({
     if (!(event.target instanceof Element) || !event.target.closest("a, button")) return;
     if (window.matchMedia("(max-width: 760px)").matches) setNavigationOpen(false);
     requestAnimationFrame(() => {
-      const main = mainRef.current;
-      const heading = main
-        ? Array.from(main.querySelectorAll<HTMLElement>("h1")).find((item) =>
-            !item.classList.contains("eol-visually-hidden") &&
-            item.getClientRects().length > 0 &&
-            getComputedStyle(item).visibility !== "hidden",
-          )
-        : null;
-      const target = heading ?? main ?? document.querySelector<HTMLElement>(".eol-auth-layout h1");
-      if (!target) return;
-      if (target !== main && !target.hasAttribute("tabindex")) target.tabIndex = -1;
-      target.focus({ preventScroll: true });
+      focusNavigationHeading(mainRef.current, document.querySelector<HTMLElement>(".eol-auth-layout h1"));
     });
   };
   const handleEscape = (event: KeyboardEvent<HTMLElement>) => {

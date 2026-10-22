@@ -136,8 +136,7 @@ function auditFile(file, product) {
         for (const selector of splitSelectors(prelude)) {
           const propertyList = [...properties];
           const isPortalDocumentRule = product === "portal" &&
-            ((selector === "html" && propertyList.length === 1 && propertyList[0] === "scroll-behavior") ||
-             (selector === ":root" && propertyList.length === 1 && propertyList[0] === "scroll-padding-top"));
+            selector === "html" && propertyList.length === 1 && propertyList[0] === "scroll-behavior";
           if (isPortalDocumentRule) {
             documentExceptions += 1;
           } else if (matchesProductScope(selector, product) || selector === ".eol-workspace-shell, .eol-auth-layout") {

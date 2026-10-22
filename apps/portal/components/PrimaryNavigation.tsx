@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-import { ResponsiveNavigation, ThemeControl } from "@empire/ui/client";
+import { PageNavigationFocus, ResponsiveNavigation, ThemeControl } from "@empire/ui/client";
 import { ExternalLinkIcon, SunIcon, MoonIcon } from "@empire/ui";
 import type { PortalLanguage } from "../lib/i18n";
 
@@ -47,7 +47,9 @@ export function PrimaryNavigation({ language }: { language: PortalLanguage }) {
   }
 
   return (
-    <ResponsiveNavigation label={copy.navigation} openLabel={copy.open} closeLabel={copy.close} resetKey={pathname}>
+    <>
+      <PageNavigationFocus navigationKey={pathname} />
+      <ResponsiveNavigation label={copy.navigation} openLabel={copy.open} closeLabel={copy.close} resetKey={pathname}>
         {links.map((link) => {
           const current = "external" in link ? false : link.key === "ecosystem"
             ? pathname === "/" && (hash === "#ekosistem" || hash === "#arsy")
@@ -68,6 +70,7 @@ export function PrimaryNavigation({ language }: { language: PortalLanguage }) {
           {(pending || languagePending) && <span className="language-status" role="status">{copy.loading}</span>}
         </div>
         <ThemeControl label={copy.theme} lightLabel={copy.light} darkLabel={copy.dark} lightIcon={<SunIcon size={15}/>} darkIcon={<MoonIcon size={15}/>} />
-    </ResponsiveNavigation>
+      </ResponsiveNavigation>
+    </>
   );
 }
