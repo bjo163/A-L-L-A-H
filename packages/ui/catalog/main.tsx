@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
 import { createRoot } from "react-dom/client";
 import { BrandConcepts } from "../src/brand/BrandConcepts";
 import { OperationalCategoryFixtures, PortalHomeFixture } from "./PageFixtures";
@@ -16,6 +16,17 @@ function Catalog() {
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmBusy, setConfirmBusy] = useState(false);
   const [confirmError, setConfirmError] = useState<string>();
+  const [catalogTitle, setCatalogTitle] = useState("");
+  const [catalogScope, setCatalogScope] = useState("");
+  const [catalogFormStatus, setCatalogFormStatus] = useState<"idle" | "error" | "success">("idle");
+  const [focusInvalidField, setFocusInvalidField] = useState<"title" | "scope">();
+  const catalogTitleRef = useRef<HTMLInputElement>(null);
+  const catalogScopeRef = useRef<HTMLSelectElement>(null);
+  useEffect(() => {
+    if (!focusInvalidField) return;
+    (focusInvalidField === "title" ? catalogTitleRef : catalogScopeRef).current?.focus();
+    setFocusInvalidField(undefined);
+  }, [focusInvalidField]);
   const [announcements, setAnnouncements] = useState<Array<{ id: number; tone: "success" | "danger"; role: "status" | "alert" }>>([]);
   const tabItems = [
     { value: "overview", label: "Overview", content: <TabMountExample name="Overview" /> },
@@ -45,6 +56,18 @@ function Catalog() {
       setConfirmBusy(false);
       setConfirmError("Preview only: the example request was not sent.");
     }, 900);
+  }
+
+  function submitCatalogForm(event: FormEvent<HTMLFormElement>) {
+    event.preventDefault();
+    const titleIsMissing = catalogTitle.trim().length === 0;
+    const scopeIsMissing = catalogScope.length === 0;
+    if (titleIsMissing || scopeIsMissing) {
+      setCatalogFormStatus("error");
+      setFocusInvalidField(titleIsMissing ? "title" : "scope");
+      return;
+    }
+    setCatalogFormStatus("success");
   }
 
   const tokenSamples = [
@@ -432,22 +455,28 @@ function Catalog() {
           <p>Keep browser validation and native keyboard behavior; connect help and errors with described-by IDs.</p>
         </div>
         <Panel className="catalog-card catalog-field-demo">
-          <FieldLabel htmlFor="catalog-title">Research title</FieldLabel>
-          <TextField id="catalog-title" aria-invalid="true" aria-describedby="catalog-title-help catalog-title-error" defaultValue="" />
-          <HelpText id="catalog-title-help">Use a short title that distinguishes this research run.</HelpText>
-          <FieldError id="catalog-title-error" role="note">Enter a title before submitting.</FieldError>
-          <FieldLabel htmlFor="catalog-question">Research question</FieldLabel>
-          <TextArea id="catalog-question" rows={3} placeholder="What do you want to understand?" />
-          <FieldLabel htmlFor="catalog-scope">Scope</FieldLabel>
-          <SelectField id="catalog-scope" required defaultValue="" aria-invalid="true" aria-describedby="catalog-scope-error">
-            <option value="">Choose a scope</option>
-            <option value="self">Self</option>
-            <option value="community">Community</option>
-            <option value="global">Global</option>
-          </SelectField>
-          <FieldError id="catalog-scope-error" role="note">Choose a scope before you continue.</FieldError>
-          <FieldLabel htmlFor="catalog-disabled">Unavailable field</FieldLabel>
-          <TextField id="catalog-disabled" disabled value="Managed by the workspace" />
+          <form noValidate onSubmit={submitCatalogForm} aria-describedby="catalog-form-help">
+            <p id="catalog-form-help" className="catalog-caption">Submit the empty form to see an announced error and focus move to the first invalid field. Correct the fields and submit again to see recovery. Nothing is saved.</p>
+            {catalogFormStatus === "error" && <Notice tone="danger" role="alert">Review the highlighted fields. Focus moved to the first field that needs attention.</Notice>}
+            {catalogFormStatus === "success" && <Notice tone="success" role="status">The example is valid. No research request was sent.</Notice>}
+            <FieldLabel htmlFor="catalog-title">Research title</FieldLabel>
+            <TextField ref={catalogTitleRef} id="catalog-title" required value={catalogTitle} aria-invalid={catalogFormStatus === "error" && !catalogTitle.trim() || undefined} aria-describedby={`catalog-title-help${catalogFormStatus === "error" && !catalogTitle.trim() ? " catalog-title-error" : ""}`} onChange={(event) => { setCatalogTitle(event.currentTarget.value); if (catalogFormStatus === "success") setCatalogFormStatus("idle"); }} />
+            <HelpText id="catalog-title-help">Use a short title that distinguishes this research run.</HelpText>
+            {catalogFormStatus === "error" && !catalogTitle.trim() && <FieldError id="catalog-title-error" role="note">Enter a title before submitting.</FieldError>}
+            <FieldLabel htmlFor="catalog-question">Research question</FieldLabel>
+            <TextArea id="catalog-question" rows={3} placeholder="What do you want to understand?" />
+            <FieldLabel htmlFor="catalog-scope">Scope</FieldLabel>
+            <SelectField ref={catalogScopeRef} id="catalog-scope" required value={catalogScope} aria-invalid={catalogFormStatus === "error" && !catalogScope || undefined} aria-describedby={catalogFormStatus === "error" && !catalogScope ? "catalog-scope-error" : undefined} onChange={(event) => { setCatalogScope(event.currentTarget.value); if (catalogFormStatus === "success") setCatalogFormStatus("idle"); }}>
+              <option value="">Choose a scope</option>
+              <option value="self">Self</option>
+              <option value="community">Community</option>
+              <option value="global">Global</option>
+            </SelectField>
+            {catalogFormStatus === "error" && !catalogScope && <FieldError id="catalog-scope-error" role="note">Choose a scope before you continue.</FieldError>}
+            <FieldLabel htmlFor="catalog-disabled">Unavailable field</FieldLabel>
+            <TextField id="catalog-disabled" disabled value="Managed by the workspace" />
+            <ReviewActions><Button type="submit">Validate example</Button></ReviewActions>
+          </form>
         </Panel>
       </section>
 

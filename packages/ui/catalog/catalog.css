@@ -121,6 +121,7 @@ body { margin: 0; min-width: 0; }
 .catalog-states { display: grid; gap: 10px; max-width: 720px; }
 .catalog-skeleton { display: grid; gap: 12px; }
 .catalog-field-demo { display: grid; gap: 8px; max-width: 620px; }
+.catalog-field-demo form { display: grid; gap: 8px; }
 .catalog-field-demo .eol-field-label:not(:first-child) { margin-top: 12px; }
 .catalog-composition { display: grid; gap: 24px; }
 .catalog-container-examples { display: grid; gap: 8px; padding: 12px 0; border-block: 1px solid var(--eol-color-border); }

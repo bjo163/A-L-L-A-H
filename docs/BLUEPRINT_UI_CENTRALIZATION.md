@@ -388,7 +388,7 @@ Owner: UI maintainer + accessibility reviewer. Dependensi: C05–C07. Gate: stat
 - [x] **UI-C08-13** — Pertahankan data lama saat refresh dengan penanda kesegaran yang jujur.
 - [x] **UI-C08-14** — Matangkan dialog focus return, Escape, pending, error dan cancellation semantics.
 - [x] **UI-C08-15** — Pastikan disabled/busy tidak menghilangkan konteks alasan atau label tindakan.
-- [ ] **UI-C08-16** — Buat contoh katalog keyboard dan form error recovery.
+- [x] **UI-C08-16** — Buat contoh katalog keyboard dan form error recovery.
 
 ### C09 — Navigation dan shell
 
@@ -825,3 +825,4 @@ Program selesai ketika seluruh gate wajib dan matriks permukaan diterima, sumber
 Dokumen ini adalah deliverable perencanaan. Pembuatan SVG final, perubahan komponen, migrasi CSS, pengujian browser, dan penerimaan visual masih merupakan pekerjaan implementasi dalam checklist di atas.
 
 | UI-C05-04, UI-C05-15, UI-C05-16 | `scripts/audit-ui-contrast.mjs` menghitung luminansi relatif WCAG dari alias `tokens.css` + `themes.css`, menguji 27 pasangan opaque tiap tema, dan gagal jika threshold gagal. Perbaikan palette: fokus light `#00828a` memberi 4.16:1 pada background dan 4.57:1 pada surface; border-strong dark `#806d95` memberi 3.62:1 pada surface; role link dan action-primary tema light memakai pink kuat; `--eol-color-action-primary` dan `--eol-color-on-accent` memasangkan tombol utama dengan label yang memenuhi 4.5:1. README mencatat pasangan terukur dan batas audit. | `node scripts/audit-ui-contrast.mjs` lulus di kedua tema untuk semua pasangan yang didaftarkan; `git diff --check` bersih untuk file slice. Overlay alpha, gradien, artwork, disabled opacity, peta, dan contrast per route belum masuk hitungan, jadi visual acceptance tetap terbuka. Tanggal: 2026-10-22. |
+| UI-C08-16 | Katalog memiliki dialog konfirmasi dengan perilaku Escape, focus trap, dan pengembalian fokus yang disediakan `ConfirmDialog`. Fixture form menggunakan submit kosong, error summary satu kali, `aria-invalid`/`aria-describedby`, focus ke input invalid setelah render, perbaikan via input/select, lalu success state lokal tanpa request. Error per-field tidak membuat pengumuman alert duplikat. | `pnpm --filter @empire/ui typecheck`, `pnpm --filter @empire/ui catalog:build`, dan `git diff --check` lulus. Ini membuktikan fixture terkompilasi dan kontrak sumber; sesi keyboard/screen reader browser tetap terbuka di matriks review. Tanggal: 2026-10-22. |
