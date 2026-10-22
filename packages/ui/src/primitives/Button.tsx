@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes } from "react";
+import { forwardRef, type ButtonHTMLAttributes } from "react";
 import { classNames } from "./classNames";
 
 export type ButtonVariant = "primary" | "secondary" | "quiet" | "danger";
@@ -17,7 +17,7 @@ export function buttonClassName(
   return classNames("eol-button", `eol-button--${variant}`, className);
 }
 
-export function Button({
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button({
   children,
   className,
   type = "button",
@@ -26,10 +26,11 @@ export function Button({
   loading = false,
   disabled = false,
   ...props
-}: ButtonProps) {
+}: ButtonProps, ref) {
   return (
     <button
       className={classNames(buttonClassName(variant), `eol-button--${size}`, className)}
+      ref={ref}
       type={type}
       disabled={disabled || loading}
       aria-busy={loading || undefined}
@@ -39,4 +40,4 @@ export function Button({
       <span>{children}</span>
     </button>
   );
-}
+});

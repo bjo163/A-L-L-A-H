@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
 import { classNames } from "./classNames";
 
 type IconButtonName =
@@ -13,14 +13,15 @@ export type IconButtonProps = Omit<
   size?: "sm" | "md" | "lg";
 };
 
-export function IconButton({ children, className, size = "md", ...props }: IconButtonProps) {
+export const IconButton = forwardRef<HTMLButtonElement, IconButtonProps>(function IconButton({ children, className, size = "md", ...props }, ref) {
   return (
     <button
       {...props}
+      ref={ref}
       type="button"
       className={classNames("eol-icon-button", `eol-icon-button--${size}`, className)}
     >
       {children}
     </button>
   );
-}
+});
