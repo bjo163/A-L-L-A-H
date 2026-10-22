@@ -1,4 +1,4 @@
-import type { ButtonHTMLAttributes, ReactNode } from "react";
+import { forwardRef, type ButtonHTMLAttributes, type ReactNode } from "react";
 import { classNames } from "./classNames";
 
 type SwitchPropsBase = Omit<
@@ -15,7 +15,7 @@ export type SwitchProps = SwitchPropsBase & (
   | { children?: ReactNode; "aria-label"?: string; "aria-labelledby": string }
 );
 
-export function Switch({
+export const Switch = forwardRef<HTMLButtonElement, SwitchProps>(function Switch({
   checked,
   onCheckedChange,
   className,
@@ -24,10 +24,11 @@ export function Switch({
   "aria-label": ariaLabel,
   "aria-labelledby": ariaLabelledBy,
   ...props
-}: SwitchProps) {
+}, ref) {
   return (
     <button
       {...props}
+      ref={ref}
       type="button"
       role="switch"
       aria-checked={checked}
@@ -42,4 +43,4 @@ export function Switch({
       {children}
     </button>
   );
-}
+});
