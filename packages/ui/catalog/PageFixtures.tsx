@@ -25,6 +25,7 @@ import {
   PublicShell,
   ReadinessList,
   RegionSummary,
+  RegionSelectCard,
   ReviewActions,
   StatusIndicator,
   TextField,
@@ -88,6 +89,7 @@ export function OperationalCategoryFixtures() {
         <MapLegend items={[{ status: "nominal", label: "Nominal" }, { status: "advisory", label: "Advisory" }, { status: "alert", label: "Alert" }]}/>
       </MapFrame>
       <RegionSummary eyebrow="FIXTURE · -6.20°, 106.80°" name="Jakarta sample region" status="Nominal" tone="success" metrics={[{ label: "Sensors", value: 12 }, { label: "Uptime", value: "99.9%" }]}/>
+      <RegionSelectCard name="Jakarta fixture" code="JKT" coordinates="-6.20°, 106.80°" status="NOMINAL" tone="success" metrics={[{ label: "Latency", value: "24 ms" }, { label: "Nodes", value: 8 }, { label: "Uptime", value: "99.9%" }, { label: "Grid Load", value: "Unavailable" }]} onSelect={() => undefined}/>
       <EventList events={[{ id: "sensor-event", timestamp: "2026-10-22T10:02:00Z", actor: "Sensor fixture", action: "Reported nominal reading", details: "YouTube Sentinel and sensor rows belong in this static event preview." }]}/>
       <Notice role="note">Map, region and sensor values are fabricated catalog data.</Notice>
     </ViewFixture>

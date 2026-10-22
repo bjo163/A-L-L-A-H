@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { WorldMonitoringSnapshot } from "@empire/batteries-world-monitor";
-import { Badge, Button, EmptyState, Icon, MangaEffect, MangaTelemetryHero, MetricGrid, Panel, RegionSummary, StatusIndicator, TextField } from "@empire/ui";
+import { Badge, Button, EmptyState, Icon, MangaEffect, MangaTelemetryHero, MetricGrid, Panel, RegionSelectCard, RegionSummary, StatusIndicator, TextField } from "@empire/ui";
 import { WorldGlobeMap } from "./WorldGlobeMap";
 import { YoutubeSentinelView } from "./YoutubeSentinelView";
 
@@ -144,27 +144,22 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
         </div>
         <div className="agent-grid">
           {visibleRegions.map((region) => (
-            <button
+            <RegionSelectCard
               key={region.id}
-              className={`agent-card region-node-card${selectedRegionId === region.id ? " region-node-card--selected" : ""}`}
-              onClick={() => setSelectedRegionId((prev) => (prev === region.id ? undefined : region.id))}
-              aria-pressed={selectedRegionId === region.id}
-            >
-              <div className="agent-head">
-                <span className="agent-symbol"><Icon name="globe" size={18}/></span>
-                <Badge tone={regionTone(region.status)}>
-                  {region.status.toUpperCase()}
-                </Badge>
-              </div>
-              <h3>{region.name}</h3>
-              <p className="agent-code">{region.code} · {region.lat.toFixed(2)}°, {region.lng.toFixed(2)}°</p>
-              <div className="region-node-metrics">
-                <div><span className="muted">Latency:</span> <strong>{metric(region.latencyMs, " ms")}</strong></div>
-                <div><span className="muted">Uptime:</span> <strong>{metric(region.uptimePercentage, "%")}</strong></div>
-                <div><span className="muted">Nodes:</span> <strong>{metric(region.nodeCount)}</strong></div>
-                <div><span className="muted">Grid Load:</span> <strong>{metric(region.heliogridLoadMw, " MW")}</strong></div>
-              </div>
-            </button>
+              name={region.name}
+              code={region.code}
+              coordinates={`${region.lat.toFixed(2)}°, ${region.lng.toFixed(2)}°`}
+              status={region.status.toUpperCase()}
+              tone={regionTone(region.status)}
+              selected={selectedRegionId === region.id}
+              onSelect={() => setSelectedRegionId((prev) => (prev === region.id ? undefined : region.id))}
+              metrics={[
+                { label: "Latency", value: metric(region.latencyMs, " ms") },
+                { label: "Uptime", value: metric(region.uptimePercentage, "%") },
+                { label: "Nodes", value: metric(region.nodeCount) },
+                { label: "Grid Load", value: metric(region.heliogridLoadMw, " MW") },
+              ]}
+            />
           ))}
         </div>
         {visibleRegions.length === 0 && (
