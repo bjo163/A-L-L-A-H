@@ -132,8 +132,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .eol-manga-action:focus-visible { outline: var(--eol-focus-width) solid var(--eol-color-focus); outline-offset: var(--eol-focus-offset); }
 .eol-manga-row { transition: transform var(--eol-motion-fast) var(--eol-easing-standard), background-color var(--eol-motion-fast) var(--eol-easing-standard), padding-inline var(--eol-motion-fast) var(--eol-easing-standard); }
 .eol-manga-row:hover { transform: translateX(4px); }
-.eol-manga-spin::before { animation: eol-spin var(--eol-manga-spin-duration, var(--eol-motion-ambient)) var(--eol-easing-linear) infinite; }
-.eol-manga-orbit { position: absolute; border: 2px dashed color-mix(in srgb, var(--eol-manga-ink, var(--eol-color-text)) 38%, transparent); border-radius: 50%; box-shadow: none; animation: eol-manga-orbit-glow var(--eol-manga-orbit-duration, var(--eol-motion-orbit)) var(--eol-easing-in-out) infinite alternate; }
+.eol-manga-spin::before { animation: eol-spin var(--eol-motion-ambient) var(--eol-easing-linear) infinite; }
+.eol-manga-orbit { position: absolute; border: 2px dashed color-mix(in srgb, var(--eol-manga-ink, var(--eol-color-text)) 38%, transparent); border-radius: 50%; box-shadow: none; animation: eol-manga-orbit-glow var(--eol-motion-orbit) var(--eol-easing-in-out) infinite alternate; }
 .eol-manga-orbit--secondary { animation-delay: var(--eol-motion-orbit-delay-secondary); }
 .eol-manga-orbit--tertiary { animation-delay: var(--eol-motion-orbit-delay-tertiary); }
 .eol-manga-screentone {
