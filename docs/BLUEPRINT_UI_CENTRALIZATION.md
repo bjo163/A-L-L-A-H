@@ -277,7 +277,7 @@ Owner: brand/vector designer + maintainer. Dependensi: C01. Gate: master vector 
 - [x] **UI-C02-11** — Buat komponen LogoMark dan BrandLockup dengan accessible-name contract.
 - [x] **UI-C02-12** — Buat pipeline favicon/app icon dari master tunggal beserta manifest output.
 - [ ] **UI-C02-13** — Tinjau bentuk di grayscale, latar ramai, light/dark dan scaling layar.
-- [ ] **UI-C02-14** — Dokumentasikan distorsi, warna, outline dan kombinasi logo yang dilarang.
+- [x] **UI-C02-14** — Dokumentasikan distorsi, warna, outline dan kombinasi logo yang dilarang. `packages/ui/brand/BRAND_SYSTEM.md` melarang skew/stretch/crop, outline/shadow, recolor path terpisah, menggabungkan kandidat, dan penggunaan pada latar yang merusak kontras.
 - [ ] **UI-C02-15** — Catat provenance, creator, lisensi, versi, dan review sebelum penggunaan publik final.
 - [ ] **UI-C02-16** — Ganti brand sigil CSS dan mark lokal sesudah semua varian tersedia.
 
@@ -885,3 +885,4 @@ Pembaruan WorkspaceShell: shell Command Center sekarang dirakit melalui Workspac
 
 | UI-C02-01 | packages/ui/brand/BRAND_SYSTEM.md merangkum arti Empire of the Light, A-L-L-A-H sebagai akronim Portal, 100CENTER sebagai workspace operator, dan batas klaim otoritas. Brief mengambil copy dari Portal dan peran produk yang ada; ia tidak mengklaim kepemilikan merek atau approval final. | Review traceability melalui sumber dan route Portal/Command Center; penetapan final identity dan trademark review tetap UI-C02-03/UI-C02-15. Tanggal: 2026-10-22. |
 | UI-C02-05 | BrandLockup package mendukung lockup horizontal dan stacked dengan teks live; LogoMark menyediakan mark-only. Katalog membandingkan tiga calon dengan Portal, workspace, dialog, dan ukuran favicon. | UI, Portal, dan Command Center typechecks serta UI catalog build lulus. Lockup API tersedia, sementara proporsi/clear space visual dan pemilihan final masih menunggu review pada UI-C02-03/UI-C02-09/UI-C02-13. Tanggal: 2026-10-22. |
+| UI-C02-14 | `packages/ui/brand/BRAND_SYSTEM.md` menetapkan penggunaan master: dilarang skew, stretch, crop, outline, shadow, pewarnaan path secara terpisah, penggabungan kandidat, dan latar dengan kontras yang tidak cukup. | Verifikasi dokumentasi sumber package. Aturan penggunaan tersedia; approved palette variant, clear space/minimum size numerik, provenance, hak penggunaan eksternal, dan review visual tetap terbuka pada C02-07–10/C02-13/C02-15. Tanggal: 2026-10-22. |
