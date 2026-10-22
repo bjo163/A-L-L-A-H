@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
+import "@empire/ui/ui.css";
 
 export const metadata: Metadata = {
   title: "A-L-L-A-H Command Center — Empire of the Light",
