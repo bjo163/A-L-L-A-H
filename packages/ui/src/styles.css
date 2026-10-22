@@ -239,7 +239,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   min-height: var(--eol-control-size-md);
   padding: var(--eol-space-2) var(--eol-space-3);
   border: var(--eol-border-width) solid var(--eol-color-border-strong);
-  border-radius: var(--eol-radius-md);
   background: var(--eol-color-surface);
   color: var(--eol-color-text);
   font: inherit;
@@ -402,7 +401,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .eol-skeleton--rect { height: 5rem; }
 .eol-skeleton--circle { width: var(--eol-size-icon-lg); height: var(--eol-size-icon-lg); min-height: 0; border-radius: var(--eol-radius-full); }
 
-@keyframes eol-spin { to { transform: rotate(360deg); } }
 @keyframes eol-shimmer { to { background-position: -220% 0; } }
 
 @media (prefers-reduced-motion: reduce) {
