@@ -7,6 +7,7 @@
 .eol-metric-grid__label { color: var(--eol-color-text-muted); font: var(--eol-font-weight-medium) var(--eol-font-size-2xs)/var(--eol-line-height-normal) var(--eol-font-mono); letter-spacing: var(--eol-letter-spacing-label); text-transform: uppercase; overflow-wrap: anywhere; }
 .eol-metric-grid__value { min-width: 0; color: var(--eol-color-text); font-size: var(--eol-font-size-2xl); font-weight: var(--eol-font-weight-medium); line-height: var(--eol-line-height-tight); overflow-wrap: anywhere; }
 .eol-metric-grid__detail { color: var(--eol-color-text-muted); font-size: var(--eol-font-size-xs); line-height: var(--eol-line-height-relaxed); overflow-wrap: anywhere; }
+.eol-metric-grid__freshness { color: var(--eol-color-text-muted); font: var(--eol-font-size-2xs)/var(--eol-line-height-normal) var(--eol-font-mono); overflow-wrap: anywhere; }
 .eol-metric-grid__item[data-tone="success"] .eol-metric-grid__value { color: var(--eol-status-success-foreground); }
 .eol-metric-grid__item[data-tone="warning"] .eol-metric-grid__value { color: var(--eol-status-warning-foreground); }
 .eol-metric-grid__item[data-tone="danger"] .eol-metric-grid__value { color: var(--eol-status-danger-foreground); }
@@ -14,6 +15,15 @@
 .eol-metric-grid--compact { gap: var(--eol-space-2); }
 .eol-metric-grid--compact .eol-metric-grid__item { padding: var(--eol-space-3); }
 .eol-metric-grid--compact .eol-metric-grid__value { font-size: var(--eol-font-size-xl); }
+.eol-metric-grid--editorial { gap: 0; border-block: var(--eol-border-width) solid var(--eol-color-border); }
+.eol-metric-grid--editorial .eol-metric-grid__item { display: flex; min-height: 6.5rem; flex-wrap: wrap; align-content: center; align-items: center; gap: var(--eol-space-4); padding: var(--eol-space-6) var(--eol-space-6); border: 0; border-inline-end: var(--eol-border-width) solid var(--eol-color-border); border-radius: 0; background: transparent; box-shadow: none; }
+.eol-metric-grid--editorial .eol-metric-grid__item:first-child { border-inline-start: var(--eol-border-width) solid var(--eol-color-border); }
+.eol-metric-grid--editorial .eol-metric-grid__value { flex: none; color: var(--eol-color-accent); font-size: var(--eol-font-size-metric-editorial); letter-spacing: -.05em; line-height: 1; }
+.eol-metric-grid--editorial .eol-metric-grid__label { flex: 1; color: var(--eol-color-text-muted); font: var(--eol-font-size-sm)/var(--eol-line-height-normal) var(--eol-font-sans); letter-spacing: var(--eol-letter-spacing-editorial); text-transform: none; }
+.eol-metric-grid--editorial .eol-metric-grid__detail,
+.eol-metric-grid--editorial .eol-metric-grid__freshness { flex-basis: 100%; }
+@media (max-width: 800px) { .eol-metric-grid--editorial { grid-template-columns: repeat(2, minmax(0, 1fr)); } .eol-metric-grid--editorial .eol-metric-grid__item { min-height: 5.5rem; border-block-end: var(--eol-border-width) solid var(--eol-color-border); } .eol-metric-grid--editorial .eol-metric-grid__item:nth-child(2n + 1) { border-inline-start: var(--eol-border-width) solid var(--eol-color-border); border-inline-end: 0; } .eol-metric-grid--editorial .eol-metric-grid__item:nth-child(2n) { border-inline-start: 0; border-inline-end: var(--eol-border-width) solid var(--eol-color-border); } }
+@media (max-width: 570px) { .eol-metric-grid--editorial .eol-metric-grid__item { min-height: 4.5rem; gap: var(--eol-space-2); padding: var(--eol-space-4) var(--eol-space-3); } .eol-metric-grid--editorial .eol-metric-grid__value { font-size: var(--eol-font-size-metric-editorial-compact); } .eol-metric-grid--editorial .eol-metric-grid__label { font-size: var(--eol-font-size-2xs); } }
 @media (max-width: 680px) { .eol-metric-grid[data-columns="3"], .eol-metric-grid[data-columns="4"] { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
 @media (max-width: 420px) { .eol-metric-grid[data-columns="3"], .eol-metric-grid[data-columns="4"] { grid-template-columns: 1fr; } }
-@media (forced-colors: active) { .eol-metric-grid__item { border-color: CanvasText; background: Canvas; color: CanvasText; } .eol-metric-grid__label, .eol-metric-grid__value, .eol-metric-grid__detail { color: CanvasText; } }
+@media (forced-colors: active) { .eol-metric-grid__item { border-color: CanvasText; background: Canvas; color: CanvasText; box-shadow: none; } .eol-metric-grid__label, .eol-metric-grid__value, .eol-metric-grid__detail, .eol-metric-grid__freshness { color: CanvasText; } }

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Badge, buttonClassName, Icon, IconText, MangaEffect, MangaOrbit, MangaSfx, Panel, SectionHeading, StatGrid } from "@empire/ui";
+import { Badge, buttonClassName, Icon, IconText, MangaEffect, MangaOrbit, MangaSfx, MetricGrid, Panel, SectionHeading } from "@empire/ui";
 import { Explorer } from "../components/Explorer";
 import { getPortalLanguage } from "../lib/i18n";
 
@@ -108,7 +108,7 @@ export default async function Home() {
       <div className="hero-watermark" aria-hidden="true">A<span>05</span></div>
     </MangaEffect>
 
-    <section className="stat-band" aria-label={en ? "Blueprint summary" : "Ringkasan blueprint"}><div className="container"><StatGrid className="stat-grid" itemClassName="stat-item" items={markers.map((m) => ({ value: m.number, label: m.label }))} /></div></section>
+    <section className="stat-band" aria-label={en ? "Blueprint summary" : "Ringkasan blueprint"}><div className="container"><MetricGrid profile="editorial" items={markers.map((m) => ({ value: m.number, label: m.label }))} /></div></section>
 
     <section className="section container" id="identitas">
       <div className="section-intro"><p className="eyebrow">01 / {en?"WHAT IS A-L-L-A-H?":"APA ITU A-L-L-A-H?"}</p><h2>{en?<>A HUB FOR <em>LIFE, LEARNING, AND ACTION.</em></>:<>HUB UNTUK <em>HIDUP, BELAJAR, DAN BERTINDAK.</em></>}</h2><p>{en?"A-L-L-A-H is a project acronym, not a claim of divine authority. The system is designed to help people work with clear sources, inspectable evidence, and decisions made by those with authority.":"Nama A-L-L-A-H adalah akronim proyek, bukan klaim otoritas ilahi. Sistem ini dirancang agar teknologi membantu manusia bekerja dengan sumber yang jelas, bukti yang bisa diperiksa, dan keputusan yang tetap berada pada orang yang berwenang."}</p></div>

@@ -33,10 +33,6 @@
 .eol-section-heading__main { min-width: 0; }
 .eol-section-heading__title { margin: 0; font-size: var(--eol-font-size-3xl); line-height: var(--eol-line-height-tight); letter-spacing: -.045em; }
 .eol-section-heading__aside { max-width: 42ch; color: var(--eol-color-text-muted); line-height: var(--eol-line-height-relaxed); }
-.eol-stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 12rem), 1fr)); }
-.eol-stat-grid__item { display: grid; gap: var(--eol-space-2); padding: var(--eol-space-5); border-inline-start: var(--eol-border-width) solid var(--eol-color-border); }
-.eol-stat-grid__value { color: var(--eol-color-accent-strong); font-size: var(--eol-font-size-3xl); line-height: 1; }
-.eol-stat-grid__label, .eol-stat-grid__detail { color: var(--eol-color-text-muted); font-size: var(--eol-font-size-sm); }
 @media (max-width: 640px) { .eol-section-heading { align-items: flex-start; flex-direction: column; gap: var(--eol-space-3); } }
 
 /* Shared manga effects. Apps may tune the manga-specific color tokens. */

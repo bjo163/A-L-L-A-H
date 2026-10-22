@@ -12,8 +12,8 @@ The centralization blueprint tracks the remaining migration and acceptance work.
 
 - `Button` for consistent native button actions.
 - `Panel` for semantic, reusable surface containers.
-- `PageIntro`, `SectionHeading`, and `StatGrid` for consistent page composition.
-- `MetricGrid` for responsive, tone-aware operational metrics; labels, business state mapping, and source freshness remain supplied by the app.
+- `PageIntro`, `SectionHeading`, and `MetricGrid` for consistent page composition and both editorial and operational metric presentations.
+- `MetricGrid` accepts label, value, detail, tone, and freshness; apps own business-state mapping and freshness copy.
 - `MangaEffect` for reusable manga panel, screentone, speed-line, spin, reveal, and hover treatments.
 - `MangaOrbit` for decorative orbit rings with the shared glow motion.
 - `MangaPageIntro` for page headings with the shared manga frame and optional SFX lettering.
@@ -45,6 +45,7 @@ The centralization blueprint tracks the remaining migration and acceptance work.
 | --- | --- | --- |
 | Button | `primary`, `secondary`, `quiet`, `danger`; native button attributes | Renders a native button and defaults to `type="button"`. Loading state and its accessible label are owned by the consuming workflow. Long labels may wrap within the available width. |
 | Panel | `as` semantic element, optional `manga` surface treatment, `className`, element attributes | Renders a surface; `manga` applies the shared ink border, offset shadow, and transition without taking over app layout. Refs are not part of the current contract. |
+| MetricGrid | `editorial` or `operational` profile; `comfortable` or `compact` density; 2/3/4 columns; items with label, value, detail, tone, and freshness | Uses one shared anatomy for Portal summary bands and Command Center operational metrics. The app supplies all domain meaning; the editorial profile keeps the value-first band while the operational profile uses label-first cards. |
 | MangaEffect | `as` semantic element; optional `panel`, `interactive`, `action`, `row`, `speedLines`, `screentone`, `spin`, and `reveal` flags; element attributes | Composes named manga treatments and transitions from the shared stylesheet. Applications supply content and layout-specific classes. `interactive` includes the common panel treatment. |
 | MangaPageIntro | `PageIntro` content props plus optional `sfx` and `sfxClassName` | Uses the shared angular panel, halftone accent, and reveal treatment; optional SFX lettering stays decorative. Breadcrumbs, copy, and actions remain application content. |
 | MangaTelemetryHero | Required `eyebrow`, `title`, `pulse`, and `sfx`; optional `description`, `metadata`, and `className` | Provides one shared telemetry hero composition, including its orbit, manga panel, reveal motion, and decorative SFX. |
@@ -110,7 +111,7 @@ Portal and Command Center can have distinct editorial and operational compositio
 
 | Consumer | Shared primitives currently used | Example |
 | --- | --- | --- |
-| Public portal | Badge, Icon, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, Panel, SectionHeading, StatGrid, Switch, Tabs, button class helper | Theme and external-link symbols use package vectors; page introductions, loading art, orbit rings, panel effects, and manga SFX lettering use shared components; the explorer selects system metadata with keyboard-accessible tab panels. |
+| Public portal | Badge, Icon, IconText, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MetricGrid, Panel, SectionHeading, Switch, Tabs, button class helper | Theme and external-link symbols use package vectors; page introductions, loading art, orbit rings, panel effects, manga SFX lettering, and editorial summary metrics use shared components; the explorer selects system metadata with keyboard-accessible tab panels. |
 | 100CENTER | Badge, Button, ConfirmDialog, EmptyState, ErrorState, FieldLabel, Icon, LoadingState, MangaEffect, MangaPageIntro, MangaTelemetryHero, MapLegend, Notice, Panel, RegionSummary, SelectField, TextArea, TextField | Overview, access-filtered navigation, workspace cards, search, sync, and World Monitor use package vectors and shared hero composition. MapLibre styling is an opt-in CSS adapter; map legend, region marker skin, and selected-region summary use package-owned patterns. Module, RFC, and Research Run lists retain distinct resource states. |
 | UI catalog | Every exported primitive | Standalone visual and interaction examples; actions are fixtures and do not call product APIs. |
 

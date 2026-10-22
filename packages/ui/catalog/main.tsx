@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { BrandConcepts } from "../src/brand/BrandConcepts";
-import { Badge, BrandLockup, Button, buttonClassName, ConfirmDialog, EmptyState, ErrorState, FieldError, FieldLabel, HelpText, Icon, IconText, iconGroups, LoadingState, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MetricGrid, Notice, Panel, RegionSummary, SectionHeading, SelectField, Skeleton, StatGrid, StatusIndicator, Switch, Tabs, TextArea, TextField } from "../src";
+import { Badge, BrandLockup, Button, buttonClassName, ConfirmDialog, EmptyState, ErrorState, FieldError, FieldLabel, HelpText, Icon, IconText, iconGroups, LoadingState, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MetricGrid, Notice, Panel, RegionSummary, SectionHeading, SelectField, Skeleton, StatusIndicator, Switch, Tabs, TextArea, TextField } from "../src";
 import "../src/ui.css";
 import "./catalog.css";
 
@@ -254,7 +254,7 @@ function Catalog() {
             description="Use a consistent heading, summary, and action area across related pages."
             sfx="BAM!"
           />
-          <StatGrid items={[
+          <MetricGrid profile="editorial" items={[
             { value: "07", label: "Architecture layers" },
             { value: "06", label: "Technology domains" },
             { value: "01", label: "Human decision authority" },
@@ -265,7 +265,7 @@ function Catalog() {
           <h3>Operational metrics</h3>
           <MetricGrid density="compact" items={[
             { label: "Service health", value: "Operational", tone: "success" },
-            { label: "Queue backlog", value: "12", detail: "4 high priority", tone: "warning" },
+            { label: "Queue backlog", value: "12", detail: "4 high priority", freshness: "Updated 2 minutes ago", tone: "warning" },
             { label: "Last refresh", value: "2 min ago", tone: "neutral" },
           ]} />
         </Panel>
