@@ -35,6 +35,10 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
   const [selectedStatus, setSelectedStatus] = useState("ALL");
   const [forceLiveCrawl, setForceLiveCrawl] = useState(true);
   const [selectedEngine, setSelectedEngine] = useState<"auto" | "innertube" | "playwright">("auto");
+  const [selectedSortBy, setSelectedSortBy] = useState<"upload_date" | "relevance">("upload_date");
+  const [hideResolved, setHideResolved] = useState(false);
+  const [onlyNew, setOnlyNew] = useState(false);
+  const [viewMode, setViewMode] = useState<"table" | "grid">("table");
   const [toast, setToast] = useState<string | null>(null);
   const [activeModal, setActiveModal] = useState<{
     type: "report" | "counter_dakwah" | "snippet";
@@ -87,7 +91,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
           summary: YoutubeScanSummary;
         }>(API_PATHS.worldMonitorYoutubeScan, {
           method: "POST",
-          body: { query: q, limit: 8, forceLive: true, engine: "auto" },
+          body: { query: q, limit: 8, forceLive: true, engine: "auto", sortBy: "upload_date" },
         });
         if (res.ok) {
           setItems(res.items);
@@ -143,6 +147,8 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
           limit: 15,
           forceLive: forceLiveCrawl,
           engine: selectedEngine,
+          sortBy: selectedSortBy,
+          onlyNew,
           useBrowserAutomation: selectedEngine === "playwright",
         },
       });
@@ -253,7 +259,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
     notify("Berhasil mengunduh laporan audit Markdown.");
   }
 
-  // Filtered items
+  // Filtered items (with elimination of already resolved / actioned items)
   const visibleItems = useMemo(() => {
     return items.filter((item) => {
       const matchesSearch = searchQuery
@@ -264,9 +270,13 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
       const matchesCat = selectedCategory === "ALL" || item.category === selectedCategory;
       const matchesRisk = selectedRiskLevel === "ALL" || item.riskLevel === selectedRiskLevel;
       const matchesStatus = selectedStatus === "ALL" || item.workflowStatus === selectedStatus;
-      return matchesSearch && matchesCat && matchesRisk && matchesStatus;
+      const matchesHideResolved = hideResolved
+        ? item.workflowStatus !== "REPORT_FILED" && item.workflowStatus !== "FALSE_POSITIVE_DISMISSED"
+        : true;
+      const matchesOnlyNew = onlyNew ? Boolean(item.isNew) : true;
+      return matchesSearch && matchesCat && matchesRisk && matchesStatus && matchesHideResolved && matchesOnlyNew;
     });
-  }, [items, searchQuery, selectedCategory, selectedRiskLevel, selectedStatus]);
+  }, [items, searchQuery, selectedCategory, selectedRiskLevel, selectedStatus, hideResolved, onlyNew]);
 
   const riskBadgeTone = (level: YoutubeRiskLevel) => {
     switch (level) {
@@ -500,19 +510,202 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
             <option value="REPORT_FILED">Laporan YouTube Terkirim</option>
             <option value="FALSE_POSITIVE_DISMISSED">Bukan Pelanggaran</option>
           </select>
+
+          <span className="muted" style={{ fontWeight: 700, marginLeft: 8 }}>
+            Urutan:
+          </span>
+          <select
+            className="sentinel-select"
+            value={selectedSortBy}
+            onChange={(e) => setSelectedSortBy(e.target.value as "upload_date" | "relevance")}
+          >
+            <option value="upload_date">📅 Video Terbaru (Upload Date)</option>
+            <option value="relevance">🎯 Paling Relevan</option>
+          </select>
+
+          <label style={{ display: "inline-flex", alignItems: "center", gap: 6, marginLeft: 12, cursor: "pointer", fontSize: "0.85rem", userSelect: "none" }}>
+            <input
+              type="checkbox"
+              checked={hideResolved}
+              onChange={(e) => setHideResolved(e.target.checked)}
+            />
+            <span style={{ color: hideResolved ? "var(--eol-manga-status-success-strong)" : "inherit", fontWeight: hideResolved ? 700 : 400 }}>
+              🗑️ Eliminasi yang Selesai / Dilaporkan
+            </span>
+          </label>
+
+          <label style={{ display: "inline-flex", alignItems: "center", gap: 6, marginLeft: 12, cursor: "pointer", fontSize: "0.85rem", userSelect: "none" }}>
+            <input
+              type="checkbox"
+              checked={onlyNew}
+              onChange={(e) => setOnlyNew(e.target.checked)}
+            />
+            <span style={{ color: onlyNew ? "var(--eol-manga-status-warning-strong)" : "inherit", fontWeight: onlyNew ? 700 : 400 }}>
+              ✨ Hanya Temuan Baru
+            </span>
+          </label>
         </div>
 
-        <div className="sentinel-filter-group">
-          <span className="muted">Menampilkan {visibleItems.length} dari {items.length} temuan</span>
+        <div className="sentinel-filter-group" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", marginTop: 4 }}>
+          <span className="muted">Menampilkan {visibleItems.length} dari {items.length} temuan di database</span>
+          <div className="sentinel-view-mode-buttons">
+            <button
+              type="button"
+              className={`sentinel-view-btn ${viewMode === "table" ? "sentinel-view-btn--active" : ""}`}
+              onClick={() => setViewMode("table")}
+            >
+              📋 Tampilan Tabel
+            </button>
+            <button
+              type="button"
+              className={`sentinel-view-btn ${viewMode === "grid" ? "sentinel-view-btn--active" : ""}`}
+              onClick={() => setViewMode("grid")}
+            >
+              🎴 Tampilan Kartu
+            </button>
+          </div>
         </div>
       </div>
 
-      {/* ── Monitored Items Grid ─────────────────────────────────────────────── */}
+      {/* ── Monitored Items View ─────────────────────────────────────────────── */}
       {visibleItems.length === 0 ? (
         <EmptyState
           title="Tidak ada konten yang cocok"
           description="Ubah kata kunci pencarian atau sesuaikan filter kategori dan risiko."
         />
+      ) : viewMode === "table" ? (
+        <div className="sentinel-table-container">
+          <table className="sentinel-table">
+            <thead>
+              <tr>
+                <th style={{ width: 36, textAlign: "center" }}>#</th>
+                <th>Video YouTube</th>
+                <th>Channel</th>
+                <th>Kategori Tauhid</th>
+                <th>Tingkat Risiko</th>
+                <th>Skor</th>
+                <th>Status Tindakan</th>
+                <th>Waktu Scan</th>
+                <th style={{ textAlign: "right" }}>Aksi</th>
+              </tr>
+            </thead>
+            <tbody>
+              {visibleItems.map((item, idx) => (
+                <tr key={item.id}>
+                  <td style={{ color: "var(--eol-color-text-muted)", fontFamily: "var(--eol-font-mono)", fontSize: 11, textAlign: "center" }}>
+                    {idx + 1}
+                  </td>
+                  <td>
+                    <div className="sentinel-table-title-cell">
+                      <img
+                        src={item.thumbnailUrl}
+                        alt={item.title}
+                        className="sentinel-table-thumb"
+                        loading="lazy"
+                        onError={(e) => {
+                          (e.target as HTMLElement).style.display = "none";
+                        }}
+                      />
+                      <div>
+                        {item.isNew && (
+                          <span className="sentinel-table-badge" style={{ background: "rgba(34, 197, 94, 0.2)", color: "#4ade80", border: "1px solid #22c55e", marginRight: 6 }}>
+                            ✨ BARU
+                          </span>
+                        )}
+                        <a
+                          href={item.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="sentinel-table-title-link"
+                          title={item.title}
+                        >
+                          {item.title}
+                        </a>
+                        <div style={{ display: "flex", gap: 8, marginTop: 4, fontSize: 11, color: "var(--eol-color-text-muted)" }}>
+                          {item.durationText && <span>⏱️ {item.durationText}</span>}
+                          {item.publishedAt && <span>📅 {item.publishedAt}</span>}
+                          <span style={{ fontFamily: "var(--eol-font-mono)", opacity: 0.7 }}>ID: {item.videoId}</span>
+                        </div>
+                      </div>
+                    </div>
+                  </td>
+                  <td>
+                    <span style={{ fontWeight: 600 }}>{item.channelTitle}</span>
+                    <div style={{ fontSize: 11, color: "var(--eol-color-text-muted)" }}>
+                      {item.viewCountText}
+                    </div>
+                  </td>
+                  <td>
+                    <Badge tone="info">{item.category.replace(/_/g, " ")}</Badge>
+                    {item.tauhidGuidance?.dalilRef && (
+                      <div style={{ fontSize: 10, color: "var(--eol-color-text-muted)", marginTop: 4 }}>
+                        📜 {item.tauhidGuidance.dalilRef}
+                      </div>
+                    )}
+                  </td>
+                  <td>
+                    <Badge tone={riskBadgeTone(item.riskLevel)}>
+                      {item.riskLevel.replace(/_/g, " ")}
+                    </Badge>
+                  </td>
+                  <td>
+                    <span style={{ fontWeight: 700, fontFamily: "var(--eol-font-mono)", color: item.riskScore >= 70 ? "#ff4d4d" : item.riskScore >= 40 ? "#f59e0b" : "#10b981" }}>
+                      {item.riskScore}
+                    </span>
+                    <span style={{ fontSize: 10, color: "var(--eol-color-text-muted)" }}>/100</span>
+                  </td>
+                  <td>
+                    <select
+                      className="sentinel-select"
+                      style={{ fontSize: 11, padding: "3px 6px" }}
+                      value={item.workflowStatus}
+                      onChange={(e) => void handleAction(item.id, e.target.value as YoutubeWorkflowStatus)}
+                    >
+                      <option value="PENDING_REVIEW">Menunggu Telaah</option>
+                      <option value="VERIFIED_SYIRIK">Terverifikasi Melanggar</option>
+                      <option value="COUNTER_DAKWAH_QUEUED">Bantahan Tauhid</option>
+                      <option value="REPORT_FILED">Laporan Terkirim</option>
+                      <option value="FALSE_POSITIVE_DISMISSED">Bukan Pelanggaran</option>
+                    </select>
+                  </td>
+                  <td style={{ whiteSpace: "nowrap", fontSize: 11, color: "var(--eol-color-text-muted)" }}>
+                    {new Date(item.scannedAt).toLocaleDateString("id-ID", { hour: "2-digit", minute: "2-digit" })}
+                  </td>
+                  <td>
+                    <div className="sentinel-table-actions" style={{ justifyContent: "flex-end" }}>
+                      <button
+                        type="button"
+                        className="sentinel-table-btn"
+                        title="Buat Laporan Pelanggaran"
+                        onClick={() => setActiveModal({ type: "report", item })}
+                      >
+                        🚩 Lapor
+                      </button>
+                      <button
+                        type="button"
+                        className="sentinel-table-btn"
+                        title="Draf Bantahan Tauhid"
+                        onClick={() => setActiveModal({ type: "counter_dakwah", item })}
+                      >
+                        🛡️ Bantahan
+                      </button>
+                      <a
+                        href={item.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="sentinel-table-btn"
+                        title="Buka Video di YouTube"
+                        style={{ textDecoration: "none" }}
+                      >
+                        ↗
+                      </a>
+                    </div>
+                  </td>
+                </tr>
+              ))}
+            </tbody>
+          </table>
+        </div>
       ) : (
         <div className="sentinel-grid">
           {visibleItems.map((item) => (
@@ -536,6 +729,9 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
 
               <div className="sentinel-card-body">
                 <div className="sentinel-card-badges">
+                  {item.isNew && (
+                    <Badge tone="success">✨ BARU</Badge>
+                  )}
                   <Badge tone={riskBadgeTone(item.riskLevel)}>
                     {item.riskLevel.replace(/_/g, " ")}
                   </Badge>

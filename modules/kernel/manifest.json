@@ -26,6 +26,11 @@
     "tenants",
     "tenant_memberships",
     "module_installations"
+    ,"world_monitor_observations"
+    ,"world_monitor_source_runs"
+    ,"world_monitor_aggregates"
+    ,"youtube_sentinel_items"
+    ,"youtube_sentinel_scans"
   ],
   "upgrades": [],
   "uiSlots": [

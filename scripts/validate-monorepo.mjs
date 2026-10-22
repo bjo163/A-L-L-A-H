@@ -13,7 +13,7 @@ const enabled=planEnabled(manifests,config.approvedEnabled);
 assert.deepEqual(enabled.map(x=>x.id),ordered.filter(m=>config.approvedEnabled.includes(m.id)).map(m=>m.id));
 assert.ok(enabled.every(m=>m.models.length>0),"every enabled module must declare registered models");
 const expectedModels={
- kernel:["roles","permissions","users","user_roles","role_permissions","audit_logs","dictionaries","lexicons","auth_sessions","tenants","tenant_memberships","module_installations"],
+ kernel:["roles","permissions","users","user_roles","role_permissions","audit_logs","dictionaries","lexicons","auth_sessions","tenants","tenant_memberships","module_installations","world_monitor_observations","world_monitor_source_runs","world_monitor_aggregates","youtube_sentinel_items","youtube_sentinel_scans"],
  governance:["change_requests","change_reviews","change_executions"],
  research:["research_runs","research_workflows","research_jobs","research_evidence","research_approvals"]
 };

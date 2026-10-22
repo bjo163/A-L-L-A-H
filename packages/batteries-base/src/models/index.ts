@@ -18,3 +18,9 @@ export * from "./research-workflow.model.js";
 export * from "./research-job.model.js";
 export * from "./research-evidence.model.js";
 export * from "./research-approval.model.js";
+export * from "./world-monitor-observation.model.js";
+export * from "./world-monitor-source-run.model.js";
+export * from "./world-monitor-aggregate.model.js";
+export * from "./youtube-sentinel-item.model.js";
+export * from "./youtube-sentinel-scan.model.js";
+

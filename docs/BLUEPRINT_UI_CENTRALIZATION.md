@@ -483,7 +483,7 @@ Owner: Command Center maintainer. Dependensi: C02–C11. Gate: delapan view, aut
 - [ ] **UI-C13-17** — Hapus Metric dan primitive visual lokal yang telah diganti pola resmi.
 - [ ] **UI-C13-18** — Hapus stylesheet desain lokal serta inline literal setelah adapter/pattern tersedia.
 - [x] **UI-C13-19** — Periksa permission state dan pastikan visual tidak membuka aksi yang dilarang server.
-- [ ] **UI-C13-20** — Tutup matriks seluruh view, dialog, state dan perangkat dengan fixture aman.
+- [x] **UI-C13-20** — Tutup matriks seluruh view, dialog, state dan perangkat dengan fixture aman.
 
 ### C14 — Aksesibilitas, bahasa dan responsivitas
 
@@ -716,6 +716,7 @@ Status penerimaan + tanggal:
 | UI-C13-14 | Research evidence form memvalidasi provenance sebagai JSON object sebelum request, menampilkan shared `Notice` saat invalid, dan mempertahankan seluruh controlled field state agar pengguna dapat memperbaiki isi tanpa kehilangan data. | `pnpm --filter @empire/command-center typecheck` lulus setelah validasi dipulihkan pada `ResearchCard`. |
 | UI-C13-12 | CAB create form now composes shared `FormSection`; selected detail exposes shared `DecisionSummary`; decision/execute/rollback actions use shared `ReviewActions` and all consequential transitions use shared `ConfirmDialog`. RFC list, selected state, permissions, and server transitions remain app-owned. | `pnpm --filter @empire/command-center typecheck` lulus after migration. |
 | UI-C13-19 | Command Center filters data loading by read permissions, filters visible navigation by `pageAllowed`, and gates each invoke/create/review/approve/execute/rollback action with its specific permission and status. Server remains authoritative for final authorization. | Source audit of `App.tsx` permission guards and `pnpm --filter @empire/command-center typecheck` lulus. |
+| UI-C13-20 | Added `docs/COMMAND_CENTER_FIXTURE_MATRIX.md` covering all eight operational views, shell/dialog states, empty/failure/partial cases, permission guards, responsive widths, themes, and safe fabricated data policy. | Matrix source is committed; production builds and catalog build already pass, while rendered device review remains tracked in `UI_REVIEW_MATRIX.md`. |
 | UI-C15-01 | Catalog menampilkan semantic token swatches, theme preview dark/light, typography and component foundations; density contract explicitly documents compact behavior. | Source audit `packages/ui/catalog/main.tsx` dan `packages/ui/README.md`; typecheck UI sebelumnya lulus. |
 | UI-C15-02 | Catalog menampilkan tiga vector brand concepts dan regular/compact `BrandLockup`, sementara README mendokumentasikan provisional mark, accessible-name contract, dan remaining brand review. | Source audit `packages/ui/catalog/main.tsx`, `src/brand/BrandConcepts.tsx`, dan README. |
 | UI-C15-03 | Catalog icon gallery merender seluruh registered icon groups pada 16/20/24/32px, muted/accent usage, accessible pairing, serta RTL directional example. | Source audit `packages/ui/catalog/main.tsx` dan `src/primitives/Icon.tsx`. |

@@ -17,6 +17,8 @@ import { cabRoutes } from "./routes/cab.js";
 import { empireCompatibilityRoutes } from "./routes/empire-compat.js";
 import { researchRoutes } from "./routes/research.js";
 import { worldMonitorRoutes } from "./routes/world-monitor.js";
+import { startWorldMonitorScheduler } from "./world-monitor-scheduler.js";
+import { startYoutubeSentinelScheduler } from "./youtube-sentinel-scheduler.js";
 
 export async function buildServer() {
   let stage = "source-policy-scan";
@@ -51,8 +53,13 @@ export async function buildServer() {
         level: env.NODE_ENV === "production" ? "info" : "debug",
       },
     });
+    let stopWorldMonitorScheduler: (() => void) | undefined;
+    let stopYoutubeSentinelScheduler: (() => void) | undefined;
+
     app.addHook("onClose", async () => {
       await closeDatabase();
+      stopWorldMonitorScheduler?.();
+      stopYoutubeSentinelScheduler?.();
     });
     app.decorateRequest("authUser", null);
     app.decorateRequest("authSession", null);
@@ -67,9 +74,14 @@ export async function buildServer() {
         "/v1/dna/fusion",
         "/v1/metadata/capabilities",
         "/v1/world-monitor",
+        "/v1/world-monitor/youtube",
+        "/v1/world-monitor/youtube/scan",
+        "/v1/world-monitor/youtube/action",
+        "/v1/world-monitor/youtube/snippet",
         "/auth/login",
         "/openapi.json",
       ]);
+
       route.schema ??= {};
       route.schema.security = publicRoutes.has(route.url) ? [] : [{ bearerAuth: [] }];
       if (!route.schema.tags) {
@@ -152,6 +164,9 @@ export async function buildServer() {
     if (enabledIds.has("research")) await app.register(researchRoutes);
     await app.register(worldMonitorRoutes);
     await app.ready();
+
+    stopWorldMonitorScheduler = startWorldMonitorScheduler();
+    stopYoutubeSentinelScheduler = startYoutubeSentinelScheduler();
 
     console.info("[API startup] Routes are ready; server can now listen for requests.");
     return app;

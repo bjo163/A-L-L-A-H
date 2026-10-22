@@ -1,5 +1,6 @@
 import { getBatteriesDna } from "@empire/batteries-dna";
-import type { DnaSensorMapping, WorldMonitoringSnapshot, WorldRegion } from "./types";
+import type { DnaSensorMapping, WorldMonitoringSnapshot, WorldRegion } from "./types.js";
+
 
 const REGION_REFERENCES: Omit<WorldRegion, "status" | "latencyMs" | "uptimePercentage" | "nodeCount" | "activeSensors" | "heliogridLoadMw">[] = [
   { id: "reg-ap-se", name: "Asia-Pacific South (Jakarta/SG)", code: "AP-SE", lat: -6.2088, lng: 106.8456 },
@@ -65,5 +66,13 @@ export function getWorldMonitoringSnapshot(): WorldMonitoringSnapshot {
     regions,
     dnaSensors: resolveDnaSensors(),
     telemetryFeeds: [],
+    sources: [],
+    observations: [],
+    alerts: [],
+    history: [],
+    mapLayers: [
+      { id: "osm", title: "OpenStreetMap", type: "raster", url: "https://tile.openstreetmap.org/{z}/{x}/{y}.png", attribution: "© OpenStreetMap contributors" },
+      { id: "nasa-gibs-modis", title: "NASA GIBS MODIS", type: "raster", url: "https://gibs.earthdata.nasa.gov/wmts/epsg3857/best/MODIS_Terra_CorrectedReflectance_TrueColor/default/GoogleMapsCompatible_Level9/{z}/{y}/{x}.jpg", attribution: "NASA GIBS" },
+    ],
   };
 }

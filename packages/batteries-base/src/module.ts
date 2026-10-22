@@ -22,6 +22,11 @@ import {
   ResearchEvidenceModel,
   ResearchApprovalModel,
   ModuleInstallationModel,
+  WorldMonitorObservationModel,
+  WorldMonitorSourceRunModel,
+  WorldMonitorAggregateModel,
+  YoutubeSentinelItemModel,
+  YoutubeSentinelScanModel,
 } from "./models/index.js";
 import { ASMAUL_HUSNA_99 } from "./data/asmaul-husna.js";
 
@@ -38,6 +43,11 @@ const kernelModels = [
   TenantModel,
   TenantMembershipModel,
   ModuleInstallationModel,
+  WorldMonitorObservationModel,
+  WorldMonitorSourceRunModel,
+  WorldMonitorAggregateModel,
+  YoutubeSentinelItemModel,
+  YoutubeSentinelScanModel,
 ];
 
 const governanceModels = [

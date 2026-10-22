@@ -1,12 +1,13 @@
 import { useEffect, useRef, useState } from "react";
 import { MapFrame, MapLegend, type MapFrameState, type MapStatus } from "@empire/ui";
 import { Map as MaplibreMap, Marker, Popup } from "maplibre-gl";
-import type { WorldRegion } from "@empire/batteries-world-monitor";
+import type { WorldRegion, WorldMonitoringSnapshot } from "@empire/batteries-world-monitor";
 
 interface WorldGlobeMapProps {
   regions: WorldRegion[];
   selectedRegionId?: string;
   onSelectRegion?: (id: string) => void;
+  mapLayers?: WorldMonitoringSnapshot["mapLayers"];
 }
 
 const mapStatuses: readonly MapStatus[] = ["nominal", "advisory", "alert", "critical", "unavailable"];
@@ -62,7 +63,7 @@ function createPopupContent(region: WorldRegion): HTMLElement {
   return content;
 }
 
-export function WorldGlobeMap({ regions, selectedRegionId, onSelectRegion }: WorldGlobeMapProps) {
+export function WorldGlobeMap({ regions, selectedRegionId, onSelectRegion, mapLayers = [] }: WorldGlobeMapProps) {
   const [mapState, setMapState] = useState<MapFrameState>("loading");
   const containerRef = useRef<HTMLDivElement>(null);
   const mapRef = useRef<MaplibreMap | null>(null);
@@ -148,6 +149,11 @@ export function WorldGlobeMap({ regions, selectedRegionId, onSelectRegion }: Wor
     map.on("load", () => {
       if (destroyedRef.current) return;
       map.resize();
+      const imagery = mapLayers.find((layer) => layer.id === "nasa-gibs-modis");
+      if (imagery && !map.getSource(imagery.id)) {
+        map.addSource(imagery.id, { type: "raster", tiles: [imagery.url], tileSize: 256, attribution: imagery.attribution });
+        map.addLayer({ id: imagery.id, type: "raster", source: imagery.id, paint: { "raster-opacity": 0.28 } });
+      }
       mapLoadedRef.current = true;
       setMapState("ready");
       syncMarkers(map);
@@ -165,7 +171,7 @@ export function WorldGlobeMap({ regions, selectedRegionId, onSelectRegion }: Wor
       mapRef.current = null;
     };
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [mapLayers]);
 
   useEffect(() => {
     if (mapRef.current && mapLoadedRef.current) syncMarkers(mapRef.current);
@@ -194,7 +200,7 @@ export function WorldGlobeMap({ regions, selectedRegionId, onSelectRegion }: Wor
         : mapState === "webgl-unavailable"
           ? "This browser or device cannot render the interactive map. Use the regional reference list below."
           : mapState === "ready"
-            ? "Markers show reference locations. Live regional telemetry is unavailable."
+            ? "Markers show global locations. NASA GIBS imagery is layered when available; observations and source age appear below."
             : "Regional reference locations remain available in the list below."}
       canvas={<div ref={containerRef} className="world-map-canvas" />}
     >

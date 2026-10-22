@@ -5,7 +5,12 @@ export const API_PATHS = {
   capabilities: "/v1/metadata/capabilities",
   modules: "/v1/modules",
   worldMonitor: "/v1/world-monitor",
+  worldMonitorYoutube: "/v1/world-monitor/youtube",
+  worldMonitorYoutubeScan: "/v1/world-monitor/youtube/scan",
+  worldMonitorYoutubeAction: "/v1/world-monitor/youtube/action",
+  worldMonitorYoutubeSnippet: "/v1/world-monitor/youtube/snippet",
   continuum: "/continuum",
+
   continuumAgents: "/continuum/agents",
   continuumAsma: "/continuum/asma",
   continuumChronicles: "/continuum/chronicles",

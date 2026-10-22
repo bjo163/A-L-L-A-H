@@ -2,6 +2,7 @@ import { useState } from "react";
 import type { WorldMonitoringSnapshot } from "@empire/batteries-world-monitor";
 import { Badge, Button, EmptyState, Icon, MangaEffect, MangaTelemetryHero, MetricGrid, Panel, RegionSummary, StatusIndicator, TextField } from "@empire/ui";
 import { WorldGlobeMap } from "./WorldGlobeMap";
+import { YoutubeSentinelView } from "./YoutubeSentinelView";
 
 interface WorldMonitorViewProps {
   snapshot: WorldMonitoringSnapshot;
@@ -10,9 +11,19 @@ interface WorldMonitorViewProps {
   refreshError?: string;
   /** Countdown in seconds until next auto-refresh. undefined = auto-refresh not running */
   nextRefreshIn?: number;
+  notificationPermission: NotificationPermission | "unsupported";
+  onEnableNotifications: () => void;
 }
 
-export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, refreshError }: WorldMonitorViewProps) {
+const monitoredLocations = [
+  ["London", "london"], ["New York", "new-york"], ["Tokyo", "tokyo"], ["Nairobi", "nairobi"],
+  ["São Paulo", "sao-paulo"], ["Delhi", "delhi"], ["Sydney", "sydney"], ["Reykjavík", "reykjavik"],
+] as const;
+
+type WorldSubTab = "systems" | "youtube";
+
+export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, refreshError, notificationPermission, onEnableNotifications }: WorldMonitorViewProps) {
+  const [subTab, setSubTab] = useState<WorldSubTab>("systems");
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
   const [selectedRegionId, setSelectedRegionId] = useState<string | undefined>(undefined);
 
@@ -45,6 +56,15 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
 
   return (
     <>
+      <div className="world-subtab-bar" role="tablist" aria-label="World Monitor views">
+        <button type="button" role="tab" aria-selected={subTab === "systems"} className={`world-subtab-btn${subTab === "systems" ? " world-subtab-btn--active" : ""}`} onClick={() => setSubTab("systems")}>
+          <Icon name="globe" size={14} /> World Systems
+        </button>
+        <button type="button" role="tab" aria-selected={subTab === "youtube"} className={`world-subtab-btn world-subtab-btn--sentinel${subTab === "youtube" ? " world-subtab-btn--active" : ""}`} onClick={() => setSubTab("youtube")}>
+          <Icon name="activity" size={14} /> YouTube Sentinel <span className="world-subtab-badge">TAUHID</span>
+        </button>
+      </div>
+      {subTab === "youtube" ? <YoutubeSentinelView searchQuery={search} /> : <>
       <MangaTelemetryHero
         eyebrow={<>SERVICE STATUS <StatusIndicator tone={systemState === "ok" ? "success" : systemState === "unavailable" ? "neutral" : "warning"}>{snapshot.globalAlertLevel === "unknown" ? "STATUS UNKNOWN" : `ALERT LEVEL ${snapshot.globalAlertLevel.toUpperCase()}`}</StatusIndicator></>}
         title="System and regional monitoring"
@@ -54,6 +74,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
         sfx="RADAR!"
       />
       {refreshError && <p role="alert" className="eol-notice eol-notice--warning">Refresh failed: {refreshError} Showing the last successful snapshot.</p>}
+{notificationPermission === "default" && <div className="world-notification-prompt"><span>Enable browser notifications for new World Monitor alerts.</span><Button variant="secondary" onClick={onEnableNotifications}>Enable notifications</Button></div>}
 
       {/* ── Globe Map ─────────────────────────────────────────────────────────── */}
       <section className="world-map-section">
@@ -76,6 +97,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
           regions={snapshot.regions}
           selectedRegionId={selectedRegionId}
           onSelectRegion={(id) => setSelectedRegionId((prev) => (prev === id ? undefined : id))}
+          mapLayers={snapshot.mapLayers}
         />
 
         {/* Selected region detail card */}
@@ -243,6 +265,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
           <EmptyState title="No verified telemetry events" description="No live event source is connected. Audit records are not exposed through this public endpoint." />
         )}
       </section>
+      </>}
     </>
   );
 }
