@@ -176,6 +176,7 @@ h1 { margin: 8px 0 6px; color: var(--eol-color-text); font-size: clamp(27px, 3vw
 .eol-auth-layout { display: grid; min-height: 100vh; place-items: center; padding: 22px; }
 .eol-auth-card { display: grid; width: min(100%, 450px); gap: 14px; padding: clamp(24px, 5vw, 40px); background: var(--eol-color-surface); }
 .eol-auth-card h1 { font-size: 28px; }.eol-auth-card > p { color: var(--eol-color-text-muted); font-size: 11px; line-height: 1.65; }
+.eol-nav-item { display: flex; align-items: center; gap: 10px; width: 100%; }.eol-nav-item__icon { display: inline-grid; place-items: center; }.eol-nav-item em { margin-left: auto; }
 .login-card h1 { font-size: 28px; }.login-card > p { color: var(--eol-color-text-muted); font-size: 11px; line-height: 1.65; }
 .remember-me { display: flex; align-items: center; gap: 10px; color: var(--eol-color-text-subtle); font-size: 11px; cursor: pointer; }
 .remember-me input { appearance: none; display: grid; width: 18px; height: 18px; flex: none; place-items: center; margin: 0; border: 2px solid var(--eol-manga-ink); border-radius: var(--eol-radius-none); background: var(--eol-color-surface); box-shadow: 2px 2px 0 var(--eol-manga-ink); cursor: pointer; }
