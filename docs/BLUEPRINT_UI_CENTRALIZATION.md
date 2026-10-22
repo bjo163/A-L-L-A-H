@@ -474,7 +474,7 @@ Owner: Command Center maintainer. Dependensi: C02–C11. Gate: delapan view, aut
 - [ ] **UI-C13-08** — Migrasikan Continuum agent cards dan invocation forms.
 - [x] **UI-C13-09** — Migrasikan Directory table dan resource states.
 - [x] **UI-C13-10** — Migrasikan Knowledge disclosure, Arabic content dan source metadata.
-- [ ] **UI-C13-11** — Migrasikan Audit list, payload details dan pagination.
+- [x] **UI-C13-11** — Migrasikan Audit list, payload details dan pagination.
 - [ ] **UI-C13-12** — Migrasikan CAB list/detail, create form, decision actions dan dialog.
 - [ ] **UI-C13-13** — Migrasikan Research list, creation, evidence dan review actions.
 - [ ] **UI-C13-14** — Tampilkan validasi provenance JSON yang dapat dipulihkan tanpa kehilangan isi form.
@@ -711,6 +711,7 @@ Status penerimaan + tanggal:
 | UI-C13-05 | Overview memakai shared `MangaTelemetryHero`, `MetricGrid`, `Panel`, `Badge`, resource states, dan `EventList` untuk activity preview; module data dan health mapping tetap berasal dari API snapshot app. | `pnpm --filter @empire/command-center typecheck` lulus setelah activity preview dipindahkan ke `EventList`. |
 | UI-C13-09 | Directory memakai shared `DataTable` dengan caption, labeled overflow region, typed columns, row keys, semantic status badges, dan shared empty result state; permission/data mapping tetap app-owned dan read-only. | `pnpm --filter @empire/command-center typecheck` lulus setelah migrasi directory table. |
 | UI-C13-10 | Knowledge index memakai shared `Disclosure` untuk native keyboard disclosure; Arabic term, transliteration, editorial status, attribute, domain, wisdom, dan source note tetap dirender sebagai data app. | `pnpm --filter @empire/command-center typecheck` lulus setelah migrasi knowledge cards. |
+| UI-C13-11 | Audit view memakai shared `EventList` untuk actor/action/timestamp dan details disclosure, serta controlled `Pagination` dengan availability berbasis page size API; payload JSON tetap ditampilkan sebagai detail yang dapat dibuka. | `pnpm --filter @empire/ui typecheck` dan `pnpm --filter @empire/command-center typecheck` lulus setelah migrasi. |
 | UI-C10-01 | `DataTable<Row>` menyediakan typed columns/cell renderer, semantic caption, `scope="col"`, numeric alignment (`start`/`center`/`end`), stable `rowKey`, and table-level empty row. Wrapper memberi horizontal overflow tanpa mengubah table semantics. | `pnpm --filter @empire/ui typecheck` lulus. Consumer migration, caption copy, and narrow-table behavior review masih terbuka pada UI-C10-02/UI-C15-04. |
 | UI-C10-02 | `DataTable` memberi wrapper overflow horizontal yang focusable (`tabIndex=0`) dengan `role=region` dan configurable `responsiveLabel`; markup tetap table semantic, sehingga narrow viewport memiliki scroll berlabel tanpa memalsukan card layout. | `pnpm --filter @empire/ui typecheck` lulus setelah responsive label ditambahkan. Consumer label localization dan browser narrow-table review masih terbuka pada UI-C15-04. |
 | UI-C10-03 | `Pagination` controlled menerima `page`, `totalPages`, dan `onPageChange`, clamps invalid values, disables previous/next pada boundary, dan mengumumkan current/total melalui `aria-live`. | `pnpm --filter @empire/ui typecheck` lulus setelah pattern baru. Consumer total/availability mapping dan keyboard/browser review masih terbuka pada UI-C15-04. |
