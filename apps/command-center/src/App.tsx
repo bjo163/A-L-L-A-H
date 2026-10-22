@@ -13,6 +13,7 @@ import { ContinuumView, type ContinuumAgent } from "./ContinuumView";
 import { KnowledgeView, type KnowledgeEntry } from "./KnowledgeView";
 import { AuditView, type AuditEvent } from "./AuditView";
 import { ResearchView, type ResearchDraft } from "./ResearchView";
+import { CabView, type CabActionRequest, type CabDraft } from "./CabView";
 
 type Signal = "checking" | "ok" | "degraded" | "unavailable";
 type Module = { id: string; title: string; version: string; state: string; enabled: boolean };
@@ -20,12 +21,11 @@ type Snapshot = { health: Signal; readiness: Signal; modules: Module[]; capabili
 type Page = "overview" | "world" | "continuum" | "directory" | "knowledge" | "audit" | "cab" | "research";
 const pageIcons: Record<Page, IconName> = { overview: "home", world: "globe", continuum: "agent", directory: "users", knowledge: "knowledge", audit: "audit", cab: "approval", research: "evidence" };
 type Chronicle = { id: string; action: string; entity: string; entityId?: string | null; payload?: Record<string, unknown> | null; createdAt: string; user?: { username?: string; displayName?: string } | null };
-type CreateRfc = { title: string; tier: CabRfc["tier"]; riskLevel: CabRfc["riskLevel"]; summary: string; justification: string; executionPlan: string; rollbackPlan: string; targetService: string; scheduledWindowStart: string; scheduledWindowEnd: string };
 type ConfirmationRequest = ResearchConfirmationRequest;
 
 const api = createApiClient(import.meta.env.VITE_API_ORIGIN || "http://127.0.0.1:4000");
 const initialSnapshot: Snapshot = { health: "checking", readiness: "checking", modules: [], capabilities: [] };
-const initialRfc: CreateRfc = { title: "", tier: "standard", riskLevel: "moderate", summary: "", justification: "", executionPlan: "", rollbackPlan: "", targetService: "", scheduledWindowStart: "", scheduledWindowEnd: "" };
+const initialRfc: CabDraft = { title: "", tier: "standard", riskLevel: "moderate", summary: "", justification: "", executionPlan: "", rollbackPlan: "", targetService: "", scheduledWindowStart: "", scheduledWindowEnd: "" };
 const initialRun: ResearchDraft = { title: "", question: "", scope: "self" };
 const can = (entity: AuthEntity | null, permission: string) => Boolean(entity?.sovereign || entity?.permissions.includes("*") || entity?.permissions.includes(permission));
 const pageItems: Array<{ key: Page; label: string; title: string; workspaceTitle: string; description: string }> = [
@@ -66,7 +66,7 @@ export function App() {
   const [search, setSearch] = useState("");
   const [auditPage, setAuditPage] = useState(1);
   const [directive, setDirective] = useState("Review current system status and report findings.");
-  const [createRfc, setCreateRfc] = useState(initialRfc);
+  const [createRfc, setCreateRfc] = useState<CabDraft>(initialRfc);
   const [createRun, setCreateRun] = useState<ResearchDraft>(initialRun);
   const [login, setLogin] = useState({ username: "", password: "" });
   const [rememberMe, setRememberMe] = useState(false);
@@ -340,30 +340,27 @@ export function App() {
       {tab==="directory"&&<DirectoryView users={directory} visibleUsers={visibleUsers}/>}
       {tab==="knowledge"&&<><Notice role="note" className="notice-panel"><Icon name="info" size={16}/><p>Entries are project mappings in editorial review. They are not verified theological definitions. Preserve cited sources and editorial status when using them.</p></Notice><KnowledgeView entries={visibleLexicon}/></>}
       {tab==="audit"&&<AuditView page={auditPage} totalPages={auditPage + (chronicles.length>=25 ? 1 : 0)} onPageChange={setAuditPage} events={visibleChronicles.map((event): AuditEvent=>({id:event.id,timestamp:new Date(event.createdAt).toLocaleString(),actor:event.user?.displayName??event.user?.username??"System",action:<><strong>{event.action.replaceAll("_"," ")}</strong> <Badge tone="neutral">{event.entity}</Badge></>,details:event.payload?<pre>{JSON.stringify(event.payload,null,2)}</pre>:event.entityId?event.entityId:undefined}))}/>}
-      {tab==="cab"&&<>
-        <section><div className="section-head"><h2>Ringkasan CAB</h2><Button variant="secondary" disabled={loading} onClick={()=>void refresh()}>Muat ulang</Button></div><MetricGrid density="compact" items={[{label:"Total RFC",value:summary?.total??0},{label:"Dalam proses",value:summary?.active??0},{label:"Selesai / rollback",value:`${summary?.completed??0} / ${summary?.reverted??0}`}]}/></section>
-        {can(entity,"cab:write")&&<FormSection title="Ajukan perubahan" description="RFC details are validated by the server before entering deliberation."><form className="form-grid form-card" onSubmit={createChange}><FieldLabel>Judul<TextField required minLength={3} value={createRfc.title} onChange={e=>setCreateRfc({...createRfc,title:e.target.value})}/></FieldLabel><div className="form-row"><FieldLabel>Tingkat<SelectField value={createRfc.tier} onChange={e=>setCreateRfc({...createRfc,tier:e.target.value as CreateRfc["tier"]})}><option value="standard">Standard</option><option value="significant">Significant</option><option value="critical">Critical</option><option value="emergency">Emergency</option></SelectField></FieldLabel><FieldLabel>Risiko<SelectField value={createRfc.riskLevel} onChange={e=>setCreateRfc({...createRfc,riskLevel:e.target.value as CreateRfc["riskLevel"]})}><option value="low">Low</option><option value="moderate">Moderate</option><option value="high">High</option><option value="critical">Critical</option></SelectField></FieldLabel></div><FieldLabel>Layanan sasaran<TextField required minLength={3} value={createRfc.targetService} onChange={e=>setCreateRfc({...createRfc,targetService:e.target.value})}/></FieldLabel><FieldLabel>Ringkasan<TextArea required minLength={3} value={createRfc.summary} onChange={e=>setCreateRfc({...createRfc,summary:e.target.value})}/></FieldLabel><FieldLabel>Alasan<TextArea required minLength={3} value={createRfc.justification} onChange={e=>setCreateRfc({...createRfc,justification:e.target.value})}/></FieldLabel><FieldLabel>Rencana eksekusi<TextArea required minLength={3} value={createRfc.executionPlan} onChange={e=>setCreateRfc({...createRfc,executionPlan:e.target.value})}/></FieldLabel><FieldLabel>Rencana rollback<TextArea required minLength={30} value={createRfc.rollbackPlan} onChange={e=>setCreateRfc({...createRfc,rollbackPlan:e.target.value})}/></FieldLabel><div className="form-row"><FieldLabel>Mulai jadwal<TextField type="datetime-local" value={createRfc.scheduledWindowStart} onChange={e=>setCreateRfc({...createRfc,scheduledWindowStart:e.target.value})}/></FieldLabel><FieldLabel>Selesai jadwal<TextField type="datetime-local" value={createRfc.scheduledWindowEnd} onChange={e=>setCreateRfc({...createRfc,scheduledWindowEnd:e.target.value})}/></FieldLabel></div><Button type="submit" disabled={busy}>Ajukan RFC</Button></form></FormSection>}
-        <section className="cab-layout"><div><div className="section-head"><h2>Daftar RFC</h2><span className="eyebrow">{visibleRfcs.length} ditampilkan</span></div>{visibleRfcs.length?<div className="rfc-list">{visibleRfcs.map(rfc=><MangaEffect as="button" action type="button" className={`rfc-item ${selected?.id===rfc.id?"rfc-selected":""}`} key={rfc.id} onClick={()=>void openRfc(rfc.id)}><span><strong>{rfc.title}</strong><small>{rfc.code} · {rfc.tier} · {rfc.riskLevel}</small></span><Badge tone={rfc.status==="approved"||rfc.status==="completed"?"success":rfc.status==="rejected"||rfc.status==="reverted"?"danger":"warning"}>{rfc.status}</Badge></MangaEffect>)}</div>:loading?<LoadingState label="Memuat daftar RFC…"/>:error?<ErrorState role="region" title="Daftar RFC tidak tersedia" description="Muat ulang daftar untuk mencoba kembali." action={<Button variant="secondary" onClick={()=>void refresh()}>Coba lagi</Button>}/>:<EmptyState title={search?"No RFC matches":"Belum ada RFC"} description={search?"Try a different search term.":"Tidak ada usulan perubahan yang dapat diakses pada konteks ini."}/>}</div>
-          <div className="rfc-detail">{selected?<><div className="section-head"><div><span className="eyebrow">{selected.code}</span><h2>{selected.title}</h2></div><Badge tone="warning">{selected.status}</Badge></div><DecisionSummary title="CAB decision" decision={selected.status} rationale={selected.summary} /><dl><dt>Justifikasi</dt><dd>{selected.justification}</dd><dt>Target</dt><dd>{selected.targetService}</dd><dt>Rencana eksekusi</dt><dd>{selected.executionPlan}</dd><dt>Rencana rollback</dt><dd>{selected.rollbackPlan}</dd><dt>Policy round</dt><dd>{selected.auditRound}</dd></dl>
-            {selected.reviews?.length?<><h3>Review & policy checks</h3><ul>{selected.reviews.map((review,i)=><li key={`${review.reviewerRole}-${i}`}><strong>{review.reviewerRole}</strong> · {review.verdict} — {review.notes}</li>)}</ul></>:null}
-            {selected.executions?.length?<><h3>Riwayat eksekusi</h3><ul>{selected.executions.map((execution,i)=><li key={`${execution.action}-${i}`}>{execution.action} · {execution.outcome} · {new Date(execution.startedAt).toLocaleString()}</li>)}</ul></>:null}
-            <ReviewActions className="action-row">
-              {selected.status==="deliberation"&&can(entity,"cab:audit")&&<Button variant="secondary" disabled={busy} onClick={()=>void perform(()=>client.request(`${API_PATHS.cabRfcs}/${selected.id}/audit`,{method:"POST",body:{}}),"Policy checks selesai dan tercatat.")}>Jalankan policy checks</Button>}
-              {selected.status==="deliberation"&&can(entity,"cab:review")&&!["critical","emergency"].includes(selected.tier)&&<>
-                <Button disabled={busy} onClick={()=>confirmRfcAction("Setujui perubahan?","Persetujuan akan dicatat pada riwayat musyawarah.","Setujui","primary","/vote",{verdict:"affirm"},"Persetujuan dicatat.")}>Setujui</Button>
-                <Button variant="secondary" disabled={busy} onClick={()=>confirmRfcAction("Minta klarifikasi?","RFC akan ditandai untuk dilengkapi sebelum dapat ditinjau ulang.","Minta klarifikasi","primary","/vote",{verdict:"inquire",notes:"Mohon lengkapi informasi agar dapat ditinjau ulang."},"Permintaan klarifikasi dicatat.")}>Minta klarifikasi</Button>
-                <Button variant="secondary" disabled={busy} onClick={()=>confirmRfcAction("Tolak perubahan?","Penolakan akan dicatat pada riwayat keputusan RFC.","Tolak perubahan","danger","/vote",{verdict:"dissent",notes:"Usulan tidak disetujui."},"Penolakan dicatat.")}>Tolak</Button>
-              </>}
-              {["critical","emergency"].includes(selected.tier)&&selected.status==="deliberation"&&entity.isSovereignAntiBypass&&<>
-                <Button disabled={busy} onClick={()=>confirmRfcAction("Keluarkan dekrit persetujuan?","Usulan berisiko kritis/darurat akan disetujui melalui kewenangan sovereign.","Setujui melalui dekrit","danger","/decree",{verdict:"approve"},"Dekrit persetujuan dicatat.")}>Dekrit setuju</Button>
-                <Button variant="secondary" disabled={busy} onClick={()=>confirmRfcAction("Veto usulan ini?","Veto akan mengakhiri deliberasi usulan dan dicatat sebagai keputusan sovereign.","Veto usulan","danger","/decree",{verdict:"veto"},"Veto dicatat.")}>Veto</Button>
-              </>}
-              {selected.status==="approved"&&can(entity,"cab:execute")&&<Button disabled={busy} onClick={()=>confirmRfcAction("Catat eksekusi RFC?","Tindakan eksekusi akan ditambahkan ke riwayat perubahan.","Catat eksekusi","primary","/execute",{},"Eksekusi dicatat.")}>Tandai selesai</Button>}
-              {selected.status==="completed"&&can(entity,"cab:execute")&&<Button variant="secondary" disabled={busy} onClick={()=>confirmRfcAction("Catat rollback RFC?","Tindakan pemulihan akan ditambahkan ke riwayat perubahan.","Catat rollback","danger","/rollback",{},"Rollback dicatat.")}>Catat rollback</Button>}
-            </ReviewActions>
-          </>:<p className="muted">Pilih RFC untuk meninjau rincian dan tindakan yang diizinkan.</p>}</div></section>
-      </>}
-      {tab==="research"&&<ResearchView draft={createRun} runs={visibleRuns} busy={busy} loading={loading} error={error} searching={Boolean(search)} canWrite={can(entity,"research:write")} canApprove={can(entity,"research:approve")} client={client} refreshKey={snapshot.checkedAt} onDraftChange={setCreateRun} onCreate={createResearch} onRefresh={()=>void refresh()} onAction={perform} onConfirmAction={requestConfirmation}/>}
+      {tab==="cab"&&<CabView
+        summary={summary}
+        visibleRfcs={visibleRfcs}
+        selected={selected}
+        draft={createRfc}
+        busy={busy}
+        loading={loading}
+        error={error}
+        searching={Boolean(search)}
+        canWrite={can(entity,"cab:write")}
+        canAudit={can(entity,"cab:audit")}
+        canReview={can(entity,"cab:review")}
+        canExecute={can(entity,"cab:execute")}
+        sovereign={entity.isSovereignAntiBypass}
+        onDraftChange={setCreateRfc}
+        onCreate={createChange}
+        onRefresh={()=>void refresh()}
+        onSelectRfc={id=>void openRfc(id)}
+        onAudit={()=>{if(selected)void perform(()=>client.request(`${API_PATHS.cabRfcs}/${selected.id}/audit`,{method:"POST",body:{}}),"Policy checks selesai dan tercatat.")}}
+        onConfirmAction={request=>confirmRfcAction(request.title,request.description,request.confirmLabel,request.tone,request.endpoint,request.body,request.successMessage)}
+      />}      {tab==="research"&&<ResearchView draft={createRun} runs={visibleRuns} busy={busy} loading={loading} error={error} searching={Boolean(search)} canWrite={can(entity,"research:write")} canApprove={can(entity,"research:approve")} client={client} refreshKey={snapshot.checkedAt} onDraftChange={setCreateRun} onCreate={createResearch} onRefresh={()=>void refresh()} onAction={perform} onConfirmAction={requestConfirmation}/>}
       </div>
       <ConfirmDialog
         open={Boolean(confirmation)}
