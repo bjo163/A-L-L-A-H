@@ -5,7 +5,7 @@ Repository: https://github.com/bjo163/A-L-L-A-H
 ## Daily work
 
 Only two working branches are used: `dev` and `main`.
-Commit work directly on `dev` and push. After CI, Docker builds, and the development
+Commit work directly on `dev` and push. After the quality gate and development
 release succeed, GitHub Actions opens or updates the pull request from `dev` to `main`
 and enables auto-merge. GitHub merges it using a **merge commit** when required checks
 pass, preserving the ancestry of the long-lived `dev` branch.
@@ -22,41 +22,30 @@ git switch dev
 git pull --ff-only origin dev
 # edit and validate
 git add <files>
-git commit -m "feat(portal): describe the change"
+git commit -m "feat(web): describe the change"
 git push origin dev
 ```
 
 CI rejects PRs to `main` from any branch other than this repository's `dev`.
-The repository setup script makes Branch policy, Quality checks, and CodeQL required before merging.
-Promotion runs only after the full `dev` validation and prerelease workflow succeeds;
+The repository setup script makes Branch policy and Quality checks required before merging.
+Promotion runs only after the `dev` quality gate and prerelease workflow succeeds;
 the `main` branch protection still blocks auto-merge until required checks pass.
 
 ## Checks
 
-- Locked dependency installation using pnpm from `packageManager` and Node from `.node-version`.
-- Registry/schema validation, release automation tests, all workspace tests (including module-kit once).
-- Production builds, TypeScript checks, high/critical production dependency audit.
-- CodeQL on PRs to main, main pushes, explicit dispatch, and weekly security scans;
-  weekly audit includes development dependencies. Dev pushes rely on the PR scan,
-  avoiding a second scan of the same change. A bot-created PR explicitly dispatches
-  CodeQL because GITHUB_TOKEN-generated PR events do not start workflows.
-- pnpm downloads, Turbo/Next build caches, and separate Docker layer caches for
-  each application are reused across runs. Typechecking and all three image builds
-  remain enabled. Cache inputs include shared TypeScript configuration, module
-  manifests, registries, and schemas so changes outside an application invalidate
-  its cached results. The API image is also started against disposable PostgreSQL
-  and
-  must pass readiness before promotion; image compilation alone is insufficient.
+- One required Quality checks job installs the locked dependencies, runs repository
+  validation and focused workflow tests, runs workspace tests, and builds the apps.
+  TypeScript checks are included in the build. Newer runs cancel older runs for the
+  same branch or PR.
+- The separate Docker image builds, disposable database startup, duplicate typecheck,
+  and per-commit dependency audit are removed from the gate. CodeQL continues to run
+  on PRs, direct pushes to `main`, and weekly scans while also serving as a non-gating
+  security report after the simplified branch protection is applied. Dependency
+  audits remain available through weekly or manual scans.
 - Actions are pinned to commit hashes. Workflow permissions are read-only except release publishing and CodeQL uploads.
 
 Local equivalent: `pnpm install --frozen-lockfile`, `pnpm validate`,
-`node --test scripts/tests/*.test.mjs`, `pnpm exec turbo run test`, `pnpm build`,
-`pnpm typecheck`, `pnpm audit --prod --audit-level high`.
-
-For the container startup check, run Compose from the repository root with
-`--project-directory . --env-file infra/docker.env.example -p empire-ci -f infra/compose.yaml`.
-Build the API image, then `up -d --no-build --wait --wait-timeout 180 api`.
-Use this separate project only for disposable checks, never a production database.
+`node --test scripts/tests/*.test.mjs`, `pnpm exec turbo run test`, and `pnpm build`.
 
 ## Automatic version and changelog
 
@@ -66,10 +55,10 @@ rerun the failed run after fixing any transient problem.
 
 GitHub suppresses push workflows caused by GITHUB_TOKEN, which can leave an
 automated merge without a main release. `Complete promotion` listens for successful
-dev CI/security completion, verifies the associated dev-to-main PR has merged, and
+dev CI completion, verifies the associated dev-to-main PR has merged, and
 dispatches main CI with `publish_main=true` and its exact `source_sha`. It only reads
 trusted repository metadata and never executes artifacts or code from a PR. Main CI
-then runs the full checks before publishing and synchronizing dev. The dispatcher
+then runs the quality gate before publishing and synchronizing dev. The dispatcher
 skips a commit already published or currently being validated; the release ledger
 also deduplicates stable publication by source SHA under the shared release queue.
 The same explicit inputs can recover a missing main release manually; ordinary
@@ -92,7 +81,8 @@ Dependency update branches are intentionally not created while the two-branch ru
 
 ## Repository settings
 
-Run once with an authenticated GitHub CLI admin account:
+Run once with an authenticated GitHub CLI admin account. Rerun after changing the
+required checks so GitHub stops blocking on the old CodeQL requirement:
 
 ```sh
 node scripts/configure-repository.mjs --dry-run

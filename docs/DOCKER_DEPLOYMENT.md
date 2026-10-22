@@ -1,6 +1,6 @@
 # Docker Compose deployment
 
-This is a self-hosted Compose baseline with four services: PostgreSQL, the API, the public Portal, and the Next.js Command Center. Each HTTP service has its own host port. There is no reverse proxy or TLS termination in this setup.
+This is a self-hosted Compose baseline with three services: PostgreSQL, the API, and one Next.js web app. The web app serves the public site and the operator workspace at `/workspace`. There is no reverse proxy or TLS termination in this setup.
 
 ## Requirements and first start
 
@@ -8,9 +8,9 @@ This is a self-hosted Compose baseline with four services: PostgreSQL, the API, 
 - A host that can reach the package registry and public monitoring sources during image build and API operation.
 - A trusted host or private network. Do not expose these plain HTTP ports directly to the public internet; provide TLS and network access control outside this stack before public use.
 
-From the repository root, copy `infra/docker.env.example` to `.env`. Set `POSTGRES_PASSWORD` to a long URL-safe random value (for example, generate 32 random bytes and encode them as hex), and set `FILE_STORAGE_SIGNING_SECRET` to at least 32 random bytes. Keep `.env` out of Git. For access from another device, change `BIND_ADDRESS` to the intended host interface, set `PUBLIC_API_ORIGIN` to an API URL reachable by that device for Portal, set `INTERNAL_API_ORIGIN` to the API address reachable from the Command Center container, and list the exact UI origins in `CORS_ORIGINS`.
+From the repository root, copy `infra/docker.env.example` to `.env`. Set `POSTGRES_PASSWORD` to a long URL-safe random value (for example, generate 32 random bytes and encode them as hex), and set `FILE_STORAGE_SIGNING_SECRET` to at least 32 random bytes. Keep `.env` out of Git. Set `INTERNAL_API_ORIGIN` to the API address reachable from the web app container and set `CORS_ORIGINS` to the public web origin, including scheme and hostname.
 
-For production, set `CORS_ORIGINS` to include the full browser origin, including scheme and hostname. For example, Command Center at `https://cc.moonwitness.biz.id` requires that exact value. The Command Center uses a same-origin `/api` path and its Next.js server forwards requests to `INTERNAL_API_ORIGIN`; this keeps the API host out of browser requests. Configure TLS and the public domain routing at the deployment proxy, and rebuild the Command Center after changing its API path or internal API host.
+For production, set `CORS_ORIGINS` to the full browser origin. For example, `https://cc.moonwitness.biz.id`. The app uses a same-origin `/api` path and its Next.js server forwards requests to `INTERNAL_API_ORIGIN`, keeping the API host out of browser requests. Configure TLS and public domain routing at the deployment proxy.
 
 Start the stack:
 
@@ -25,11 +25,11 @@ docker compose --project-directory . --env-file .env -f infra/compose.yaml up -d
 docker compose --project-directory . --env-file .env -f infra/compose.yaml ps
 ```
 
-Default host URLs are `http://localhost:3300` (Portal), `http://localhost:3400` (Command Center), and `http://localhost:4000` (API). PostgreSQL has no published host port. The API is bound to `0.0.0.0` inside its container and published on loopback by default. Portal's API URL is embedded at build time, so rebuild Portal after changing `PUBLIC_API_ORIGIN`. Command Center uses `/api` on its own origin and forwards requests from its server to `INTERNAL_API_ORIGIN`:
+Default host URLs are `http://localhost:3300` (web app) and `http://localhost:4000` (API). PostgreSQL has no published host port. The API is bound to `0.0.0.0` inside its container and published on loopback by default. The web app uses `/api` on its own origin and forwards requests from its server to `INTERNAL_API_ORIGIN`:
 
 ```sh
-docker compose --project-directory . --env-file .env -f infra/compose.yaml build --no-cache portal
-docker compose --project-directory . --env-file .env -f infra/compose.yaml up -d portal
+docker compose --project-directory . --env-file .env -f infra/compose.yaml build --no-cache web
+docker compose --project-directory . --env-file .env -f infra/compose.yaml up -d web
 ```
 
 The API runs its existing enabled-module schema synchronization during startup. Review database preflight and backup requirements in [AUTOMATION.md](AUTOMATION.md) before using this stack with existing or valuable data. Compose does not automatically apply the legacy dictionary migration.
@@ -39,16 +39,16 @@ The API runs its existing enabled-module schema synchronization during startup. 
 ```sh
 docker compose --project-directory . --env-file .env -f infra/compose.yaml ps
 docker compose --project-directory . --env-file .env -f infra/compose.yaml logs --follow api
-docker compose --project-directory . --env-file .env -f infra/compose.yaml logs --follow portal command-center
+docker compose --project-directory . --env-file .env -f infra/compose.yaml logs --follow web
 ```
 
 The API health check uses `/v1/readiness`, which also checks the current database schema. Keep the default single API instance: YouTube scan rate limits are process-local. Horizontal replicas require a shared limiter first.
 
 If Compose reports `dependency api failed to start`, inspect the API log above:
-the dependent frontends are waiting for API readiness. In particular,
+the web app is waiting for API readiness. In particular,
 `ERR_MODULE_NOT_FOUND` for `batteries-world-monitor/src/types.js` indicates an old
 image whose World Monitor entry points at TypeScript source. The package now builds
-and exports `dist/index.js`; rebuild the API and Command Center from the updated
+and exports `dist/index.js`; rebuild the API and web app from the updated
 source. Increasing the health-check timeout cannot repair a missing runtime module.
 Fresh provisioning also creates `tenants` before `partners`, which references it.
 If startup asks for `EMPIRE_OWNER_PASSWORD` or `EMPIRE_ARCHITECT_PASSWORD`, provide
@@ -69,7 +69,7 @@ The second command assumes the default Compose project name (`empire-of-the-ligh
 For a restore, stop all application services first and restore into a disposable/test stack or a deliberately selected empty database. Do not run a destructive restore against a live database as a routine update:
 
 ```sh
-docker compose --project-directory . --env-file .env -f infra/compose.yaml stop api portal command-center
+docker compose --project-directory . --env-file .env -f infra/compose.yaml stop api web
 docker compose --project-directory . --env-file .env -f infra/compose.yaml exec -T postgres pg_restore -U empire -d empire --clean --if-exists < backups/empire.dump
 docker run --rm -i -v empire-of-the-light_private_files:/target busybox sh -c 'tar xzf - -C /target' < backups/private-files.tgz
 ```

@@ -10,10 +10,8 @@ Node >=22.12, pnpm 11.24, and local PostgreSQL are required for API operations.
 4. Copy `.env.example` to `.env`, replace the sample values locally, and keep `.env` private.
 5. Start a local PostgreSQL instance and set its URL in `DATABASE_URL`.
 6. Optional: run `pnpm db:preflight` to inspect changes, `pnpm db:sync` to install active module schemas, or `pnpm db:sync:smoke` to validate the synchronizer in a temporary PostgreSQL schema. Normal API startup performs the same sync automatically.
-7. Start the API with `pnpm --filter @empire/api dev` at `127.0.0.1:4000`.
-8. Start 100CENTER with `pnpm --filter @empire/command-center dev` at `127.0.0.1:5173`. Sign in with a provisioned operator account. CAB and Research actions follow server-side permissions.
-9. Start the public portal with `pnpm --filter @empire/portal dev` at `127.0.0.1:3300`.
-10. Read the API contract at `http://127.0.0.1:4000/openapi.json`.
+7. Start the API and web app together in parallel with `pnpm dev`. The API listens at `127.0.0.1:4000` and web at `127.0.0.1:3300`; public pages and the operator workspace at `/workspace` use the same app. Sign in with a provisioned operator account; CAB and Research actions follow server-side permissions.
+8. Read the API contract at `http://127.0.0.1:4000/openapi.json`.
 
 ## Database
 
@@ -21,14 +19,14 @@ The API uses the Empire Batteries Knex/Objection persistence layer against Postg
 
 ## Security
 
-The API listens on loopback by default. Privileged accounts require separate `EMPIRE_OWNER_PASSWORD` and `EMPIRE_ARCHITECT_PASSWORD` values when first provisioned. There is no shared default account password. Login issues a short-lived revocable bearer session; only the token hash is stored. The Command Center keeps its session in tab-scoped browser storage.
+The API listens on loopback by default. Privileged accounts require separate `EMPIRE_OWNER_PASSWORD` and `EMPIRE_ARCHITECT_PASSWORD` values when first provisioned. There is no shared default account password. Login issues a short-lived revocable bearer session; only the token hash is stored. The web app keeps its session in tab-scoped browser storage.
 
 Keep database URLs and bootstrap passwords in private environment configuration. Do not place credentials in frontend `VITE_`/`NEXT_PUBLIC_` variables or commit them. The portal has no direct database access.
 
 ## YouTube Sentinel demo corpus
 
-The in-memory repository starts empty. Fictional Sentinel examples are available only when `YOUTUBE_SENTINEL_DEMO_MODE=true` is set in the API's private environment. The Command Center marks these records as synthetic demo data; never use them as real findings or evidence. Leave the setting disabled in production.
+The in-memory repository starts empty. Fictional Sentinel examples are available only when `YOUTUBE_SENTINEL_DEMO_MODE=true` is set in the API's private environment. The 100CENTER workspace marks these records as synthetic demo data; never use them as real findings or evidence. Leave the setting disabled in production.
 
 ## Scope and readiness
 
-The research workflow stores tenant-scoped runs, human approvals, workflow/job state, source evidence with provenance, and audit events. CAB decisions and execution history are available in the authenticated Command Center. OIDC, production deployment, backup/restore drills, licensed corpus import, and production certification remain separate release gates.
+The research workflow stores tenant-scoped runs, human approvals, workflow/job state, source evidence with provenance, and audit events. CAB decisions and execution history are available in the authenticated 100CENTER workspace. OIDC, production deployment, backup/restore drills, licensed corpus import, and production certification remain separate release gates.

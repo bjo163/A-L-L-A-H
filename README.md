@@ -31,9 +31,9 @@ The v5 research blueprint adds a physics-measured energy OS, protonic and photon
 
 The local development system uses **PostgreSQL on the developer machine**. Set `DATABASE_URL` in the ignored `.env`; the API synchronizes active module schemas and safe additive changes during startup. You can also run `pnpm db:sync` to synchronize explicitly. Setup instructions: [Local PostgreSQL](docs/LOCAL_POSTGRESQL.md). No cloud database is required.
 
-The [Genesis v4 monorepo blueprint](docs/BLUEPRINT_V4_MONOREPO.md) describes React/Vite 100CENTER, Next.js public portal, Fastify API and PostgreSQL with [Odoo-style modules](docs/MODULE_SYSTEM_SPEC.md). The API uses the Empire Batteries Knex/Objection layer as its persistence and schema-sync authority. OpenAPI is served at `/openapi.json`, with shared frontend request helpers in `packages/api-contract`. Refer to [release gates](docs/OPERATIONS_RELEASE_GATES.md) and [ADR-0002 proposal](docs/adr/ADR-0002-modular-monorepo-proposal.md).
+The active deployment has one Next.js web app for public pages and the operator workspace, plus the Fastify API and PostgreSQL. The [Genesis v4 monorepo blueprint](docs/BLUEPRINT_V4_MONOREPO.md) records the earlier separate-app design. The API uses the Empire Batteries Knex/Objection layer as its persistence and schema-sync authority. OpenAPI is served at `/openapi.json`, with shared frontend request helpers in `packages/api-contract`. Refer to [release gates](docs/OPERATIONS_RELEASE_GATES.md) and [ADR-0002 proposal](docs/adr/ADR-0002-modular-monorepo-proposal.md).
 
-Shared presentation primitives and visual tokens live in [`packages/ui`](packages/ui/README.md). Page layout and product-specific composition remain in each app. The [UI Blueprint and long-term checklist](docs/BLUEPRINT_UI.md) defines the design direction, product journeys, delivery phases, and acceptance evidence.
+Shared presentation primitives and visual tokens live in [`packages/ui`](packages/ui/README.md). The web app owns page routing and product composition; the package owns shared interface primitives. The [UI Blueprint and long-term checklist](docs/BLUEPRINT_UI.md) defines the design direction, product journeys, delivery phases, and acceptance evidence.
 
 ## Find your way
 | Area | Entry |
@@ -54,7 +54,7 @@ Shared presentation primitives and visual tokens live in [`packages/ui`](package
 - Humans retain consent, data rights and decision authority. A fictional persona never grants API permissions.
 - Three scopes: SELF / COMMUNITY / GLOBAL. The last is a network or privacy-safe aggregate, not compulsory authority over people.
 - Four operational pillars: PATHFINDING, TRUTH_GUIDANCE, RENEWAL, PROTECTION.
-- No direct frontend database access. The Command Center uses the local canonical Empire API; public production integration still follows the documented Gen2 ownership and ADR boundary.
+- No direct frontend database access. The web app uses the local canonical Empire API; public production integration still follows the documented Gen2 ownership and ADR boundary.
 
 ## Compatibility with MoonWitness Gen2
 This repository is a **design and reference-data owner for this project**, not a unilateral replacement for the frozen [MoonWitness Blueprint](https://github.com/ArsyBelovedLabs/moonwitness-blueprint). Integration into Gen2 requires an approved ADR, capability ownership, contracts, tests and deployment gates. Its [Command Center](https://github.com/ArsyBelovedLabs/moonwitness-commandcenter) is a boundary shell, not a certified full operations console.
