@@ -1,8 +1,9 @@
-import { useState } from "react";
+import { lazy, Suspense, useState } from "react";
 import type { WorldMonitoringSnapshot } from "@empire/batteries-world-monitor";
-import { Badge, Button, EmptyState, Icon, MangaTelemetryHero, MetricGrid, RegionSelectCard, RegionSummary, SectionHeading, SensorDisclosure, StatusIndicator, Tabs, TelemetryEventList } from "@empire/ui";
-import { WorldGlobeMap } from "./WorldGlobeMap";
-import { YoutubeSentinelView } from "./YoutubeSentinelView";
+import { Badge, Button, EmptyState, Icon, LoadingState, MangaTelemetryHero, MapFrame, MetricGrid, RegionSelectCard, RegionSummary, SectionHeading, SensorDisclosure, StatusIndicator, Tabs, TelemetryEventList } from "@empire/ui";
+
+const WorldGlobeMap = lazy(async () => ({ default: (await import("./WorldGlobeMap")).WorldGlobeMap }));
+const YoutubeSentinelView = lazy(async () => ({ default: (await import("./YoutubeSentinelView")).YoutubeSentinelView }));
 
 interface WorldMonitorViewProps {
   snapshot: WorldMonitoringSnapshot;
@@ -81,12 +82,14 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
             <Button variant="secondary" onClick={onRefresh}><Icon name="refresh" size={15}/>Refresh Pulse</Button>
           </div>} />
 
-        <WorldGlobeMap
-          regions={snapshot.regions}
-          selectedRegionId={selectedRegionId}
-          onSelectRegion={(id) => setSelectedRegionId((prev) => (prev === id ? undefined : id))}
-          mapLayers={snapshot.mapLayers}
-        />
+        <Suspense fallback={<MapFrame title="Interactive region map" state="loading" stateTitle="Loading map adapter" description="The regional reference list below remains available." />}>
+          <WorldGlobeMap
+            regions={snapshot.regions}
+            selectedRegionId={selectedRegionId}
+            onSelectRegion={(id) => setSelectedRegionId((prev) => (prev === id ? undefined : id))}
+            mapLayers={snapshot.mapLayers}
+          />
+        </Suspense>
 
         {/* Selected region detail card */}
         {selectedRegion && (
@@ -209,7 +212,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
         }))} empty={<EmptyState title="No verified telemetry events" description="No live event source is connected. Audit records are not exposed through this public endpoint." />} />
       </section>
         </> },
-        { value: "youtube", label: <><Icon name="activity" size={14} /> YouTube Sentinel <span className="world-subtab-badge">TAUHID</span></>, content: <YoutubeSentinelView searchQuery={search} /> },
+        { value: "youtube", label: <><Icon name="activity" size={14} /> YouTube Sentinel <span className="world-subtab-badge">TAUHID</span></>, content: <Suspense fallback={<LoadingState label="Loading YouTube Sentinel…" />}><YoutubeSentinelView searchQuery={search} /></Suspense> },
       ]}
     />
   );
