@@ -14,6 +14,8 @@ The catalog also includes a fabricated Portal homepage and one composition fixtu
 
 Run `pnpm audit:ui-css` to find repeated property declarations within the same selector and grouping context. The current source audit reports 157 findings; each needs triage before the audit can be used as a clean CI gate.
 
+`pnpm validate:ui-assets` checks the asset manifest against the inline SVG icon and brand inventories, font package versions and stylesheet imports, and the included font license texts. The current brand concepts are exploratory and Orbit remains provisional. There are no generated vector or binary assets checked into the package today; the validator enforces that recorded policy so a future generated asset must be deliberately inventoried.
+
 ## Current exports
 
 - `Button` for consistent native button actions.

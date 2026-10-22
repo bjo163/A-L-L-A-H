@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "generatedAssetPolicy": "UI assets are authored as inline SVG components; generated binary/vector outputs are not currently checked in.",
+  "vectors": {
+    "icons": {
+      "source": "src/primitives/Icon.tsx",
+      "inventoryExport": "iconNames",
+      "names": ["home", "globe", "spark", "users", "directory", "clock", "arrows", "menu", "search", "filter", "refresh", "settings", "command", "logOut", "externalLink", "close", "info", "success", "warning", "error", "pending", "user", "team", "lock", "agent", "modules", "knowledge", "evidence", "history", "audit", "approval", "document", "source", "copy", "download", "plus", "edit", "sun", "moon", "chevronDown", "chevronLeft", "chevronRight", "arrowLeft", "arrowRight", "arrowUp", "arrowUpRight", "arrowDownRight", "check", "activity", "input", "output", "chevronUp"]
+    },
+    "brandConcepts": {
+      "source": "src/brand/BrandConcepts.tsx",
+      "inventoryType": "BrandConcept",
+      "names": ["aperture", "orbit", "monogram"],
+      "status": "Orbit is a provisional working mark; final identity requires C02 review."
+    }
+  },
+  "fonts": [
+    { "package": "@fontsource-variable/space-grotesk", "version": "5.3.0", "license": "SIL Open Font License 1.1", "licenseFile": "licenses/SPACE-GROTESK-OFL-1.1.txt", "imports": ["@fontsource-variable/space-grotesk/wght.css"] },
+    { "package": "@fontsource/dm-mono", "version": "5.3.0", "license": "SIL Open Font License 1.1", "licenseFile": "licenses/DM-MONO-OFL-1.1.txt", "imports": ["@fontsource/dm-mono/latin-400.css", "@fontsource/dm-mono/latin-500.css"] }
+  ],
+  "generatedFiles": []
+}

@@ -10,6 +10,7 @@
   "scripts": {
     "validate": "node scripts/validate.mjs && node scripts/validate-monorepo.mjs && node scripts/validate-batteries-dna.mjs && node scripts/validate-ui-boundary.mjs",
     "audit:ui-css": "node scripts/audit-ui-css-duplicates.mjs",
+    "validate:ui-assets": "node scripts/validate-ui-assets.mjs",
     "world-monitor:runtime-smoke": "pnpm --filter @empire/api exec tsx src/scripts/world-monitor-runtime-smoke.ts",
     "module:test": "node --test packages/module-kit/test/*.test.mjs",
     "dna:generate": "node scripts/generate-batteries-dna.mjs",
