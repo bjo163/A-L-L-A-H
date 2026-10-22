@@ -42,6 +42,8 @@ export { PageIntro } from "./patterns/PageIntro";
 export type { PageIntroProps } from "./patterns/PageIntro";
 export { IconText } from "./patterns/IconText";
 export type { IconTextProps } from "./patterns/IconText";
+export { MetricGrid } from "./patterns/MetricGrid";
+export type { MetricGridProps, MetricItem } from "./patterns/MetricGrid";
 export { MangaSfx } from "./patterns/MangaSfx";
 export type { MangaSfxProps } from "./patterns/MangaSfx";
 export { MangaEffect } from "./patterns/MangaEffect";

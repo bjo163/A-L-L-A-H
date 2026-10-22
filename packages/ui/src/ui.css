@@ -4,4 +4,5 @@
 @import "./styles.css";
 @import "./patterns/maps.css";
 @import "./patterns/icon-text.css";
+@import "./patterns/metric-grid.css";
 @import "./brand/brand.css";

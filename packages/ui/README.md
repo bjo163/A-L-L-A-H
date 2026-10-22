@@ -13,6 +13,7 @@ The centralization blueprint tracks the remaining migration and acceptance work.
 - `Button` for consistent native button actions.
 - `Panel` for semantic, reusable surface containers.
 - `PageIntro`, `SectionHeading`, and `StatGrid` for consistent page composition.
+- `MetricGrid` for responsive, tone-aware operational metrics; labels, business state mapping, and source freshness remain supplied by the app.
 - `MangaEffect` for reusable manga panel, screentone, speed-line, spin, reveal, and hover treatments.
 - `MangaOrbit` for decorative orbit rings with the shared glow motion.
 - `MangaPageIntro` for page headings with the shared manga frame and optional SFX lettering.

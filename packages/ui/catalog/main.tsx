@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { BrandConcepts } from "../src/brand/BrandConcepts";
-import { Badge, BrandLockup, Button, buttonClassName, ConfirmDialog, EmptyState, ErrorState, FieldError, FieldLabel, HelpText, Icon, IconText, iconGroups, LoadingState, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, Notice, Panel, RegionSummary, SectionHeading, SelectField, Skeleton, StatGrid, StatusIndicator, Switch, Tabs, TextArea, TextField } from "../src";
+import { Badge, BrandLockup, Button, buttonClassName, ConfirmDialog, EmptyState, ErrorState, FieldError, FieldLabel, HelpText, Icon, IconText, iconGroups, LoadingState, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MetricGrid, Notice, Panel, RegionSummary, SectionHeading, SelectField, Skeleton, StatGrid, StatusIndicator, Switch, Tabs, TextArea, TextField } from "../src";
 import "../src/ui.css";
 import "./catalog.css";
 
@@ -260,6 +260,14 @@ function Catalog() {
             { value: "01", label: "Human decision authority" },
           ]} />
           <MangaLoadingState className="catalog-manga-loading" eyebrow="ATLAS" label="Loading system map…" sfx="ZIP!" />
+        </Panel>
+        <Panel className="catalog-card">
+          <h3>Operational metrics</h3>
+          <MetricGrid density="compact" items={[
+            { label: "Service health", value: "Operational", tone: "success" },
+            { label: "Queue backlog", value: "12", detail: "4 high priority", tone: "warning" },
+            { label: "Last refresh", value: "2 min ago", tone: "neutral" },
+          ]} />
         </Panel>
       </section>
 
