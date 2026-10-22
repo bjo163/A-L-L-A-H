@@ -9,7 +9,7 @@ import type {
   YoutubeViolationCategory,
   YoutubeWorkflowStatus,
 } from "@empire/batteries-world-monitor";
-import { Badge, Button, DataTable, type DataTableColumn, EmptyState, MetricGrid, Panel, StatusIndicator, DocumentIcon, DownloadIcon, CopyIcon } from "@empire/ui";
+import { Badge, Button, DataTable, type DataTableColumn, EmptyState, MetricGrid, Panel, StatusIndicator, DocumentIcon, DownloadIcon, CopyIcon, IconText, SparkIcon, WarningIcon, AuditIcon, ModulesIcon, CheckIcon, GlobeIcon } from "@empire/ui";
 
 const api = createApiClient(import.meta.env.VITE_API_ORIGIN || "http://127.0.0.1:4000");
 
@@ -608,7 +608,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
             onKeyDown={(e) => e.key === "Enter" && void handleScan()}
           />
           <Button variant="primary" onClick={() => void handleScan()} disabled={scanning}>
-            {scanning ? "Sedang Memindai..." : "⚡ Jalankan Pemindaian Otomatis"}
+            {scanning ? "Sedang Memindai..." : <IconText icon={<SparkIcon />}>Jalankan Pemindaian Otomatis</IconText>}
           </Button>
         </div>
 
@@ -703,21 +703,21 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               className={`sentinel-direction-tab ${selectedDirection === "ALL" ? "sentinel-direction-tab--active-all" : ""}`}
               onClick={() => setSelectedDirection("ALL")}
             >
-              🌐 Semua Arah ({items.length})
+              <IconText icon={<GlobeIcon />}>Semua Arah ({items.length})</IconText>
             </button>
             <button
               type="button"
               className={`sentinel-direction-tab ${selectedDirection === "NEGATIVE" ? "sentinel-direction-tab--active-neg" : ""}`}
               onClick={() => setSelectedDirection("NEGATIVE")}
             >
-              ⚠️ Kesesatan &amp; Khurafat ({items.filter((i) => i.direction === "NEGATIVE").length})
+              <IconText icon={<WarningIcon />}>Kesesatan &amp; Khurafat ({items.filter((i) => i.direction === "NEGATIVE").length})</IconText>
             </button>
             <button
               type="button"
               className={`sentinel-direction-tab ${selectedDirection === "POSITIVE" ? "sentinel-direction-tab--active-pos" : ""}`}
               onClick={() => setSelectedDirection("POSITIVE")}
             >
-              ✨ Kebajikan &amp; Hikmah ({items.filter((i) => i.direction === "POSITIVE").length})
+              <IconText icon={<SparkIcon />}>Kebajikan &amp; Hikmah ({items.filter((i) => i.direction === "POSITIVE").length})</IconText>
             </button>
           </div>
 
@@ -730,13 +730,13 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
             onChange={(e) => setSelectedTradition(e.target.value as SentinelTradition | "ALL")}
           >
             <option value="ALL">Semua Tradisi</option>
-            <option value="ISLAM">🕌 Islam</option>
-            <option value="KRISTEN">✝️ Kristen</option>
-            <option value="KATOLIK">⛪ Katolik</option>
-            <option value="HINDU">🕉️ Hindu</option>
-            <option value="BUDDHA">☸️ Buddha</option>
-            <option value="KHONGHUCU">☯️ Khonghucu</option>
-            <option value="UNIVERSAL">🌟 Universal</option>
+            <option value="ISLAM">Islam</option>
+            <option value="KRISTEN">Kristen</option>
+            <option value="KATOLIK">Katolik</option>
+            <option value="HINDU">Hindu</option>
+            <option value="BUDDHA">Buddha</option>
+            <option value="KHONGHUCU">Khonghucu</option>
+            <option value="UNIVERSAL">Universal</option>
           </select>
         </div>
 
@@ -750,7 +750,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
             <option value="ALL">Semua Kategori ({items.length})</option>
-            <optgroup label="⚠️ Arah Negatif (Kesesatan)">
+            <optgroup label="Arah Negatif (Kesesatan)">
               <option value="SIHIR_PELET">Sihir, Santet &amp; Pelet</option>
               <option value="DUKUN_RAMALAN">Dukun &amp; Ramalan Tarot</option>
               <option value="PESUGIHAN_TUMBAL">Pesugihan &amp; Tumbal</option>
@@ -759,7 +759,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               <option value="KUBURAN_SESAJEN">Makam &amp; Sesajen</option>
               <option value="UMUM_SYIRIK">Kesyirikan Umum</option>
             </optgroup>
-            <optgroup label="✨ Arah Positif (Kebajikan & Hikmah)">
+            <optgroup label="Arah Positif (Kebajikan & Hikmah)">
               <option value="TAUHID_DAKWAH">Dakwah Pemurnian Tauhid</option>
               <option value="AKHLAK_KARIMAH">Pendidikan Akhlak Karimah</option>
               <option value="KASIH_KRISTIANI">Kasih Kristiani &amp; Pengharapan</option>
@@ -768,7 +768,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               <option value="KEBAJIKAN_KHONGHUCU">Kebajikan Moral Khonghucu</option>
               <option value="UNIVERSAL_HIKMAH">Hikmah Kebijaksanaan Hidup</option>
             </optgroup>
-            <optgroup label="ℹ️ Edukasi / Netral">
+            <optgroup label="Edukasi / Netral">
               <option value="BEBAS_SYIRIK">Bebas Syirik / Edukasi</option>
             </optgroup>
           </select>
@@ -817,8 +817,8 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
             value={selectedSortBy}
             onChange={(e) => setSelectedSortBy(e.target.value as "upload_date" | "relevance")}
           >
-            <option value="upload_date">📅 Video Terbaru (Upload Date)</option>
-            <option value="relevance">🎯 Paling Relevan</option>
+            <option value="upload_date">Video Terbaru (Upload Date)</option>
+            <option value="relevance">Paling Relevan</option>
           </select>
 
           <label className="sentinel-checkbox-label">
@@ -828,7 +828,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               onChange={(e) => setHideResolved(e.target.checked)}
             />
             <span className={`sentinel-filter-state${hideResolved ? " sentinel-filter-state--active-success" : ""}`}>
-              🗑️ Eliminasi yang Selesai / Dilaporkan
+              <IconText icon={<CheckIcon />}>Eliminasi yang Selesai / Dilaporkan</IconText>
             </span>
           </label>
 
@@ -839,7 +839,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               onChange={(e) => setOnlyNew(e.target.checked)}
             />
             <span className={`sentinel-filter-state${onlyNew ? " sentinel-filter-state--active-warning" : ""}`}>
-              ✨ Hanya Temuan Baru
+              <IconText icon={<SparkIcon />}>Hanya Temuan Baru</IconText>
             </span>
           </label>
         </div>
@@ -852,14 +852,14 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               className={`sentinel-view-btn ${viewMode === "table" ? "sentinel-view-btn--active" : ""}`}
               onClick={() => setViewMode("table")}
             >
-              📋 Tampilan Tabel
+              <IconText icon={<AuditIcon />}>Tampilan Tabel</IconText>
             </button>
             <button
               type="button"
               className={`sentinel-view-btn ${viewMode === "grid" ? "sentinel-view-btn--active" : ""}`}
               onClick={() => setViewMode("grid")}
             >
-              🎴 Tampilan Kartu
+              <IconText icon={<ModulesIcon />}>Tampilan Kartu</IconText>
             </button>
           </div>
         </div>
@@ -875,7 +875,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
         <DataTable<YoutubeMonitoredItem>
           caption={
             <span>
-              📋 <strong>Temuan YouTube Sentinel</strong> — {visibleItems.length} video terpantau di database
+              <IconText icon={<DocumentIcon size={16} />}><strong>Temuan YouTube Sentinel</strong> — {visibleItems.length} video terpantau di database</IconText>
             </span>
           }
           className="sentinel-table"
@@ -914,7 +914,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               <div className="sentinel-card-body">
                 <div className="sentinel-card-badges">
                   {item.isNew && (
-                    <Badge tone="success">✨ BARU</Badge>
+                    <Badge tone="success"><IconText icon={<SparkIcon />}>BARU</IconText></Badge>
                   )}
                   <Badge tone={riskBadgeTone(item.riskLevel)}>
                     {item.riskLevel.replace(/_/g, " ")}
