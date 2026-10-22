@@ -845,7 +845,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  background: var(--eol-color-surface-sunken, rgba(0, 0, 0, 0.4));
+  background: var(--eol-color-surface-inset);
   padding: 4px;
   border-radius: 6px;
   border: 1px solid var(--eol-color-border, #333);
@@ -957,7 +957,7 @@
   gap: 16px;
   flex-wrap: wrap;
   padding: 10px 14px;
-  background: var(--eol-color-surface-sunken, rgba(0, 0, 0, 0.3));
+  background: var(--eol-color-surface-inset);
   border: 1px solid var(--eol-color-border, #333);
   border-radius: 6px;
   margin-top: 10px;
@@ -1195,7 +1195,7 @@
 .sentinel-partner-field input,
 .sentinel-partner-field select,
 .sentinel-partner-field textarea {
-  background: var(--eol-color-surface-sunken, #121212);
+  background: var(--eol-color-surface-inset);
   border: 1px solid var(--eol-color-border, #444);
   color: var(--eol-color-text, #fff);
   border-radius: 4px;
