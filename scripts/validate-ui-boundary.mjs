@@ -46,7 +46,7 @@ const requiredProductStyles = [
 ];
 const sharedImportErrors = [];
 const sharedImportCounts = new Map();
-for (const match of sharedEntrySource.matchAll(/^\\s*@import\\s+(?:url\\()?["']([^"']+)["']\\)?\\s*;/gm)) {
+for (const match of sharedEntrySource.matchAll(/^\s*@import\s+(?:url\()?["']([^"']+)["']\)?\s*;/gm)) {
   const specifier = match[1];
   if (requiredProductStyles.includes(specifier)) {
     sharedImportCounts.set(specifier, (sharedImportCounts.get(specifier) ?? 0) + 1);
@@ -74,7 +74,7 @@ for (const file of files) {
     if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier)) continue;
     const specifier = statement.moduleSpecifier.text;
     if (/\\.css(?:\\?.*)?$/i.test(specifier) && specifier !== "@empire/ui/ui.css") {
-      nonCanonicalStylesheetImports.push(`${consumer} imports non-canonical stylesheet ${specifier}; import @empire/ui/ui.css only from the root layout`);
+    if (/\.css(?:\?.*)?$/i.test(specifier) && specifier !== "@empire/ui/ui.css") {
     }
     if (!/^@empire\/ui\/ui\.css$/.test(specifier)) continue;
     const imports = stylesheetImports.get(app);
