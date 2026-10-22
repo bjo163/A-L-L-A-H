@@ -46,7 +46,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
   return (
     <>
       <MangaTelemetryHero
-        eyebrow={<>SERVICE STATUS <span className="live-pill" data-state={systemState}>● {snapshot.globalAlertLevel === "unknown" ? "STATUS UNKNOWN" : `ALERT LEVEL ${snapshot.globalAlertLevel.toUpperCase()}`}</span></>}
+        eyebrow={<>SERVICE STATUS <span className="live-pill" data-state={systemState}>{snapshot.globalAlertLevel === "unknown" ? "STATUS UNKNOWN" : `ALERT LEVEL ${snapshot.globalAlertLevel.toUpperCase()}`}</span></>}
         title="System and regional monitoring"
         description="API and database health are checked live. Regional infrastructure, energy, and DNA sensor sources are not connected yet."
         metadata={<><span><Icon name="clock" size={13}/> Updated {new Date(snapshot.timestamp).toLocaleTimeString()}</span><span><Icon name="globe" size={13}/> {snapshot.regions.length} Reference Regions</span><span><Icon name="spark" size={13}/> {totalHeliogrid} Heliogrid Load</span><span><Icon name="command" size={13}/> {snapshot.dnaSensors.length} DNA Mappings</span></>}
@@ -177,7 +177,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
           {visibleSensors.map((sensor) => (
             <MangaEffect as="details" interactive className="knowledge-card" key={sensor.dnaId}>
               <summary>
-                <span className="knowledge-arabic">{sensor.arabic || "◈"}</span>
+                <span className="knowledge-arabic">{sensor.arabic || <Icon name="spark" size={18}/>}</span>
                 <span className="knowledge-title">
                   <strong>{sensor.transliteration}</strong>
                   <small>{sensor.dnaId} · {sensor.capability}</small>

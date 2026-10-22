@@ -7,13 +7,13 @@ export const iconNames = [
   "info", "success", "warning", "error", "pending", "user", "team", "lock", "agent",
   "modules", "knowledge", "evidence", "history", "audit", "approval", "document", "source",
   "copy", "download", "plus", "edit", "sun", "moon", "chevronDown", "chevronLeft",
-  "chevronRight", "arrowLeft", "arrowRight", "arrowUpRight", "arrowDownRight", "check", "activity", "input", "output",
+  "chevronRight", "arrowLeft", "arrowRight", "arrowUpRight", "arrowDownRight", "check", "activity", "input", "output", "chevronUp",
 ] as const;
 
 export type IconName = (typeof iconNames)[number];
 
 export const iconGroups: ReadonlyArray<{ label: string; names: readonly IconName[] }> = [
-  { label: "Navigation", names: ["home", "menu", "close", "externalLink", "chevronDown", "chevronLeft", "chevronRight", "arrowLeft", "arrowRight", "arrowUpRight", "arrowDownRight", "input", "output"] },
+  { label: "Navigation", names: ["home", "menu", "close", "externalLink", "chevronDown", "chevronLeft", "chevronRight", "chevronUp", "arrowLeft", "arrowRight", "arrowUpRight", "arrowDownRight", "input", "output"] },
   { label: "Actions", names: ["search", "filter", "refresh", "settings", "command", "logOut", "copy", "download", "plus", "edit"] },
   { label: "Status", names: ["info", "success", "warning", "error", "pending", "check", "activity"] },
   { label: "Identity & access", names: ["users", "directory", "user", "team", "lock"] },
@@ -61,6 +61,7 @@ const paths: Record<IconName, ReactNode> = {
   sun: <><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.93 4.93l1.42 1.42m11.3 11.3 1.42 1.42M2 12h2m16 0h2M4.93 19.07l1.42-1.42m11.3-11.3 1.42-1.42"/></>,
   moon: <path d="M20.2 15.4A8.5 8.5 0 0 1 8.6 3.8 8.7 8.7 0 1 0 20.2 15.4Z"/>,
   chevronDown: <path d="m6 9 6 6 6-6"/>,
+  chevronUp: <path d="m6 15 6-6 6 6"/>,
   chevronLeft: <path d="m15 18-6-6 6-6"/>,
   chevronRight: <path d="m9 18 6-6-6-6"/>,
   arrowLeft: <><path d="m14 5-7 7 7 7"/><path d="M7 12h14"/></>,
