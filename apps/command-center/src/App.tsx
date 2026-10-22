@@ -9,13 +9,13 @@ import type { ConfirmDialogTone, IconName } from "@empire/ui";
 import { WorldMonitorView } from "./WorldMonitorView";
 import { ResearchCard, type ResearchConfirmationRequest } from "./ResearchCard";
 import { DirectoryView, type DirectoryUser } from "./DirectoryView";
+import { ContinuumView, type ContinuumAgent } from "./ContinuumView";
 
 type Signal = "checking" | "ok" | "degraded" | "unavailable";
 type Module = { id: string; title: string; version: string; state: string; enabled: boolean };
 type Snapshot = { health: Signal; readiness: Signal; modules: Module[]; capabilities: string[]; checkedAt?: string };
 type Page = "overview" | "world" | "continuum" | "directory" | "knowledge" | "audit" | "cab" | "research";
 const pageIcons: Record<Page, IconName> = { overview: "home", world: "globe", continuum: "agent", directory: "users", knowledge: "knowledge", audit: "audit", cab: "approval", research: "evidence" };
-type Agent = { id: string; code: string; term: string; role?: string; slug?: string; tier: string; status: string; metadata?: Record<string, unknown> | null };
 type LexiconEntry = { id: string; code: string; arabic?: string; translit: string; term: string; attribute: string; domain: string; wisdom: string; revelations: string; editorialStatus: string };
 type Chronicle = { id: string; action: string; entity: string; entityId?: string | null; payload?: Record<string, unknown> | null; createdAt: string; user?: { username?: string; displayName?: string } | null };
 type CreateRfc = { title: string; tier: CabRfc["tier"]; riskLevel: CabRfc["riskLevel"]; summary: string; justification: string; executionPlan: string; rollbackPlan: string; targetService: string; scheduledWindowStart: string; scheduledWindowEnd: string };
@@ -58,7 +58,7 @@ export function App() {
   const [selected, setSelected] = useState<CabRfc | null>(null);
   const [runs, setRuns] = useState<ResearchRun[]>([]);
   const [continuum, setContinuum] = useState<Record<string, unknown> | null>(null);
-  const [agents, setAgents] = useState<Agent[]>([]);
+  const [agents, setAgents] = useState<ContinuumAgent[]>([]);
   const [lexicon, setLexicon] = useState<LexiconEntry[]>([]);
   const [chronicles, setChronicles] = useState<Chronicle[]>([]);
   const [directory, setDirectory] = useState<DirectoryUser[]>([]);
@@ -144,7 +144,7 @@ export function App() {
         if (can(session.entity, "continuum:read")) {
           const results = await Promise.allSettled([
             client.request<Record<string, unknown>>(API_PATHS.continuum),
-            client.request<{ agents: Agent[] }>(API_PATHS.continuumAgents),
+            client.request<{ agents: ContinuumAgent[] }>(API_PATHS.continuumAgents),
             client.request<{ lexicons: LexiconEntry[] }>(API_PATHS.continuumAsma),
             client.request<{ data: Chronicle[]; meta: { page: number; total: number; totalPages: number } }>(`${API_PATHS.continuumChronicles}?page=${auditPage}&limit=25`),
           ]);
@@ -325,7 +325,17 @@ export function App() {
       <section className="activity-preview"><div className="section-head"><div><span className="eyebrow">RECENT ACTIVITY</span><h2>Latest events</h2></div><button className="text-button" onClick={()=>setTab("audit")}>Open ledger <Icon name="arrowUpRight" size={12}/></button></div><EventList className="event-list" events={chronicles.slice(0,5).map(event=>({id:event.id,timestamp:new Date(event.createdAt).toLocaleString(),actor:event.user?.displayName??event.user?.username??"System",action:event.action.replaceAll("_"," "),details:event.entityId?`${event.entity} · ${event.entityId}`:event.entity}))} empty={<EmptyState title="No recent events" description="Audit events will appear here as operators use the system."/>}/></section>
       </>}
       {tab==="world"&&(worldLoading&&!worldSnapshot?<LoadingState label="Memuat World Monitor…"/>:worldSnapshot?<WorldMonitorView snapshot={worldSnapshot} search={search} nextRefreshIn={worldNextRefreshIn} refreshError={worldError} onRefresh={()=>void refreshWorld()} notificationPermission={worldNotificationPermission} onEnableNotifications={()=>void enableWorldMonitorNotifications()}/>:worldError?<ErrorState title="World Monitor is unavailable" description={worldError} action={<Button variant="secondary" onClick={()=>void refreshWorld()}>Retry</Button>}/>:<LoadingState label="Connecting to World Monitor…"/>)}
-      {tab==="continuum"&&<><section><MetricGrid density="compact" items={[{label:"Registered agents",value:agents.length},{label:"Active agents",value:agents.filter(agent=>agent.status==="active").length,tone:"success"},{label:"Asma mappings",value:lexicon.length}]}/></section><section><div className="section-head"><div><span className="eyebrow">SERAPH REGISTRY</span><h2>Agent fleet</h2></div><Badge tone="info">Invocation is audit logged</Badge></div><div className="agent-grid">{visibleAgents.map(agent=><Panel manga as="article" key={agent.id} className="agent-card"><div className="agent-head"><span className="agent-symbol"><Icon name="agent" size={18}/></span><Badge tone={agent.status==="active"?"success":"warning"}>{agent.status}</Badge></div><h3>{agent.term}</h3><p className="agent-code">{agent.code} · {agent.tier}</p><p>{agent.role??"Continuum agent"}</p>{can(entity,"continuum:invoke")&&<form className="invoke-form" onSubmit={event=>{event.preventDefault();void perform(()=>client.request(`${API_PATHS.continuumAgents}/${encodeURIComponent(agent.code)}/invoke`,{method:"POST",body:{directive}}),`${agent.term} invocation recorded.`);}}><TextField aria-label={`Directive for ${agent.term}`} value={directive} onChange={event=>setDirective(event.target.value)} maxLength={500}/><Button disabled={busy||!directive.trim()} type="submit">Invoke agent <Icon name="arrowUpRight" size={12}/></Button></form>}</Panel>)}</div>{visibleAgents.length===0&&<EmptyState title="No agents match" description="Try a different search term."/>}</section><Notice role="note" className="notice-panel"><Icon name="info" size={16}/><p>Agent invocation records an instruction in the local audit ledger. It does not execute external tools or claim a completed task.</p></Notice></>}
+      {tab==="continuum"&&<ContinuumView
+        agentCount={agents.length}
+        activeAgentCount={agents.filter(agent=>agent.status==="active").length}
+        lexiconCount={lexicon.length}
+        agents={visibleAgents}
+        canInvoke={can(entity,"continuum:invoke")}
+        directive={directive}
+        busy={busy}
+        onDirectiveChange={setDirective}
+        onInvoke={agent=>void perform(()=>client.request(`${API_PATHS.continuumAgents}/${encodeURIComponent(agent.code)}/invoke`,{method:"POST",body:{directive}}),`${agent.term} invocation recorded.`)}
+      />}
       {tab==="directory"&&<DirectoryView users={directory} visibleUsers={visibleUsers}/>}
       {tab==="knowledge"&&<><Notice role="note" className="notice-panel"><Icon name="info" size={16}/><p>Entries are project mappings in editorial review. They are not verified theological definitions. Preserve cited sources and editorial status when using them.</p></Notice><section><div className="section-head"><div><span className="eyebrow">SOURCE INDEX</span><h2>Asma mappings <span className="count-chip">{visibleLexicon.length}</span></h2></div><Badge tone="warning">DRAFT REVIEW</Badge></div><div className="knowledge-grid">{visibleLexicon.map(entry=><Disclosure className="knowledge-card" key={entry.id} summary={<><span className="knowledge-symbol" lang={entry.arabic?"ar":undefined} dir={entry.arabic?"rtl":undefined}>{entry.arabic||<Icon name="knowledge" size={20}/>}</span><span className="knowledge-title"><strong>{entry.term}</strong><small dir="ltr">{entry.translit} · {entry.code}</small></span><Badge tone="neutral">{entry.editorialStatus}</Badge></>}><div className="knowledge-detail"><p><strong>Project attribute</strong><br/>{entry.attribute}</p><p><strong>Domain</strong><br/>{entry.domain}</p><p>{entry.wisdom}</p><small>Source note: {entry.revelations}</small></div></Disclosure>)}</div>{visibleLexicon.length===0&&<EmptyState title="No mappings match" description="Try searching by Arabic, transliteration, term, or domain."/>}</section></>}
       {tab==="audit"&&<section><div className="section-head"><div><span className="eyebrow">ILLIYYIN LEDGER</span><h2>Recorded activity</h2></div><Pagination className="audit-controls" page={auditPage} totalPages={auditPage + (chronicles.length>=25 ? 1 : 0)} onPageChange={setAuditPage} previousLabel="Newer audit events" nextLabel="Older audit events" /></div><EventList className="event-list event-list-large" events={visibleChronicles.map(event=>({id:event.id,timestamp:new Date(event.createdAt).toLocaleString(),actor:event.user?.displayName??event.user?.username??"System",action:<><strong>{event.action.replaceAll("_"," ")}</strong> <Badge tone="neutral">{event.entity}</Badge></>,details:event.payload?<pre>{JSON.stringify(event.payload,null,2)}</pre>:event.entityId?event.entityId:undefined}))} empty={<EmptyState title="No matching audit events" description="Events are written as operators take actions."/>} /></section>}
