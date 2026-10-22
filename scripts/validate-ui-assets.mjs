@@ -20,6 +20,7 @@ const inventory = async (entry, pattern, label) => {
 };
 
 await inventory(manifest.vectors.icons, /export const iconNames = \[([\s\S]*?)\] as const/, "icons");
+await inventory(manifest.vectors.domainSymbols, /export const domainSymbolNames = \[([\s\S]*?)\] as const/, "domain symbols");
 await inventory(manifest.vectors.brandConcepts, /export type BrandConcept = ([^;]+);/, "brand concepts");
 
 const iconSource = await read(manifest.vectors.icons.source);
@@ -46,6 +47,15 @@ else if (/\b(?:stroke|strokeWidth|strokeLinecap|strokeLinejoin)\s*[:=]/.test(pat
 if (/\b(?:id|href|xlinkHref|mask|filter)\s*=|<(?:defs|symbol|linearGradient|radialGradient|mask|filter|pattern)\b|url\s*\(/i.test(pathRegistry)) errors.push("icon path registry must remain definition-free so repeated icons cannot collide through IDs, masks, filters, or paint references");
 if (family?.perIconOverrides !== false) errors.push("icon stroke family must explicitly prohibit per-icon stroke overrides");
 if (!family?.name || !manifest.vectors.icons.provenance || !manifest.vectors.icons.licenseStatus) errors.push("icon family requires a name, provenance, and explicit license status");
+const domainSource = await read(manifest.vectors.domainSymbols.source);
+const domainSvg = domainSource.match(/<svg\b([\s\S]*?)>/)?.[1] ?? "";
+const domainPaths = domainSource.match(/const symbolPaths:[\s\S]*?= \{([\s\S]*?)\n\};\n\nexport type DomainSymbolProps/)?.[1] ?? "";
+for (const [name, attribute] of Object.entries(expectedIconRoot)) {
+  if (!domainSvg.includes(attribute)) errors.push(`domain symbols must share ${family?.name ?? "the icon family"}: root SVG ${name} differs from the manifest contract`);
+}
+if (!domainPaths) errors.push("domain symbol path registry could not be inspected for family overrides");
+else if (/\b(?:stroke|strokeWidth|strokeLinecap|strokeLinejoin)\s*[:=]/.test(domainPaths)) errors.push("domain symbols must not override the shared stroke family");
+if (manifest.vectors.domainSymbols.strokeFamily !== family?.name || !manifest.vectors.domainSymbols.provenance) errors.push("domain symbols require the shared icon stroke family and provenance");
 const iconLicense = await read("licenses/ICONS.md");
 if (!iconLicense.includes("created from scratch") || !iconLicense.includes("no third-party") || !iconLicense.includes("does not grant a license")) errors.push("licenses/ICONS.md must document original authorship, third-party exclusion, and current reuse limits");
 
@@ -129,5 +139,5 @@ if (errors.length) {
   console.error(`UI asset manifest validation failed (${errors.length}):\n- ${errors.join("\n- ")}`);
   process.exitCode = 1;
 } else {
-  console.log(`UI asset manifest valid: ${manifest.vectors.icons.names.length} icons, ${manifest.vectors.brandConcepts.names.length} brand concepts, ${manifest.fonts.length} licensed font packages, ${manifest.generatedFiles.length} generated files.`);
+  console.log(`UI asset manifest valid: ${manifest.vectors.icons.names.length} icons, ${manifest.vectors.domainSymbols.names.length} domain symbols, ${manifest.vectors.brandConcepts.names.length} brand concepts, ${manifest.fonts.length} licensed font packages, ${manifest.generatedFiles.length} generated files.`);
 }

@@ -60,8 +60,8 @@ export function PortalHomeFixture() {
         <div className="eol-container">
           <h2>Every system has a <em>role.</em></h2>
           <div className="frontier-grid">
-            <PortalDomainCard id="portal-fixture-arsy" index="01" accent="mint" icon="agent" status="DESIGN" statusTone="info" descriptor="AGENCY & ORCHESTRATION" title="ARSY" summary="Agents, tools, sources, and accountable workflows." action={<a className="card-link" href="#portal-process">Read the fixture</a>}/>
-            <PortalDomainCard id="portal-fixture-ziil" index="02" accent="gold" icon="approval" status="FOUNDATION" statusTone="success" descriptor="RIGHTS & SAFETY" title="ZIIL" summary="People retain authority, privacy, review, and appeal." action={<a className="card-link" href="#portal-process">Read the fixture</a>}/>
+            <PortalDomainCard id="portal-fixture-arsy" index="01" accent="mint" symbol="arsy" status="DESIGN" statusTone="info" descriptor="AGENCY & ORCHESTRATION" title="ARSY" summary="Agents, tools, sources, and accountable workflows." action={<a className="card-link" href="#portal-process">Read the fixture</a>}/>
+            <PortalDomainCard id="portal-fixture-ziil" index="02" accent="gold" symbol="ziil" status="FOUNDATION" statusTone="success" descriptor="RIGHTS & SAFETY" title="ZIIL" summary="People retain authority, privacy, review, and appeal." action={<a className="card-link" href="#portal-process">Read the fixture</a>}/>
           </div>
         </div>
       </section>

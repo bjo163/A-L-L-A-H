@@ -1,5 +1,4 @@
-import type { DomainAccent } from "@empire/ui";
-import type { IconName } from "@empire/ui";
+import type { DomainAccent, DomainSymbolName } from "@empire/ui";
 import type { PortalLanguage } from "./i18n";
 
 type StatusKey = "design" | "research" | "metadata" | "foundation";
@@ -17,7 +16,7 @@ type SystemDefinition = {
   code: string;
   name: string;
   accent: DomainAccent;
-  icon: IconName;
+  symbol: DomainSymbolName;
   status: StatusKey;
   en: LocalizedContent;
   idLocale: LocalizedContent;
@@ -25,7 +24,7 @@ type SystemDefinition = {
 
 const systems: readonly SystemDefinition[] = [
   {
-    id: "arsy", index: "01", code: "SYS 01", name: "ARSY", accent: "mint", icon: "agent", status: "design",
+    id: "arsy", index: "01", code: "SYS 01", name: "ARSY", accent: "mint", symbol: "arsy", status: "design",
     en: {
       descriptor: "Agent Reality System Yard & Orchestration", context: "AGENCY",
       summary: "An agency layer that composes agents, tools, sources, runtime environments, and workflows. AI models are one foundational capability in the system.",
@@ -42,7 +41,7 @@ const systems: readonly SystemDefinition[] = [
     },
   },
   {
-    id: "heliogrid", index: "02", code: "SYS 02", name: "HELIOGRID", accent: "amber", icon: "activity", status: "design",
+    id: "heliogrid", index: "02", code: "SYS 02", name: "HELIOGRID", accent: "amber", symbol: "heliogrid", status: "design",
     en: {
       descriptor: "Power & measurement", context: "ENERGY",
       summary: "An energy system model grounded in real meters, grid power, solar, storage, and safety limits.",
@@ -59,7 +58,7 @@ const systems: readonly SystemDefinition[] = [
     },
   },
   {
-    id: "qrealm", index: "03", code: "SYS 03", name: "Q-REALM", accent: "violet", icon: "spark", status: "research",
+    id: "qrealm", index: "03", code: "SYS 03", name: "Q-REALM", accent: "violet", symbol: "qrealm", status: "research",
     en: {
       descriptor: "Quantum & computing research", context: "COMPUTING",
       summary: "Circuit experiments and optional QPU comparisons against classical methods. The project does not claim to own quantum hardware.",
@@ -76,7 +75,7 @@ const systems: readonly SystemDefinition[] = [
     },
   },
   {
-    id: "forge", index: "04", code: "SYS 04", name: "MATERIAL FORGE", accent: "rose", icon: "modules", status: "design",
+    id: "forge", index: "04", code: "SYS 04", name: "MATERIAL FORGE", accent: "rose", symbol: "forge", status: "design",
     en: {
       descriptor: "Materials discovery", summary: "Licensed data flows, simulation, candidate screening, lab testing, and independent replication.",
       description: "Materials research pipeline: data licensing, DFT/simulation, candidate screening, professional laboratory testing, and independent replication.",
@@ -91,7 +90,7 @@ const systems: readonly SystemDefinition[] = [
     },
   },
   {
-    id: "knowledge", index: "05", code: "SYS 05", name: "UNIVERSAL COSMOS", accent: "blue", icon: "knowledge", status: "metadata",
+    id: "knowledge", index: "05", code: "SYS 05", name: "UNIVERSAL COSMOS", accent: "blue", symbol: "cosmos", status: "metadata",
     en: {
       descriptor: "Knowledge & comparison", summary: "UNILEX and four distinct source families: Qur’an, Torah, Psalms, and canonical Gospel narratives, without automatically equating Islamic references to the Gospel.",
       description: "UNILEX and Qur’an/Torah/Psalms/Gospel source families, plus planned Daoist and Shinto studies with distinct editions, provenance, and interpretations.",
@@ -106,7 +105,7 @@ const systems: readonly SystemDefinition[] = [
     },
   },
   {
-    id: "ziil", index: "06", code: "SYS 06", name: "ZIIL", accent: "gold", icon: "approval", status: "foundation",
+    id: "ziil", index: "06", code: "SYS 06", name: "ZIIL", accent: "gold", symbol: "ziil", status: "foundation",
     en: {
       descriptor: "Rights, review & safety", context: "GOVERNANCE", summary: "Keeps consent, privacy, risk assessment, appeal, audit, and action control with people.",
       description: "Human governance, consent, risk assessment, privacy, appeals, and bounded AI actions. Software does not confer religious or divine authority.",

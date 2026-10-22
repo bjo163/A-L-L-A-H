@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState, type FormEvent } from "react"
 import { createRoot } from "react-dom/client";
 import { BrandConcepts } from "../src/brand/BrandConcepts";
 import { OperationalCategoryFixtures, PortalHomeFixture } from "./PageFixtures";
-import { ActionGroup, ActionLink, ActionPanel, ArchitectureLayers, AuthLayout, Badge, BrandLockup, Button, buttonClassName, CallToAction, Card, Checkbox, ConfirmDialog, Container, DataTable, DecisionSummary, Disclosure, EmptyState, EntityCard, ErrorState, EventList, Field, FieldError, FieldLabel, FilterBar, FormSection, Grid, Heading, HelpText, Icon, IconButton, IconText, iconDisplaySizes, iconGroups, IdentityCardGroup, Inline, LiveRegion, Metadata, NavGroup, NavItem, LoadingState, ListDetail, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MangaTelemetryHero, MetricGrid, ModuleGrid, Notice, PageCrosslinks, Panel, Pagination, PortalDomainCard, ReadinessBoard, ReadinessList, RegionSummary, RepositoryOverview, ResourceState, ReviewActions, ResponsiveTabs, RoadmapPreview, RoadmapTimeline, Section, SectionHeading, SelectField, Skeleton, Stack, StatusIndicator, SystemAtlas, SystemDetailPanel, Tabs, TextArea, Text, TextField, ThemeControl, Timeline, WorkflowSteps } from "../src";
+import { ActionGroup, ActionLink, ActionPanel, ArchitectureLayers, AuthLayout, Badge, BrandLockup, Button, buttonClassName, CallToAction, Card, Checkbox, ConfirmDialog, Container, DataTable, DecisionSummary, Disclosure, DomainSymbol, domainSymbolNames, EmptyState, EntityCard, ErrorState, EventList, Field, FieldError, FieldLabel, FilterBar, FormSection, Grid, Heading, HelpText, Icon, IconButton, IconText, iconDisplaySizes, iconGroups, IdentityCardGroup, Inline, LiveRegion, Metadata, NavGroup, NavItem, LoadingState, ListDetail, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MangaTelemetryHero, MetricGrid, ModuleGrid, Notice, PageCrosslinks, Panel, Pagination, PortalDomainCard, ReadinessBoard, ReadinessList, RegionSummary, RepositoryOverview, ResourceState, ReviewActions, ResponsiveTabs, RoadmapPreview, RoadmapTimeline, Section, SectionHeading, SelectField, Skeleton, Stack, StatusIndicator, SystemAtlas, SystemDetailPanel, Tabs, TextArea, Text, TextField, ThemeControl, Timeline, WorkflowSteps } from "../src";
 import "../src/portal.css";
 import "./catalog.css";
 
@@ -160,6 +160,14 @@ function Catalog() {
           <span dir="rtl">RTL <Icon name="arrowLeft"/> <Icon name="arrowUpRight"/> <Icon name="input"/></span>
         </div>
         <div className="icon-gallery__usage"><span><Icon name="search" size={16}/>Search current view</span><IconText icon="arrowUpRight">Open related details</IconText><button type="button" aria-label="Close preview"><Icon name="close" size={16}/></button><small>Visible label for actions · explicit accessible name for icon-only controls</small></div>
+      </section>
+
+      <section className="catalog-section" aria-labelledby="domain-symbol-heading">
+        <div className="catalog-section-heading">
+          <div><p className="catalog-eyebrow">DOMAIN VECTOR FAMILY</p><h2 id="domain-symbol-heading">Six domains, one stroke system</h2></div>
+          <p>Package-owned, decorative 24px SVG symbols share the icon family. The domain name and visible label carry meaning; symbols never replace the title.</p>
+        </div>
+        <div className="domain-symbol-gallery">{domainSymbolNames.map((name) => <div className="domain-symbol-gallery__item" key={name}><DomainSymbol name={name} size={32}/><code>{name}</code></div>)}</div>
       </section>
 
       <section className="manga-showcase" aria-label="Manga visual effects preview">
@@ -564,7 +572,7 @@ function Catalog() {
         <Card className="catalog-card"><NavGroup label="Navigation fixture"><NavItem current icon={<Icon name="home" size={16}/>}>Current view</NavItem><NavItem disabled icon={<Icon name="lock" size={16}/>}>Unavailable view</NavItem></NavGroup><Field label="Composed field" hint="Native control remains app-controlled" control={<TextField defaultValue="Fixture value" />} /><Checkbox label="Fixture checkbox" defaultChecked /><LiveRegion>Catalog actions are local-only.</LiveRegion></Card>
         <AuthLayout brandName="A-L-L-A-H" brandDescriptor="CATALOG FIXTURE" title="Auth layout preview" description="Static composition only." className="catalog-auth-preview"><Button variant="secondary">Continue</Button></AuthLayout>
         <IdentityCardGroup items={[{ id: "fixture-hub", featured: true, label: "FIXTURE HUB", title: "A-L-L-A-H", description: "Static identity card sample." }, { id: "fixture-operator", label: "OPERATOR SPACE", title: "100CENTER", description: "A supporting identity card." }]} />
-        <div className="frontier-grid"><PortalDomainCard id="fixture-knowledge" index="05" accent="blue" icon="knowledge" status="METADATA" statusTone="info" descriptor="KNOWLEDGE & SOURCES" title="UNIVERSAL COSMOS" summary="Fabricated catalog summary for the domain-card presentation." action={<a className="card-link" href="#exports-heading">Open fixture details</a>} /></div>
+        <div className="frontier-grid"><PortalDomainCard id="fixture-knowledge" index="05" accent="blue" symbol="cosmos" status="METADATA" statusTone="info" descriptor="KNOWLEDGE & SOURCES" title="UNIVERSAL COSMOS" summary="Fabricated catalog summary for the domain-card presentation." action={<a className="card-link" href="#exports-heading">Open fixture details</a>} /></div>
         <WorkflowSteps label="Fabricated process sample" items={[{ id: "fixture-source", number: "01", title: "Source", description: "Record provenance." }, { id: "fixture-review", number: "02", title: "Review", description: "People inspect evidence." }]} />
         <ArchitectureLayers items={[{ id: "fixture-layer-1", code: "P01", title: "HUMANS & MISSION", description: "Accountable decisions.", href: "#exports-heading" }, { id: "fixture-layer-2", code: "P02", title: "ARSY", description: "Tools and workflows.", href: "#exports-heading" }]} orchestrationLabel="ORCHESTRATION" summary="Two fabricated layers connected by evidence and review." action={<a href="#exports-heading">Explore fixture layers</a>} />
         <ResponsiveTabs label="Fabricated system explorer" defaultValue="fixture-arsy" orientationBreakpoint={800} containerClassName="explorer" className="explorer-tabs" listClassName="explorer-menu" tabClassName="explorer-tab" selectedTabClassName="is-active" panelClassName="explorer-tab-panel" items={[

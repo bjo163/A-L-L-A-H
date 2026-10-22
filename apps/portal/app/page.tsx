@@ -82,7 +82,7 @@ export default async function Home() {
         id={s.id}
         index={s.index}
         accent={s.accent}
-        icon={s.icon}
+        symbol={s.symbol}
         status={s.statusLabel}
         statusTone={s.statusTone}
         descriptor={s.descriptor}

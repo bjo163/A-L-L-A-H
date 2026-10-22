@@ -73,6 +73,14 @@
         "chevronUp"
       ]
     },
+    "domainSymbols": {
+      "source": "src/patterns/DomainSymbol.tsx",
+      "inventoryExport": "domainSymbolNames",
+      "names": ["arsy", "heliogrid", "qrealm", "forge", "cosmos", "ziil"],
+      "provenance": "Original repository-authored line symbols using the Empire Line v1 geometry rules.",
+      "strokeFamily": "Empire Line v1",
+      "status": "Shared vector candidates; verify domain-owner interpretation and visual legibility."
+    },
     "brandConcepts": {
       "source": "src/brand/BrandConcepts.tsx",
       "inventoryType": "BrandConcept",

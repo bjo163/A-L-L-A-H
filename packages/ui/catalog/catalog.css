@@ -63,6 +63,9 @@ body { margin: 0; min-width: 0; }
 .icon-gallery-group h3 { margin: 0; color: var(--eol-color-text-subtle); font-size: var(--eol-font-size-lg); }
 .icon-gallery__item { display: flex; min-height: 60px; align-items: center; gap: 8px; padding: 9px 11px; border: 1px solid var(--eol-color-border); background: var(--eol-color-surface); color: var(--eol-color-text); }
 .icon-gallery__samples { display: flex; flex: 1; align-items: center; justify-content: space-between; gap: 4px; min-width: 0; }
+.domain-symbol-gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(112px, 1fr)); gap: 10px; }
+.domain-symbol-gallery__item { display: grid; min-height: 92px; place-items: center; gap: 8px; padding: 12px; border: 1px solid var(--eol-color-border); background: var(--eol-color-surface); color: var(--eol-color-accent-strong); }
+.domain-symbol-gallery__item code { color: var(--eol-color-text-muted); font: var(--eol-font-size-2xs) var(--eol-font-mono); text-transform: uppercase; }
 .icon-gallery__item .eol-icon { color: var(--eol-color-accent); }
 .icon-gallery__item .icon-gallery__muted { flex: none; color: var(--eol-color-text-muted); }
 .icon-gallery__item code { color: var(--eol-color-text-muted); font-size: .68rem; }
