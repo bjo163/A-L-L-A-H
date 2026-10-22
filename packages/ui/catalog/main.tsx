@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { BrandConcepts } from "../src/brand/BrandConcepts";
-import { Badge, BrandLockup, Button, buttonClassName, ConfirmDialog, Container, DataTable, DecisionSummary, Disclosure, EmptyState, EntityCard, ErrorState, EventList, FieldError, FieldLabel, FilterBar, FormSection, HelpText, Icon, IconText, iconGroups, ListDetail, LoadingState, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MangaTelemetryHero, MetricGrid, Notice, Panel, Pagination, ReadinessList, RegionSummary, ResourceState, ReviewActions, SectionHeading, SelectField, Skeleton, StatusIndicator, Switch, Tabs, TextArea, TextField, Timeline } from "../src";
+import { ActionGroup, ActionLink, AuthLayout, Badge, BrandLockup, Button, buttonClassName, Card, Checkbox, ConfirmDialog, Container, DataTable, DecisionSummary, Disclosure, EmptyState, EntityCard, ErrorState, EventList, Field, FieldError, FieldLabel, FilterBar, FormSection, Grid, Heading, HelpText, Icon, IconButton, IconText, iconGroups, Inline, LiveRegion, Metadata, NavGroup, NavItem, LoadingState, ListDetail, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MangaTelemetryHero, MetricGrid, Notice, Panel, Pagination, ReadinessList, RegionSummary, ResourceState, ReviewActions, SectionHeading, SelectField, Skeleton, Stack, StatusIndicator, Switch, Tabs, TextArea, Text, TextField, Timeline } from "../src";
 import "../src/ui.css";
 import "./catalog.css";
 
@@ -458,6 +458,13 @@ function Catalog() {
           <FormSection title="Review fixture" description="A complete form section keeps context before actions."><ReviewActions><Button>Approve fixture</Button><Button variant="secondary">Request changes</Button></ReviewActions></FormSection>
           <DecisionSummary title="Decision summary" decision="Pending review" rationale="The final decision remains app-owned and explicit." />
         </Panel>
+      </section>
+
+      <section className="catalog-section" aria-labelledby="exports-heading">
+        <div className="catalog-section-heading"><div><p className="catalog-eyebrow">PUBLIC EXPORT SMOKE</p><h2 id="exports-heading">Composition contract examples</h2></div><p>Small local fixtures keep public exports discoverable and prevent API drift.</p></div>
+        <Card className="catalog-card"><Stack gap="2"><Heading as="h3">Typography and layout</Heading><Text>Shared text keeps semantic copy readable while layout primitives preserve spacing ownership.</Text><Metadata>Fixture metadata · no API request</Metadata><Grid minItemWidth="sm"><Inline gap="2"><Badge tone="info">Grid</Badge><Badge tone="success">Inline</Badge></Inline><ActionGroup><ActionLink href="#exports-heading">Action link</ActionLink><IconButton aria-label="Preview icon action"><Icon name="search" size={16}/></IconButton></ActionGroup></Grid></Stack></Card>
+        <Card className="catalog-card"><NavGroup label="Navigation fixture"><NavItem current icon={<Icon name="home" size={16}/>}>Current view</NavItem><NavItem disabled icon={<Icon name="lock" size={16}/>}>Unavailable view</NavItem></NavGroup><Field label="Composed field" hint="Native control remains app-controlled" control={<TextField defaultValue="Fixture value" />} /><Checkbox label="Fixture checkbox" defaultChecked /><LiveRegion>Catalog actions are local-only.</LiveRegion></Card>
+        <AuthLayout brandName="A-L-L-A-H" brandDescriptor="CATALOG FIXTURE" title="Auth layout preview" description="Static composition only." className="catalog-auth-preview"><Button variant="secondary">Continue</Button></AuthLayout>
       </section>
 
       <footer className="catalog-footer">

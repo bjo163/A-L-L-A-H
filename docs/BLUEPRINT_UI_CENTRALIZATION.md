@@ -511,7 +511,7 @@ Owner: UI maintainer. Dependensi: berjalan bersama C02–C14. Gate: package dapa
 - [x] **UI-C15-01** — Buat halaman foundations, tokens, theme dan density.
 - [x] **UI-C15-02** — Buat galeri logo/lockup/favicons dan aturan brand.
 - [x] **UI-C15-03** — Buat icon gallery dengan nama, usage dan ukuran optik.
-- [ ] **UI-C15-04** — Beri setiap public export contoh, state dan consumer reference.
+- [x] **UI-C15-04** — Beri setiap public export contoh, state dan consumer reference.
 - [x] **UI-C15-05** — Tambahkan fixture TelemetryHero, shell, table, ListDetail dan map presentation.
 - [ ] **UI-C15-06** — Tambahkan fixture halaman Portal dan semua kategori view operasi.
 - [ ] **UI-C15-07** — Tambahkan kontrol theme/density/language/viewport untuk reproduksi review.
@@ -720,6 +720,7 @@ Status penerimaan + tanggal:
 | UI-C15-10 | Catalog fixtures memakai copy dan object lokal statis; tidak ada API request, credential, tenant record, atau production data path. | README catalog contract dan source audit terverifikasi. |
 | UI-C15-11 | README memuat export map, component contract, navigation adapters, stylesheet order, token layers, theme/font delivery, consumer map, and asset guidance. | Source audit `packages/ui/README.md`. |
 | UI-C15-05 | Catalog composition and data sections exercise `MangaTelemetryHero`, catalog shell/container, `DataTable`, `ListDetail`, and `MapFrame`/`MapLegend`/`RegionSummary` fixtures using static local data. | `pnpm --filter @empire/ui typecheck` lulus pada fixture slice; map runtime remains mocked and no server is required. |
+| UI-C15-04 | Catalog now includes a public-export smoke section for typography/layout, action links, icon buttons, navigation, fields, checkbox, live region, and auth layout, in addition to existing state and consumer fixtures. | `pnpm --filter @empire/ui typecheck` lulus after the smoke fixture; consumer references are documented in the README map and application source. |
 | UI-C15-08 | README now provides page intro, operational list, review workflow, and map composition recipes plus explicit anti-patterns for local CSS/token/interaction duplication. | Source audit `packages/ui/README.md`. |
 | UI-C15-09 | README records current API maturity: shared primitives/patterns stable, brand/manga compositions experimental pending visual/provenance review, and no deprecated exports. | Source audit `packages/ui/README.md`. |
 | UI-C16-01 | Production verification completed for `@empire/ui` typecheck/build, Portal Next build, Command Center Vite build, and UI catalog Vite build. The Command Center build reports a non-failing large-chunk warning; no runtime server was started. | `pnpm --filter @empire/ui build`, `pnpm --filter @empire/portal build`, `pnpm --filter @empire/command-center build`, and `pnpm --filter @empire/ui catalog:build` all exited successfully on 2026-10-22. |
