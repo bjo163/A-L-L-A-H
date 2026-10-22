@@ -46,7 +46,6 @@ body { margin: 0; min-width: 0; }
 .brand-concept__previews { display: grid; gap: 10px; margin-top: 18px; }
 .brand-concept__lockup { width: 100%; padding: 10px; border: 1px solid var(--eol-color-border); background: var(--eol-color-background); }
 .brand-concept__lockup--compact { background: var(--eol-color-surface-raised); }
-.brand-concept__lockup--stacked { align-items: flex-start; }
 .brand-concept__favicon small { color: var(--eol-color-text-muted); font: .55rem var(--eol-font-mono); letter-spacing: .08em; }
 .brand-concept__favicon { display: flex; align-items: center; gap: 8px; }
 .brand-concept__favicon svg { width: 32px; height: 32px; color: var(--eol-color-accent); }
