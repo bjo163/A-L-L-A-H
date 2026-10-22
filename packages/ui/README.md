@@ -18,6 +18,10 @@ The package defines `comfortable` and `compact` density through inherited `data-
 
 Run `pnpm audit:ui-css` to find repeated identical property declarations within the same selector and grouping context. The current audit passes across all 15 package stylesheets. A clean result only rules out identical declarations in matching cascade contexts; declarations with different values and rendered computed styles still need review.
 
+### CSS ownership and selector scope
+
+`tokens.css`, `themes.css`, and shared `styles.css` own the package token roots, cross-product reset, and native element baseline. Portal product selectors stay beneath `:where(.eol-public-shell)`; Command Center selectors stay beneath `:where(.eol-workspace-shell)` or `:where(.eol-auth-layout)`. The optional MapLibre adapter scopes vendor controls and popup styling beneath `:where(.eol-map-frame)`. The zero-specificity `:where()` roots keep those boundaries from changing selector priority. Portal has three deliberate document-navigation rules: two `html { scroll-behavior }` declarations (normal and reduced motion) and `:root { scroll-padding-top }`; its layout anchor-offset variables live on the Portal shell. `pnpm audit:ui-boundary` checks consumer stylesheet imports and class hooks, then audits all product and adapter selectors against these roots.
+
 `pnpm validate:ui-assets` checks the asset manifest against the inline SVG icon and brand inventories, font package versions and stylesheet imports, and the included font license texts. It scans `assets/generated/` and verifies the SHA-256 digest of each manifest entry, detecting unlisted, missing, and modified generated files. Seven generated SVG brand/icon outputs are checked in and hashed. The current brand concepts are exploratory and Orbit remains provisional.
 
 ## Current exports

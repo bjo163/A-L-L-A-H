@@ -1,4 +1,5 @@
 import { existsSync, readdirSync, readFileSync, statSync } from "node:fs";
+import { execFileSync } from "node:child_process";
 import { join, relative } from "node:path";
 import ts from "typescript";
 
@@ -185,3 +186,4 @@ for (const [key, entry] of allowedHooks) {
 
 if (hookErrors.length) throw new Error(`UI class/style contract failed:\n- ${hookErrors.join("\n- ")}`);
 console.log(`UI boundary valid: ${files.length} consumer source files; no inline style props; ${observedHooks.size} UI class hooks are package-owned and allowlisted.`);
+execFileSync(process.execPath, [join(root, "scripts/audit-ui-product-scope.mjs")], { stdio: "inherit" });
