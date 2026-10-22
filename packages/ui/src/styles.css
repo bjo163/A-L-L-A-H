@@ -486,3 +486,4 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   .eol-skeleton { background: Canvas; border: 1px solid CanvasText; }
   .eol-dialog::backdrop { background: Canvas; opacity: 0.8; }
 }
+.eol-manga-panel :focus-visible { outline-offset: calc(0px - var(--eol-focus-width)); }

@@ -3,6 +3,7 @@ import { createRoot } from "react-dom/client";
 import { BrandConcepts, BrandOpticalSizePreviews, BrandVariantPreviews } from "./BrandConceptGallery";
 import { OperationalCategoryFixtures, PortalHomeFixture } from "./PageFixtures";
 import { IllustrationFrameGallery } from "./IllustrationFrameGallery";
+import { MangaEffectReview } from "./MangaEffectReview";
 import { ActionGroup, ActionLink, ActionPanel, ArchitectureLayers, AuthLayout, Badge, BrandLockup, Button, buttonClassName, CallToAction, Card, Checkbox, ConfirmDialog, Container, DataTable, DecisionSummary, Disclosure, DonutChart, DomainSymbol, domainSymbolNames, EmptyState, EntityCard, ErrorState, EventList, Field, FieldError, FieldLabel, FilterBar, FormSection, Grid, Heading, HelpText, Icon, IconButton, IconText, iconDisplaySizes, iconGroups, IdentityCardGroup, Inline, LiveRegion, Metadata, NavGroup, NavItem, LoadingState, ListDetail, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MangaTelemetryHero, MetricGrid, ModuleGrid, Notice, PageCrosslinks, Panel, Pagination, PortalDomainCard, ReadinessBoard, ReadinessList, RegionSummary, RepositoryOverview, ResourceState, ReviewActions, ResponsiveTabs, RoadmapPreview, RoadmapTimeline, Section, SectionHeading, SelectField, Skeleton, Stack, StatusIndicator, SystemAtlas, SystemDetailPanel, Tabs, TextArea, Text, TextField, ThemeControl, Timeline, WorkflowSteps, ArrowUpRightIcon, ArrowLeftIcon, ArrowRightIcon, SearchIcon, CloseIcon, SunIcon, MoonIcon, HomeIcon, LockIcon } from "../src";
 import "../src/portal.css";
 import "../src/command-center.css";
@@ -193,6 +194,8 @@ function Catalog() {
           <span className="manga-panel__caption">MOTION WITH A PURPOSE</span>
         </MangaEffect>
       </section>
+
+      <MangaEffectReview />
 
       <section className="catalog-section" aria-labelledby="buttons-heading">
         <div className="catalog-section-heading">

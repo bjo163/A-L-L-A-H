@@ -94,6 +94,14 @@ body { margin: 0; min-width: 0; }
 .icon-gallery__usage > span { display: inline-flex; align-items: center; gap: 8px; color: var(--eol-color-text); }
 .icon-gallery__usage > button { display: grid; width: 36px; height: 36px; place-items: center; border: 1px solid var(--eol-color-border-strong); background: var(--eol-color-surface); color: var(--eol-color-text); }
 .icon-gallery__usage > small { flex: 1 1 240px; }
+.manga-effect-review-grid { display: grid; grid-template-columns: minmax(0, .8fr) minmax(0, 1.2fr); gap: 16px; }
+.manga-effect-review-panel { min-width: 0; padding: 16px; }
+.manga-effect-review-panel--edge { display: flex; align-items: flex-start; padding: 0; }
+.manga-effect-review-panel--copy { overflow-wrap: anywhere; }
+.manga-effect-review-panel--copy h3 { margin: 0 0 8px; font-size: var(--eol-font-size-heading-3); }
+.manga-effect-review-panel--copy p { color: var(--eol-color-text-muted); line-height: var(--eol-line-height-relaxed); }
+.manga-effect-review-panel--copy code { overflow-wrap: anywhere; }
+@media (max-width: 640px) { .manga-effect-review-grid { grid-template-columns: minmax(0, 1fr); } }
 .brand-concept__screen--dialog > strong { font-size: .85rem; }
 .brand-concept__screen--dialog > span:not(.catalog-eyebrow) { color: var(--eol-color-text-muted); font-size: .62rem; line-height: 1.5; }
 .brand-concept__screen--dialog > div:last-child { display: flex; justify-content: flex-end; gap: 6px; }
