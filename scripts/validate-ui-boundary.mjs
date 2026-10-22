@@ -73,8 +73,8 @@ for (const file of files) {
   for (const statement of sourceFile.statements) {
     if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier)) continue;
     const specifier = statement.moduleSpecifier.text;
-    if (/\\.css(?:\\?.*)?$/i.test(specifier) && specifier !== "@empire/ui/ui.css") {
     if (/\.css(?:\?.*)?$/i.test(specifier) && specifier !== "@empire/ui/ui.css") {
+      nonCanonicalStylesheetImports.push(`${consumer} imports non-canonical stylesheet ${specifier}; import @empire/ui/ui.css only from the root layout`);
     }
     if (!/^@empire\/ui\/ui\.css$/.test(specifier)) continue;
     const imports = stylesheetImports.get(app);
