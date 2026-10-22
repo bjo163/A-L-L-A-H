@@ -475,7 +475,7 @@ Owner: Command Center maintainer. Dependensi: C02–C11. Gate: delapan view, aut
 - [x] **UI-C13-09** — Migrasikan Directory table dan resource states.
 - [x] **UI-C13-10** — Migrasikan Knowledge disclosure, Arabic content dan source metadata.
 - [x] **UI-C13-11** — Migrasikan Audit list, payload details dan pagination.
-- [ ] **UI-C13-12** — Migrasikan CAB list/detail, create form, decision actions dan dialog.
+- [x] **UI-C13-12** — Migrasikan CAB list/detail, create form, decision actions dan dialog.
 - [x] **UI-C13-13** — Migrasikan Research list, creation, evidence dan review actions.
 - [x] **UI-C13-14** — Tampilkan validasi provenance JSON yang dapat dipulihkan tanpa kehilangan isi form.
 - [x] **UI-C13-15** — Selaraskan bahasa UI dan atribut `lang`; jangan hardcode bahasa dokumen yang salah.
@@ -714,6 +714,7 @@ Status penerimaan + tanggal:
 | UI-C13-11 | Audit view memakai shared `EventList` untuk actor/action/timestamp dan details disclosure, serta controlled `Pagination` dengan availability berbasis page size API; payload JSON tetap ditampilkan sebagai detail yang dapat dibuka. | `pnpm --filter @empire/ui typecheck` dan `pnpm --filter @empire/command-center typecheck` lulus setelah migrasi. |
 | UI-C13-15 | Portal menetapkan `html lang` dari cookie `PortalLanguage` (`id`/`en`) dan seluruh route/loading memakai bahasa yang sama. Command Center entry document secara eksplisit menetapkan `lang="en"`, sesuai copy utama workspace; tidak ada runtime language switch yang mengklaim bahasa lain. | Source audit pada `apps/portal/app/layout.tsx`, `apps/portal/lib/i18n.ts`, dan `apps/command-center/index.html`; Portal dan Command Center typecheck lulus sebelumnya. |
 | UI-C13-14 | Research evidence form memvalidasi provenance sebagai JSON object sebelum request, menampilkan shared `Notice` saat invalid, dan mempertahankan seluruh controlled field state agar pengguna dapat memperbaiki isi tanpa kehilangan data. | `pnpm --filter @empire/command-center typecheck` lulus setelah validasi dipulihkan pada `ResearchCard`. |
+| UI-C13-12 | CAB create form now composes shared `FormSection`; selected detail exposes shared `DecisionSummary`; decision/execute/rollback actions use shared `ReviewActions` and all consequential transitions use shared `ConfirmDialog`. RFC list, selected state, permissions, and server transitions remain app-owned. | `pnpm --filter @empire/command-center typecheck` lulus after migration. |
 | UI-C15-01 | Catalog menampilkan semantic token swatches, theme preview dark/light, typography and component foundations; density contract explicitly documents compact behavior. | Source audit `packages/ui/catalog/main.tsx` dan `packages/ui/README.md`; typecheck UI sebelumnya lulus. |
 | UI-C15-02 | Catalog menampilkan tiga vector brand concepts dan regular/compact `BrandLockup`, sementara README mendokumentasikan provisional mark, accessible-name contract, dan remaining brand review. | Source audit `packages/ui/catalog/main.tsx`, `src/brand/BrandConcepts.tsx`, dan README. |
 | UI-C15-03 | Catalog icon gallery merender seluruh registered icon groups pada 16/20/24/32px, muted/accent usage, accessible pairing, serta RTL directional example. | Source audit `packages/ui/catalog/main.tsx` dan `src/primitives/Icon.tsx`. |
