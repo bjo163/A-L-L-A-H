@@ -87,6 +87,7 @@ The centralization blueprint tracks the remaining migration and acceptance work.
 - **Identity band:** use `IdentityCardGroup` for one featured identity plus supporting cards; supply labels, descriptions, and route actions from the product layer.
 - **Portal domain cards:** use `PortalDomainCard` with a typed accent, vector icon, visible maturity badge, and app-provided action. Keep maturity-to-tone mapping and domain content at the consumer boundary.
 - **Workflow/architecture:** use `WorkflowSteps` for ordered process cards and `ArchitectureLayers` for linked layer rows plus the orbit summary. Supply route-aware links through the renderer callback and keep layer labels, descriptions, and destination policy in the app.
+- **System explorer:** use `ResponsiveTabs` for package-owned selection and breakpoint-aware keyboard orientation; render each content pane with `SystemDetailPanel`. Keep system data, translated copy, and status-tone mapping in the consumer.
 - **Operational list:** `FilterBar` → `DataTable`/`EventList`/`ListDetail` → `Pagination` → explicit `EmptyState` or `ErrorState`. Do not rebuild table headers, disclosure, or pagination semantics in product CSS.
 - **Review workflow:** `FormSection` → shared native fields → `ReviewActions` → `ConfirmDialog` for consequential actions. Keep server authorization and workflow transitions in the app.
 - **Map surface:** `MapFrame` → vendor map runtime owned by the app → `MapLegend`/`RegionSummary`; load the MapLibre adapter only in the Command Center product entry.

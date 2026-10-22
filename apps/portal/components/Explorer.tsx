@@ -1,8 +1,5 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import { Badge, Icon, MangaEffect, Tabs } from "@empire/ui";
-import type { TabItem, TabsOrientation } from "@empire/ui";
+import { Icon, ResponsiveTabs, SystemDetailPanel } from "@empire/ui";
+import type { TabItem } from "@empire/ui";
 import type { PortalLanguage } from "../lib/i18n";
 
 const itemsFor = (language: PortalLanguage) => {
@@ -20,65 +17,38 @@ return [
 type SystemItem = ReturnType<typeof itemsFor>[number];
 type SystemId = SystemItem["id"];
 
-function SystemPanel({ item, language }: { item: SystemItem; language: PortalLanguage }) {
-  return (
-    <MangaEffect panel className="explorer-detail" data-system={item.id}>
-      <div className="explorer-detail-top">
-        <span className="panel-label">{item.kind}</span>
-        <Badge className="stage-pill" tone={item.stage === "RISET" || item.stage === "RESEARCH" ? "warning" : item.stage === "FONDASI" || item.stage === "FOUNDATION" ? "success" : "info"}>
-          {item.stage}
-        </Badge>
-      </div>
-      <div className="explorer-visual" aria-hidden="true">
-        <span className="explore-ring explore-ring-1" />
-        <span className="explore-ring explore-ring-2" />
-        <span className="explore-ring explore-ring-3" />
-        <span className="explore-core">{item.code}</span>
-      </div>
-      <h3>{item.name}</h3>
-      <p className="explorer-description">{item.description}</p>
-      <div className="explorer-io">
-        <div><span className="panel-label">{language === "en" ? "INPUTS" : "MASUKAN"}</span>{item.inputs.map((input) => <p key={input}><Icon name="input" size={14}/> {input}</p>)}</div>
-        <div><span className="panel-label">{language === "en" ? "EXPECTED OUTPUTS" : "HASIL YANG DIHARAPKAN"}</span>{item.outputs.map((output) => <p key={output}><Icon name="output" size={14}/> {output}</p>)}</div>
-      </div>
-      <p className="explorer-note">{language === "en" ? "Architecture preview. Status reflects repository planning, not a live physical device." : "Pratinjau arsitektur. Status menggambarkan perencanaan repositori, bukan perangkat fisik aktif (not a live physical device)."}</p>
-    </MangaEffect>
-  );
-}
-
 export function Explorer({ language }: { language: PortalLanguage }) {
   const items = itemsFor(language);
-  const [active, setActive] = useState<SystemId>("arsy");
-  const [orientation, setOrientation] = useState<TabsOrientation>("vertical");
-
-  useEffect(() => {
-    const media = window.matchMedia("(max-width: 800px)");
-    const updateOrientation = () => setOrientation(media.matches ? "horizontal" : "vertical");
-    updateOrientation();
-    media.addEventListener("change", updateOrientation);
-    return () => media.removeEventListener("change", updateOrientation);
-  }, []);
 
   const tabs: readonly TabItem<SystemId>[] = items.map((item) => ({
     value: item.id,
     label: <><span>{item.code}</span><strong>{item.name}</strong><Icon name="arrowUpRight" size={14}/></>,
-    content: <SystemPanel item={item} language={language} />,
+    content: <SystemDetailPanel
+      systemId={item.id}
+      category={item.kind}
+      status={item.stage}
+      statusTone={item.stage === "RISET" || item.stage === "RESEARCH" ? "warning" : item.stage === "FONDASI" || item.stage === "FOUNDATION" ? "success" : "info"}
+      code={item.code}
+      name={item.name}
+      description={item.description}
+      inputsLabel={language === "en" ? "INPUTS" : "MASUKAN"}
+      inputs={item.inputs}
+      outputsLabel={language === "en" ? "EXPECTED OUTPUTS" : "HASIL YANG DIHARAPKAN"}
+      outputs={item.outputs}
+      note={language === "en" ? "Architecture preview. Status reflects repository planning, not a live physical device." : "Pratinjau arsitektur. Status menggambarkan perencanaan repositori, bukan perangkat fisik aktif (not a live physical device)."}
+    />,
   }));
 
-  return (
-    <MangaEffect panel className="explorer">
-      <Tabs
-        items={tabs}
-        value={active}
-        onValueChange={setActive}
+  return <ResponsiveTabs
+    items={tabs}
+    defaultValue="arsy"
     label={language === "en" ? "System explorer" : "Penjelajah sistem"}
-        orientation={orientation}
-        className="explorer-tabs"
-        listClassName="explorer-menu"
-        tabClassName="explorer-tab"
-        selectedTabClassName="is-active"
-        panelClassName="explorer-tab-panel"
-      />
-    </MangaEffect>
-  );
+    orientationBreakpoint={800}
+    containerClassName="explorer"
+    className="explorer-tabs"
+    listClassName="explorer-menu"
+    tabClassName="explorer-tab"
+    selectedTabClassName="is-active"
+    panelClassName="explorer-tab-panel"
+  />;
 }
