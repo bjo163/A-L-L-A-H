@@ -101,6 +101,15 @@ body { margin: 0; min-width: 0; }
 .catalog-notices { display: grid; gap: 10px; }
 .catalog-notices .eol-notice { margin: 0; }
 .catalog-panels { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.catalog-operations-fixtures { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+.catalog-view-fixture { display: grid; align-content: start; gap: 14px; min-width: 0; padding: 16px; }
+.catalog-view-fixture > h3 { margin: 0; color: var(--eol-color-accent-strong); font: 700 .72rem/1.5 var(--eol-font-mono); letter-spacing: .07em; text-transform: uppercase; }
+.catalog-view-fixture .eol-event-list,.catalog-view-fixture .eol-timeline,.catalog-view-fixture .eol-readiness-list { min-width: 0; }
+.catalog-page-fixture-wrap { overflow: hidden; padding: 16px; }
+.catalog-page-fixture-wrap > .catalog-section-heading h3 { margin: 4px 0; }
+.catalog-page-fixture .site-header { max-width: none; min-height: 68px; padding-inline: 20px; }
+.catalog-page-fixture .page-hero { padding: 48px 20px 30px; }
+.catalog-page-fixture .site-footer { padding: 20px; }
 .catalog-card h3 { margin: 12px 0 4px; }
 .catalog-card > p:last-child { margin: 0; font-size: 0.875rem; }
 .catalog-footer { padding: 24px 0; font-size: 0.8rem; }
@@ -143,6 +152,7 @@ body { margin: 0; min-width: 0; }
   .brand-concepts { grid-template-columns: 1fr; }
   .catalog-section-heading > p { margin-top: 8px; }
   .catalog-panels { grid-template-columns: 1fr; }
+  .catalog-operations-fixtures { grid-template-columns: 1fr; }
   .catalog-map-patterns { grid-template-columns: 1fr; }
   .catalog-preview-controls { padding: 18px 14px; }
   .catalog-preview-control-row { align-items: stretch; }

@@ -10,6 +10,8 @@ The centralization blueprint tracks the remaining migration and acceptance work.
 
 The visual catalog uses static local fixtures and does not call product APIs. Its responsive preview offers repeatable theme, density, language, and iframe viewport settings; use those settings when capturing comparison screenshots.
 
+The catalog also includes a fabricated Portal homepage and one composition fixture for each Command Center category (Overview, World Monitor, Continuum, Directory, Knowledge, Audit, CAB, and Research). These previews exercise shared patterns only; application authorization, routing, and workflows remain outside the package.
+
 ## Current exports
 
 - `Button` for consistent native button actions.

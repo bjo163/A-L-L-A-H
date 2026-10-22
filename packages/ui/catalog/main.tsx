@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { BrandConcepts } from "../src/brand/BrandConcepts";
+import { OperationalCategoryFixtures, PortalHomeFixture } from "./PageFixtures";
 import { ActionGroup, ActionLink, ActionPanel, ArchitectureLayers, AuthLayout, Badge, BrandLockup, Button, buttonClassName, CallToAction, Card, Checkbox, ConfirmDialog, Container, DataTable, DecisionSummary, Disclosure, EmptyState, EntityCard, ErrorState, EventList, Field, FieldError, FieldLabel, FilterBar, FormSection, Grid, Heading, HelpText, Icon, IconButton, IconText, iconGroups, IdentityCardGroup, Inline, LiveRegion, Metadata, NavGroup, NavItem, LoadingState, ListDetail, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MangaTelemetryHero, MetricGrid, ModuleGrid, Notice, PageCrosslinks, Panel, Pagination, PortalDomainCard, ReadinessBoard, ReadinessList, RegionSummary, RepositoryOverview, ResourceState, ReviewActions, ResponsiveTabs, RoadmapPreview, RoadmapTimeline, SectionHeading, SelectField, Skeleton, Stack, StatusIndicator, SystemAtlas, SystemDetailPanel, Tabs, TextArea, Text, TextField, ThemeControl, Timeline, WorkflowSteps } from "../src";
 import "../src/portal.css";
 import "./catalog.css";
@@ -492,6 +493,20 @@ function Catalog() {
           <FormSection title="Review fixture" description="A complete form section keeps context before actions."><ReviewActions><Button>Approve fixture</Button><Button variant="secondary">Request changes</Button></ReviewActions></FormSection>
           <DecisionSummary title="Decision summary" decision="Pending review" rationale="The final decision remains app-owned and explicit." />
         </Panel>
+      </section>
+
+      <section className="catalog-section" aria-labelledby="page-fixtures-heading">
+        <div className="catalog-section-heading">
+          <div><p className="catalog-eyebrow">REAL PAGE COMPOSITIONS</p><h2 id="page-fixtures-heading">Portal page and Command Center categories</h2></div>
+          <p>Full static compositions exercise shared UI patterns in each product context. Every record and action is fabricated; no service is contacted.</p>
+        </div>
+        <Panel className="catalog-card catalog-page-fixture-wrap">
+          <div className="catalog-section-heading"><div><p className="catalog-eyebrow">PORTAL · HOME</p><h3>Public homepage fixture</h3></div><p>Shared shell, page intro, domains, process, and closing actions.</p></div>
+          <PortalHomeFixture />
+        </Panel>
+        <div className="catalog-operations-fixtures" aria-label="Command Center view fixtures">
+          <OperationalCategoryFixtures />
+        </div>
       </section>
 
       <section className="catalog-section" aria-labelledby="exports-heading">
