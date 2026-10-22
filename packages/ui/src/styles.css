@@ -7,6 +7,9 @@
 * { box-sizing: border-box; }
 body { margin: 0; }
 a { text-decoration: none; }
+button, input, textarea, select { font: inherit; }
+button { color: inherit; }
+button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visible, select:focus-visible, summary:focus-visible { outline: var(--eol-focus-width) solid var(--eol-color-focus); outline-offset: var(--eol-focus-offset); }
 .brand { display: flex; align-items: center; }
 
 .eol-icon {

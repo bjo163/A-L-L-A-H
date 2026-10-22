@@ -1,9 +1,6 @@
 body { min-width: 320px; min-height: 100vh; background-color: var(--eol-color-background); background-image: radial-gradient(color-mix(in srgb, var(--eol-manga-secondary) 15%, transparent) .8px, transparent .8px); background-size: 9px 9px; }
-button, input, textarea, select { font: inherit; }
-button, a { color: inherit; }
 a { color: var(--eol-color-accent); }
 a:hover, .text-button:hover { color: var(--eol-color-accent-strong); }
-button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visible { outline: var(--eol-focus-width) solid var(--eol-color-focus); outline-offset: var(--eol-focus-offset); }
 
 .shell { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
 .sidebar { position: sticky; top: 0; display: flex; flex-direction: column; height: 100vh; padding: 25px 16px 18px; border-right: 1px solid var(--eol-color-border); background: linear-gradient(180deg, var(--eol-color-surface-inset) 0%, var(--eol-color-background) 100%); }
@@ -249,4 +246,473 @@ footer { margin: 40px 0 16px; color: var(--eol-color-text-muted); font-size: 8px
   border-color: var(--eol-color-accent-border);
   background: var(--eol-color-accent-subtle);
   box-shadow: 4px 4px 0 var(--eol-manga-ink);
+}
+
+/* ── YouTube Tauhid Sentinel Styles ───────────────────────────────────────── */
+.sentinel-tab-switcher {
+  display: flex;
+  gap: 12px;
+  margin: 16px 0 24px;
+  border-bottom: 2px solid var(--eol-manga-ink);
+  padding-bottom: 8px;
+}
+.sentinel-tab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 8px 18px;
+  border: 2px solid var(--eol-manga-ink);
+  border-radius: var(--eol-radius-none);
+  background: var(--eol-color-surface);
+  color: var(--eol-color-text-subtle);
+  font: 700 12px var(--eol-font-sans);
+  cursor: pointer;
+  box-shadow: 3px 3px 0 var(--eol-manga-ink);
+  transition: all 0.15s ease;
+}
+.sentinel-tab-btn:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: 4px 4px 0 var(--eol-manga-ink);
+  color: var(--eol-color-text);
+}
+.sentinel-tab-btn.is-active {
+  background: var(--eol-color-accent);
+  color: #fff;
+  transform: translate(-2px, -2px);
+  box-shadow: 5px 5px 0 var(--eol-manga-ink);
+}
+
+.sentinel-scanner-panel {
+  padding: 20px;
+  border: 2px solid var(--eol-manga-ink);
+  background: var(--eol-color-surface-raised);
+  box-shadow: 4px 4px 0 var(--eol-manga-ink);
+  margin-bottom: 24px;
+}
+.sentinel-scanner-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 14px;
+  margin-bottom: 12px;
+}
+.sentinel-scanner-head h3 {
+  margin: 0;
+  font-size: 16px;
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+.sentinel-search-bar {
+  display: flex;
+  gap: 10px;
+  margin-bottom: 14px;
+}
+.sentinel-search-input {
+  flex: 1;
+  padding: 10px 14px;
+  border: 2px solid var(--eol-manga-ink);
+  background: var(--eol-color-surface);
+  color: var(--eol-color-text);
+  font: 500 13px var(--eol-font-mono);
+}
+.sentinel-presets {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: 10px;
+}
+.sentinel-preset-btn {
+  padding: 4px 10px;
+  border: 1px solid var(--eol-manga-ink);
+  background: var(--eol-color-surface);
+  color: var(--eol-color-text-subtle);
+  font: 11px var(--eol-font-sans);
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.sentinel-preset-btn:hover {
+  background: var(--eol-color-accent-subtle);
+  color: var(--eol-color-accent-strong);
+  border-color: var(--eol-color-accent);
+}
+
+.sentinel-filter-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  align-items: center;
+  justify-content: space-between;
+  padding: 14px;
+  border: 2px solid var(--eol-manga-ink);
+  background: var(--eol-color-surface);
+  box-shadow: 3px 3px 0 var(--eol-manga-ink);
+  margin-bottom: 20px;
+}
+.sentinel-filter-group {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.sentinel-select {
+  padding: 6px 10px;
+  border: 1px solid var(--eol-manga-ink);
+  background: var(--eol-color-surface-raised);
+  color: var(--eol-color-text);
+  font: 11px var(--eol-font-mono);
+  border-radius: var(--eol-radius-none);
+}
+
+.sentinel-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+  gap: 20px;
+  margin-top: 16px;
+}
+.sentinel-card {
+  display: flex;
+  flex-direction: column;
+  border: 2px solid var(--eol-manga-ink);
+  background: var(--eol-color-surface);
+  box-shadow: 4px 4px 0 var(--eol-manga-ink);
+  transition: transform 0.15s, box-shadow 0.15s;
+  overflow: hidden;
+}
+.sentinel-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--eol-manga-ink);
+}
+.sentinel-card-thumb-container {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  overflow: hidden;
+  border-bottom: 2px solid var(--eol-manga-ink);
+}
+.sentinel-card-thumb {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  opacity: 0.9;
+  transition: transform 0.2s;
+}
+.sentinel-card:hover .sentinel-card-thumb {
+  transform: scale(1.03);
+}
+.sentinel-card-duration {
+  position: absolute;
+  bottom: 8px;
+  right: 8px;
+  padding: 2px 6px;
+  background: rgba(0, 0, 0, 0.85);
+  color: #fff;
+  font: 700 10px var(--eol-font-mono);
+  border-radius: 2px;
+}
+.sentinel-card-source-pill {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  padding: 3px 8px;
+  background: var(--eol-manga-ink);
+  color: var(--eol-manga-highlight);
+  font: 700 9px var(--eol-font-mono);
+  letter-spacing: 0.05em;
+  text-transform: uppercase;
+}
+.sentinel-card-body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: 16px;
+  gap: 12px;
+}
+.sentinel-card-badges {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+.sentinel-card-title {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1.4;
+  color: var(--eol-color-text);
+}
+.sentinel-card-channel {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  color: var(--eol-color-text-muted);
+  font: 11px var(--eol-font-mono);
+}
+.sentinel-rules-box {
+  padding: 10px;
+  background: var(--eol-color-surface-inset);
+  border: 1px dashed var(--eol-color-border-strong);
+}
+.sentinel-rules-title {
+  font: 700 10px var(--eol-font-mono);
+  color: var(--eol-color-text-muted);
+  text-transform: uppercase;
+  margin-bottom: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.sentinel-rule-item {
+  font-size: 11px;
+  line-height: 1.4;
+  margin-bottom: 4px;
+  color: var(--eol-color-text);
+}
+.sentinel-rule-weight {
+  font-weight: 700;
+  padding: 1px 4px;
+  border-radius: 2px;
+  background: var(--eol-status-danger-surface);
+  color: var(--eol-status-danger-foreground);
+  font-size: 9px;
+  margin-left: 4px;
+}
+.sentinel-tauhid-box {
+  padding: 12px;
+  background: var(--eol-color-accent-subtle);
+  border-left: 4px solid var(--eol-color-accent);
+}
+.sentinel-arabic {
+  font-family: "Amiri", "Scheherazade New", serif;
+  font-size: 16px;
+  direction: rtl;
+  text-align: right;
+  color: var(--eol-color-text);
+  margin-bottom: 4px;
+}
+.sentinel-dalil-ref {
+  font: 700 10px var(--eol-font-mono);
+  color: var(--eol-color-accent-strong);
+  margin-bottom: 4px;
+}
+.sentinel-dalil-text {
+  font-size: 11px;
+  font-style: italic;
+  color: var(--eol-color-text-subtle);
+  line-height: 1.45;
+}
+.sentinel-card-actions {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-top: auto;
+  padding-top: 12px;
+  border-top: 1px solid var(--eol-color-border);
+}
+
+.sentinel-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.7);
+  backdrop-filter: blur(4px);
+  z-index: 1000;
+  display: grid;
+  place-items: center;
+  padding: 20px;
+}
+.sentinel-modal {
+  width: 100%;
+  max-width: 650px;
+  max-height: 90vh;
+  overflow-y: auto;
+  border: 3px solid var(--eol-manga-ink);
+  background: var(--eol-color-surface);
+  box-shadow: 8px 8px 0 var(--eol-manga-ink);
+  padding: 24px;
+}
+.sentinel-modal-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+  border-bottom: 2px solid var(--eol-manga-ink);
+  padding-bottom: 10px;
+}
+.sentinel-modal-head h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 700;
+}
+.sentinel-code-snippet {
+  padding: 12px;
+  background: #111;
+  color: #39ff14;
+  font: 11px var(--eol-font-mono);
+  overflow-x: auto;
+  border: 2px solid var(--eol-manga-ink);
+  max-height: 350px;
+}
+
+
+/* -- World Monitor Sub-tab Bar ----------------------------------- */
+.world-subtab-bar {
+  display: flex;
+  gap: 4px;
+  padding: 12px 0 0 0;
+  border-bottom: 2px solid var(--eol-manga-ink);
+  margin-bottom: 20px;
+}
+.world-subtab-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 18px;
+  font: 700 12px var(--eol-font-sans);
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+  background: transparent;
+  border: 2px solid transparent;
+  border-bottom: none;
+  color: var(--eol-text-secondary);
+  cursor: pointer;
+  transition: color 0.15s, background 0.15s;
+  margin-bottom: -2px;
+}
+.world-subtab-btn:hover {
+  color: var(--eol-text-primary);
+  background: var(--eol-surface-raised);
+}
+.world-subtab-btn--active {
+  color: var(--eol-text-primary);
+  background: var(--eol-bg);
+  border-color: var(--eol-manga-ink);
+  border-bottom-color: var(--eol-bg);
+}
+.world-subtab-btn--sentinel.world-subtab-btn--active {
+  color: #ff6b35;
+}
+.world-subtab-badge {
+  font: 700 9px var(--eol-font-sans);
+  letter-spacing: 0.1em;
+  background: #ff6b35;
+  color: #fff;
+  padding: 2px 5px;
+  border-radius: 3px;
+}
+
+/* -- Sentinel Playwright Automated Crawler Elements ------------- */
+.sentinel-browser-status-bar {
+  margin: 10px 0 14px 0;
+  padding: 8px 12px;
+  background: var(--eol-surface-subtle);
+  border: 1px dashed var(--eol-manga-ink);
+  border-radius: 4px;
+}
+.sentinel-toggle-label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  cursor: pointer;
+  font-size: 13px;
+}
+.sentinel-toggle-label input[type="checkbox"] {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  accent-color: #ff6b35;
+}
+.sentinel-toggle-label span {
+  display: flex;
+  flex-direction: column;
+}
+.sentinel-toggle-label strong {
+  color: var(--eol-text-primary);
+  font-size: 12px;
+}
+.sentinel-toggle-label small {
+  color: var(--eol-text-secondary);
+  font-size: 11px;
+}
+.sentinel-scanning-banner {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 14px 18px;
+  margin-bottom: 14px;
+  background: rgba(255, 107, 53, 0.08);
+  border: 2px solid #ff6b35;
+  border-radius: 6px;
+  animation: pulse-sentinel 2s infinite ease-in-out;
+}
+.sentinel-scanning-banner strong {
+  display: block;
+  font-size: 13px;
+  color: #ff6b35;
+  margin-bottom: 4px;
+}
+.sentinel-scanning-banner p {
+  margin: 0;
+  font-size: 12px;
+  color: var(--eol-text-secondary);
+}
+.sentinel-spinner {
+  width: 24px;
+  height: 24px;
+  border: 3px solid rgba(255, 107, 53, 0.2);
+  border-top-color: #ff6b35;
+  border-radius: 50%;
+  animation: spin-sentinel 0.8s linear infinite;
+  flex-shrink: 0;
+}
+@keyframes spin-sentinel {
+  to { transform: rotate(360deg); }
+}
+@keyframes pulse-sentinel {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.85; }
+}
+
+/* -- Sentinel Engine Selector Elements --------------------------- */
+.sentinel-engine-controls {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 6px;
+}
+.sentinel-engine-buttons {
+  display: flex;
+  gap: 6px;
+  flex-wrap: wrap;
+}
+.sentinel-engine-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 5px 12px;
+  font: 700 11px var(--eol-font-sans);
+  letter-spacing: 0.04em;
+  background: var(--eol-surface-raised);
+  border: 1px solid var(--eol-manga-ink);
+  color: var(--eol-text-secondary);
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+.sentinel-engine-btn:hover {
+  color: var(--eol-text-primary);
+  border-color: #ff6b35;
+}
+.sentinel-engine-btn--active {
+  background: #ff6b35;
+  color: #fff;
+  border-color: #ff6b35;
+}
+.sentinel-engine-note {
+  display: block;
+  font-size: 11px;
+  color: var(--eol-text-secondary);
+  font-style: italic;
 }
