@@ -4,7 +4,7 @@ import Link from "next/link";
 import { PrimaryNavigation } from "../components/PrimaryNavigation";
 import { getPortalLanguage, text } from "../lib/i18n";
 import { BrandLockup, IconText, PublicShell, ThemeBootstrap, ArrowUpRightIcon, ExternalLinkIcon } from "@empire/ui";
-import "@empire/ui/portal.css";
+import "@empire/ui/ui.css";
 
 export async function generateMetadata(): Promise<Metadata> {
   const language = await getPortalLanguage();

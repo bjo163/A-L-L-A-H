@@ -1,4 +1,4 @@
-@import "../src/portal.css";
+@import "../src/ui.css";
 
 * { box-sizing: border-box; }
 body { min-width: 0; margin: 0; background: var(--eol-color-background); color: var(--eol-color-text); }

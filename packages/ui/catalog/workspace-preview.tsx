@@ -2,7 +2,6 @@ import { useState } from "react";
 import { createRoot } from "react-dom/client";
 import { Badge, BrandLockup, Breadcrumbs, Button, Icon, MangaPageIntro, MetricGrid, NavItem, Panel, SectionHeading, StatusIndicator, WorkspaceShell } from "../src";
 import "../src/ui.css";
-import "../src/command-center.css";
 import "./workspace-preview.css";
 
 function WorkspacePreview() {

@@ -11,8 +11,6 @@ html[data-theme="light"] .eol-public-shell {
 :where(.eol-public-shell) .nav-links > a[aria-current="page"] { text-decoration-color: var(--eol-manga-rose); }
 :where(.eol-public-shell) .language-switch button { border-radius: var(--eol-radius-none); }
 :where(.eol-public-shell) .language-switch button[aria-pressed="true"] { border: 2px solid var(--eol-manga-ink); background: var(--eol-manga-highlight); color: var(--eol-manga-ink); box-shadow: 2px 2px 0 var(--eol-manga-ink); }
-:where(.eol-public-shell) .theme-toggle { border: 2px solid var(--eol-manga-ink) !important; border-radius: var(--eol-radius-none) !important; box-shadow: 3px 3px 0 var(--eol-manga-ink); }
-:where(.eol-public-shell) .theme-toggle:hover { background: var(--eol-manga-rose) !important; color: var(--eol-manga-ink) !important; }
 :where(.eol-public-shell) .nav-toggle-icon i { background: var(--eol-color-accent) !important; }
 
 :where(.eol-public-shell) .hero h1 em, :where(.eol-public-shell) .section h2 em { color: var(--eol-manga-rose) !important; }

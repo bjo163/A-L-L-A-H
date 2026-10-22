@@ -7,16 +7,12 @@ const root = process.cwd();
 const appRoots = ["apps/portal", "apps/command-center"];
 const forbidden = [/packages\/ui\/src/, /@empire\/ui\/src/];
 const requiredStylesheetEntries = new Map([
-  ["apps/portal", new Set(["@empire/ui/portal.css"])],
-  ["apps/command-center", new Set([
-    "@empire/ui/ui.css",
-    "@empire/ui/adapters/maplibre.css",
-    "@empire/ui/command-center.css",
-  ])],
+  ["apps/portal", new Set(["@empire/ui/ui.css"])],
+  ["apps/command-center", new Set(["@empire/ui/ui.css"])],
 ]);
 const catalogEntry = readFileSync(join(root, "packages/ui/catalog/main.tsx"), "utf8");
-if ((catalogEntry.match(/\.\.\/src\/(?:portal|command-center)\.css/g) ?? []).length !== 2) {
-  throw new Error("UI catalog must load both product profiles explicitly for cross-product fixtures");
+if ((catalogEntry.match(/\.\.\/src\/ui\.css/g) ?? []).length !== 1) {
+  throw new Error("UI catalog must load the single shared UI stylesheet entry");
 }
 const files = [];
 const packageStyles = [];
@@ -53,7 +49,7 @@ for (const file of files) {
   for (const statement of sourceFile.statements) {
     if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier)) continue;
     const specifier = statement.moduleSpecifier.text;
-    if (!/^@empire\/ui\/(?:ui|portal|command-center|adapters\/maplibre)\.css$/.test(specifier)) continue;
+    if (!/^@empire\/ui\/ui\.css$/.test(specifier)) continue;
     const imports = stylesheetImports.get(app);
     imports.set(specifier, (imports.get(specifier) ?? 0) + 1);
   }

@@ -1,4 +1,5 @@
-/* Shared public entry: raw tokens, semantic theme aliases, then component styles. */
+/* Single public stylesheet entry for Portal, Command Center, and the UI catalog. */
+@import "maplibre-gl/dist/maplibre-gl.css";
 @import "./tokens.css";
 @import "./themes.css";
 @import "./styles.css";
@@ -10,3 +11,7 @@
 @import "./patterns/illustration-frame.css";
 @import "./patterns/manga-page-intro.css";
 @import "./brand/brand.css";
+@import "./products/portal-globals.css";
+@import "./products/portal-manga.css";
+@import "./products/command-center.css";
+@import "./adapters/maplibre.css";
