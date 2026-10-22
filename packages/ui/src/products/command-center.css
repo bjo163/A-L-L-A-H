@@ -1,21 +1,13 @@
-:root {
-  font-family: var(--eol-font-sans);
-  color: var(--eol-color-text);
-  background: var(--eol-color-background);
-  font-synthesis: none;
-}
-
-* { box-sizing: border-box; }
-body { min-width: 320px; min-height: 100vh; margin: 0; background-color: var(--eol-color-background); background-image: radial-gradient(color-mix(in srgb, var(--eol-manga-secondary) 15%, transparent) .8px, transparent .8px); background-size: 9px 9px; }
+body { min-width: 320px; min-height: 100vh; background-color: var(--eol-color-background); background-image: radial-gradient(color-mix(in srgb, var(--eol-manga-secondary) 15%, transparent) .8px, transparent .8px); background-size: 9px 9px; }
 button, input, textarea, select { font: inherit; }
 button, a { color: inherit; }
-a { color: var(--eol-color-accent); text-decoration: none; }
+a { color: var(--eol-color-accent); }
 a:hover, .text-button:hover { color: var(--eol-color-accent-strong); }
 button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visible { outline: var(--eol-focus-width) solid var(--eol-color-focus); outline-offset: var(--eol-focus-offset); }
 
 .shell { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
 .sidebar { position: sticky; top: 0; display: flex; flex-direction: column; height: 100vh; padding: 25px 16px 18px; border-right: 1px solid var(--eol-color-border); background: linear-gradient(180deg, var(--eol-color-surface-inset) 0%, var(--eol-color-background) 100%); }
-.brand { display: flex; align-items: center; padding: 2px 12px 28px; }
+.brand { padding: 2px 12px 28px; }
 .operator-meta strong, .operator-meta small { display: block; }
 .operator-card { display: flex; align-items: center; gap: 10px; padding: 12px; border: 2px solid var(--eol-manga-ink); border-radius: var(--eol-radius-none); background: var(--eol-color-surface); box-shadow: 3px 3px 0 var(--eol-manga-ink); }
 .avatar { display: grid; flex: none; width: 34px; height: 34px; place-items: center; border: 2px solid var(--eol-manga-ink); border-radius: var(--eol-radius-none); color: var(--eol-color-accent-strong); background: var(--eol-color-accent-subtle); box-shadow: 2px 2px 0 var(--eol-manga-ink); font-size: 14px; font-weight: 700; }
