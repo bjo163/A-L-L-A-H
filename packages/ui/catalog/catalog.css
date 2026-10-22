@@ -204,3 +204,211 @@ body { margin: 0; min-width: 0; }
   .catalog-preview-control-row { align-items: stretch; }
   .catalog-preview-control .eol-field { min-width: 100%; }
 }
+
+
+/* Extreme Funky Grunge Gen Z pilot — catalog-only until visual acceptance. */
+.extreme-pilot-section .catalog-section-heading h2 span {
+  color: var(--eol-color-accent-strong);
+  text-decoration: underline;
+  text-decoration-thickness: .12em;
+  text-underline-offset: .12em;
+}
+.extreme-pilot {
+  --extreme-ink: var(--eol-manga-ink);
+  --extreme-lime: var(--eol-palette-light-lime);
+  --extreme-cyan: var(--eol-manga-secondary);
+  --extreme-rose: var(--eol-color-accent);
+  position: relative;
+  isolation: isolate;
+  overflow: hidden;
+  padding: clamp(14px, 3vw, 30px);
+  border: 3px solid var(--eol-color-text);
+  background:
+    linear-gradient(135deg, transparent 0 48%, color-mix(in srgb, var(--eol-color-accent) 7%, transparent) 48% 49%, transparent 49%),
+    var(--eol-color-background);
+  color: var(--eol-color-text);
+  box-shadow: 9px 9px 0 var(--eol-color-text);
+}
+.extreme-pilot::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  background-image: radial-gradient(color-mix(in srgb, var(--eol-color-text) 15%, transparent) .8px, transparent .8px);
+  background-size: 7px 7px;
+  opacity: .22;
+  mask-image: linear-gradient(135deg, #000, transparent 55%);
+}
+.extreme-pilot__topline,
+.extreme-pilot__footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  font: 700 .68rem/1.4 var(--eol-font-mono);
+  letter-spacing: .09em;
+  text-transform: uppercase;
+}
+.extreme-pilot__topline { padding-bottom: 16px; border-bottom: 2px solid var(--eol-color-text); }
+.extreme-pilot__hero {
+  display: grid;
+  grid-template-columns: minmax(0, 1.15fr) minmax(220px, .85fr);
+  align-items: center;
+  gap: clamp(18px, 4vw, 48px);
+  padding-block: clamp(26px, 5vw, 56px);
+}
+.extreme-pilot__copy { min-width: 0; }
+.extreme-pilot__eyebrow {
+  margin: 0 0 14px;
+  color: var(--eol-color-accent-strong);
+  font: 700 .7rem/1.5 var(--eol-font-mono);
+  letter-spacing: .16em;
+  text-transform: uppercase;
+}
+.extreme-pilot__copy h3 {
+  max-width: 12ch;
+  margin: 0;
+  font: 700 clamp(2.4rem, 7.5vw, 6.1rem)/.88 var(--eol-font-sans);
+  letter-spacing: -.09em;
+  text-transform: uppercase;
+  overflow-wrap: anywhere;
+}
+.extreme-pilot__copy h3 em {
+  color: var(--extreme-lime);
+  font-style: normal;
+  -webkit-text-stroke: 1px var(--extreme-ink);
+  text-shadow: 3px 3px 0 var(--extreme-ink);
+}
+.extreme-pilot__description {
+  max-width: 47ch;
+  margin: 22px 0;
+  color: var(--eol-color-text-muted);
+  font-size: var(--eol-font-size-lg);
+  line-height: var(--eol-line-height-relaxed);
+}
+.extreme-pilot__actions { display: flex; flex-wrap: wrap; gap: 10px; }
+.extreme-pilot__art {
+  position: relative;
+  display: grid;
+  min-height: 310px;
+  align-content: space-between;
+  overflow: hidden;
+  padding: 16px;
+  border: 3px solid var(--extreme-ink);
+  border-radius: 0;
+  background: var(--extreme-lime);
+  color: var(--extreme-ink);
+  box-shadow: 8px 8px 0 var(--extreme-rose);
+  transform: rotate(1.5deg);
+}
+.extreme-pilot__art::after {
+  position: absolute;
+  z-index: 0;
+  inset: 0;
+  content: "";
+  pointer-events: none;
+  background: repeating-linear-gradient(135deg, transparent 0 8px, rgb(18 14 32 / 12%) 8px 10px);
+}
+.extreme-pilot__art-index,
+.extreme-pilot__art-caption {
+  position: relative;
+  z-index: 2;
+  font: 700 .65rem/1.5 var(--eol-font-mono);
+  letter-spacing: .1em;
+}
+.extreme-pilot__burst {
+  position: absolute;
+  z-index: 1;
+  top: 18%;
+  left: 15%;
+  width: 72%;
+  aspect-ratio: 1;
+  background: var(--extreme-cyan);
+  border: 3px solid var(--extreme-ink);
+  clip-path: polygon(50% 0%,59% 28%,82% 7%,74% 37%,100% 39%,77% 56%,96% 79%,65% 72%,64% 100%,47% 76%,26% 96%,32% 67%,2% 70%,24% 51%,5% 28%,37% 37%);
+}
+.extreme-pilot__orbit {
+  position: absolute;
+  z-index: 2;
+  top: 25%;
+  left: 22%;
+  width: 58%;
+  aspect-ratio: 1;
+  border: 3px solid var(--extreme-ink);
+  border-radius: 50%;
+  transform: rotate(-27deg) scaleY(.42);
+}
+.extreme-pilot__sfx {
+  position: absolute;
+  z-index: 3;
+  top: 33%;
+  right: 5%;
+  color: var(--extreme-rose);
+  font: italic 900 clamp(3rem, 7vw, 5.5rem)/.8 var(--eol-font-sans);
+  letter-spacing: -.1em;
+  -webkit-text-stroke: 1px var(--extreme-ink);
+  text-shadow: 4px 4px 0 var(--extreme-ink);
+  transform: rotate(-13deg);
+}
+.extreme-pilot__principles {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+}
+.extreme-pilot__principle {
+  position: relative;
+  min-width: 0;
+  padding: 18px;
+  border: 2px solid var(--eol-color-text);
+  border-radius: 0;
+  background: var(--eol-color-surface);
+  box-shadow: 4px 4px 0 var(--eol-color-text);
+}
+.extreme-pilot__number {
+  display: inline-block;
+  margin-bottom: 20px;
+  font: 700 .72rem/1 var(--eol-font-mono);
+}
+.extreme-pilot__principle h4 {
+  margin: 0 0 8px;
+  font: 700 clamp(1.1rem, 2.2vw, 1.7rem)/1 var(--eol-font-sans);
+  letter-spacing: -.05em;
+}
+.extreme-pilot__principle p {
+  margin: 0;
+  color: var(--eol-color-text-muted);
+  font-size: var(--eol-font-size-sm);
+  line-height: var(--eol-line-height-relaxed);
+}
+.extreme-pilot__principle--funky { border-top: 7px solid var(--extreme-lime); }
+.extreme-pilot__principle--grunge { border-top: 7px solid var(--extreme-rose); }
+.extreme-pilot__principle--genz { border-top: 7px solid var(--extreme-cyan); }
+.extreme-pilot__footer {
+  justify-content: flex-start;
+  gap: 12px;
+  margin-top: 28px;
+  padding-top: 16px;
+  border-top: 2px dashed var(--eol-color-border-strong);
+}
+.extreme-pilot__footer span:nth-child(2) { color: var(--eol-color-accent-strong); font-size: 1.25rem; }
+@media (max-width: 700px) {
+  .extreme-pilot { box-shadow: 5px 5px 0 var(--eol-color-text); }
+  .extreme-pilot__hero { grid-template-columns: minmax(0, 1fr); }
+  .extreme-pilot__copy h3 { max-width: 10ch; font-size: clamp(2.8rem, 15vw, 5rem); }
+  .extreme-pilot__art { min-height: 260px; max-width: 420px; width: calc(100% - 8px); }
+  .extreme-pilot__principles { grid-template-columns: minmax(0, 1fr); }
+  .extreme-pilot__principle { padding: 14px; }
+  .extreme-pilot__number { margin-bottom: 10px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .extreme-pilot *, .extreme-pilot *::before, .extreme-pilot *::after { animation: none !important; transition: none !important; }
+}
+@media (forced-colors: active) {
+  .extreme-pilot, .extreme-pilot__art, .extreme-pilot__principle {
+    forced-color-adjust: auto;
+    box-shadow: none;
+  }
+  .extreme-pilot__copy h3 em { -webkit-text-stroke: 0; text-shadow: none; }
+}
