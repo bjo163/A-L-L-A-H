@@ -526,7 +526,7 @@ Owner: UI maintainer. Dependensi: berjalan bersama C02–C14. Gate: package dapa
 Owner: frontend/tooling maintainer. Dependensi: C06, C15. Gate: drift terdeteksi sebelum rilis.
 
 - [x] **UI-C16-01** — Jalankan typecheck dan production build package/Portal/Command Center/catalog.
-- [ ] **UI-C16-02** — Tambahkan pemeriksaan import internal package dan dependency terlarang.
+- [x] **UI-C16-02** — Tambahkan pemeriksaan import internal package dan dependency terlarang.
 - [ ] **UI-C16-03** — Tambahkan pemeriksaan literal desain dan stylesheet app dengan allowlist beralasan.
 - [ ] **UI-C16-04** — Tambahkan deteksi duplikasi deklarasi dalam konteks selector/media yang sama.
 - [ ] **UI-C16-05** — Tambahkan manifest asset/provenance validation dan generated asset drift check.
@@ -723,6 +723,7 @@ Status penerimaan + tanggal:
 | UI-C15-08 | README now provides page intro, operational list, review workflow, and map composition recipes plus explicit anti-patterns for local CSS/token/interaction duplication. | Source audit `packages/ui/README.md`. |
 | UI-C15-09 | README records current API maturity: shared primitives/patterns stable, brand/manga compositions experimental pending visual/provenance review, and no deprecated exports. | Source audit `packages/ui/README.md`. |
 | UI-C16-01 | Production verification completed for `@empire/ui` typecheck/build, Portal Next build, Command Center Vite build, and UI catalog Vite build. The Command Center build reports a non-failing large-chunk warning; no runtime server was started. | `pnpm --filter @empire/ui build`, `pnpm --filter @empire/portal build`, `pnpm --filter @empire/command-center build`, and `pnpm --filter @empire/ui catalog:build` all exited successfully on 2026-10-22. |
+| UI-C16-02 | Repository import audit found no consumer imports of `packages/ui/src`, `@empire/ui/src`, router runtimes, or MapLibre runtime from package source; public exports remain through package entrypoints and the MapLibre adapter stays CSS-only. | `rg` boundary audit across `apps/**` and `packages/ui/src/**` returned no forbidden matches. |
 | UI-C13-13 | Research list memakai shared `Panel`, `Badge`, `LoadingState`, `ErrorState`, `EmptyState`, `FieldLabel`, `TextField`, `TextArea`, `SelectField`, `Button`, `Notice`, dan `ConfirmDialog`; create, evidence, completion, approval/rejection, workflow status, dan permission guards tetap berada di app. | Source audit pada `ResearchCard` dan `App.tsx`; `pnpm --filter @empire/command-center typecheck` lulus. |
 | UI-C13-08 | Continuum agent cards memakai shared `Panel`, `Badge`, `Icon`, `MetricGrid`, dan `EmptyState`; invocation form memakai shared `FieldLabel`, `TextField`, dan `Button` dengan permission guard app-owned. | Source audit pada view Continuum dan `pnpm --filter @empire/command-center typecheck` lulus. |
 | UI-C10-01 | `DataTable<Row>` menyediakan typed columns/cell renderer, semantic caption, `scope="col"`, numeric alignment (`start`/`center`/`end`), stable `rowKey`, and table-level empty row. Wrapper memberi horizontal overflow tanpa mengubah table semantics. | `pnpm --filter @empire/ui typecheck` lulus. Consumer migration, caption copy, and narrow-table behavior review masih terbuka pada UI-C10-02/UI-C15-04. |
