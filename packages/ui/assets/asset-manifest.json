@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAssetPolicy": "Brand concepts are authored as inline SVG components; assets/source/brand/orbit.svg is the single editable Orbit geometry source for the generated LogoMark React component and mark/favicon/app-icon SVGs. Outputs are deterministic and regenerated with pnpm --filter @empire/ui assets:generate. Final identity approval is tracked in UI-C02.",
+  "generatedAssetPolicy": "Brand concepts are authored as inline SVG components; assets/source/brand/orbit.svg is the single editable standard-size Orbit geometry source, with assets/source/brand/orbit-small.svg as its package-owned small-size optical correction. Both sources generate the LogoMark components, full-brand/monochrome/inverse variants, and favicon/app-icon SVGs. Outputs are deterministic and regenerated with pnpm --filter @empire/ui assets:generate. Final identity approval is tracked in UI-C02.",
   "generatedAssetDirectory": "assets/generated",
   "vectors": {
     "icons": {
@@ -108,8 +108,44 @@
       "source": "assets/source/brand/orbit.svg",
       "componentOutput": "src/brand/OrbitMark.generated.tsx",
       "assetModuleOutput": "src/brand/BrandAssets.generated.ts",
+      "opticalMaster": {
+        "source": "assets/source/brand/orbit-small.svg",
+        "componentOutput": "src/brand/OrbitMarkSmall.generated.tsx",
+        "sizes": [
+          {
+            "size": 16,
+            "path": "assets/generated/brand/empire-mark-small-16.svg"
+          },
+          {
+            "size": 24,
+            "path": "assets/generated/brand/empire-mark-small-24.svg"
+          },
+          {
+            "size": 32,
+            "path": "assets/generated/icons/favicon.svg"
+          }
+        ]
+      },
+      "variants": {
+        "fullBrand": {
+          "path": "assets/generated/brand/empire-mark.svg",
+          "color": "#f1b84b"
+        },
+        "monochrome": {
+          "path": "assets/generated/brand/empire-mark-monochrome.svg",
+          "color": "#201832"
+        },
+        "inverse": {
+          "path": "assets/generated/brand/empire-mark-inverse.svg",
+          "color": "#ffffff"
+        }
+      },
       "assetOutputs": [
         "assets/generated/brand/empire-mark.svg",
+        "assets/generated/brand/empire-mark-monochrome.svg",
+        "assets/generated/brand/empire-mark-inverse.svg",
+        "assets/generated/brand/empire-mark-small-16.svg",
+        "assets/generated/brand/empire-mark-small-24.svg",
         "assets/generated/icons/favicon.svg",
         "assets/generated/icons/app-icon-48.svg",
         "assets/generated/icons/app-icon-192.svg",
@@ -144,16 +180,36 @@
       "sha256": "3139cadcd4687b550e8db77a43fbbacfe0eaf8b3358a3edca8a8003822c9018a"
     },
     {
+      "path": "src/brand/OrbitMarkSmall.generated.tsx",
+      "sha256": "0340947b83059c7e5dfde590c73f69ccf8a1ba2be891bbf4dec8469c804137f4"
+    },
+    {
       "path": "src/brand/BrandAssets.generated.ts",
-      "sha256": "61f647b3711c54fdbf0c8b614b136a61e4887772d086337359b814e22cea05ba"
+      "sha256": "f1292a414255f6a2ef457a6207998578bcf7c5f70e7a244cc10817ad426afa70"
     },
     {
       "path": "assets/generated/brand/empire-mark.svg",
       "sha256": "ffa402ec4e4715a959d43a55c9d171aa727994d801ad08f3179f9422494aae24"
     },
     {
+      "path": "assets/generated/brand/empire-mark-monochrome.svg",
+      "sha256": "881999e7c9d903e58b1cd8d4390c52cbe9873ed8b411d0f4d9142c300f37ccc0"
+    },
+    {
+      "path": "assets/generated/brand/empire-mark-inverse.svg",
+      "sha256": "d540214a0fab68a2869337f8ba2e7e4258950f9f0074a58195d53b27a773bba1"
+    },
+    {
+      "path": "assets/generated/brand/empire-mark-small-16.svg",
+      "sha256": "ecb9dd6d041fdd4e79449af5e7ab8daf63e85fd546dc00ac00c20fb89bd0230d"
+    },
+    {
+      "path": "assets/generated/brand/empire-mark-small-24.svg",
+      "sha256": "63100d435e43493dbfb3ded17bda5a2948605b84c9d98f5293ccd8834da24f68"
+    },
+    {
       "path": "assets/generated/icons/favicon.svg",
-      "sha256": "d6c9ccabcde71e2ef90b11fd458b6a9e99fccf029db4a9974da6771bcfad07d5"
+      "sha256": "975bf11b996a273ccd63dff6a859ee8c5424bfc69ad1800a5e1fc4768c94b747"
     },
     {
       "path": "assets/generated/icons/app-icon-48.svg",

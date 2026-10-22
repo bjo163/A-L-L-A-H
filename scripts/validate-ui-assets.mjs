@@ -92,7 +92,7 @@ if (!Array.isArray(manifest.generatedFiles)) {
     }
     const absolute = resolve(uiRoot, asset.path);
     const withinGenerated = relative(generatedRoot, absolute);
-    const allowedGeneratedSource = ["src/brand/OrbitMark.generated.tsx", "src/brand/BrandAssets.generated.ts"].includes(asset.path);
+    const allowedGeneratedSource = ["src/brand/OrbitMark.generated.tsx", "src/brand/OrbitMarkSmall.generated.tsx", "src/brand/BrandAssets.generated.ts"].includes(asset.path);
     if (isAbsolute(asset.path) || (!allowedGeneratedSource && (withinGenerated === "" || withinGenerated === ".." || withinGenerated.startsWith(`..${sep}`) || isAbsolute(withinGenerated)))) {
       errors.push(`generated asset path must point to a file beneath ${manifest.generatedAssetDirectory}: ${asset.path}`);
       continue;
@@ -116,8 +116,7 @@ async function walkGenerated(directory) {
   }
 }
 await walkGenerated(generatedRoot);
-const generatedComponentPath = "src/brand/OrbitMark.generated.tsx";
-for (const generatedSource of [generatedComponentPath, "src/brand/BrandAssets.generated.ts"]) {
+for (const generatedSource of ["src/brand/OrbitMark.generated.tsx", "src/brand/OrbitMarkSmall.generated.tsx", "src/brand/BrandAssets.generated.ts"]) {
   try {
     const contents = await read(generatedSource);
     actualGenerated.set(generatedSource, createHash("sha256").update(contents).digest("hex"));
@@ -130,8 +129,38 @@ for (const path of new Set([...actualGenerated.keys(), ...expectedGenerated.keys
 }
 if (!manifest.generatedAssetPolicy?.includes("inline SVG")) errors.push("generated asset policy must document the current inline-SVG source strategy");
 if (manifest.generatedFiles.length > 0 && !manifest.generatedAssetPolicy?.includes("assets:generate")) errors.push("generated assets require a documented deterministic generation command");
-if (!manifest.generatedAssetPolicy?.includes("single editable Orbit geometry source")) errors.push("generated asset policy must identify the single editable Orbit geometry source");
+if (!manifest.generatedAssetPolicy?.includes("single editable standard-size Orbit geometry source")) errors.push("generated asset policy must identify the single editable standard-size Orbit geometry source");
 if (manifest.vectors.brandMaster?.source !== "assets/source/brand/orbit.svg" || manifest.vectors.brandMaster?.componentOutput !== "src/brand/OrbitMark.generated.tsx" || manifest.vectors.brandMaster?.assetModuleOutput !== "src/brand/BrandAssets.generated.ts") errors.push("brand master manifest must point from the editable SVG to its generated React component and public asset module");
+const requiredBrandVariants = {
+  fullBrand: { path: "assets/generated/brand/empire-mark.svg", color: "#f1b84b" },
+  monochrome: { path: "assets/generated/brand/empire-mark-monochrome.svg", color: "#201832" },
+  inverse: { path: "assets/generated/brand/empire-mark-inverse.svg", color: "#ffffff" },
+};
+for (const [name, expected] of Object.entries(requiredBrandVariants)) {
+  const variant = manifest.vectors.brandMaster?.variants?.[name];
+  if (variant?.path !== expected.path || variant?.color?.toLowerCase() !== expected.color) {
+    errors.push(`brand master ${name} variant must map to ${expected.path} in ${expected.color}`);
+    continue;
+  }
+  const contents = await read(expected.path).catch(() => "");
+  if (!contents.includes(`stroke="${expected.color}"`) || !contents.includes(`fill="${expected.color}"`)) {
+    errors.push(`brand master ${name} output must use its manifest color for strokes and fills`);
+  }
+}
+const opticalMaster = manifest.vectors.brandMaster?.opticalMaster;
+const expectedOpticalSizes = [
+  { size: 16, path: "assets/generated/brand/empire-mark-small-16.svg" },
+  { size: 24, path: "assets/generated/brand/empire-mark-small-24.svg" },
+  { size: 32, path: "assets/generated/icons/favicon.svg" },
+];
+if (opticalMaster?.source !== "assets/source/brand/orbit-small.svg" || opticalMaster?.componentOutput !== "src/brand/OrbitMarkSmall.generated.tsx" || JSON.stringify(opticalMaster?.sizes) !== JSON.stringify(expectedOpticalSizes)) {
+  errors.push("brand master must document the small-size optical source, component, and 16/24/32px outputs");
+}
+try {
+  const opticalSource = await read("assets/source/brand/orbit-small.svg");
+  if (!/<svg\b[^>]*viewBox="0 0 72 72"/i.test(opticalSource) || !/stroke-width="4"/.test(opticalSource)) errors.push("small-size optical source must share the master viewBox and use its documented 4px outline correction");
+  errors.push(...svgSafetyErrors(opticalSource, "small-size optical SVG source"));
+} catch { errors.push("small-size optical SVG source is missing"); }
 try {
   const master = await read("assets/source/brand/orbit.svg");
   if (!/<svg\b[^>]*viewBox="0 0 72 72"/i.test(master)) errors.push("editable Orbit SVG master requires viewBox 0 0 72 72");
@@ -145,6 +174,12 @@ for (const asset of manifest.generatedFiles) {
   const contents = await readFile(resolve(uiRoot, asset.path), "utf8").catch(() => "");
   if (!contents.startsWith("<svg ") || !contents.includes("viewBox=\"0 0 72 72\"")) errors.push(`generated SVG requires a 72-unit master viewBox: ${asset.path}`);
   errors.push(...svgSafetyErrors(contents, `generated SVG ${asset.path}`));
+}
+for (const { size, path } of expectedOpticalSizes) {
+  const contents = await read(path).catch(() => "");
+  if (!contents.includes(`width="${size}"`) || !contents.includes(`height="${size}"`) || !contents.includes("stroke-width=\"4\"")) {
+    errors.push(`generated optical SVG must preserve its ${size}px source size and corrected stroke: ${path}`);
+  }
 }
 
 if (errors.length) {

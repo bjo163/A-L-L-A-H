@@ -4,7 +4,9 @@ import { buttonClassName } from "../primitives/Button";
 import { classNames } from "../primitives/classNames";
 import { Panel } from "../primitives/Panel";
 import { TextField } from "../primitives/TextField";
+import { empireMarkFullBrandSvg, empireMarkInverseSvg, empireMarkMonochromeSvg, empireMarkSmall16Svg, empireMarkSmall24Svg, empireMarkSmall32Svg } from "./BrandAssets.generated";
 import { OrbitMark } from "./OrbitMark.generated";
+import { OrbitMarkSmall } from "./OrbitMarkSmall.generated";
 
 export type BrandConcept = "aperture" | "orbit" | "monogram";
 
@@ -12,10 +14,10 @@ export type BrandConcept = "aperture" | "orbit" | "monogram";
  * Shared working mark for product shells. Orbit is provisional: the brand
  * concept and final logo system remain subject to the C02 review gate.
  */
-export type LogoMarkProps = { className?: string };
+export type LogoMarkProps = { className?: string; opticalSize?: "standard" | "small" };
 
-export function LogoMark({ className }: LogoMarkProps = {}) {
-  return <BrandConceptMark concept="orbit" className={classNames("eol-logo-mark", className)} />;
+export function LogoMark({ className, opticalSize = "standard" }: LogoMarkProps = {}) {
+  return <BrandConceptMark concept="orbit" opticalSize={opticalSize} className={classNames("eol-logo-mark", className)} />;
 }
 
 export type BrandLockupProps = {
@@ -48,8 +50,8 @@ const conceptNames: Record<BrandConcept, string> = {
 };
 
 /** Early vector identity studies; the Orbit working mark is provisional. */
-export function BrandConceptMark({ concept, className }: LogoMarkProps & { concept: BrandConcept }) {
-  if (concept === "orbit") return <OrbitMark className={className} />;
+export function BrandConceptMark({ concept, className, opticalSize = "standard" }: LogoMarkProps & { concept: BrandConcept }) {
+  if (concept === "orbit") return opticalSize === "small" ? <OrbitMarkSmall className={className} /> : <OrbitMark className={className} />;
   return (
     <svg
       aria-hidden="true"
@@ -103,7 +105,7 @@ export function BrandConcepts() {
               <span><strong>A-L-L-A-H</strong><small>STACKED LOCKUP</small></span>
             </div>
             <div className="brand-concept__favicon">
-              <BrandConceptMark concept={concept} />
+              <BrandConceptMark concept={concept} opticalSize="small" />
               <small>32px</small>
             </div>
           </div>
@@ -136,4 +138,47 @@ export function BrandConcepts() {
       ))}
     </div>
   );
+}
+
+const standaloneBrandVariants = [
+  { name: "Full brand", color: "#f1b84b", svg: empireMarkFullBrandSvg, surface: "brand-variant-preview--full-brand" },
+  { name: "Monochrome", color: "#201832", svg: empireMarkMonochromeSvg, surface: "brand-variant-preview--monochrome" },
+  { name: "Inverse", color: "#ffffff", svg: empireMarkInverseSvg, surface: "brand-variant-preview--inverse" },
+] as const;
+
+/** Catalog-only presentation of manifest-tracked standalone brand color outputs. */
+export function BrandVariantPreviews() {
+  return <ul className="brand-variant-gallery" aria-label="Generated standalone brand color variants">
+    {standaloneBrandVariants.map((variant) => (
+      <li className={`brand-variant-preview ${variant.surface}`} key={variant.name}>
+        <img src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(variant.svg)}`} alt="" aria-hidden="true" />
+        <span><strong>{variant.name}</strong><small>{variant.color}</small></span>
+      </li>
+    ))}
+  </ul>;
+}
+
+const opticalSizeSamples = [
+  { size: 16, standard: empireMarkFullBrandSvg, optical: empireMarkSmall16Svg },
+  { size: 24, standard: empireMarkFullBrandSvg, optical: empireMarkSmall24Svg },
+  { size: 32, standard: empireMarkFullBrandSvg, optical: empireMarkSmall32Svg },
+] as const;
+
+/** Compare generated geometry at representative small display sizes. */
+export function BrandOpticalSizePreviews() {
+  return <section className="brand-optical-review" aria-labelledby="brand-optical-review-heading">
+    <h3 id="brand-optical-review-heading">Small-size optical study</h3>
+    <div className="brand-optical-size-gallery">
+      {opticalSizeSamples.map(({ size, standard, optical }) => (
+        <figure className="brand-optical-size-sample" key={size}>
+          <div className="brand-optical-size-sample__pair">
+            <span><img className="brand-optical-size-sample__mark" data-size={size} src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(standard)}`} alt="" aria-hidden="true" /><small>Master</small></span>
+            <span><img className="brand-optical-size-sample__mark" data-size={size} src={`data:image/svg+xml;charset=utf-8,${encodeURIComponent(optical)}`} alt="" aria-hidden="true" /><small>Optical</small></span>
+          </div>
+          <figcaption>{size}px</figcaption>
+        </figure>
+      ))}
+    </div>
+    <p>The small source raises outline weight and simplifies the orbit for comparison; final legibility still needs rendered review.</p>
+  </section>;
 }
