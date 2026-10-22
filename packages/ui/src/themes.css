@@ -14,9 +14,11 @@
   --eol-color-text-subtle: var(--eol-palette-dark-text-subtle);
   --eol-color-text-muted: var(--eol-palette-dark-text-muted);
   --eol-color-text-inverse: var(--eol-palette-dark-text-inverse);
+  --eol-color-on-accent: var(--eol-palette-dark-ink-950);
   --eol-color-link: var(--eol-palette-dark-pink-strong);
   --eol-color-accent: var(--eol-palette-dark-pink);
   --eol-color-accent-strong: var(--eol-palette-dark-pink-strong);
+  --eol-color-action-primary: var(--eol-palette-dark-pink);
   --eol-color-accent-border: var(--eol-palette-dark-pink);
   --eol-color-accent-subtle: var(--eol-color-surface-selected);
   --eol-color-focus: var(--eol-palette-dark-cyan);
@@ -88,9 +90,11 @@
   --eol-color-text-subtle: var(--eol-palette-light-text-subtle);
   --eol-color-text-muted: var(--eol-palette-light-text-muted);
   --eol-color-text-inverse: var(--eol-palette-light-white);
+  --eol-color-on-accent: var(--eol-palette-light-white);
   --eol-color-link: var(--eol-palette-light-pink-strong);
   --eol-color-accent: var(--eol-palette-light-pink);
   --eol-color-accent-strong: var(--eol-palette-light-pink-strong);
+  --eol-color-action-primary: var(--eol-palette-light-pink-strong);
   --eol-color-accent-border: var(--eol-palette-light-ink);
   --eol-color-accent-subtle: var(--eol-color-surface-selected);
   --eol-color-focus: var(--eol-palette-light-cyan);
