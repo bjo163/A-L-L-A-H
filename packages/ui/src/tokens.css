@@ -120,6 +120,7 @@
   /* Typography roles; applications may set their own display face. */
   --eol-font-sans: "Space Grotesk Variable", Inter, ui-sans-serif, system-ui, sans-serif;
   --eol-font-mono: "DM Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+  --eol-font-script: "Noto Sans Arabic", "Noto Sans Hebrew", "Noto Sans Devanagari", var(--eol-font-sans);
   --eol-font-size-xs: 0.6875rem;
   --eol-font-size-2xs: 0.625rem;
   --eol-font-size-sm: 0.75rem;
@@ -137,6 +138,7 @@
   --eol-line-height-tight: 1.25;
   --eol-line-height-normal: 1.5;
   --eol-line-height-relaxed: 1.7;
+  --eol-line-height-script: 1.9;
   --eol-letter-spacing-label: 0.09em;
   --eol-letter-spacing-editorial: 0.04em;
 
