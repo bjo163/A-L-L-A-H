@@ -77,3 +77,5 @@ export type { GridProps, InlineProps, LayoutSpace, StackProps } from "./patterns
 export { StatusIndicator } from "./patterns/StatusIndicator";
 export { MapFrame, MapLegend, RegionSummary } from "./patterns/MapPatterns";
 export type { MapFrameState, MapLegendItem, MapStatus, RegionSummaryMetric } from "./patterns/MapPatterns";
+export { ResourceState } from "./patterns/ResourceState";
+export type { ResourceStateKind, ResourceStateProps } from "./patterns/ResourceState";
