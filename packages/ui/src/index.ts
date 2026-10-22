@@ -80,6 +80,8 @@ export { ActionGroup } from "./patterns/ActionGroup";
 export type { ActionGroupProps } from "./patterns/ActionGroup";
 export { Card } from "./patterns/Card";
 export type { CardProps } from "./patterns/Card";
+export { Breadcrumbs, SkipLink } from "./patterns/Navigation";
+export type { BreadcrumbItem, BreadcrumbsProps, SkipLinkProps } from "./patterns/Navigation";
 export { Grid, Inline, Stack } from "./patterns/Layout";
 export type { GridProps, InlineProps, LayoutSpace, StackProps } from "./patterns/Layout";
 export { StatusIndicator } from "./patterns/StatusIndicator";
