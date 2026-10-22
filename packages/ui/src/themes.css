@@ -9,6 +9,7 @@
   --eol-color-surface-action: var(--eol-palette-dark-ink-700);
   --eol-color-surface-selected: color-mix(in srgb, var(--eol-palette-dark-pink) 15%, transparent);
   --eol-color-border: var(--eol-palette-dark-ink-950);
+  --eol-color-border-subtle: color-mix(in srgb, var(--eol-color-border-strong) 32%, transparent);
   --eol-color-border-strong: var(--eol-palette-dark-ink-600);
   --eol-color-text: var(--eol-palette-dark-text);
   --eol-color-text-subtle: var(--eol-palette-dark-text-subtle);
@@ -85,6 +86,7 @@
   --eol-color-surface-action: var(--eol-palette-light-action);
   --eol-color-surface-selected: color-mix(in srgb, var(--eol-palette-light-lime) 50%, transparent);
   --eol-color-border: var(--eol-palette-light-ink);
+  --eol-color-border-subtle: color-mix(in srgb, var(--eol-color-border) 14%, transparent);
   --eol-color-border-strong: var(--eol-palette-light-ink);
   --eol-color-text: var(--eol-palette-light-ink);
   --eol-color-text-subtle: var(--eol-palette-light-text-subtle);
