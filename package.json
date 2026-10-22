@@ -8,7 +8,8 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "validate": "node scripts/validate.mjs && node scripts/validate-monorepo.mjs && node scripts/validate-batteries-dna.mjs && node scripts/validate-ui-boundary.mjs",
+    "validate": "node scripts/validate.mjs && node scripts/validate-monorepo.mjs && node scripts/validate-batteries-dna.mjs && node scripts/validate-ui-boundary.mjs && node scripts/validate-ui-svg.mjs",
+    "validate:ui-svg": "node scripts/validate-ui-svg.mjs",
     "audit:ui-css": "node scripts/audit-ui-css-duplicates.mjs",
     "validate:ui-assets": "node scripts/validate-ui-assets.mjs",
     "world-monitor:runtime-smoke": "pnpm --filter @empire/api exec tsx src/scripts/world-monitor-runtime-smoke.ts",
