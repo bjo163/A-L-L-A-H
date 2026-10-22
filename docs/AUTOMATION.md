@@ -42,7 +42,10 @@ the `main` branch protection still blocks auto-merge until required checks pass.
   CodeQL because GITHUB_TOKEN-generated PR events do not start workflows.
 - pnpm downloads, Turbo/Next build caches, and separate Docker layer caches for
   each application are reused across runs. Typechecking and all three image builds
-  remain enabled. The API image is also started against disposable PostgreSQL and
+  remain enabled. Cache inputs include shared TypeScript configuration, module
+  manifests, registries, and schemas so changes outside an application invalidate
+  its cached results. The API image is also started against disposable PostgreSQL
+  and
   must pass readiness before promotion; image compilation alone is insufficient.
 - Actions are pinned to commit hashes. Workflow permissions are read-only except release publishing and CodeQL uploads.
 

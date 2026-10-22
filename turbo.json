@@ -1,5 +1,14 @@
 {
   "$schema": "https://turbo.build/schema.json",
+  "globalDependencies": [
+    ".node-version",
+    "pnpm-workspace.yaml",
+    "tsconfig.base.json",
+    "config/**",
+    "modules/*/manifest.json",
+    "schemas/**",
+    "data/**"
+  ],
   "tasks": {
     "build": {
       "dependsOn": [
