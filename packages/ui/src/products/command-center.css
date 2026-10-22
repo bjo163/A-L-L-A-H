@@ -179,7 +179,7 @@
 .eol-auth-layout .remember-me input:checked { background: var(--eol-manga-highlight); }
 .eol-auth-layout .remember-me input:checked::after { color: var(--eol-manga-ink); content: "✓"; font-size: var(--eol-font-size-sm); font-weight: 900; line-height: 1; }
 .eol-auth-layout .remember-me input:focus-visible { outline: var(--eol-focus-width) solid var(--eol-color-focus); outline-offset: var(--eol-focus-offset); }
-.eol-auth-layout .login-health { justify-content: space-between; margin-top: 8px; color: var(--eol-color-text-muted); font-size: var(--eol-font-size-3xs); }
+.eol-auth-layout .login-health { justify-content: space-between; margin-top: 8px; color: var(--eol-color-text-muted); font-size: var(--eol-font-size-sm); }
 .eol-workspace-shell .notice { margin-block: 12px; }
 .eol-workspace-shell footer { margin: 40px 0 16px; color: var(--eol-color-text-muted); font-size: 8px; letter-spacing: .15em; }
 
