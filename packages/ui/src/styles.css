@@ -116,24 +116,24 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
 /* Shared manga effects. Apps may tune the manga-specific color tokens. */
 .eol-manga-panel, .eol-manga-surface {
-  border: 2px solid var(--eol-manga-ink, var(--eol-color-text));
+  border: 2px solid var(--eol-manga-ink);
   border-radius: var(--eol-radius-none);
-  box-shadow: 4px 4px 0 var(--eol-manga-ink, var(--eol-color-text));
+  box-shadow: 4px 4px 0 var(--eol-manga-ink);
   transition: transform var(--eol-motion-fast) var(--eol-easing-standard), box-shadow var(--eol-motion-fast) var(--eol-easing-standard), border-color var(--eol-motion-fast) var(--eol-easing-standard), background-color var(--eol-motion-fast) var(--eol-easing-standard);
 }
 .eol-manga-panel { position: relative; isolation: isolate; overflow: hidden; background: var(--eol-color-surface); }
-.eol-manga-panel--interactive:hover { transform: translate(-3px, -3px); box-shadow: 8px 8px 0 var(--eol-manga-ink, var(--eol-color-text)); }
+.eol-manga-panel--interactive:hover { transform: translate(-3px, -3px); box-shadow: 8px 8px 0 var(--eol-manga-ink); }
 .eol-manga-page-intro { isolation: isolate; overflow: hidden; background: var(--eol-color-surface); }
-.eol-manga-page-intro::before { position: absolute; z-index: 0; inset: 0 auto 0 0; width: 5px; background: var(--eol-manga-highlight, var(--eol-color-accent)); content: ""; }
-.eol-manga-page-intro::after { position: absolute; z-index: 0; inset: 0 0 0 auto; width: min(38%, 17rem); background-image: radial-gradient(circle, color-mix(in srgb, var(--eol-manga-secondary, var(--eol-color-accent)) 58%, transparent) .8px, transparent 1.25px); background-size: 8px 8px; opacity: .38; mask-image: linear-gradient(90deg, transparent, #000 42%); pointer-events: none; content: ""; }
+.eol-manga-page-intro::before { position: absolute; z-index: 0; inset: 0 auto 0 0; width: 5px; background: var(--eol-manga-highlight); content: ""; }
+.eol-manga-page-intro::after { position: absolute; z-index: 0; inset: 0 0 0 auto; width: min(38%, 17rem); background-image: radial-gradient(circle, color-mix(in srgb, var(--eol-manga-secondary) 58%, transparent) .8px, transparent 1.25px); background-size: 8px 8px; opacity: .38; mask-image: linear-gradient(90deg, transparent, #000 42%); pointer-events: none; content: ""; }
 .eol-manga-page-intro > :not(.eol-page-intro__decoration) { position: relative; z-index: 1; }
 .eol-manga-action { transition: transform var(--eol-motion-fast) var(--eol-easing-standard), background-color var(--eol-motion-fast) var(--eol-easing-standard), box-shadow var(--eol-motion-fast) var(--eol-easing-standard), color var(--eol-motion-fast) var(--eol-easing-standard); }
-.eol-manga-action:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--eol-manga-ink, var(--eol-color-text)); }
+.eol-manga-action:hover { transform: translate(-2px, -2px); box-shadow: 5px 5px 0 var(--eol-manga-ink); }
 .eol-manga-action:focus-visible { outline: var(--eol-focus-width) solid var(--eol-color-focus); outline-offset: var(--eol-focus-offset); }
 .eol-manga-row { transition: transform var(--eol-motion-fast) var(--eol-easing-standard), background-color var(--eol-motion-fast) var(--eol-easing-standard), padding-inline var(--eol-motion-fast) var(--eol-easing-standard); }
 .eol-manga-row:hover { transform: translateX(4px); }
 .eol-manga-spin::before { animation: eol-spin var(--eol-motion-ambient) var(--eol-easing-linear) infinite; }
-.eol-manga-orbit { position: absolute; border: 2px dashed color-mix(in srgb, var(--eol-manga-ink, var(--eol-color-text)) 38%, transparent); border-radius: 50%; box-shadow: none; animation: eol-manga-orbit-glow var(--eol-motion-orbit) var(--eol-easing-in-out) infinite alternate; }
+.eol-manga-orbit { position: absolute; border: 2px dashed color-mix(in srgb, var(--eol-manga-ink) 38%, transparent); border-radius: 50%; box-shadow: none; animation: eol-manga-orbit-glow var(--eol-motion-orbit) var(--eol-easing-in-out) infinite alternate; }
 .eol-manga-orbit--secondary { animation-delay: var(--eol-motion-orbit-delay-secondary); }
 .eol-manga-orbit--tertiary { animation-delay: var(--eol-motion-orbit-delay-tertiary); }
 .eol-manga-screentone {
@@ -142,22 +142,22 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 }
 .eol-manga-speed-lines {
   --eol-speedline-base: var(--eol-color-surface);
-  background-image: linear-gradient(90deg, var(--eol-speedline-base) 0%, color-mix(in srgb, var(--eol-speedline-base) 92%, transparent) 38%, transparent 79%), repeating-conic-gradient(from 265deg at 65% 48%, transparent 0deg 4deg, color-mix(in srgb, var(--eol-manga-highlight, var(--eol-color-accent)) 23%, transparent) 4.2deg 4.65deg, transparent 5deg 9deg);
+  background-image: linear-gradient(90deg, var(--eol-speedline-base) 0%, color-mix(in srgb, var(--eol-speedline-base) 92%, transparent) 38%, transparent 79%), repeating-conic-gradient(from 265deg at 65% 48%, transparent 0deg 4deg, color-mix(in srgb, var(--eol-manga-highlight) 23%, transparent) 4.2deg 4.65deg, transparent 5deg 9deg);
 }
 .eol-manga-sfx {
   display: inline-block;
   padding: .16em .28em .22em;
-  border: var(--eol-manga-sfx-border, 2px solid var(--eol-color-text));
-  background: var(--eol-manga-sfx-background, var(--eol-color-accent));
-  color: var(--eol-manga-sfx-foreground, var(--eol-color-text-inverse));
+  border: var(--eol-manga-sfx-border);
+  background: var(--eol-manga-sfx-background);
+  color: var(--eol-manga-sfx-foreground);
   font-family: var(--eol-font-sans);
   font-size: clamp(2rem, 8vw, 5rem);
   font-style: italic;
   font-weight: 900;
   letter-spacing: -.1em;
   line-height: .85;
-  text-shadow: 2px 2px 0 var(--eol-manga-ink, var(--eol-color-text));
-  box-shadow: var(--eol-manga-sfx-shadow, 3px 3px 0 var(--eol-color-text));
+  text-shadow: 2px 2px 0 var(--eol-manga-ink);
+  box-shadow: var(--eol-manga-sfx-shadow);
   clip-path: polygon(5% 0,100% 7%,91% 36%,100% 52%,91% 100%,0 88%,8% 55%,0 33%);
   transform: rotate(var(--eol-sfx-angle, -8deg));
   animation: eol-manga-pop var(--eol-motion-emphasis) var(--eol-easing-expressive) both;
@@ -173,34 +173,34 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   justify-content: center;
   gap: 28px;
   padding: clamp(1.5rem, 5vw, 3rem);
-  border: 3px solid var(--eol-manga-ink, var(--eol-color-text));
-  background: var(--eol-manga-stage, var(--eol-color-surface-raised));
-  color: var(--eol-manga-stage-foreground, var(--eol-color-text));
-  box-shadow: 8px 8px 0 var(--eol-manga-ink, var(--eol-color-text));
+  border: 3px solid var(--eol-manga-ink);
+  background: var(--eol-manga-stage);
+  color: var(--eol-manga-stage-foreground);
+  box-shadow: 8px 8px 0 var(--eol-manga-ink);
 }
 .eol-manga-loading__sfx { position: absolute; inset-block-start: 1.25rem; inset-inline-end: 1.5rem; --eol-sfx-angle: 8deg; }
-.eol-manga-loading__eyebrow { margin: 0; color: var(--eol-manga-highlight, var(--eol-color-accent)); font: var(--eol-font-weight-bold) var(--eol-font-size-xs)/var(--eol-line-height-normal) var(--eol-font-mono); letter-spacing: var(--eol-letter-spacing-label); }
+.eol-manga-loading__eyebrow { margin: 0; color: var(--eol-manga-highlight); font: var(--eol-font-weight-bold) var(--eol-font-size-xs)/var(--eol-line-height-normal) var(--eol-font-mono); letter-spacing: var(--eol-letter-spacing-label); }
 .eol-manga-loading__title { margin: .25em 0 .5em; font-size: clamp(1.75rem, 4vw, 3rem); letter-spacing: -.04em; }
-.eol-manga-loading__orbit { position: relative; flex: 0 0 auto; width: 94px; height: 94px; border: 4px dashed var(--eol-manga-ink, var(--eol-color-text)); border-radius: 50% 32% 50% 40%; background: var(--eol-manga-highlight, var(--eol-color-accent)); box-shadow: 4px 4px 0 var(--eol-manga-ink, var(--eol-color-text)); animation: eol-spin var(--eol-motion-orbit) var(--eol-easing-linear) infinite; }
-.eol-manga-loading__orbit::before, .eol-manga-loading__orbit::after { position: absolute; inset: 13px; border: 3px solid var(--eol-manga-ink, var(--eol-color-text)); border-radius: 50%; content: ""; transform: rotateX(65deg); }
-.eol-manga-loading__orbit::after { inset: 29px; background: var(--eol-manga-sfx-background, var(--eol-color-accent)); box-shadow: 3px 3px 0 var(--eol-manga-ink, var(--eol-color-text)); }
+.eol-manga-loading__orbit { position: relative; flex: 0 0 auto; width: 94px; height: 94px; border: 4px dashed var(--eol-manga-ink); border-radius: 50% 32% 50% 40%; background: var(--eol-manga-highlight); box-shadow: 4px 4px 0 var(--eol-manga-ink); animation: eol-spin var(--eol-motion-orbit) var(--eol-easing-linear) infinite; }
+.eol-manga-loading__orbit::before, .eol-manga-loading__orbit::after { position: absolute; inset: 13px; border: 3px solid var(--eol-manga-ink); border-radius: 50%; content: ""; transform: rotateX(65deg); }
+.eol-manga-loading__orbit::after { inset: 29px; background: var(--eol-manga-sfx-background); box-shadow: 3px 3px 0 var(--eol-manga-ink); }
 .eol-manga-loading__lines { display: grid; gap: 8px; max-width: 350px; }
-.eol-manga-loading__lines i { height: 9px; border: 1px solid var(--eol-manga-ink, var(--eol-color-text)); background: linear-gradient(90deg, var(--eol-manga-highlight, var(--eol-color-accent)) 0 30%, var(--eol-manga-secondary, var(--eol-color-accent-border)) 50%, var(--eol-manga-sfx-background, var(--eol-color-accent)) 80%); background-size: 220% 100%; animation: eol-shimmer var(--eol-motion-shimmer) var(--eol-easing-in-out) infinite; }
+.eol-manga-loading__lines i { height: 9px; border: 1px solid var(--eol-manga-ink); background: linear-gradient(90deg, var(--eol-manga-highlight) 0 30%, var(--eol-manga-secondary) 50%, var(--eol-manga-sfx-background) 80%); background-size: 220% 100%; animation: eol-shimmer var(--eol-motion-shimmer) var(--eol-easing-in-out) infinite; }
 .eol-manga-loading__lines i:nth-child(2) { width: 82%; }
 .eol-manga-loading__lines i:nth-child(3) { width: 61%; }
 @media (max-width: 800px) { .eol-manga-loading { min-height: 48vh; } }
 @media (max-width: 570px) { .eol-manga-loading { flex-direction: column; align-items: flex-start; justify-content: center; gap: 8px; } .eol-manga-loading__orbit { width: 72px; height: 72px; } }
-.eol-manga-telemetry-hero { --eol-speedline-base: var(--eol-manga-stage, var(--eol-color-surface-raised)); position: relative; display: flex; min-height: 203px; align-items: center; justify-content: space-between; padding: 27px 35px; background-color: var(--eol-manga-stage, var(--eol-color-surface-raised)); color: var(--eol-manga-stage-foreground, var(--eol-color-text)); }
+.eol-manga-telemetry-hero { --eol-speedline-base: var(--eol-manga-stage); position: relative; display: flex; min-height: 203px; align-items: center; justify-content: space-between; padding: 27px 35px; background-color: var(--eol-manga-stage); color: var(--eol-manga-stage-foreground); }
 .eol-manga-telemetry-hero__content { max-width: 780px; }
-.eol-manga-telemetry-hero__eyebrow { margin: 0; color: var(--eol-manga-stage-foreground, var(--eol-color-text)); font: var(--eol-font-size-xs) var(--eol-font-mono); letter-spacing: var(--eol-letter-spacing-label); }
-.eol-manga-telemetry-hero__title { margin: 12px 0 9px; color: var(--eol-manga-stage-foreground, var(--eol-color-text)); font-size: clamp(19px, 2vw, 25px); }
-.eol-manga-telemetry-hero__description { max-width: 560px; margin: 0; color: var(--eol-manga-stage-foreground, var(--eol-color-text)); font-size: var(--eol-font-size-sm); line-height: var(--eol-line-height-relaxed); }
-.eol-manga-telemetry-hero__metadata { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 21px; color: var(--eol-manga-stage-foreground, var(--eol-color-text)); font: 9px var(--eol-font-mono); }
+.eol-manga-telemetry-hero__eyebrow { margin: 0; color: var(--eol-manga-stage-foreground); font: var(--eol-font-size-xs) var(--eol-font-mono); letter-spacing: var(--eol-letter-spacing-label); }
+.eol-manga-telemetry-hero__title { margin: 12px 0 9px; color: var(--eol-manga-stage-foreground); font-size: clamp(19px, 2vw, 25px); }
+.eol-manga-telemetry-hero__description { max-width: 560px; margin: 0; color: var(--eol-manga-stage-foreground); font-size: var(--eol-font-size-sm); line-height: var(--eol-line-height-relaxed); }
+.eol-manga-telemetry-hero__metadata { display: flex; flex-wrap: wrap; gap: 18px; margin-top: 21px; color: var(--eol-manga-stage-foreground); font: 9px var(--eol-font-mono); }
 .eol-manga-telemetry-hero__sfx { position: absolute; z-index: 2; inset-block-start: 14px; inset-inline-end: 22%; --eol-sfx-angle: 8deg; font-size: clamp(1.1rem, 2vw, 1.8rem); }
-.eol-manga-telemetry-hero__orbit { position: relative; display: grid; flex: none; width: 142px; height: 142px; place-items: center; margin-inline-end: 28px; border: 2px solid var(--eol-manga-ink, var(--eol-color-text)); border-radius: 50%; color: var(--eol-manga-ink, var(--eol-color-text)); background: radial-gradient(circle, var(--eol-manga-highlight, var(--eol-color-accent)) 0 35%, color-mix(in srgb, var(--eol-manga-secondary, var(--eol-color-accent-border)) 72%, transparent) 36% 57%, transparent 58%); box-shadow: 4px 4px 0 var(--eol-manga-ink, var(--eol-color-text)); font: 14px var(--eol-font-mono); }
+.eol-manga-telemetry-hero__orbit { position: relative; display: grid; flex: none; width: 142px; height: 142px; place-items: center; margin-inline-end: 28px; border: 2px solid var(--eol-manga-ink); border-radius: 50%; color: var(--eol-manga-ink); background: radial-gradient(circle, var(--eol-manga-highlight) 0 35%, color-mix(in srgb, var(--eol-manga-secondary) 72%, transparent) 36% 57%, transparent 58%); box-shadow: 4px 4px 0 var(--eol-manga-ink); font: 14px var(--eol-font-mono); }
 .eol-manga-telemetry-hero__ring--inner { inset: 12px; }
 .eol-manga-telemetry-hero__ring--outer { inset: -10px; }
-.eol-manga-telemetry-hero__orbit i, .eol-manga-telemetry-hero__orbit b { position: absolute; width: 6px; height: 6px; border: 1px solid var(--eol-manga-ink, var(--eol-color-text)); border-radius: 50%; background: var(--eol-manga-sfx-background, var(--eol-color-accent)); box-shadow: 1px 1px 0 var(--eol-manga-ink, var(--eol-color-text)); }
+.eol-manga-telemetry-hero__orbit i, .eol-manga-telemetry-hero__orbit b { position: absolute; width: 6px; height: 6px; border: 1px solid var(--eol-manga-ink); border-radius: 50%; background: var(--eol-manga-sfx-background); box-shadow: 1px 1px 0 var(--eol-manga-ink); }
 .eol-manga-telemetry-hero__orbit i { inset-block-start: 12px; inset-inline-end: 28px; }
 .eol-manga-telemetry-hero__orbit b { inset-block-end: 20px; inset-inline-start: 22px; width: 4px; height: 4px; }
 @media (max-width: 760px) { .eol-manga-telemetry-hero { min-height: 185px; padding: 20px; } .eol-manga-telemetry-hero__orbit { width: 82px; height: 82px; margin-inline: 10px; font-size: 11px; } .eol-manga-telemetry-hero__ring--inner { inset: 8px; } .eol-manga-telemetry-hero__ring--outer { inset: -7px; } .eol-manga-telemetry-hero__orbit i { inset-block-start: 6px; inset-inline-end: 12px; } .eol-manga-telemetry-hero__sfx { inset-block-start: 8px; inset-inline-end: 12%; font-size: 1.15rem; } }
@@ -405,7 +405,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   .eol-button:hover:not(:disabled) { transform: none; }
   .eol-state__indicator, .eol-skeleton { animation: none; }
   .eol-manga-panel, .eol-manga-surface, .eol-manga-panel--interactive { transition: none; }
-  .eol-manga-panel--interactive:hover { transform: none; box-shadow: 4px 4px 0 var(--eol-manga-ink, var(--eol-color-text)); }
+  .eol-manga-panel--interactive:hover { transform: none; box-shadow: 4px 4px 0 var(--eol-manga-ink); }
   .eol-manga-action, .eol-manga-row { transition: none; }
   .eol-manga-action:hover, .eol-manga-row:hover { transform: none; }
   .eol-manga-reveal, .eol-manga-sfx { animation: none; }
