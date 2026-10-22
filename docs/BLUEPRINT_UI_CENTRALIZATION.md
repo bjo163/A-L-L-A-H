@@ -239,7 +239,7 @@ Owner: maintainer UI + product/design. Dependensi: tidak ada. Gate: inventaris d
 Owner: design + UI maintainer. Dependensi: C00. Gate: satu arah dipilih melalui contoh nyata.
 
 - [ ] **UI-C01-01** — Susun moodboard berlisensi/provenance jelas untuk Empire Ink.
-- [ ] **UI-C01-02** — Buat dua atau tiga eksplorasi dalam fixture hero, tabel, form, dan dialog yang sama.
+- [x] **UI-C01-02** — Buat dua atau tiga eksplorasi dalam fixture hero, tabel, form, dan dialog yang sama.
 - [ ] **UI-C01-03** — Tentukan peran aksen utama, aksen dekoratif, dan warna status.
 - [ ] **UI-C01-04** — Tetapkan hirarki display, heading, body, metadata dan angka.
 - [ ] **UI-C01-05** — Tetapkan anatomi halaman: context, title, summary, primary action, content.
@@ -256,7 +256,7 @@ Owner: design + UI maintainer. Dependensi: C00. Gate: satu arah dipilih melalui 
 Owner: brand/vector designer + maintainer. Dependensi: C01. Gate: master vector dan pedoman dapat dipakai semua konsumen.
 
 - [ ] **UI-C02-01** — Tulis brief makna Empire of the Light, A-L-L-A-H dan 100CENTER.
-- [ ] **UI-C02-02** — Susun eksplorasi aperture, orbit dan monogram tanpa memakai simbol generik sebagai final otomatis.
+- [x] **UI-C02-02** — Susun eksplorasi aperture, orbit dan monogram tanpa memakai simbol generik sebagai final otomatis.
 - [ ] **UI-C02-03** — Nilai konsep memakai scorecard dan simulasi permukaan produk.
 - [ ] **UI-C02-04** — Gambar master mark SVG dengan geometri dan optical correction yang terdokumentasi.
 - [ ] **UI-C02-05** — Buat lockup horizontal, stacked dan mark-only.
@@ -664,8 +664,11 @@ Status penerimaan + tanggal:
 | UI-C00-01 | Revisi dasar workspace `c5ef355` pada branch `dev`; sebelum slice ini working tree hanya memiliki perubahan tiga dokumen blueprint (`docs/BLUEPRINT_UI.md`, `packages/ui/README.md`, dan dokumen ini). | Snapshot sumber telah dikenali dan perubahan yang bukan milik migrasi tidak tercampur. Screenshot baseline belum tersedia; UI-C00-08 tetap terbuka. |
 | UI-C00-02 | `apps/portal/app`: `/`, `/systems`, `/roadmap`, root layout, not-found, serta loading root/systems/roadmap. Komponen bersama: `PrimaryNavigation`, `PortalPageChrome`, `Explorer`, `RouteLoading`. `apps/command-center/src/App.tsx`: views `overview`, `world`, `continuum`, `directory`, `knowledge`, `audit`, `cab`, `research`; login dan pemulihan sesi berada sebelum shell; `ConfirmDialog` ada di shell; resource state muncul di view. Peta berada di `WorldMonitorView.tsx` dan `WorldGlobeMap.tsx`. | Inventaris permukaan kode tersedia. Error boundary Portal, seluruh kombinasi permission/state, dan screenshot alur memerlukan review implementasi tambahan; itu tetap tercatat di item khusus, bukan dianggap teruji oleh inventaris. |
 | UI-C00-03 | Enumerasi `packages/ui/src/index.ts`: 52 baris ekspor bertipe/nilai; consumers `apps/portal`, `apps/command-center`, dan `packages/ui/catalog/main.tsx` memakai package entry `@empire/ui`. Stylesheets diekspor melalui subpath `@empire/ui/styles.css` dan `@empire/ui/manga-theme.css` pada `packages/ui/package.json`. | Export dan consumer entry telah ditemukan. Cakupan contoh katalog per ekspor belum dipetakan; tetap harus ditutup pada UI-C15-04. |
+| UI-C01-02, UI-C02-02 | `packages/ui/src/brand/BrandConcepts.tsx` memuat vector path asli untuk tiga arah (aperture, orbit, monogram). `packages/ui/catalog/main.tsx` menaruhnya dalam fixture sama; tiap arah ditampilkan sebagai lockup A-L-L-A-H, lockup 100CENTER, mark kecil, hero, ringkasan status operasional dengan search field, dan dialog konfirmasi. | Tiga kandidat siap dibandingkan dalam dark/light preview katalog. Bukan logo produksi terpilih; review tampilan di viewport nyata dan keputusan konsep final masih terbuka. |
 
 Dasar bukti di atas adalah pembacaan file dan pencatatan branch/revisi, bukan pengujian visual. ID ini ditutup pada 22 Oktober 2026 sebelum perubahan implementasi; pemeriksaan ulang diperlukan bila baseline/revisi berubah sebelum wave berikutnya.
+
+Pembaruan identitas vector wave W1: `pnpm --filter @empire/ui typecheck`, `pnpm --filter @empire/ui catalog:build`, dan `git diff --check` berhasil. Katalog mengompilasi kandidat SVG sebagai bagian dari package UI. Browser review tidak dilakukan pada sesi login Command Center yang sudah terbuka; perubahan tema dan tampilan tetap menunggu pemeriksaan manual. Kandidat tidak diekspor sebagai logo resmi sampai C02-03 dan keputusan desain berikutnya ditutup.
 
 ## 16. Definisi selesai program
 

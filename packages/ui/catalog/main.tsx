@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
+import { BrandConcepts } from "../src/brand/BrandConcepts";
 import { Badge, Button, buttonClassName, ConfirmDialog, EmptyState, ErrorState, FieldError, FieldLabel, HelpText, LoadingState, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, Notice, Panel, SectionHeading, SelectField, Skeleton, StatGrid, Switch, Tabs, TextArea, TextField } from "../src";
 import "../src/styles.css";
 import "../src/manga-theme.css";
@@ -70,6 +71,17 @@ function Catalog() {
           Preview light theme
         </Switch>
       </header>
+
+      <section className="catalog-section" aria-labelledby="brand-concepts-heading">
+        <div className="catalog-section-heading">
+          <div>
+            <p className="catalog-eyebrow">VECTOR IDENTITY STUDY</p>
+            <h2 id="brand-concepts-heading">One family, three marks</h2>
+          </div>
+          <p>Early SVG concepts shown in portal, operator, and small-icon contexts. These are review candidates, not a selected production logo.</p>
+        </div>
+        <BrandConcepts />
+      </section>
 
       <section className="manga-showcase" aria-label="Manga visual effects preview">
         <MangaEffect as="article" panel screentone className="manga-panel manga-panel--hero">
