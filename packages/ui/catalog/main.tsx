@@ -246,6 +246,12 @@ function Catalog() {
           aside="Shared layout primitives keep page hierarchy consistent while leaving copy and domain details to each app."
         />
         <Panel className="catalog-card catalog-composition">
+          <SectionHeading
+            layout="section"
+            eyebrow="LONG TITLE + ACTION"
+            title="Review long evidence labels without losing the primary action"
+            aside={<Button variant="quiet">Open evidence</Button>}
+          />
           <MangaPageIntro
             className="catalog-intro-demo"
             breadcrumb="Portal / Overview"

@@ -31,6 +31,8 @@
 .eol-page-intro__description { max-width: var(--eol-content-width); margin: 0; color: var(--eol-color-text-muted); font-size: var(--eol-font-size-lg); line-height: var(--eol-line-height-relaxed); }
 .eol-page-intro__actions { display: flex; flex-wrap: wrap; gap: var(--eol-space-3); }
 .eol-section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--eol-space-6); }
+.eol-section-heading--section { margin-block-end: 1.875rem; }
+.eol-section-heading--compact { align-items: center; gap: 0.875rem; margin-block-end: 0.875rem; }
 .eol-section-heading__main { min-width: 0; }
 .eol-section-heading__title { margin: 0; font-size: var(--eol-font-size-3xl); line-height: var(--eol-line-height-tight); letter-spacing: -.045em; }
 .eol-section-heading__aside { max-width: 42ch; color: var(--eol-color-text-muted); line-height: var(--eol-line-height-relaxed); }
