@@ -43,7 +43,7 @@ html[data-theme="light"] body {
 .sat-point { background: var(--eol-color-accent) !important; box-shadow: 0 0 0 2px var(--eol-manga-ink); }
 .visual-coordinates { color: var(--eol-manga-ink) !important; font-weight: 700; text-shadow: 1px 1px var(--eol-manga-highlight); }
 .hero-clarity { color: var(--eol-manga-purple-strong) !important; font-weight: 800; }
-.hero-buttons .btn, .closing-section .btn { border: 2px solid var(--eol-manga-ink); border-radius: var(--eol-radius-none); box-shadow: 4px 4px 0 var(--eol-manga-ink); font-weight: 800; }
+.hero-buttons .eol-button--lg, .closing-section .eol-button--lg { border: 2px solid var(--eol-manga-ink); border-radius: var(--eol-radius-none); box-shadow: 4px 4px 0 var(--eol-manga-ink); font-weight: 800; }
 .eol-button--primary { background: var(--eol-manga-rose) !important; color: var(--eol-manga-ink) !important; }
 .eol-button--primary:hover:not(:disabled) { background: var(--eol-manga-accent-hover) !important; box-shadow: 0 5px 0 var(--eol-manga-ink) !important; }
 .eol-button--secondary { background: var(--eol-manga-highlight) !important; color: var(--eol-manga-ink) !important; border-color: var(--eol-manga-ink) !important; }

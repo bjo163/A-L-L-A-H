@@ -47,7 +47,7 @@ export default async function Home() {
       eyebrow={<>EMPIRE OF THE LIGHT <span className="slash">/</span> GENESIS 05</>}
       title={en ? <>LIVE.<br/><span className="outline-word">LEARN.</span><br/><em>ACT.</em></> : <>HIDUP.<br/><span className="outline-word">BELAJAR.</span><br/><em>BERTINDAK.</em></>}
       description={<><strong>A-L-L-A-H — Accountable Life, Learning &amp; Action Hub</strong> — {en ? "is a proposed hub connecting people, knowledge, and technology through processes that can be examined." : "adalah rancangan hub untuk menghubungkan manusia, pengetahuan, dan teknologi melalui proses yang dapat diperiksa."}</>}
-      actions={<><Link className={buttonClassName("primary", "btn")} href="#ekosistem"><IconText icon="arrowDownRight">{en ? "Explore the ecosystem" : "Jelajahi ekosistem"}</IconText></Link><Link className={buttonClassName("secondary", "btn")} href="/roadmap"><IconText icon="arrowRight">{en ? "See real status" : "Lihat status nyata"}</IconText></Link></>}
+      actions={<><Link className={buttonClassName("primary", "eol-button--lg")} href="#ekosistem"><IconText icon="arrowDownRight">{en ? "Explore the ecosystem" : "Jelajahi ekosistem"}</IconText></Link><Link className={buttonClassName("secondary", "eol-button--lg")} href="/roadmap"><IconText icon="arrowRight">{en ? "See real status" : "Lihat status nyata"}</IconText></Link></>}
       clarity={<>{en ? "DESIGN & RESEARCH" : "RANCANGAN & RISET"} <span className="dot-sep">·</span> {en ? "NO CLAIM THAT HARDWARE IS INSTALLED" : "BUKAN KLAIM PERANGKAT SUDAH TERPASANG"}</>}
       centerLabel={en ? "HUMAN" : "HUB MANUSIA"}
       centerCaption={en ? "LEARNING · ACTION HUB" : "BELAJAR · AKSI"}
@@ -112,7 +112,7 @@ export default async function Home() {
         stage={en ? "CURRENT PRIORITY" : "PRIORITAS SAAT INI"}
         title={en ? "BUILD VERIFIABLE OPERATIONS." : "BANGUN OPERASI YANG DAPAT DIVERIFIKASI."}
         description={en ? "Reviewed authentication and access, database migrations, linked research evidence, and recovery readiness are gates before hardware experiments." : "Autentikasi dan akses yang ditinjau, migrasi basis data, bukti riset yang tertaut, serta kesiapan pemulihan menjadi gerbang sebelum eksperimen perangkat keras."}
-        action={<Link className={buttonClassName("primary", "btn")} href="/roadmap"><IconText icon="arrowUpRight">{en ? "Explore the stages" : "Telusuri tahapan"}</IconText></Link>}
+        action={<Link className={buttonClassName("primary", "eol-button--lg")} href="/roadmap"><IconText icon="arrowUpRight">{en ? "Explore the stages" : "Telusuri tahapan"}</IconText></Link>}
         items={(en ? ["100CENTER & API", "HELIOGRID TELEMETRY", "MATERIAL SIMULATION", "COMPUTING COMPARISON", "INDEPENDENT VALIDATION"] : ["100CENTER & API", "TELEMETRI HELIOGRID", "SIMULASI MATERIAL", "PEMBANDINGAN KOMPUTASI", "VALIDASI INDEPENDEN"]).map((label, index) => ({
           id: `roadmap-${index + 1}`,
           label,
@@ -126,9 +126,9 @@ export default async function Home() {
       title={en ? <>THINK <em>FURTHER.</em><br/>ACT <span>WITH EVIDENCE.</span></> : <>BERPIKIR <em>LEBIH JAUH.</em><br/>BERTINDAK <span>DENGAN BUKTI.</span></>}
       description={en ? "Empire of the Light is a blueprint for human-led research, learning, and services. Every technology claim needs evidence proportionate to reality." : "Empire of the Light adalah blueprint untuk riset, pembelajaran, dan layanan yang dipimpin manusia. Setiap klaim teknologi perlu bukti yang sepadan dengan kenyataannya."}
       actions={<>
-        <Link className={buttonClassName("primary", "btn")} href="/systems"><IconText icon="arrowUpRight">{en ? "Explore the system map" : "Jelajahi peta sistem"}</IconText></Link>
-        <Link className={buttonClassName("secondary", "btn")} href="/roadmap"><IconText icon="arrowUpRight">{en ? "Check readiness" : "Periksa kesiapan"}</IconText></Link>
-        <a className={buttonClassName("secondary", "btn")} target="_blank" rel="noopener noreferrer" href="https://github.com/bjo163/empire-of-the-light"><IconText icon="externalLink">{en ? "Open repository" : "Buka repositori"}</IconText></a>
+        <Link className={buttonClassName("primary", "eol-button--lg")} href="/systems"><IconText icon="arrowUpRight">{en ? "Explore the system map" : "Jelajahi peta sistem"}</IconText></Link>
+        <Link className={buttonClassName("secondary", "eol-button--lg")} href="/roadmap"><IconText icon="arrowUpRight">{en ? "Check readiness" : "Periksa kesiapan"}</IconText></Link>
+        <a className={buttonClassName("secondary", "eol-button--lg")} target="_blank" rel="noopener noreferrer" href="https://github.com/bjo163/empire-of-the-light"><IconText icon="externalLink">{en ? "Open repository" : "Buka repositori"}</IconText></a>
       </>}
     />
   </>;

@@ -105,7 +105,7 @@ export default async function RoadmapPage() {
       eyebrow={en ? "OPEN WORK" : "KERJA TERBUKA"}
       title={en ? "CHANGES CAN BE TRACED." : "PERUBAHAN DAPAT DITELUSURI."}
       description={en ? "Review engineering and research proposals, then follow changes on GitHub. Deployments and scientific results each require their own evidence." : "Tinjau proposal rekayasa dan riset, lalu ikuti perubahannya melalui GitHub. Deployment dan hasil ilmiah membutuhkan bukti masing-masing."}
-      action={<a className={buttonClassName("primary", "btn")} href="https://github.com/bjo163/empire-of-the-light" target="_blank" rel="noopener noreferrer"><IconText icon="externalLink">{en ? "Explore GitHub" : "Jelajahi GitHub"}</IconText></a>}
+      action={<a className={buttonClassName("primary", "eol-button--lg")} href="https://github.com/bjo163/empire-of-the-light" target="_blank" rel="noopener noreferrer"><IconText icon="externalLink">{en ? "Explore GitHub" : "Jelajahi GitHub"}</IconText></a>}
     />
     <PortalPageCrosslinks label={en ? "Related pages" : "Halaman terkait"} links={[
       { href: "/systems", label: en ? "Back to system atlas" : "Kembali ke atlas sistem", icon: "arrowLeft", iconPosition: "start" },

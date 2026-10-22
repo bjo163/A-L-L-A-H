@@ -64,7 +64,7 @@ export default async function SystemsPage() {
       eyebrow={en ? "IMPLEMENTATION IN REPOSITORY" : "IMPLEMENTASI DI REPOSITORI"}
       title={en ? <>ONE <em>MODULAR MONOREPO.</em></> : <>SATU <em>MONOREPO MODULAR.</em></>}
       description={en ? "100CENTER uses React + Vite, this public portal uses Next.js, the local API uses Fastify, and storage uses local PostgreSQL. New research modules remain proposals until contracts and ownership are approved." : "100CENTER memakai React + Vite, portal publik ini memakai Next.js, API lokal memakai Fastify, dan penyimpanan memakai PostgreSQL lokal. Modul riset baru tetap berstatus usulan sampai kontrak dan kepemilikannya disetujui."}
-      actions={<Link className={buttonClassName("primary", "btn")} href="/roadmap"><IconText icon="arrowUpRight">{en ? "Review readiness" : "Tinjau kesiapan"}</IconText></Link>}
+      actions={<Link className={buttonClassName("primary", "eol-button--lg")} href="/roadmap"><IconText icon="arrowUpRight">{en ? "Review readiness" : "Tinjau kesiapan"}</IconText></Link>}
       modules={modules}
       modulesLabel={en ? "Repository modules" : "Modul repositori"}
     />
