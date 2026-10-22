@@ -405,6 +405,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
  .eol-resource-state { display: grid; gap: var(--eol-space-2); padding: var(--eol-space-6); border: var(--eol-border-width) solid var(--eol-color-border); border-radius: var(--eol-radius-md); color: var(--eol-color-text-subtle); background: var(--eol-color-surface); }
 .eol-resource-state strong { color: var(--eol-color-text); }.eol-resource-state p { margin: 0; color: var(--eol-color-text-muted); line-height: var(--eol-line-height-relaxed); }.eol-resource-state__action { margin-top: var(--eol-space-2); }
+.eol-resource-state__content { min-width: 0; }
 .eol-resource-state--error { border-color: var(--eol-status-danger-border); }.eol-resource-state--forbidden { border-color: var(--eol-status-warning-border); }.eol-resource-state--stale, .eol-resource-state--partial { border-color: var(--eol-status-info-border); }
 @media (forced-colors: active) {
   .eol-panel,

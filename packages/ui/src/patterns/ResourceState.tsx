@@ -11,5 +11,5 @@ const defaultCopy: Record<ResourceStateKind, [string, string]> = {
 export function ResourceState({ state, title, description, action, children, className }: ResourceStateProps) {
   if (state === "initial" && children) return <>{children}</>;
   const [defaultTitle, defaultDescription] = defaultCopy[state];
-  return <section className={classNames("eol-resource-state", `eol-resource-state--${state}`, className)} aria-live={state === "loading" ? "polite" : undefined}><strong>{title ?? defaultTitle}</strong><p>{description ?? defaultDescription}</p>{action && <div className="eol-resource-state__action">{action}</div>}</section>;
+  return <section className={classNames("eol-resource-state", `eol-resource-state--${state}`, className)} aria-live={state === "loading" ? "polite" : undefined}>{children && (state === "stale" || state === "partial") && <div className="eol-resource-state__content">{children}</div>}<strong>{title ?? defaultTitle}</strong><p>{description ?? defaultDescription}</p>{action && <div className="eol-resource-state__action">{action}</div>}</section>;
 }
