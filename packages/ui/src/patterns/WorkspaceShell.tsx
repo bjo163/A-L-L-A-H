@@ -38,7 +38,7 @@ export function WorkspaceShell({
     }
   };
 
-  return <div className={classNames("shell", className)}>
+  return <div className={classNames("eol-workspace-shell", className)}>
     <SkipLink targetId={mainId}>{skipLabel}</SkipLink>
     <Button
       ref={toggleRef}
