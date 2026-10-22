@@ -4,9 +4,9 @@
 [![CI](https://github.com/bjo163/A-L-L-A-H/actions/workflows/ci.yml/badge.svg)](https://github.com/bjo163/A-L-L-A-H/actions/workflows/ci.yml)
 [![Security](https://github.com/bjo163/A-L-L-A-H/actions/workflows/security.yml/badge.svg)](https://github.com/bjo163/A-L-L-A-H/actions/workflows/security.yml)
 
-Development follows **dev → main**. Every push that passes CI publishes a version and changelog:
-prereleases from `dev`, stable releases from `main`.
-See [automation guide](docs/AUTOMATION.md) and [releases](https://github.com/bjo163/A-L-L-A-H/releases).
+Development follows **dev → main** through a pull request. CI validates, tests, and builds;
+releases are created manually from `main` when needed. See the [simple workflow](docs/AUTOMATION.md)
+and [releases](https://github.com/bjo163/A-L-L-A-H/releases).
 
 > **One vocabulary. Four source families. Three journey scopes. Four pillars. Shared responsibility.**
 
