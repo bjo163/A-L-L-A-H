@@ -68,6 +68,8 @@ export { Heading, Metadata, Text } from "./patterns/Typography";
 export type { HeadingProps, MetadataProps, TextProps } from "./patterns/Typography";
 export { Container } from "./patterns/Container";
 export type { ContainerProps, ContainerSize } from "./patterns/Container";
+export { CodeBlock, Divider, KeyValueList } from "./patterns/ContentPatterns";
+export type { CodeBlockProps, DividerProps, KeyValueItem, KeyValueListProps } from "./patterns/ContentPatterns";
 export { Grid, Inline, Stack } from "./patterns/Layout";
 export type { GridProps, InlineProps, LayoutSpace, StackProps } from "./patterns/Layout";
 export { StatusIndicator } from "./patterns/StatusIndicator";
