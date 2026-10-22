@@ -145,9 +145,13 @@ export function WorldGlobeMap({ regions, selectedRegionId, onSelectRegion, mapLa
       return;
     }
     mapRef.current = map;
+    const loadingTimeout = window.setTimeout(() => {
+      if (!destroyedRef.current && !mapLoadedRef.current) setMapState("error");
+    }, 12_000);
 
     map.on("load", () => {
       if (destroyedRef.current) return;
+      window.clearTimeout(loadingTimeout);
       map.resize();
       const imagery = mapLayers.find((layer) => layer.id === "nasa-gibs-modis");
       if (imagery && !map.getSource(imagery.id)) {
@@ -159,11 +163,15 @@ export function WorldGlobeMap({ regions, selectedRegionId, onSelectRegion, mapLa
       syncMarkers(map);
     });
     map.on("error", () => {
-      if (!destroyedRef.current && !mapLoadedRef.current) setMapState("error");
+      if (!destroyedRef.current && !mapLoadedRef.current) {
+        window.clearTimeout(loadingTimeout);
+        setMapState("error");
+      }
     });
 
     return () => {
       destroyedRef.current = true;
+      window.clearTimeout(loadingTimeout);
       mapLoadedRef.current = false;
       markersRef.current.forEach((marker) => marker.remove());
       markersRef.current.clear();
