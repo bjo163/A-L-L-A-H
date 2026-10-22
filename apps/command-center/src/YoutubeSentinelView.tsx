@@ -9,7 +9,7 @@ import type {
   YoutubeViolationCategory,
   YoutubeWorkflowStatus,
 } from "@empire/batteries-world-monitor";
-import { Badge, Button, DataTable, type DataTableColumn, EmptyState, Icon, Panel, StatusIndicator } from "@empire/ui";
+import { Badge, Button, DataTable, type DataTableColumn, EmptyState, Icon, MetricGrid, Panel, StatusIndicator } from "@empire/ui";
 
 const api = createApiClient(import.meta.env.VITE_API_ORIGIN || "http://127.0.0.1:4000");
 
@@ -578,40 +578,19 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
       )}
 
       {/* ── Summary Stats ────────────────────────────────────────────────────── */}
-      <div className="metrics world-metrics" style={{ gridTemplateColumns: "repeat(6, minmax(0, 1fr))", marginBottom: 20 }}>
-        <Panel manga as="article">
-          <small>TOTAL VIDEO DIPANTAU</small>
-          <strong>{summary?.totalMonitored ?? items.length}</strong>
-        </Panel>
-        <Panel manga as="article">
-          <small>KRITIS (SYIRIK NYATA)</small>
-          <strong style={{ color: "var(--eol-manga-status-danger-strong)" }}>
-            {summary?.criticalSyirikCount ?? 0}
-          </strong>
-        </Panel>
-        <Panel manga as="article">
-          <small>RISIKO TINGGI (OKULTISME)</small>
-          <strong style={{ color: "var(--eol-manga-status-warning-strong)" }}>
-            {summary?.highRiskCount ?? 0}
-          </strong>
-        </Panel>
-        <Panel manga as="article">
-          <small>HIKMAH &amp; KEBAJIKAN</small>
-          <strong style={{ color: "#4ade80" }}>
-            {summary?.positiveContentCount ?? items.filter((i) => i.direction === "POSITIVE").length}
-          </strong>
-        </Panel>
-        <Panel manga as="article">
-          <small>BANTAHAN DAKWAH TAUHID</small>
-          <strong style={{ color: "var(--eol-manga-status-success-strong)" }}>
-            {summary?.counterDakwahCount ?? 0}
-          </strong>
-        </Panel>
-        <Panel manga as="article">
-          <small>TINDAKAN DIAJUKAN</small>
-          <strong>{summary?.actionTakenCount ?? 0}</strong>
-        </Panel>
-      </div>
+      <MetricGrid
+        className="sentinel-summary"
+        columns={6}
+        density="compact"
+        items={[
+          { label: "Total video dipantau", value: summary?.totalMonitored ?? items.length },
+          { label: "Kritis (syirik nyata)", value: summary?.criticalSyirikCount ?? 0, tone: "danger" },
+          { label: "Risiko tinggi (okultisme)", value: summary?.highRiskCount ?? 0, tone: "warning" },
+          { label: "Hikmah & kebajikan", value: summary?.positiveContentCount ?? items.filter((item) => item.direction === "POSITIVE").length, tone: "success" },
+          { label: "Bantahan dakwah tauhid", value: summary?.counterDakwahCount ?? 0, tone: "success" },
+          { label: "Tindakan diajukan", value: summary?.actionTakenCount ?? 0 },
+        ]}
+      />
 
       {/* ── Scanner Control Panel ────────────────────────────────────────────── */}
       <section className="sentinel-scanner-panel">
