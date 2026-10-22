@@ -97,7 +97,7 @@ export default async function Home() {
       <WorkflowSteps label={en ? "A-L-L-A-H workflow" : "Alur kerja A-L-L-A-H"} items={flow.map((step) => ({ id: step.n, number: step.n, title: step.title, description: step.text }))} />
       <ArchitectureLayers
         items={layers.map((layer, index) => ({ id: layer.code, code: layer.code, title: layer.label, description: layer.detail, href: `/systems#plane-${index + 1}` }))}
-        renderLink={({ href, className, children, key }) => <MangaEffect as={Link} row href={href} className={className} key={key}>{children}</MangaEffect>}
+        renderLink={({ id, href, className, children }) => <MangaEffect as={Link} row href={href} className={className} key={id}>{children}</MangaEffect>}
         orchestrationLabel={en ? "ORCHESTRATION" : "ORKESTRASI"}
         summary={en ? "Seven layers connect through sources, evidence, approval, and governance. Experimental technology remains research." : "Tujuh lapisan saling terhubung lewat sumber, bukti, persetujuan, dan tata kelola. Teknologi eksperimental tetap berstatus riset."}
         action={<Link href="/systems"><IconText icon={<ArrowUpRightIcon />}>{en ? "Explore the seven layers" : "Jelajahi tujuh lapisan"}</IconText></Link>}

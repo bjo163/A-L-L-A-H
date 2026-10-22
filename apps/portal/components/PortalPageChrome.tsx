@@ -36,6 +36,6 @@ export function PortalPageCrosslinks({ links, label = "Tautan terkait" }: { link
   return <PageCrosslinks
     label={label}
     items={links.map((link) => ({ id: link.href, href: link.href, content: <PageLinkLabel link={link} /> }))}
-    renderLink={({ id, href, children }) => <Link key={id} href={href}>{children}</Link>}
+    renderLink={({ id, href, className, children }) => <Link key={id} className={className} href={href}>{children}</Link>}
   />;
 }

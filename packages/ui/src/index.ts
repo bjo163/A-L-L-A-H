@@ -99,6 +99,7 @@ export { ModuleGrid } from "./patterns/ModuleGrid";
 export type { ModuleGridItem, ModuleGridProps } from "./patterns/ModuleGrid";
 export { PageCrosslinks } from "./patterns/PageCrosslinks";
 export type { PageCrosslinkItem, PageCrosslinkLinkProps, PageCrosslinksProps } from "./patterns/PageCrosslinks";
+export type { SharedLinkProps, SharedLinkRenderer } from "./patterns/linkComposition";
 export { RepositoryOverview } from "./patterns/RepositoryOverview";
 export type { RepositoryOverviewProps } from "./patterns/RepositoryOverview";
 export { RoadmapTimeline } from "./patterns/RoadmapTimeline";
