@@ -89,6 +89,7 @@ body { margin: 0; min-width: 0; }
 .icon-gallery__item .eol-icon { color: var(--eol-color-accent); }
 .icon-gallery__item .icon-gallery__muted { flex: none; color: var(--eol-color-text-muted); }
 .icon-gallery__item code { color: var(--eol-color-text-muted); font-size: .68rem; }
+@media (forced-colors: active) { .icon-gallery__item .eol-icon { color: inherit; } }
 .icon-gallery__usage { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; margin-top: 16px; color: var(--eol-color-text-muted); }
 .icon-gallery__usage > span { display: inline-flex; align-items: center; gap: 8px; color: var(--eol-color-text); }
 .icon-gallery__usage > button { display: grid; width: 36px; height: 36px; place-items: center; border: 1px solid var(--eol-color-border-strong); background: var(--eol-color-surface); color: var(--eol-color-text); }
