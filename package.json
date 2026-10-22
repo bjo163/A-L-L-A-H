@@ -8,7 +8,7 @@
     "node": ">=22.12.0"
   },
   "scripts": {
-    "validate": "node scripts/validate.mjs && node scripts/validate-monorepo.mjs && node scripts/validate-batteries-dna.mjs && node scripts/validate-ui-boundary.mjs && node scripts/audit-ui-tokens.mjs && node scripts/validate-ui-assets.mjs && node scripts/validate-ui-svg.mjs && node scripts/audit-ui-contrast.mjs && node scripts/audit-ui-motion.mjs",
+    "validate": "node scripts/validate.mjs && node scripts/validate-monorepo.mjs && node scripts/validate-batteries-dna.mjs && node scripts/validate-ui-boundary.mjs && node scripts/audit-ui-css-duplicates.mjs && node scripts/audit-ui-tokens.mjs && node scripts/validate-ui-assets.mjs && node scripts/validate-ui-svg.mjs && node scripts/audit-ui-contrast.mjs && node scripts/audit-ui-motion.mjs",
     "audit:ui-boundary": "node scripts/validate-ui-boundary.mjs",
     "audit:ui-tokens": "node scripts/audit-ui-tokens.mjs",
     "validate:ui-svg": "node scripts/validate-ui-svg.mjs",
