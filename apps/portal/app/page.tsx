@@ -3,44 +3,12 @@ import { ArchitectureLayers, buttonClassName, CallToAction, Icon, IconText, Iden
 import { Explorer } from "../components/Explorer";
 import { getPortalLanguage } from "../lib/i18n";
 
-const markers = [
-  { number: "07", label: "Lapisan arsitektur" },
-  { number: "06", label: "Domain teknologi" },
-  { number: "04", label: "Keluarga sumber awal" },
-  { number: "01", label: "Otoritas keputusan: manusia" },
-];
-
-const layers = [
-  { code: "P01", label: "MANUSIA & MISI", detail: "Orang, komunitas, perjalanan, mandat, dan keputusan yang bertanggung jawab" },
-  { code: "P02", label: "ARSY · AGENCY & ORKESTRASI", detail: "Agen, alat, alur kerja, konteks eksekusi, kebijakan, dan checkpoint manusia" },
-  { code: "P03", label: "KOMPUTASI", detail: "CPU/GPU sebagai dasar; riset QPU, fotonik, dan protonik sebagai opsi" },
-  { code: "P04", label: "ENERGI HELIOGRID", detail: "Jaringan, surya, baterai, pengukuran, dan model keselamatan" },
-  { code: "P05", label: "MATERIAL FORGE", detail: "Simulasi, kandidat material, eksperimen yang dapat direplikasi" },
-  { code: "P06", label: "PENGETAHUAN & SUMBER", detail: "UNILEX, teks dengan edisi jelas, tradisi, dan sains empiris" },
-  { code: "P07", label: "TATA KELOLA ZIIL", detail: "Persetujuan, privasi, bukti, audit, batas tindakan, dan pemulihan" },
-];
-
-const systems = [
-  { index: "01", id: "arsy", name: "ARSY", descriptor: "Agent Reality System Yard & Orchestration", tag: "RANCANGAN", color: "mint", summary: "Lapisan agency yang merangkai agen, alat, sumber, lingkungan eksekusi, dan alur kerja. Model AI hanyalah salah satu kemampuan dasar di dalam sistem ini." },
-  { index: "02", id: "heliogrid", name: "HELIOGRID", descriptor: "Energi & pengukuran", tag: "RANCANGAN", color: "amber", summary: "Model sistem energi yang mengutamakan meter nyata, jaringan, surya, penyimpanan, dan batas keselamatan." },
-  { index: "03", id: "qrealm", name: "Q-REALM", descriptor: "Riset komputasi", tag: "RISET", color: "violet", summary: "Eksperimen sirkuit dan pembandingan QPU opsional terhadap metode klasik. Proyek ini tidak mengklaim memiliki perangkat kuantum." },
-  { index: "04", id: "forge", name: "MATERIAL FORGE", descriptor: "Penemuan material", tag: "RANCANGAN", color: "rose", summary: "Alur data berlisensi, simulasi, penyaringan kandidat, pengujian laboratorium, dan replikasi independen." },
-  { index: "05", id: "knowledge", name: "UNIVERSAL COSMOS", descriptor: "Pengetahuan & makna", tag: "METADATA", color: "blue", summary: "UNILEX dan empat keluarga sumber yang tetap terpisah: Qur’an, Torah, Mazmur, dan narasi Injil kanonik; referen Injil dalam Islam tidak otomatis disamakan." },
-  { index: "06", id: "ziil", name: "ZIIL", descriptor: "Hak, tinjauan & keselamatan", tag: "FONDASI", color: "gold", summary: "Menjaga persetujuan, privasi, penilaian risiko, banding, audit, dan kendali tindakan tetap pada manusia." },
-];
-
-const flow = [
-  { n: "01", title: "Sumber", text: "Teks, data, dan pengukuran menyimpan asal serta konteksnya." },
-  { n: "02", title: "ARSY", text: "Agen, alat, dan alur kerja dikoordinasikan sesuai mandat; model AI menjadi salah satu kemampuan dasarnya." },
-  { n: "03", title: "100CENTER", text: "Orang yang berwenang meninjau bukti, kesiapan, dan mandat." },
-  { n: "04", title: "Aksi", text: "Keputusan dijalankan manusia, dicatat, dan dapat ditinjau kembali." },
-];
-
-const domainIcons = { arsy: "agent", heliogrid: "activity", qrealm: "spark", forge: "modules", knowledge: "knowledge", ziil: "approval" } as const;
+import { getPortalSystems } from "../lib/portal-systems";
 
 export default async function Home() {
   const language = await getPortalLanguage();
   const en = language === "en";
+  const systems = getPortalSystems(language);
   const markers = en
     ? [{number:"07",label:"Architecture layers"},{number:"06",label:"Technology domains"},{number:"04",label:"Early source families"},{number:"01",label:"Decision authority: humans"}]
     : [{number:"07",label:"Lapisan arsitektur"},{number:"06",label:"Domain teknologi"},{number:"04",label:"Keluarga sumber awal"},{number:"01",label:"Otoritas keputusan: manusia"}];
@@ -60,21 +28,6 @@ export default async function Home() {
     { code: "P05", label: "MATERIAL FORGE", detail: "Simulasi, kandidat material, eksperimen yang dapat direplikasi" },
     { code: "P06", label: "PENGETAHUAN & SUMBER", detail: "UNILEX, teks dengan edisi jelas, tradisi, dan sains empiris" },
     { code: "P07", label: "TATA KELOLA ZIIL", detail: "Persetujuan, privasi, bukti, audit, batas tindakan, dan pemulihan" },
-  ];
-  const systems = en ? [
-    {index:"01",id:"arsy",name:"ARSY",descriptor:"Agent Reality System Yard & Orchestration",tag:"DESIGN",color:"mint",summary:"An agency layer that composes agents, tools, sources, runtime environments, and workflows. AI models are one foundational capability in the system."},
-    {index:"02",id:"heliogrid",name:"HELIOGRID",descriptor:"Energy & measurement",tag:"DESIGN",color:"amber",summary:"An energy system model grounded in real meters, grid power, solar, storage, and safety limits."},
-    {index:"03",id:"qrealm",name:"Q-REALM",descriptor:"Computing research",tag:"RESEARCH",color:"violet",summary:"Circuit experiments and optional QPU comparisons against classical methods. The project does not claim to own quantum hardware."},
-    {index:"04",id:"forge",name:"MATERIAL FORGE",descriptor:"Materials discovery",tag:"DESIGN",color:"rose",summary:"Licensed data flows, simulation, candidate screening, lab testing, and independent replication."},
-    {index:"05",id:"knowledge",name:"UNIVERSAL COSMOS",descriptor:"Knowledge & meaning",tag:"METADATA",color:"blue",summary:"UNILEX and four distinct source families: Qur’an, Torah, Psalms, and canonical Gospel narratives, without automatically equating Islamic references to the Gospel."},
-    {index:"06",id:"ziil",name:"ZIIL",descriptor:"Rights, review & safety",tag:"FOUNDATION",color:"gold",summary:"Keeps consent, privacy, risk assessment, appeal, audit, and action control with people."},
-  ] : [
-    { index: "01", id: "arsy", name: "ARSY", descriptor: "Agent Reality System Yard & Orchestration", tag: "RANCANGAN", color: "mint", summary: "Lapisan agency yang merangkai agen, alat, sumber, lingkungan eksekusi, dan alur kerja. Model AI hanyalah salah satu kemampuan dasar di dalam sistem ini." },
-    { index: "02", id: "heliogrid", name: "HELIOGRID", descriptor: "Energi & pengukuran", tag: "RANCANGAN", color: "amber", summary: "Model sistem energi yang mengutamakan meter nyata, jaringan, surya, penyimpanan, dan batas keselamatan." },
-    { index: "03", id: "qrealm", name: "Q-REALM", descriptor: "Riset komputasi", tag: "RISET", color: "violet", summary: "Eksperimen sirkuit dan pembandingan QPU opsional terhadap metode klasik. Proyek ini tidak mengklaim memiliki perangkat kuantum." },
-    { index: "04", id: "forge", name: "MATERIAL FORGE", descriptor: "Penemuan material", tag: "RANCANGAN", color: "rose", summary: "Alur data berlisensi, simulasi, penyaringan kandidat, pengujian laboratorium, dan replikasi independen." },
-    { index: "05", id: "knowledge", name: "UNIVERSAL COSMOS", descriptor: "Pengetahuan & makna", tag: "METADATA", color: "blue", summary: "UNILEX dan empat keluarga sumber yang tetap terpisah: Qur’an, Torah, Mazmur, dan narasi Injil kanonik; referen Injil dalam Islam tidak otomatis disamakan." },
-    { index: "06", id: "ziil", name: "ZIIL", descriptor: "Hak, tinjauan & keselamatan", tag: "FONDASI", color: "gold", summary: "Menjaga persetujuan, privasi, penilaian risiko, banding, audit, dan kendali tindakan tetap pada manusia." },
   ];
   const flow = en ? [
     {n:"01",title:"Sources",text:"Texts, data, and measurements retain provenance and context."},
@@ -128,10 +81,10 @@ export default async function Home() {
         key={s.id}
         id={s.id}
         index={s.index}
-        accent={s.color as "amber" | "violet" | "rose" | "mint" | "blue" | "gold"}
-        icon={domainIcons[s.id as keyof typeof domainIcons]}
-        status={s.tag}
-        statusTone={s.tag === "RISET" || s.tag === "RESEARCH" ? "warning" : s.tag === "FONDASI" || s.tag === "FOUNDATION" ? "success" : "info"}
+        accent={s.accent}
+        icon={s.icon}
+        status={s.statusLabel}
+        statusTone={s.statusTone}
         descriptor={s.descriptor}
         title={s.name}
         summary={s.summary}
