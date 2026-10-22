@@ -1,5 +1,5 @@
 /* Shared color and manga tokens are imported first by the Portal stylesheet entry. */
-html[data-theme="light"] body {
+html[data-theme="light"] .eol-public-shell {
   background-color: var(--eol-color-background) !important;
   background-image: radial-gradient(color-mix(in srgb, var(--eol-manga-ink) 12%, transparent) .8px, transparent .8px) !important;
 }
@@ -117,7 +117,7 @@ html[data-theme="light"] body {
 
 .eol-public-shell__footer { background: var(--eol-manga-ink) !important; border-top: 3px solid var(--eol-manga-highlight) !important; }
 .eol-public-shell__footer, .eol-public-shell__footer a, .eol-public-shell__footer b, .eol-public-shell__footer p, .eol-public-shell__footer-navigation { color: var(--eol-manga-stage-foreground) !important; }
-html[data-theme="dark"] body { background-color: var(--eol-color-background) !important; background-image: radial-gradient(color-mix(in srgb, var(--eol-color-text) 9%, transparent) .8px, transparent .8px) !important; }
+html[data-theme="dark"] .eol-public-shell { background-color: var(--eol-color-background) !important; background-image: radial-gradient(color-mix(in srgb, var(--eol-color-text) 9%, transparent) .8px, transparent .8px) !important; }
 html[data-theme="dark"] .eol-public-shell__header { background: color-mix(in srgb, var(--eol-color-background) 94%, transparent) !important; }
 html[data-theme="dark"] .identity-row > div, html[data-theme="dark"] .frontier-content, html[data-theme="dark"] .frontier-top { background: color-mix(in srgb, var(--eol-color-surface) 96%, transparent) !important; }
 html[data-theme="dark"] .frontier-content > p:not(.panel-label) { color: var(--eol-color-text-muted) !important; }
