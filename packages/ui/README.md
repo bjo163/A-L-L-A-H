@@ -12,6 +12,8 @@ The visual catalog uses static local fixtures and does not call product APIs. It
 
 The catalog also includes a fabricated Portal homepage and one composition fixture for each Command Center category (Overview, World Monitor, Continuum, Directory, Knowledge, Audit, CAB, and Research). These previews exercise shared patterns only; application authorization, routing, and workflows remain outside the package.
 
+Run `pnpm audit:ui-css` to find repeated property declarations within the same selector and grouping context. The current source audit reports 157 findings; each needs triage before the audit can be used as a clean CI gate.
+
 ## Current exports
 
 - `Button` for consistent native button actions.
