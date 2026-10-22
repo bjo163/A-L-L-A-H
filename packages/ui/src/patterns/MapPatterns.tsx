@@ -30,6 +30,7 @@ export function MapFrame({
   className,
   canvas,
   children,
+  onMotionPausedChange,
 }: {
   title: ReactNode;
   state?: MapFrameState;
@@ -41,10 +42,11 @@ export function MapFrame({
   className?: string;
   canvas?: ReactNode;
   children?: ReactNode;
+  onMotionPausedChange?: (paused: boolean) => void;
 }) {
   const needsFallback = state !== "ready";
   const stateRole = state === "error" || state === "webgl-unavailable" ? "alert" : "status";
-  const motionRef = useMotionVisibility<HTMLElement>();
+  const motionRef = useMotionVisibility<HTMLElement>(true, onMotionPausedChange);
   return (
     <section
       ref={motionRef}

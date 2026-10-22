@@ -10,6 +10,7 @@ import type {
   YoutubeWorkflowStatus,
 } from "@empire/batteries-world-monitor";
 import { Badge, Button, DataTable, type DataTableColumn, EmptyState, MetricGrid, Panel, StatusIndicator, DocumentIcon, DownloadIcon, CopyIcon, IconText, SparkIcon, WarningIcon, AuditIcon, ModulesIcon, CheckIcon, GlobeIcon, ActivityIcon, AgentIcon, ArrowUpRightIcon, ClockIcon, HistoryIcon, KnowledgeIcon, PlusIcon, SettingsIcon, SourceIcon } from "@empire/ui";
+import { MotionRegion } from "@empire/ui/client";
 
 const api = createApiClient(import.meta.env.VITE_API_ORIGIN || "http://127.0.0.1:4000");
 
@@ -647,7 +648,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
         </div>
 
         {scanning && (
-          <div className="sentinel-scanning-banner">
+          <MotionRegion className="sentinel-scanning-banner">
             <div className="sentinel-spinner" />
             <div>
               <strong>
@@ -659,7 +660,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                   : "Menyiapkan koneksi ke YouTube InnerTube API..."}
               </p>
             </div>
-          </div>
+          </MotionRegion>
         )}
 
         <div className="sentinel-presets">

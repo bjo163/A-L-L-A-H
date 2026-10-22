@@ -2,6 +2,16 @@
   "policy": "App-specific class hooks passed to @empire/ui components are listed here with an owner and reason, and are styled only by packages/ui/src. They may compose product layout or named presentation patterns; apps may not define their CSS. Runtime classes must be listed explicitly.",
   "entries": [
     {
+      "consumer": "apps/command-center/src/YoutubeSentinelView.tsx",
+      "component": "MotionRegion",
+      "prop": "className",
+      "classes": [
+        "sentinel-scanning-banner"
+      ],
+      "owner": "command-center",
+      "reason": "Applies the package-owned Sentinel scanning presentation and viewport-aware animation lifecycle to the active status banner."
+    },
+    {
       "consumer": "apps/portal/app/not-found.tsx",
       "component": "Container",
       "prop": "className",

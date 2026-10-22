@@ -13,3 +13,4 @@ export { ThemeControl } from "./patterns/ThemeControl";
 export type { ThemeControlProps } from "./patterns/ThemeControl";
 export { WorkspaceShell } from "./patterns/WorkspaceShell";
 export type { WorkspaceShellProps } from "./patterns/WorkspaceShell";
+export { MotionRegion } from "./patterns/MotionRegion";

@@ -5,6 +5,8 @@
 :where([data-eol-motion-paused="true"]) .eol-skeleton,
 :where([data-eol-motion-paused="true"]) .eol-map-marker__pulse,
 :where([data-eol-motion-paused="true"]) .eol-button__spinner,
+:where([data-eol-motion-paused="true"]).sentinel-scanning-banner,
+:where([data-eol-motion-paused="true"]) .sentinel-spinner,
 :where([data-eol-motion-paused="true"]).eol-manga-reveal {
   animation-play-state: paused !important;
 }

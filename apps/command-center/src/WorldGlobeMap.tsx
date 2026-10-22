@@ -1,4 +1,4 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { MapFrame, MapLegend, type MapFrameState, type MapStatus } from "@empire/ui";
 import { Map as MaplibreMap, Marker, Popup } from "maplibre-gl";
 import type { WorldRegion, WorldMonitoringSnapshot } from "@empire/batteries-world-monitor";
@@ -76,6 +76,12 @@ export function WorldGlobeMap({ regions, selectedRegionId, onSelectRegion, mapLa
   regionsRef.current = regions;
   selectedRegionIdRef.current = selectedRegionId;
   onSelectRegionRef.current = onSelectRegion;
+  const handleMotionPausedChange = useCallback((paused: boolean) => {
+    const map = mapRef.current;
+    if (!map) return;
+    if (paused) map.stop();
+    else map.triggerRepaint();
+  }, []);
 
   function syncMarkers(map: MaplibreMap) {
     const currentRegions = regionsRef.current;
@@ -202,6 +208,7 @@ export function WorldGlobeMap({ regions, selectedRegionId, onSelectRegion, mapLa
       className="world-map-container"
       title="Interactive region map"
       state={mapState}
+      onMotionPausedChange={handleMotionPausedChange}
       stateTitle={mapState === "loading" ? "Connecting to map source" : undefined}
       description={mapState === "error"
         ? "The map source could not be loaded. Use the regional reference list below."
