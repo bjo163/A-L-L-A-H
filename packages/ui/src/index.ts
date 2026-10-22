@@ -106,6 +106,8 @@ export { Heading, Metadata, Text } from "./patterns/Typography";
 export type { HeadingProps, MetadataProps, TextProps } from "./patterns/Typography";
 export { Container } from "./patterns/Container";
 export type { ContainerProps, ContainerSize } from "./patterns/Container";
+export { Section } from "./patterns/Section";
+export type { SectionProps, SectionProfile } from "./patterns/Section";
 export { CodeBlock, Divider, KeyValueList } from "./patterns/ContentPatterns";
 export type { CodeBlockProps, DividerProps, KeyValueItem, KeyValueListProps } from "./patterns/ContentPatterns";
 export { ActionGroup } from "./patterns/ActionGroup";

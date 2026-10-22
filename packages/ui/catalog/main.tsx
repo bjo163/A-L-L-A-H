@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState, type FormEvent } from "react"
 import { createRoot } from "react-dom/client";
 import { BrandConcepts } from "../src/brand/BrandConcepts";
 import { OperationalCategoryFixtures, PortalHomeFixture } from "./PageFixtures";
-import { ActionGroup, ActionLink, ActionPanel, ArchitectureLayers, AuthLayout, Badge, BrandLockup, Button, buttonClassName, CallToAction, Card, Checkbox, ConfirmDialog, Container, DataTable, DecisionSummary, Disclosure, EmptyState, EntityCard, ErrorState, EventList, Field, FieldError, FieldLabel, FilterBar, FormSection, Grid, Heading, HelpText, Icon, IconButton, IconText, iconGroups, IdentityCardGroup, Inline, LiveRegion, Metadata, NavGroup, NavItem, LoadingState, ListDetail, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MangaTelemetryHero, MetricGrid, ModuleGrid, Notice, PageCrosslinks, Panel, Pagination, PortalDomainCard, ReadinessBoard, ReadinessList, RegionSummary, RepositoryOverview, ResourceState, ReviewActions, ResponsiveTabs, RoadmapPreview, RoadmapTimeline, SectionHeading, SelectField, Skeleton, Stack, StatusIndicator, SystemAtlas, SystemDetailPanel, Tabs, TextArea, Text, TextField, ThemeControl, Timeline, WorkflowSteps } from "../src";
+import { ActionGroup, ActionLink, ActionPanel, ArchitectureLayers, AuthLayout, Badge, BrandLockup, Button, buttonClassName, CallToAction, Card, Checkbox, ConfirmDialog, Container, DataTable, DecisionSummary, Disclosure, EmptyState, EntityCard, ErrorState, EventList, Field, FieldError, FieldLabel, FilterBar, FormSection, Grid, Heading, HelpText, Icon, IconButton, IconText, iconGroups, IdentityCardGroup, Inline, LiveRegion, Metadata, NavGroup, NavItem, LoadingState, ListDetail, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MangaTelemetryHero, MetricGrid, ModuleGrid, Notice, PageCrosslinks, Panel, Pagination, PortalDomainCard, ReadinessBoard, ReadinessList, RegionSummary, RepositoryOverview, ResourceState, ReviewActions, ResponsiveTabs, RoadmapPreview, RoadmapTimeline, Section, SectionHeading, SelectField, Skeleton, Stack, StatusIndicator, SystemAtlas, SystemDetailPanel, Tabs, TextArea, Text, TextField, ThemeControl, Timeline, WorkflowSteps } from "../src";
 import "../src/portal.css";
 import "./catalog.css";
 
@@ -304,6 +304,14 @@ function Catalog() {
           aside="Shared layout primitives keep page hierarchy consistent while leaving copy and domain details to each app."
         />
         <Panel className="catalog-card catalog-composition">
+          <Section profile="editorial" aria-labelledby="editorial-rhythm-heading">
+            <Heading as="h3" id="editorial-rhythm-heading">Editorial section rhythm</Heading>
+            <Text>Long-form sections receive generous vertical breathing room and a wider gap between related content.</Text>
+          </Section>
+          <Section profile="operational" aria-labelledby="operational-rhythm-heading">
+            <Heading as="h3" id="operational-rhythm-heading">Operational section rhythm</Heading>
+            <Text>Task-focused sections use a tighter, repeatable vertical interval for dense workflows.</Text>
+          </Section>
           <SectionHeading
             layout="section"
             eyebrow="LONG TITLE + ACTION"

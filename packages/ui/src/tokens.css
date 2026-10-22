@@ -113,6 +113,10 @@
   --eol-layout-container-gutter-narrow: 1.0625rem;
   --eol-layout-grid-gap: var(--eol-space-4);
   --eol-layout-grid-min: 16rem;
+  --eol-section-space-editorial: clamp(4rem, 8vw, 7rem);
+  --eol-section-space-operational: var(--eol-space-8);
+  --eol-section-gap-editorial: var(--eol-space-6);
+  --eol-section-gap-operational: var(--eol-space-4);
   --eol-size-icon-sm: 1rem;
   --eol-size-icon-md: 1.25rem;
   --eol-size-icon-lg: 1.5rem;

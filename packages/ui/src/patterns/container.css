@@ -6,5 +6,8 @@
 .eol-container--reading { --eol-container-width: 48rem; }
 .eol-container--content { --eol-container-width: 76rem; }
 .eol-container--workspace { --eol-container-width: 90rem; }
+.eol-section { display: grid; min-width: 0; gap: var(--eol-section-gap, var(--eol-space-4)); padding-block: var(--eol-section-space, 0); }
+.eol-section[data-profile="editorial"] { --eol-section-gap: var(--eol-section-gap-editorial); --eol-section-space: var(--eol-section-space-editorial); }
+.eol-section[data-profile="operational"] { --eol-section-gap: var(--eol-section-gap-operational); --eol-section-space: var(--eol-section-space-operational); }
 @media (max-width: 68.75rem) { .eol-container { --eol-container-gutter: var(--eol-layout-container-gutter-medium); } }
 @media (max-width: 35.625rem) { .eol-container { --eol-container-gutter: var(--eol-layout-container-gutter-narrow); } }

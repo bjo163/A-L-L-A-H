@@ -29,6 +29,6 @@ export function Inline({ gap = "3", align = "center", justify = "start", classNa
   return <div {...props} className={classNames("eol-inline", className)} data-align={align} data-gap={gap} data-justify={justify} />;
 }
 
-export function Grid({ gap = "4", minItemWidth = "md", className, ...props }: GridProps) {
+export function Grid({ gap, minItemWidth = "md", className, ...props }: GridProps) {
   return <div {...props} className={classNames("eol-grid", className)} data-gap={gap} data-min-item-width={minItemWidth} />;
 }
