@@ -44,6 +44,10 @@ const rolePairs = [
   ['focus', 'background', 3], ['focus', 'surface', 3],
   ['border-strong', 'surface', 3], ['accent-border', 'surface', 3],
 ];
+const fixedFeatureSurfacePairs = [
+  ['feature-panel-start', '--eol-palette-feature-deep-teal'],
+  ['feature-panel-end', '--eol-palette-feature-deep-navy'],
+];
 let failed = false;
 for (const theme of ['dark', 'light']) {
   const vars = new Map(tokens);
@@ -56,6 +60,15 @@ for (const theme of ['dark', 'light']) {
     if (value === null) { console.log(`SKIP ${fgRole}/${bgRole}: non-opaque or unsupported color (${fg} / ${bg})`); continue; }
     const pass = value >= min;
     console.log(`${pass ? 'PASS' : 'FAIL'} ${fgRole}/${bgRole}: ${value.toFixed(2)}:1 (min ${min}:1; ${fg} / ${bg})`);
+    if (!pass) failed = true;
+  }
+  for (const [surfaceRole, surfaceToken] of fixedFeatureSurfacePairs) {
+    const fg = resolve('--eol-color-text-inverse', vars);
+    const bg = resolve(surfaceToken, vars);
+    const value = ratio(fg, bg);
+    if (value === null) { console.log(`SKIP text-inverse/${surfaceRole}: unsupported color (${fg} / ${bg})`); continue; }
+    const pass = value >= 4.5;
+    console.log(`${pass ? 'PASS' : 'FAIL'} text-inverse/${surfaceRole}: ${value.toFixed(2)}:1 (min 4.5:1; ${fg} / ${bg})`);
     if (!pass) failed = true;
   }
   for (const status of ['neutral', 'info', 'success', 'warning', 'danger']) {
