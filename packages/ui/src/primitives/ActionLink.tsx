@@ -1,5 +1,5 @@
 import type { AnchorHTMLAttributes } from "react";
-import { buttonClassName, type ButtonVariant } from "./Button";
+import { buttonClassName, type ButtonVariant } from "./buttonStyles";
 
 export type ActionLinkProps = AnchorHTMLAttributes<HTMLAnchorElement> & {
   variant?: ButtonVariant;

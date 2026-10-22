@@ -2,9 +2,11 @@
 
 import { forwardRef, useCallback, type ButtonHTMLAttributes } from "react";
 import { classNames } from "./classNames";
+import { buttonClassName, type ButtonVariant } from "./buttonStyles";
 import { useMotionVisibility } from "./useMotionVisibility";
 
-export type ButtonVariant = "primary" | "secondary" | "quiet" | "danger";
+export { buttonClassName } from "./buttonStyles";
+export type { ButtonVariant } from "./buttonStyles";
 export type ButtonSize = "sm" | "md" | "lg";
 
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
@@ -12,13 +14,6 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   size?: ButtonSize;
   loading?: boolean;
 };
-
-export function buttonClassName(
-  variant: ButtonVariant = "primary",
-  className?: string,
-) {
-  return classNames("eol-button", `eol-button--${variant}`, className);
-}
 
 export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button({
   children,
