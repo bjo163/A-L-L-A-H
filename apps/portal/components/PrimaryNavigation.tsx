@@ -41,6 +41,10 @@ export function PrimaryNavigation({ language }: { language: PortalLanguage }) {
   }, [pathname]);
 
   useEffect(() => {
+    setLanguagePending(false);
+  }, [language]);
+
+  useEffect(() => {
     const saved = window.localStorage.getItem("eol-theme");
     const current = saved === "light" ? "light" : "dark";
     setTheme(current);
