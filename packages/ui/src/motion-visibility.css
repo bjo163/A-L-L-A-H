@@ -1,0 +1,10 @@
+/* Continuous package motion sleeps outside the viewport and while its document is hidden. */
+:where([data-eol-motion-paused="true"]) .eol-manga-loading__orbit,
+:where([data-eol-motion-paused="true"]) .eol-manga-loading__lines i,
+:where([data-eol-motion-paused="true"]) .eol-state__indicator,
+:where([data-eol-motion-paused="true"]) .eol-skeleton,
+:where([data-eol-motion-paused="true"]) .eol-map-marker__pulse,
+:where([data-eol-motion-paused="true"]) .eol-button__spinner,
+:where([data-eol-motion-paused="true"]).eol-manga-reveal {
+  animation-play-state: paused !important;
+}

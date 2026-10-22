@@ -1,8 +1,11 @@
+"use client";
+
 import type { ReactNode } from "react";
 import { Badge, type BadgeTone } from "../primitives/Badge";
 import { Button } from "../primitives/Button";
 import { CloseIcon } from "../primitives/Icon";
 import { Panel } from "../primitives/Panel";
+import { useMotionVisibility } from "../primitives/useMotionVisibility";
 
 export type MapFrameState = "ready" | "loading" | "empty" | "stale" | "error" | "unavailable" | "webgl-unavailable";
 
@@ -41,8 +44,10 @@ export function MapFrame({
 }) {
   const needsFallback = state !== "ready";
   const stateRole = state === "error" || state === "webgl-unavailable" ? "alert" : "status";
+  const motionRef = useMotionVisibility<HTMLElement>();
   return (
     <section
+      ref={motionRef}
       className={["eol-map-frame", className].filter(Boolean).join(" ")}
       aria-label={typeof title === "string" ? title : "Map"}
       aria-busy={state === "loading"}

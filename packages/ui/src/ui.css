@@ -2,6 +2,7 @@
 @import "./tokens.css";
 @import "./themes.css";
 @import "./styles.css";
+@import "./motion-visibility.css";
 @import "./patterns/maps.css";
 @import "./patterns/icon-text.css";
 @import "./patterns/metric-grid.css";
