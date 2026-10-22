@@ -515,8 +515,8 @@ Owner: UI maintainer. Dependensi: berjalan bersama C02–C14. Gate: package dapa
 - [x] **UI-C15-05** — Tambahkan fixture TelemetryHero, shell, table, ListDetail dan map presentation.
 - [ ] **UI-C15-06** — Tambahkan fixture halaman Portal dan semua kategori view operasi.
 - [ ] **UI-C15-07** — Tambahkan kontrol theme/density/language/viewport untuk reproduksi review.
-- [ ] **UI-C15-08** — Dokumentasikan composition recipe dan contoh anti-pattern override lokal.
-- [ ] **UI-C15-09** — Dokumentasikan status stable/experimental/deprecated setiap API.
+- [x] **UI-C15-08** — Dokumentasikan composition recipe dan contoh anti-pattern override lokal.
+- [x] **UI-C15-09** — Dokumentasikan status stable/experimental/deprecated setiap API.
 - [x] **UI-C15-10** — Simpan seluruh fixture sebagai data fiktif tanpa credential atau data tenant.
 - [x] **UI-C15-11** — Perbarui README package, consumer map dan petunjuk asset generation.
 - [ ] **UI-C15-12** — Hubungkan perubahan API dengan changelog, migration note dan bukti visual.
@@ -720,6 +720,8 @@ Status penerimaan + tanggal:
 | UI-C15-10 | Catalog fixtures memakai copy dan object lokal statis; tidak ada API request, credential, tenant record, atau production data path. | README catalog contract dan source audit terverifikasi. |
 | UI-C15-11 | README memuat export map, component contract, navigation adapters, stylesheet order, token layers, theme/font delivery, consumer map, and asset guidance. | Source audit `packages/ui/README.md`. |
 | UI-C15-05 | Catalog composition and data sections exercise `MangaTelemetryHero`, catalog shell/container, `DataTable`, `ListDetail`, and `MapFrame`/`MapLegend`/`RegionSummary` fixtures using static local data. | `pnpm --filter @empire/ui typecheck` lulus pada fixture slice; map runtime remains mocked and no server is required. |
+| UI-C15-08 | README now provides page intro, operational list, review workflow, and map composition recipes plus explicit anti-patterns for local CSS/token/interaction duplication. | Source audit `packages/ui/README.md`. |
+| UI-C15-09 | README records current API maturity: shared primitives/patterns stable, brand/manga compositions experimental pending visual/provenance review, and no deprecated exports. | Source audit `packages/ui/README.md`. |
 | UI-C13-13 | Research list memakai shared `Panel`, `Badge`, `LoadingState`, `ErrorState`, `EmptyState`, `FieldLabel`, `TextField`, `TextArea`, `SelectField`, `Button`, `Notice`, dan `ConfirmDialog`; create, evidence, completion, approval/rejection, workflow status, dan permission guards tetap berada di app. | Source audit pada `ResearchCard` dan `App.tsx`; `pnpm --filter @empire/command-center typecheck` lulus. |
 | UI-C13-08 | Continuum agent cards memakai shared `Panel`, `Badge`, `Icon`, `MetricGrid`, dan `EmptyState`; invocation form memakai shared `FieldLabel`, `TextField`, dan `Button` dengan permission guard app-owned. | Source audit pada view Continuum dan `pnpm --filter @empire/command-center typecheck` lulus. |
 | UI-C10-01 | `DataTable<Row>` menyediakan typed columns/cell renderer, semantic caption, `scope="col"`, numeric alignment (`start`/`center`/`end`), stable `rowKey`, and table-level empty row. Wrapper memberi horizontal overflow tanpa mengubah table semantics. | `pnpm --filter @empire/ui typecheck` lulus. Consumer migration, caption copy, and narrow-table behavior review masih terbuka pada UI-C10-02/UI-C15-04. |

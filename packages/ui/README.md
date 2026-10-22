@@ -78,6 +78,17 @@ The centralization blueprint tracks the remaining migration and acceptance work.
 
 `@empire/ui` does not own application routing. Portal consumers keep Next.js `Link` behavior and may use `buttonClassName` for shared action styling. Command Center keeps local view selection in application state and uses native buttons for its view switcher. `Breadcrumbs` and `SkipLink` remain router-neutral and use plain anchors, so the package serves both applications without importing a router runtime.
 
+### Composition recipes and API maturity
+
+- **Page intro:** `Container` → `MangaPageIntro` or `PageIntro` → app-owned actions → resource content. Keep route copy, permissions, and data mapping in the app.
+- **Operational list:** `FilterBar` → `DataTable`/`EventList`/`ListDetail` → `Pagination` → explicit `EmptyState` or `ErrorState`. Do not rebuild table headers, disclosure, or pagination semantics in product CSS.
+- **Review workflow:** `FormSection` → shared native fields → `ReviewActions` → `ConfirmDialog` for consequential actions. Keep server authorization and workflow transitions in the app.
+- **Map surface:** `MapFrame` → vendor map runtime owned by the app → `MapLegend`/`RegionSummary`; load the MapLibre adapter only in the Command Center product entry.
+
+Avoid anti-patterns: importing product CSS into a primitive, copying token values into an app stylesheet, using color without a text cue, wrapping a native control in a second interactive control, or moving routing/permission/data policy into this package.
+
+API maturity: primitives and patterns listed in the current contract are **stable** for this workspace; brand concepts and manga compositions remain **experimental** until final visual/provenance review; no export is **deprecated** at this time. Breaking changes require updating consumers, catalog fixtures, and migration notes in the same change.
+
 ## Adding and changing components
 
 Promote a pattern when a real consumer workflow needs it, its interaction or accessibility behavior should stay consistent across applications, and its API can remain independent of product data, routing, and permissions. A primitive may be shared before a second product adopts it when native behavior or accessibility is difficult to reproduce safely; record its first consumer and review another adoption before expanding its API. Keep page composition, product language, artwork, and one-off layouts in the application. A shared component needs a typed contract, named states and keyboard behavior, a catalog example, and a consumer before it is considered ready.
