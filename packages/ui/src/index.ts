@@ -130,6 +130,8 @@ export { PublicShell } from "./patterns/PublicShell";
 export type { PublicShellProps } from "./patterns/PublicShell";
 export { DomainSymbol, domainSymbolNames } from "./patterns/DomainSymbol";
 export type { DomainSymbolName, DomainSymbolProps } from "./patterns/DomainSymbol";
+export { IllustrationFrame, illustrationRatios } from "./patterns/IllustrationFrame";
+export type { IllustrationFit, IllustrationFrameProps, IllustrationRatio } from "./patterns/IllustrationFrame";
 export { WorkspaceShell } from "./patterns/WorkspaceShell";
 export type { WorkspaceShellProps } from "./patterns/WorkspaceShell";
 export { ResponsiveNavigation } from "./patterns/ResponsiveNavigation";
