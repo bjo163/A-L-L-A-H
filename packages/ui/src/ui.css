@@ -1,3 +1,4 @@
-/* Shared public entry: keep the historical cascade order while consuming the package theme. */
+/* Shared public entry: raw tokens, semantic theme aliases, then component styles. */
+@import "./tokens.css";
+@import "./themes.css";
 @import "./styles.css";
-@import "./manga-theme.css";

@@ -1,5 +1,4 @@
 :root {
-  color-scheme: dark;
   font-family: var(--eol-font-sans);
   background: var(--eol-color-background);
   color: var(--eol-color-text);
@@ -7,7 +6,6 @@
   background-image: var(--eol-texture-grid);
   background-size: 28px 28px;
 }
-:root[data-theme="light"] { color-scheme: light; }
 
 * { box-sizing: border-box; }
 body { margin: 0; min-width: 0; }

@@ -3,7 +3,6 @@
   color: var(--eol-color-text);
   background: var(--eol-color-background);
   font-synthesis: none;
-  color-scheme: dark;
 }
 
 * { box-sizing: border-box; }
