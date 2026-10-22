@@ -6,7 +6,7 @@ import { Panel } from "../src/primitives/Panel";
 import { SelectField } from "../src/primitives/SelectField";
 import { TextField } from "../src/primitives/TextField";
 import { empireMarkFullBrandSvg, empireMarkInverseSvg, empireMarkMonochromeSvg, empireMarkSmall16Svg, empireMarkSmall24Svg, empireMarkSmall32Svg } from "../src/brand/BrandAssets.generated";
-import { BrandConceptMark } from "../src/brand/BrandIdentity";
+import { BrandConceptMark, BrandLockupFrame } from "../src/brand/BrandIdentity";
 import type { BrandConcept } from "../src/brand/BrandIdentity";
 
 const conceptNames: Record<BrandConcept, string> = {
@@ -124,18 +124,9 @@ export function BrandConcepts({ language = "en" }: { language?: CatalogLanguage 
             </div>
           </div>
           <div className="brand-concept__previews">
-            <div className="brand-concept__lockup">
-              <BrandConceptMark concept={concept} className="brand-concept__lockup-mark" />
-              <span><strong>A-L-L-A-H</strong><small>PUBLIC PORTAL</small></span>
-            </div>
-            <div className="brand-concept__lockup brand-concept__lockup--compact">
-              <BrandConceptMark concept={concept} className="brand-concept__lockup-mark" />
-              <span><strong>100CENTER</strong><small>OPERATOR WORKSPACE</small></span>
-            </div>
-            <div className="brand-concept__lockup brand-concept__lockup--stacked">
-              <BrandConceptMark concept={concept} className="brand-concept__lockup-mark" />
-              <span><strong>A-L-L-A-H</strong><small>STACKED LOCKUP</small></span>
-            </div>
+            <BrandLockupFrame className="brand-concept__lockup" mark={<BrandConceptMark concept={concept} className="eol-logo-mark" />} name="A-L-L-A-H" descriptor="PUBLIC PORTAL" />
+            <BrandLockupFrame className="brand-concept__lockup brand-concept__lockup--compact" mark={<BrandConceptMark concept={concept} className="eol-logo-mark" />} name="100CENTER" descriptor="OPERATOR WORKSPACE" size="compact" />
+            <BrandLockupFrame className="brand-concept__lockup brand-concept__lockup--stacked" mark={<BrandConceptMark concept={concept} className="eol-logo-mark" />} name="A-L-L-A-H" descriptor="STACKED LOCKUP" layout="stacked" />
             <div className="brand-concept__favicon">
               <BrandConceptMark concept={concept} opticalSize="small" />
               <small>32px</small>
@@ -143,18 +134,12 @@ export function BrandConcepts({ language = "en" }: { language?: CatalogLanguage 
           </div>
           <div className="brand-concept__screens" aria-label={`${conceptNames[concept]} context previews`}>
             <Panel as="section" className="brand-concept__screen brand-concept__screen--hero">
-              <div className="brand-concept__screen-brand">
-                <BrandConceptMark concept={concept} className="brand-concept__screen-mark" />
-                <span>A-L-L-A-H <small>PUBLIC PORTAL</small></span>
-              </div>
+              <BrandLockupFrame className="brand-concept__screen-brand" mark={<BrandConceptMark concept={concept} className="eol-logo-mark" />} name="A-L-L-A-H" descriptor="PUBLIC PORTAL" size="compact" />
               <strong>Human-led,<br />evidence ready.</strong>
               <span aria-hidden="true" className={buttonClassName("secondary")}>Explore systems</span>
             </Panel>
             <Panel as="section" className="brand-concept__screen brand-concept__screen--workspace">
-              <div className="brand-concept__screen-brand">
-                <BrandConceptMark concept={concept} className="brand-concept__screen-mark" />
-                <span>100CENTER <small>OPERATIONS</small></span>
-              </div>
+              <BrandLockupFrame className="brand-concept__screen-brand" mark={<BrandConceptMark concept={concept} className="eol-logo-mark" />} name="100CENTER" descriptor="OPERATIONS" size="compact" />
               <div className="brand-concept__screen-row"><span>API boundary</span><Badge tone="success">Ready</Badge></div>
               <div className="brand-concept__screen-row"><span>Research review</span><Badge tone="warning">Pending</Badge></div>
               <TextField aria-label="Search this view" placeholder="Search this view" readOnly />

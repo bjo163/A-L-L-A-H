@@ -24,17 +24,27 @@ export type BrandLockupProps = {
   className?: string;
 };
 
-/** Shared product lockup; its visible name and descriptor supply its text name. */
-export function BrandLockup({ name, descriptor, size = "regular", layout = "horizontal", tone = "default", className = "" }: BrandLockupProps) {
+/** Package-internal lockup frame used by the catalog to compare provisional marks. */
+export type BrandLockupFrameProps = BrandLockupProps & { mark: ReactNode };
+
+/** Shared lockup structure for catalog-only concept studies; not part of the public barrel. */
+export function BrandLockupFrame({ mark, name, descriptor, size = "regular", layout = "horizontal", tone = "default", className = "" }: BrandLockupFrameProps) {
   const classes = ["eol-brand-lockup", `eol-brand-lockup--${size}`, `eol-brand-lockup--${layout}`, `eol-brand-lockup--${tone}`, className].filter(Boolean).join(" ");
   return (
     <span className={classes}>
-      <span className="eol-brand-lockup__mark" aria-hidden="true"><LogoMark /></span>
+      <span className="eol-brand-lockup__mark" aria-hidden="true">{mark}</span>
       <span className="eol-brand-lockup__text">
         <strong className="eol-brand-lockup__name">{name}</strong>
         <small className="eol-brand-lockup__descriptor">{descriptor}</small>
       </span>
     </span>
+  );
+}
+
+/** Shared product lockup; its visible name and descriptor supply its text name. */
+export function BrandLockup({ name, descriptor, size = "regular", layout = "horizontal", tone = "default", className = "" }: BrandLockupProps) {
+  return (
+    <BrandLockupFrame mark={<LogoMark />} name={name} descriptor={descriptor} size={size} layout={layout} tone={tone} className={className} />
   );
 }
 
