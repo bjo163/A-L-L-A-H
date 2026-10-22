@@ -17,7 +17,11 @@ export function PageNavigationFocus({ navigationKey, mainSelector = "main" }: Pa
     if (previousKey.current === navigationKey) return;
     previousKey.current = navigationKey;
     const frame = requestAnimationFrame(() => {
-      focusNavigationHeading(document.querySelector<HTMLElement>(mainSelector));
+      if (window.location.hash) {
+        focusNavigationAnchor(window.location.hash);
+      } else {
+        focusNavigationHeading(document.querySelector<HTMLElement>(mainSelector));
+      }
     });
     return () => cancelAnimationFrame(frame);
   }, [mainSelector, navigationKey]);
@@ -39,6 +43,7 @@ export function PageNavigationFocus({ navigationKey, mainSelector = "main" }: Pa
     };
     window.addEventListener("hashchange", focusHashDestination);
     document.addEventListener("click", focusClickedHash);
+    scheduleHashFocus(window.location.hash);
     return () => {
       cancelAnimationFrame(frame);
       window.removeEventListener("hashchange", focusHashDestination);
