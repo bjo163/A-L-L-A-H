@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ArchitectureLayers, buttonClassName, Icon, IconText, IdentityCardGroup, MangaEffect, MetricGrid, PortalDomainCard, PortalOrbitHero, SectionHeading, WorkflowSteps } from "@empire/ui";
+import { ArchitectureLayers, buttonClassName, CallToAction, Icon, IconText, IdentityCardGroup, MangaEffect, MetricGrid, PortalDomainCard, PortalOrbitHero, RoadmapPreview, SectionHeading, WorkflowSteps } from "@empire/ui";
 import { Explorer } from "../components/Explorer";
 import { getPortalLanguage } from "../lib/i18n";
 
@@ -154,9 +154,29 @@ export default async function Home() {
     <section className="section section-alt" id="penjelajah"><div className="eol-container"><SectionHeading layout="section" eyebrowClassName="eyebrow" asideClassName="head-aside" eyebrow={<>04 / {en?"SYSTEM EXPLORER":"PENJELAJAH SISTEM"}</>} title={en?<>VIEW <em>INPUTS & OUTPUTS.</em></>:<>LIHAT <em>MASUKAN &amp; HASIL.</em></>} aside={en?<>Choose a domain to see its purpose,<br/>required data, and boundaries.</>:<>Pilih domain untuk melihat tujuan,<br/>data yang diperlukan, dan batasnya.</>} /><Explorer language={language}/><p className="explorer-footer-link"><Link href="/systems"><IconText icon="arrowUpRight">{en?"Open the complete architecture map":"Buka peta arsitektur lengkap"}</IconText></Link><span>{en?"Portal statuses refer to the blueprint, not live equipment monitoring.":"Semua status di portal ini merujuk pada blueprint, bukan pemantauan perangkat langsung."}</span></p></div></section>
 
     <section className="section eol-container" id="peta-jalan"><SectionHeading layout="section" eyebrowClassName="eyebrow" eyebrow={<>05 / {en?"BUILD SEQUENCE":"URUTAN MEMBANGUN"}</>} title={en?<>EVIDENCE FIRST. <em>CAPABILITY FOLLOWS.</em></>:<>BUKTI DULU. <em>KEMAMPUAN MENYUSUL.</em></>} aside={<Link className="text-link" href="/roadmap"><IconText icon="arrowUpRight">{en?"Roadmap & readiness":"Lihat peta jalan &amp; kesiapan"}</IconText></Link>} />
-      <MangaEffect panel className="roadmap-teaser"><div><span className="checkpoint-number">01</span><span className="checkpoint-stage">{en?"CURRENT PRIORITY":"PRIORITAS SAAT INI"}</span><h3>{en?"BUILD VERIFIABLE OPERATIONS.":"BANGUN OPERASI YANG DAPAT DIVERIFIKASI."}</h3><p>{en?"Reviewed authentication and access, database migrations, linked research evidence, and recovery readiness are gates before hardware experiments.":"Autentikasi dan akses yang ditinjau, migrasi basis data, bukti riset yang tertaut, serta kesiapan pemulihan menjadi gerbang sebelum eksperimen perangkat keras."}</p><Link className={buttonClassName("primary", "btn")} href="/roadmap"><IconText icon="arrowUpRight">{en?"Explore the stages":"Telusuri tahapan"}</IconText></Link></div><div className="roadmap-rungs">{(en?["100CENTER & API", "HELIOGRID TELEMETRY", "MATERIAL SIMULATION", "COMPUTING COMPARISON", "INDEPENDENT VALIDATION"]:["100CENTER & API", "TELEMETRI HELIOGRID", "SIMULASI MATERIAL", "PEMBANDINGAN KOMPUTASI", "VALIDASI INDEPENDEN"]).map((x, i) => <div key={x}><span>{String(i + 1).padStart(2, "0")}</span><strong>{x}</strong><small>{i === 0 ? (en?"IMPLEMENTATION GATE":"GERBANG IMPLEMENTASI") : (en?"DESIGN / RESEARCH":"DIRANCANG / RISET")}</small></div>)}</div></MangaEffect>
+      <RoadmapPreview
+        checkpoint="01"
+        stage={en ? "CURRENT PRIORITY" : "PRIORITAS SAAT INI"}
+        title={en ? "BUILD VERIFIABLE OPERATIONS." : "BANGUN OPERASI YANG DAPAT DIVERIFIKASI."}
+        description={en ? "Reviewed authentication and access, database migrations, linked research evidence, and recovery readiness are gates before hardware experiments." : "Autentikasi dan akses yang ditinjau, migrasi basis data, bukti riset yang tertaut, serta kesiapan pemulihan menjadi gerbang sebelum eksperimen perangkat keras."}
+        action={<Link className={buttonClassName("primary", "btn")} href="/roadmap"><IconText icon="arrowUpRight">{en ? "Explore the stages" : "Telusuri tahapan"}</IconText></Link>}
+        items={(en ? ["100CENTER & API", "HELIOGRID TELEMETRY", "MATERIAL SIMULATION", "COMPUTING COMPARISON", "INDEPENDENT VALIDATION"] : ["100CENTER & API", "TELEMETRI HELIOGRID", "SIMULASI MATERIAL", "PEMBANDINGAN KOMPUTASI", "VALIDASI INDEPENDEN"]).map((label, index) => ({
+          id: `roadmap-${index + 1}`,
+          label,
+          status: index === 0 ? (en ? "IMPLEMENTATION GATE" : "GERBANG IMPLEMENTASI") : (en ? "DESIGN / RESEARCH" : "DIRANCANG / RISET"),
+        }))}
+      />
     </section>
 
-    <section className="closing-section"><div className="eol-container"><p className="eyebrow">{en?"A FUTURE BUILT WITH ACCOUNTABILITY":"MASA DEPAN YANG DAPAT DIPERTANGGUNGJAWABKAN"}</p><h2>{en?<>THINK <em>FURTHER.</em><br/>ACT <span>WITH EVIDENCE.</span></>:<>BERPIKIR <em>LEBIH JAUH.</em><br/>BERTINDAK <span>DENGAN BUKTI.</span></>}</h2><p>{en?"Empire of the Light is a blueprint for human-led research, learning, and services. Every technology claim needs evidence proportionate to reality.":"Empire of the Light adalah blueprint untuk riset, pembelajaran, dan layanan yang dipimpin manusia. Setiap klaim teknologi perlu bukti yang sepadan dengan kenyataannya."}</p><div className="closing-actions"><Link className={buttonClassName("primary", "btn")} href="/systems"><IconText icon="arrowUpRight">{en?"Explore the system map":"Jelajahi peta sistem"}</IconText></Link><Link className={buttonClassName("secondary", "btn")} href="/roadmap"><IconText icon="arrowUpRight">{en?"Check readiness":"Periksa kesiapan"}</IconText></Link><a className={buttonClassName("secondary", "btn")} target="_blank" rel="noopener noreferrer" href="https://github.com/bjo163/empire-of-the-light"><IconText icon="externalLink">{en?"Open repository":"Buka repositori"}</IconText></a></div></div></section>
+    <CallToAction
+      eyebrow={en ? "A FUTURE BUILT WITH ACCOUNTABILITY" : "MASA DEPAN YANG DAPAT DIPERTANGGUNGJAWABKAN"}
+      title={en ? <>THINK <em>FURTHER.</em><br/>ACT <span>WITH EVIDENCE.</span></> : <>BERPIKIR <em>LEBIH JAUH.</em><br/>BERTINDAK <span>DENGAN BUKTI.</span></>}
+      description={en ? "Empire of the Light is a blueprint for human-led research, learning, and services. Every technology claim needs evidence proportionate to reality." : "Empire of the Light adalah blueprint untuk riset, pembelajaran, dan layanan yang dipimpin manusia. Setiap klaim teknologi perlu bukti yang sepadan dengan kenyataannya."}
+      actions={<>
+        <Link className={buttonClassName("primary", "btn")} href="/systems"><IconText icon="arrowUpRight">{en ? "Explore the system map" : "Jelajahi peta sistem"}</IconText></Link>
+        <Link className={buttonClassName("secondary", "btn")} href="/roadmap"><IconText icon="arrowUpRight">{en ? "Check readiness" : "Periksa kesiapan"}</IconText></Link>
+        <a className={buttonClassName("secondary", "btn")} target="_blank" rel="noopener noreferrer" href="https://github.com/bjo163/empire-of-the-light"><IconText icon="externalLink">{en ? "Open repository" : "Buka repositori"}</IconText></a>
+      </>}
+    />
   </>;
 }
