@@ -118,6 +118,8 @@ export { Breadcrumbs, NavGroup, NavItem, SkipLink } from "./patterns/Navigation"
 export type { BreadcrumbItem, BreadcrumbsProps, NavGroupProps, NavItemProps, SkipLinkProps } from "./patterns/Navigation";
 export { PublicShell } from "./patterns/PublicShell";
 export type { PublicShellProps } from "./patterns/PublicShell";
+export { WorkspaceShell } from "./patterns/WorkspaceShell";
+export type { WorkspaceShellProps } from "./patterns/WorkspaceShell";
 export { ResponsiveNavigation } from "./patterns/ResponsiveNavigation";
 export type { ResponsiveNavigationProps } from "./patterns/ResponsiveNavigation";
 export { ThemeBootstrap } from "./patterns/ThemeBootstrap";
