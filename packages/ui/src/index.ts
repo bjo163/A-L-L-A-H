@@ -90,6 +90,8 @@ export { FilterBar } from "./patterns/FilterBar";
 export type { FilterBarProps } from "./patterns/FilterBar";
 export { ListDetail } from "./patterns/ListDetail";
 export type { ListDetailProps } from "./patterns/ListDetail";
+export { Disclosure } from "./patterns/Disclosure";
+export type { DisclosureProps } from "./patterns/Disclosure";
 export { Grid, Inline, Stack } from "./patterns/Layout";
 export type { GridProps, InlineProps, LayoutSpace, StackProps } from "./patterns/Layout";
 export { StatusIndicator } from "./patterns/StatusIndicator";
