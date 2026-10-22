@@ -2,6 +2,12 @@
 
 Shared React primitives and visual tokens for the public portal and 100CENTER.
 
+## Active centralization plan
+
+The [UI centralization blueprint](../../docs/BLUEPRINT_UI_CENTRALIZATION.md) defines the target ownership of all product presentation, including brand SVGs, icons, illustrations, tokens, themes, component variants, page patterns, and layouts in this package. Portal and Command Center retain routing, product content, data, permissions, and workflows. Its `UI-Cxx-yy` checklist covers migration, acceptance evidence, and removal of duplicate visual implementations.
+
+This is a planned migration. The current implementation and historical guidance below still describe app-local styles and artwork; that guidance is superseded for new presentation work by the centralization blueprint. Existing contrast measurements are historical and must be rechecked against the final token/theme version before acceptance. Proposed APIs and asset paths in the blueprint are not yet exports of this package.
+
 ## Current exports
 
 - `Button` for consistent native button actions.
