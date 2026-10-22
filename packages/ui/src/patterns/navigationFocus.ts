@@ -25,5 +25,6 @@ export function focusNavigationAnchor(hash: string) {
   const target = document.getElementById(id);
   if (!target || !(target instanceof HTMLElement)) return;
   if (!target.matches("a[href], button, input, select, textarea, summary, [tabindex], [contenteditable=true]")) target.tabIndex = -1;
+  target.scrollIntoView({ block: "start", behavior: "auto" });
   target.focus({ preventScroll: true });
 }
