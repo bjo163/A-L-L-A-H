@@ -21,6 +21,7 @@
     "roles",
     "permissions",
     "users",
+    "tenants",
     "partners",
     "user_roles",
     "role_permissions",
@@ -29,7 +30,6 @@
     "legacy_dictionary_imports",
     "lexicons",
     "auth_sessions",
-    "tenants",
     "tenant_memberships",
     "module_installations"
     ,"world_monitor_observations"

@@ -36,6 +36,32 @@ const inlineSvgPattern = /<\s*svg\b/i;
 const embeddedStylePattern = /<\s*style\b/i;
 const literalColorPattern = /#(?:[\da-f]{3}|[\da-f]{4}|[\da-f]{6}|[\da-f]{8})\b|\b(?:rgb|rgba|hsl|hsla)\s*\(|(?:linear|radial|conic)-gradient\s*\(/i;
 const stylesheetImports = new Map([...requiredStylesheetEntries.keys()].map((app) => [app, new Map()]));
+const nonCanonicalStylesheetImports = [];
+const sharedEntryPath = join(root, "packages/ui/src/ui.css");
+const sharedEntrySource = readFileSync(sharedEntryPath, "utf8");
+const requiredProductStyles = [
+  "./products/portal-globals.css",
+  "./products/portal-manga.css",
+  "./products/command-center.css",
+];
+const sharedImportErrors = [];
+const sharedImportCounts = new Map();
+const sharedImportPositions = new Map();
+for (const match of sharedEntrySource.matchAll(/^\s*@import\s+(?:url\()?["']([^"']+)["']\)?\s*;/gm)) {
+  const specifier = match[1];
+  if (requiredProductStyles.includes(specifier)) {
+    sharedImportCounts.set(specifier, (sharedImportCounts.get(specifier) ?? 0) + 1);
+    if (!sharedImportPositions.has(specifier)) sharedImportPositions.set(specifier, match.index);
+  }
+}
+for (const specifier of requiredProductStyles) {
+  const count = sharedImportCounts.get(specifier) ?? 0;
+  if (count !== 1) sharedImportErrors.push(`packages/ui/src/ui.css must import ${specifier} exactly once (found ${count})`);
+}
+const sharedProductOrder = requiredProductStyles.map((specifier) => sharedImportPositions.get(specifier) ?? -1);
+if (sharedProductOrder.some((position) => position < 0) || sharedProductOrder.some((position, index) => index > 0 && position < sharedProductOrder[index - 1])) {
+  sharedImportErrors.push("packages/ui/src/ui.css must preserve product cascade order: portal globals → Portal profile → Command Center profile");
+}
 for (const file of files) {
   const source = readFileSync(file, "utf8");
   if (forbidden.some((pattern) => pattern.test(source))) throw new Error(`Forbidden UI boundary import in ${relative(root, file)}`);
@@ -49,13 +75,19 @@ for (const file of files) {
   for (const statement of sourceFile.statements) {
     if (!ts.isImportDeclaration(statement) || !ts.isStringLiteral(statement.moduleSpecifier)) continue;
     const specifier = statement.moduleSpecifier.text;
+    if (/\.css(?:\?.*)?$/i.test(specifier) && specifier !== "@empire/ui/ui.css") {
+      nonCanonicalStylesheetImports.push(`${consumer} imports non-canonical stylesheet ${specifier}; import @empire/ui/ui.css only from the root layout`);
+    }
+    if (/^@empire\/ui\/ui\.css$/.test(specifier) && consumer !== `${app}/app/layout.tsx`) {
+      nonCanonicalStylesheetImports.push(`${consumer} must not import @empire/ui/ui.css; import it only from ${app}/app/layout.tsx`);
+    }
     if (!/^@empire\/ui\/ui\.css$/.test(specifier)) continue;
     const imports = stylesheetImports.get(app);
     imports.set(specifier, (imports.get(specifier) ?? 0) + 1);
   }
 }
 if (parallelVisualSources.length) throw new Error(`Consumer visual source must stay in @empire/ui:\n- ${parallelVisualSources.join("\n- ")}`);
-const stylesheetErrors = [];
+const stylesheetErrors = [...sharedImportErrors, ...nonCanonicalStylesheetImports];
 for (const [app, required] of requiredStylesheetEntries) {
   const imports = stylesheetImports.get(app);
   for (const entry of required) {

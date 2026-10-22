@@ -4,7 +4,7 @@
 **Branch policy:** `dev` → reviewed PR → `main`  
 **Owner of visual implementation:** `packages/ui` / `@empire/ui`  
 **Consumers in this plan:** Portal and Command Center  
-**Status:** execution plan; partial wiring changes are committed to `dev`, but full validation and visual acceptance remain open.  
+**Status:** active implementation; stylesheet-entry enforcement, product-selector scoping enforcement, CSS duplicate enforcement, and Command Center theme bootstrap are implemented. Full CI Quality checks, all three Docker image builds, and CodeQL passed on commit `547715943a9b35bc6c268daa023d11a8ba03f9ff`. Full browser visual acceptance and compiled CSS output inspection remain open.
 **Related authority:** [UI Centralization Blueprint](BLUEPRINT_UI_CENTRALIZATION.md), [UI Blueprint](BLUEPRINT_UI.md), [ADR-0004](adr/ADR-0004-ui-package-centralization.md), [ADR-0005](adr/ADR-0005-extreme-funky-grunge-gen-z-pilot.md).
 
 ## 1. Executive decision
@@ -97,9 +97,9 @@ Tasks:
 - [x] Ensure Portal root layout imports `@empire/ui/ui.css`.
 - [x] Ensure Command Center root layout imports `@empire/ui/ui.css`.
 - [x] Remove the duplicate Command Center import from `src/App.tsx`.
-- [ ] Run package and application typechecks/builds after the import change.
-- [ ] Verify Next.js production builds include both product styles without CSS ordering/build errors.
-- [ ] Confirm no direct app import of `portal-manga.css` or `command-center.css`.
+- [x] Run package and application typechecks/builds after the import change. Verified by CI run [39856531963](https://github.com/bjo163/A-L-L-A-H/actions/runs/39856531963) on commit `1c848708b6bf79555cebceb4fc41463db50e72a9`.
+- [x] Verify both Next.js production builds compile without CSS ordering/build errors. Both Portal and Command Center production builds completed successfully in the same CI run; this confirms compilation, not full computed-style correctness.
+- [x] Confirm no direct app import of `portal-manga.css` or `command-center.css`. The UI boundary validator enforces root-layout-only `@empire/ui/ui.css` imports and rejects alternate consumer CSS imports.
 - [ ] Capture the compiled CSS order and check for duplicate loading in built output.
 
 **Exit gate:** both production builds succeed; one intended global import per app; the shared entry resolves in both consumers.
@@ -209,13 +209,13 @@ Tasks:
 **Purpose:** stop visual ownership from drifting back into the apps.
 
 Tasks:
-- [ ] Keep `pnpm audit:ui-css` and `pnpm audit:ui-boundary` green.
-- [ ] Add/extend a test that checks exactly one shared stylesheet import per consumer root layout.
-- [ ] Detect direct product stylesheet imports from apps and reject new consumer-owned CSS files except documented runtime/vendor exceptions.
+- [x] Keep `pnpm audit:ui-css`, `pnpm audit:ui-boundary`, and product selector-scope audit green. The boundary, product-scope, duplicate-CSS, token, SVG/assets, contrast, and motion audits passed within `pnpm validate` on commit `547715943a9b35bc6c268daa023d11a8ba03f9ff`.
+- [x] Add/extend a test that checks exactly one shared stylesheet import per consumer root layout. `scripts/validate-ui-boundary.mjs` checks both root imports, rejects imports from other app files, verifies the product CSS entries occur once, and checks the declared cascade order.
+- [x] Detect direct product stylesheet imports from apps and reject new consumer-owned CSS files except documented runtime/vendor exceptions. The current validator rejects direct app CSS imports and app-owned presentation stylesheets.
 - [ ] Check exported shared components and CSS selectors against actual consumer use before deleting compatibility APIs.
-- [ ] Run package tests, application tests, typecheck, build, root validation, dependency audit and Docker image builds.
-- [ ] Ensure tests catch invalid/missing tokens and accidental cross-product selector leakage where feasible.
-- [ ] Treat static audits as guardrails, not substitutes for browser screenshot review.
+- [x] Run package tests, application tests, typecheck, build, root validation, dependency audit and Docker image builds. CI run [39857806762](https://github.com/bjo163/A-L-L-A-H/actions/runs/39857806762) passed quality checks and API, Portal, and Command Center Docker image builds; security run [39857806782](https://github.com/bjo163/A-L-L-A-H/actions/runs/39857806782) passed CodeQL.
+- [x] Ensure tests catch invalid/missing tokens and accidental cross-product selector leakage where feasible. Token-reference audit and product selector-scope audit are now part of `pnpm validate`; rendered-context contrast and visual leakage still require browser acceptance.
+- [x] Treat static audits as guardrails, not substitutes for browser screenshot review. The Definition of Done and review matrix keep browser, assistive-technology, and product sign-off as separate gates.
 
 **Exit gate:** the relevant CI workflow is green for the latest commit, including both app builds and Docker builds; exceptions are documented and scoped.
 
@@ -300,6 +300,6 @@ The work is complete only when **all** are true:
 3. Capture current Portal and Command Center baseline screenshots in light/dark and mobile/desktop.
 4. Validate build output and computed styles for both consumers.
 5. Fix any evidenced regressions in the canonical package source, not by adding consumer-local CSS.
-6. Proceed through phases 2–7 in small reviewable slices and keep PR #5 draft until its stated gates are met.
+6. Proceed through phases 2–7 in small reviewable slices and keep [PR #6](https://github.com/bjo163/A-L-L-A-H/pull/6) in Draft until its stated gates are met.
 
-**Current truth:** stylesheet ownership and import placement have been corrected in source. The full two-consumer design-system migration is **not yet certified complete** until the gates and evidence above are satisfied.
+**Current truth (2026-10-23):** both consumers use the shared root-layout entry; the Command Center bootstraps the stored theme before first paint; the import contract is enforced automatically. Full CI Quality checks, dependency audit, product CSS selector-scope audit, duplicate-CSS audit, typechecks/builds, and API/Portal/Command Center Docker image builds passed on commit `547715943a9b35bc6c268daa023d11a8ba03f9ff`; CodeQL also passed. Compiled CSS inspection, fresh post-change screenshots, full authenticated route/state visual review, assistive-technology review, and product/design sign-off remain open. The full two-consumer design-system migration is **not yet certified complete**.

@@ -12,17 +12,22 @@ From the repository root, copy `infra/docker.env.example` to `.env`. Set `POSTGR
 
 Start the stack:
 
+For a new database, also set distinct `EMPIRE_OWNER_PASSWORD` and
+`EMPIRE_ARCHITECT_PASSWORD` values in `.env` (or Coolify environment variables).
+They provision the `4-lah` and `shadow` operator accounts. Existing accounts keep
+their current passwords; the variables do not reset them on restart.
+
 ```sh
-docker compose --env-file .env -f infra/compose.yaml config
-docker compose --env-file .env -f infra/compose.yaml up -d --build
-docker compose --env-file .env -f infra/compose.yaml ps
+docker compose --project-directory . --env-file .env -f infra/compose.yaml config
+docker compose --project-directory . --env-file .env -f infra/compose.yaml up -d --build
+docker compose --project-directory . --env-file .env -f infra/compose.yaml ps
 ```
 
 Default host URLs are `http://localhost:3300` (Portal), `http://localhost:3400` (Command Center), and `http://localhost:4000` (API). PostgreSQL has no published host port. The API is bound to `0.0.0.0` inside its container and published on loopback by default. The frontend's API URL is embedded at build time, so rebuild the Command Center after changing `PUBLIC_API_ORIGIN`:
 
 ```sh
-docker compose --env-file .env -f infra/compose.yaml build --no-cache command-center
-docker compose --env-file .env -f infra/compose.yaml up -d command-center
+docker compose --project-directory . --env-file .env -f infra/compose.yaml build --no-cache command-center
+docker compose --project-directory . --env-file .env -f infra/compose.yaml up -d command-center
 ```
 
 The API runs its existing enabled-module schema synchronization during startup. Review database preflight and backup requirements in [AUTOMATION.md](AUTOMATION.md) before using this stack with existing or valuable data. Compose does not automatically apply the legacy dictionary migration.
@@ -30,12 +35,22 @@ The API runs its existing enabled-module schema synchronization during startup. 
 ## Health and logs
 
 ```sh
-docker compose --env-file .env -f infra/compose.yaml ps
-docker compose --env-file .env -f infra/compose.yaml logs --follow api
-docker compose --env-file .env -f infra/compose.yaml logs --follow portal command-center
+docker compose --project-directory . --env-file .env -f infra/compose.yaml ps
+docker compose --project-directory . --env-file .env -f infra/compose.yaml logs --follow api
+docker compose --project-directory . --env-file .env -f infra/compose.yaml logs --follow portal command-center
 ```
 
 The API health check uses `/v1/readiness`, which also checks the current database schema. Keep the default single API instance: YouTube scan rate limits are process-local. Horizontal replicas require a shared limiter first.
+
+If Compose reports `dependency api failed to start`, inspect the API log above:
+the dependent frontends are waiting for API readiness. In particular,
+`ERR_MODULE_NOT_FOUND` for `batteries-world-monitor/src/types.js` indicates an old
+image whose World Monitor entry points at TypeScript source. The package now builds
+and exports `dist/index.js`; rebuild the API and Command Center from the updated
+source. Increasing the health-check timeout cannot repair a missing runtime module.
+Fresh provisioning also creates `tenants` before `partners`, which references it.
+If startup asks for `EMPIRE_OWNER_PASSWORD` or `EMPIRE_ARCHITECT_PASSWORD`, provide
+the two first-provisioning passwords above and redeploy.
 
 ## Backup and restore
 
@@ -43,7 +58,7 @@ Take a PostgreSQL backup and a separate archive of uploaded private files before
 
 ```sh
 mkdir -p backups
-docker compose --env-file .env -f infra/compose.yaml exec -T postgres pg_dump -U empire -d empire -Fc > backups/empire.dump
+docker compose --project-directory . --env-file .env -f infra/compose.yaml exec -T postgres pg_dump -U empire -d empire -Fc > backups/empire.dump
 docker run --rm -v empire-of-the-light_private_files:/source:ro -v "${PWD}/backups:/backup" busybox tar czf /backup/private-files.tgz -C /source .
 ```
 
@@ -52,8 +67,8 @@ The second command assumes the default Compose project name (`empire-of-the-ligh
 For a restore, stop all application services first and restore into a disposable/test stack or a deliberately selected empty database. Do not run a destructive restore against a live database as a routine update:
 
 ```sh
-docker compose --env-file .env -f infra/compose.yaml stop api portal command-center
-docker compose --env-file .env -f infra/compose.yaml exec -T postgres pg_restore -U empire -d empire --clean --if-exists < backups/empire.dump
+docker compose --project-directory . --env-file .env -f infra/compose.yaml stop api portal command-center
+docker compose --project-directory . --env-file .env -f infra/compose.yaml exec -T postgres pg_restore -U empire -d empire --clean --if-exists < backups/empire.dump
 docker run --rm -i -v empire-of-the-light_private_files:/target busybox sh -c 'tar xzf - -C /target' < backups/private-files.tgz
 ```
 
@@ -62,11 +77,13 @@ Restore the private-files archive into the corresponding volume with a one-off h
 ## Stop and update
 
 ```sh
-docker compose --env-file .env -f infra/compose.yaml down
-docker compose --env-file .env -f infra/compose.yaml build --pull
-docker compose --env-file .env -f infra/compose.yaml up -d --build
+docker compose --project-directory . --env-file .env -f infra/compose.yaml down
+docker compose --project-directory . --env-file .env -f infra/compose.yaml build --pull
+docker compose --project-directory . --env-file .env -f infra/compose.yaml up -d --build
 ```
 
 `down` preserves named volumes. `down -v` deletes the database and private-file volumes and must not be used as a normal stop command. Keep the previous image/build and the database/file backup available for rollback; an image rollback alone may not reverse a schema change.
 
-This deployment baseline has not yet been exercised with Docker Engine in the development workspace. Compose validation, image builds, service health, browser access, and volume restore remain acceptance checks in the grand plan.
+CI builds all three application images and verifies API readiness against disposable
+PostgreSQL. Public-domain access, browser workflows, and backup/restore still need
+deployment-specific acceptance checks.

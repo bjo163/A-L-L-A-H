@@ -6,6 +6,12 @@ import { fileURLToPath } from "node:url";
 
 const root = resolve(fileURLToPath(new URL(".", import.meta.url)), "..");
 
+test("production JavaScript entry loads without a TypeScript loader", async () => {
+  const runtime = await import("@empire/batteries-world-monitor");
+  assert.equal(typeof runtime.scanYoutube, "function");
+  assert.equal(typeof runtime.getWorldMonitoringSnapshot, "function");
+});
+
 test("batteries-world-monitor package structure and types are valid", () => {
   const pkg = JSON.parse(readFileSync(resolve(root, "package.json"), "utf8"));
   assert.equal(pkg.name, "@empire/batteries-world-monitor");
