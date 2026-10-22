@@ -8,6 +8,14 @@ const uiRoot = resolve(root, "packages/ui");
 const manifest = JSON.parse(await readFile(resolve(uiRoot, "assets/asset-manifest.json"), "utf8"));
 const errors = [];
 const read = (path) => readFile(resolve(uiRoot, path), "utf8");
+function svgSafetyErrors(markup, label) {
+  const findings = [];
+  if (/<\s*(script|foreignObject|image|use|iframe|object|embed)\b/i.test(markup)) findings.push(`${label}: disallowed active, embedded, or reference-based SVG element`);
+  if (/\son[a-z0-9:_-]+\s*=/i.test(markup)) findings.push(`${label}: inline SVG event handler is not allowed`);
+  if (/\b(?:href|xlink:href)\s*=\s*(["']?)(?!#)[^\s>]+/i.test(markup)) findings.push(`${label}: SVG reference must not point outside the vector`);
+  if (/url\s*\(\s*["']?(?!#)[^)]+\)/i.test(markup)) findings.push(`${label}: SVG CSS URL must be a local fragment reference`);
+  return findings;
+}
 const inventory = async (entry, pattern, label) => {
   const source = await read(entry.source);
   const match = source.match(pattern);
@@ -127,7 +135,7 @@ if (manifest.vectors.brandMaster?.source !== "assets/source/brand/orbit.svg" || 
 try {
   const master = await read("assets/source/brand/orbit.svg");
   if (!/<svg\b[^>]*viewBox="0 0 72 72"/i.test(master)) errors.push("editable Orbit SVG master requires viewBox 0 0 72 72");
-  if (/<(?:script|foreignObject|image|use)\b/i.test(master) || /\b(?:href|xlink:href)=/i.test(master)) errors.push("editable Orbit SVG master contains an external or unsafe element/reference");
+  errors.push(...svgSafetyErrors(master, "editable Orbit SVG master"));
 } catch { errors.push("editable Orbit SVG master is missing"); }
 const manifestOutputs = (manifest.vectors.brandMaster?.assetOutputs ?? []).slice().sort();
 const generatedSvgOutputs = manifest.generatedFiles.filter(({ path }) => path.startsWith(`${manifest.generatedAssetDirectory}/`)).map(({ path }) => path).sort();
@@ -136,7 +144,7 @@ for (const asset of manifest.generatedFiles) {
   if (!asset.path.endsWith(".svg")) continue;
   const contents = await readFile(resolve(uiRoot, asset.path), "utf8").catch(() => "");
   if (!contents.startsWith("<svg ") || !contents.includes("viewBox=\"0 0 72 72\"")) errors.push(`generated SVG requires a 72-unit master viewBox: ${asset.path}`);
-  if (/<(?:script|foreignObject|image|use)\b/i.test(contents) || /\b(?:href|xlink:href)=/i.test(contents)) errors.push(`generated SVG contains an external or unsafe element/reference: ${asset.path}`);
+  errors.push(...svgSafetyErrors(contents, `generated SVG ${asset.path}`));
 }
 
 if (errors.length) {

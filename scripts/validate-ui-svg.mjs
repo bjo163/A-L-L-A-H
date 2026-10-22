@@ -35,7 +35,7 @@ for (const path of files) {
 
   function inspectSvgAttributes(opening, currentSvgPath, isRoot = false) {
     const tag = ts.isIdentifier(opening.tagName) ? opening.tagName.text.toLowerCase() : "";
-    if (!isRoot && ["use", "image", "feimage", "foreignobject"].includes(tag)) errors.push(`${currentSvgPath}: disallowed SVG element <${tag}>`);
+    if (!isRoot && ["script", "use", "image", "feimage", "foreignobject", "iframe", "object", "embed"].includes(tag)) errors.push(`${currentSvgPath}: disallowed SVG element <${tag}>`);
     if (isRoot) {
       if (!attribute(opening, "viewBox")) errors.push(`${currentSvgPath}: SVG requires a viewBox`);
       if (!attribute(opening, "aria-hidden") && !attribute(opening, "role")) errors.push(`${currentSvgPath}: SVG must be decorative or expose an accessible role`);
@@ -45,6 +45,7 @@ for (const path of files) {
         if (!ts.isJsxAttribute(property) || !ts.isIdentifier(property.name)) continue;
         const name = property.name.text.toLowerCase();
         if (["href", "xlinkhref", "dangerouslysetinnerhtml"].includes(name)) errors.push(`${currentSvgPath}: disallowed SVG attribute ${property.name.text}`);
+        if (/^on[a-z]/i.test(name)) errors.push(`${currentSvgPath}: inline SVG event handler ${property.name.text} is not allowed`);
         if (name === "style" && property.initializer) {
           const text = property.initializer.getText(sourceFile);
           if (/url\s*\(\s*["']?(?!#)/i.test(text)) errors.push(`${currentSvgPath}: SVG style contains a non-fragment URL reference`);

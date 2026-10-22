@@ -35,6 +35,7 @@ export function DonutChart({ label, centerLabel, segments, className }: DonutCha
       className={classNames("eol-donut-chart", className)}
       viewBox="0 0 36 36"
       role="img"
+      focusable="false"
       aria-label={`${label}. ${total} ${centerLabel}. ${summary}`}
     >
       <circle className="eol-donut-chart__track" cx={center} cy={center} r={radius} fill="none" strokeWidth="3" />
