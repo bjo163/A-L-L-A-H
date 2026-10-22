@@ -116,6 +116,14 @@
   --eol-status-danger-foreground: var(--eol-palette-status-danger-light-foreground);
   --eol-status-danger-surface: var(--eol-palette-status-danger-light-surface);
   --eol-status-danger-border: var(--eol-palette-status-danger-light-border);
+  /* MapLibre basemaps remain dark; keep map status/label contrast stable in the light UI. */
+  --eol-map-status-nominal: var(--eol-palette-map-status-nominal);
+  --eol-map-status-advisory: var(--eol-palette-map-status-advisory);
+  --eol-map-status-alert: var(--eol-palette-map-status-alert);
+  --eol-map-status-critical: var(--eol-palette-map-status-critical);
+  --eol-map-label-color: var(--eol-palette-map-label);
+  --eol-map-label-shadow: var(--eol-palette-map-label-shadow);
+  --eol-map-marker-outline: var(--eol-palette-map-marker-outline);
   --eol-manga-ink: var(--eol-palette-light-ink);
   --eol-manga-paper: var(--eol-palette-light-white);
   --eol-manga-status-success-strong: var(--eol-status-success-foreground);
