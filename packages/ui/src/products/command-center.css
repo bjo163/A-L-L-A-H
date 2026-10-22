@@ -935,3 +935,13 @@
   margin: 6px 0;
 }
 
+
+
+/* Reused Sentinel presentation hooks extracted from repeated inline styles. */
+.eol-workspace-shell .sentinel-actions-end { justify-content: flex-end; }
+.eol-workspace-shell .sentinel-space-after-4 { margin-block-end: var(--eol-space-4); }
+.eol-workspace-shell .sentinel-filter-label { font-weight: 700; }
+.eol-workspace-shell .sentinel-filter-label--offset { margin-inline-start: var(--eol-space-2); }
+.eol-workspace-shell .sentinel-checkbox-label { display: inline-flex; align-items: center; gap: 6px; margin-inline-start: 12px; cursor: pointer; font-size: 0.85rem; user-select: none; }
+.eol-workspace-shell .sentinel-modal-copy { font-size: var(--eol-font-size-sm); line-height: 1.6; }
+.eol-workspace-shell .sentinel-modal-label { font-size: var(--eol-font-size-sm); }

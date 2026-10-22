@@ -518,7 +518,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
         header: "Aksi",
         align: "end",
         cell: (item: YoutubeMonitoredItem) => (
-          <div className="sentinel-table-actions" style={{ justifyContent: "flex-end" }}>
+          <div className="sentinel-table-actions sentinel-actions-end">
             {item.direction === "POSITIVE" ? (
               <>
                 <button
@@ -572,7 +572,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
   return (
     <div className="youtube-sentinel-container">
       {toast && (
-        <div role="status" className="eol-notice eol-notice--info" style={{ marginBottom: 16 }}>
+        <div role="status" className="eol-notice eol-notice--info sentinel-space-after-4">
           {toast}
         </div>
       )}
@@ -628,7 +628,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
 
         <div className="sentinel-browser-status-bar">
           <div className="sentinel-engine-controls">
-            <span className="muted" style={{ fontWeight: 700 }}>Engine Penelusuran:</span>
+            <span className="muted sentinel-filter-label">Engine Penelusuran:</span>
             <div className="sentinel-engine-buttons">
               <button
                 type="button"
@@ -756,7 +756,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
         </div>
 
         <div className="sentinel-filter-group">
-          <span className="muted" style={{ fontWeight: 700 }}>
+          <span className="muted sentinel-filter-label">
             Kategori:
           </span>
           <select
@@ -788,7 +788,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
             </optgroup>
           </select>
 
-          <span className="muted" style={{ fontWeight: 700, marginLeft: 8 }}>
+          <span className="muted sentinel-filter-label sentinel-filter-label--offset">
             Level Risiko:
           </span>
           <select
@@ -804,7 +804,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
             <option value="NOMINAL_CLEAR">Aman</option>
           </select>
 
-          <span className="muted" style={{ fontWeight: 700, marginLeft: 8 }}>
+          <span className="muted sentinel-filter-label sentinel-filter-label--offset">
             Status Tindakan:
           </span>
           <select
@@ -824,7 +824,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
             <option value="ARCHIVED_REFERENCE">Arsip Referensi Luhur</option>
           </select>
 
-          <span className="muted" style={{ fontWeight: 700, marginLeft: 8 }}>
+          <span className="muted sentinel-filter-label sentinel-filter-label--offset">
             Urutan:
           </span>
           <select
@@ -836,7 +836,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
             <option value="relevance">🎯 Paling Relevan</option>
           </select>
 
-          <label style={{ display: "inline-flex", alignItems: "center", gap: 6, marginLeft: 12, cursor: "pointer", fontSize: "0.85rem", userSelect: "none" }}>
+          <label className="sentinel-checkbox-label">
             <input
               type="checkbox"
               checked={hideResolved}
@@ -847,7 +847,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
             </span>
           </label>
 
-          <label style={{ display: "inline-flex", alignItems: "center", gap: 6, marginLeft: 12, cursor: "pointer", fontSize: "0.85rem", userSelect: "none" }}>
+          <label className="sentinel-checkbox-label">
             <input
               type="checkbox"
               checked={onlyNew}
@@ -1025,19 +1025,19 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               </Button>
             </div>
 
-            <p style={{ fontSize: 12, lineHeight: 1.6 }}>
+            <p className="sentinel-modal-copy">
               Salin draf pengaduan berikut untuk dilaporkan melalui fitur <strong>Report / Laporkan</strong> di antarmuka resmi YouTube:
             </p>
 
             <div style={{ marginBottom: 12 }}>
-              <strong style={{ fontSize: 12 }}>Kategori Laporan yang Dipilih:</strong>
+              <strong className="sentinel-modal-label">Kategori Laporan yang Dipilih:</strong>
               <p className="eol-notice eol-notice--warning" style={{ margin: "6px 0", fontSize: 12 }}>
                 {activeModal.item.reportPacket.policyReference} ({activeModal.item.reportPacket.reportedCategory})
               </p>
             </div>
 
-            <div style={{ marginBottom: 16 }}>
-              <strong style={{ fontSize: 12 }}>Teks Aduan Siap Salin:</strong>
+            <div className="sentinel-space-after-4">
+              <strong className="sentinel-modal-label">Teks Aduan Siap Salin:</strong>
               <textarea
                 readOnly
                 className="sentinel-search-input"
@@ -1046,7 +1046,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               />
             </div>
 
-            <div className="button-row" style={{ justifyContent: "flex-end" }}>
+            <div className="button-row sentinel-actions-end">
               <Button
                 variant="secondary"
                 onClick={() => {
@@ -1089,11 +1089,11 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               </Button>
             </div>
 
-            <p style={{ fontSize: 12, lineHeight: 1.6 }}>
+            <p className="sentinel-modal-copy">
               Gunakan materi Tauhid berikut sebagai bahan respons komentar, konten sanggahan video, atau utas literasi umat:
             </p>
 
-            <div className="sentinel-tauhid-box" style={{ marginBottom: 16 }}>
+            <div className="sentinel-tauhid-box sentinel-space-after-4">
               {activeModal.item.tauhidGuidance.arabicText && (
                 <div className="sentinel-arabic" style={{ fontSize: 18 }}>
                   {activeModal.item.tauhidGuidance.arabicText}
@@ -1102,7 +1102,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               <div className="sentinel-dalil-ref">
                 📜 {activeModal.item.tauhidGuidance.dalilRef}
               </div>
-              <div className="sentinel-dalil-text" style={{ fontSize: 12 }}>
+              <div className="sentinel-dalil-text sentinel-modal-label">
                 &ldquo;{activeModal.item.tauhidGuidance.translation}&rdquo;
               </div>
               <p style={{ margin: "8px 0 0", fontSize: 11, color: "var(--eol-color-text)" }}>
@@ -1110,8 +1110,8 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               </p>
             </div>
 
-            <div style={{ marginBottom: 16 }}>
-              <strong style={{ fontSize: 12 }}>Draf Komentar Bantahan Edukatif:</strong>
+            <div className="sentinel-space-after-4">
+              <strong className="sentinel-modal-label">Draf Komentar Bantahan Edukatif:</strong>
               <textarea
                 readOnly
                 className="sentinel-search-input"
@@ -1120,7 +1120,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               />
             </div>
 
-            <div className="button-row" style={{ justifyContent: "flex-end" }}>
+            <div className="button-row sentinel-actions-end">
               <Button
                 variant="secondary"
                 onClick={() => {
@@ -1163,13 +1163,13 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               </Button>
             </div>
 
-            <p style={{ fontSize: 12, lineHeight: 1.6 }}>
+            <p className="sentinel-modal-copy">
               Konten ini teridentifikasi sebagai pembawa nilai kebajikan luhur dari tradisi{" "}
               <strong>{activeModal.item.tradition}</strong>. Gunakan materi berikut untuk amplifikasi media atau rujukan edukasi:
             </p>
 
             {activeModal.item.wisdomGuidance && (
-              <div className="sentinel-wisdom-box" style={{ marginBottom: 16 }}>
+              <div className="sentinel-wisdom-box sentinel-space-after-4">
                 {activeModal.item.wisdomGuidance.originalText && (
                   <div className="sentinel-arabic" style={{ fontSize: 18, color: "#4ade80" }}>
                     {activeModal.item.wisdomGuidance.originalText}
@@ -1191,8 +1191,8 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
             )}
 
             {activeModal.item.amplifyPacket && (
-              <div style={{ marginBottom: 16 }}>
-                <strong style={{ fontSize: 12 }}>Draf Teks Amplifikasi &amp; Berbagi:</strong>
+              <div className="sentinel-space-after-4">
+                <strong className="sentinel-modal-label">Draf Teks Amplifikasi &amp; Berbagi:</strong>
                 <textarea
                   readOnly
                   className="sentinel-search-input"
@@ -1218,7 +1218,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               </div>
             )}
 
-            <div className="button-row" style={{ justifyContent: "flex-end" }}>
+            <div className="button-row sentinel-actions-end">
               <Button
                 variant="secondary"
                 onClick={() => {
@@ -1263,7 +1263,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               </Button>
             </div>
 
-            <p style={{ fontSize: 12, lineHeight: 1.6 }}>
+            <p className="sentinel-modal-copy">
               Skrip otomasi headless ini dapat dijalankan langsung di terminal lokal atau server background untuk merayapi hasil pencarian YouTube dan menyuntikkannya otomatis ke API World Monitor tanpa AI:
             </p>
 
