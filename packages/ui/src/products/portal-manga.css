@@ -109,8 +109,8 @@ html[data-theme="light"] .eol-public-shell {
 .page-hero h1 { color: var(--eol-manga-stage-foreground) !important; }
 .page-hero h1 em { color: var(--eol-manga-highlight) !important; text-shadow: 2px 2px var(--eol-manga-ink); }
 .page-hero > p:last-child, .page-hero .eol-page-intro__description { color: var(--eol-manga-stage-foreground) !important; }
-.page-hero-links a { border: 2px solid var(--eol-manga-ink) !important; border-radius: var(--eol-radius-none) !important; background: var(--eol-manga-paper) !important; color: var(--eol-manga-ink) !important; box-shadow: 3px 3px 0 var(--eol-manga-ink); }
-.page-hero-links a:hover { background: var(--eol-manga-secondary) !important; }
+.page-hero-links a { border: 2px solid var(--eol-manga-ink) !important; border-radius: var(--eol-radius-none) !important; background: var(--eol-manga-paper) !important; color: var(--eol-color-text) !important; box-shadow: 3px 3px 0 var(--eol-manga-ink); }
+.page-hero-links a:hover { background: var(--eol-manga-secondary) !important; color: var(--eol-manga-ink) !important; }
 .page-breadcrumb, .page-breadcrumb a { color: var(--eol-color-text-muted) !important; }
 .atlas-item:nth-child(odd) { background: linear-gradient(110deg, var(--eol-manga-highlight) 0 16%, var(--eol-manga-paper) 16%) !important; }
 .timeline-index { border: 2px solid var(--eol-manga-ink); border-radius: var(--eol-radius-none) !important; color: var(--eol-manga-ink) !important; box-shadow: 2px 2px 0 var(--eol-manga-ink); }
