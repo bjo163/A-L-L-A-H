@@ -94,6 +94,8 @@ export { Disclosure } from "./patterns/Disclosure";
 export type { DisclosureProps } from "./patterns/Disclosure";
 export { EventList } from "./patterns/EventList";
 export type { EventItem, EventListProps } from "./patterns/EventList";
+export { EntityCard } from "./patterns/EntityCard";
+export type { EntityCardProps } from "./patterns/EntityCard";
 export { Grid, Inline, Stack } from "./patterns/Layout";
 export type { GridProps, InlineProps, LayoutSpace, StackProps } from "./patterns/Layout";
 export { StatusIndicator } from "./patterns/StatusIndicator";
