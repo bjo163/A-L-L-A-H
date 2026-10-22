@@ -3,6 +3,12 @@
 @import "@fontsource/dm-mono/latin-400.css";
 @import "@fontsource/dm-mono/latin-500.css";
 
+.eol-icon {
+  display: inline-block;
+  flex: none;
+  vertical-align: -0.125em;
+}
+
 .eol-panel {
   border: var(--eol-border-width) solid var(--eol-color-border);
   border-radius: var(--eol-radius-md);

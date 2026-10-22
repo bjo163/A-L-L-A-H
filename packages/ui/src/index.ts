@@ -1,5 +1,7 @@
 export { Badge } from "./primitives/Badge";
 export type { BadgeProps, BadgeTone } from "./primitives/Badge";
+export { Icon, iconGroups, iconNames } from "./primitives/Icon";
+export type { IconName } from "./primitives/Icon";
 export { Button, buttonClassName } from "./primitives/Button";
 export type { ButtonProps, ButtonVariant } from "./primitives/Button";
 export { ConfirmDialog } from "./primitives/ConfirmDialog";

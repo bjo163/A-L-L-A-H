@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { BrandConcepts } from "../src/brand/BrandConcepts";
-import { Badge, Button, buttonClassName, ConfirmDialog, EmptyState, ErrorState, FieldError, FieldLabel, HelpText, LoadingState, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, Notice, Panel, SectionHeading, SelectField, Skeleton, StatGrid, Switch, Tabs, TextArea, TextField } from "../src";
+import { Badge, Button, buttonClassName, ConfirmDialog, EmptyState, ErrorState, FieldError, FieldLabel, HelpText, Icon, iconGroups, LoadingState, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, Notice, Panel, SectionHeading, SelectField, Skeleton, StatGrid, Switch, Tabs, TextArea, TextField } from "../src";
 import "../src/styles.css";
 import "../src/manga-theme.css";
 import "./catalog.css";
@@ -81,6 +81,18 @@ function Catalog() {
           <p>Early SVG concepts shown in portal, operator, and small-icon contexts. These are review candidates, not a selected production logo.</p>
         </div>
         <BrandConcepts />
+      </section>
+
+      <section className="catalog-section" aria-labelledby="icon-gallery-heading">
+        <div className="catalog-section-heading">
+          <div>
+            <p className="catalog-eyebrow">ORIGINAL VECTOR ICONS</p>
+            <h2 id="icon-gallery-heading">One 24px stroke family</h2>
+          </div>
+          <p>Compare every icon at 16, 20, 24, and 32px in one accent plus muted text color. Correct use pairs it with a visible label or names the control; avoid color-only meaning and unlabeled icon-only actions.</p>
+        </div>
+        {iconGroups.map((group) => <div className="icon-gallery-group" key={group.label}><h3>{group.label}</h3><div className="icon-gallery">{group.names.map((name) => <div className="icon-gallery__item" key={name}><div className="icon-gallery__samples"><Icon name={name} size={16}/><Icon name={name} size={20}/><Icon name={name} size={24}/><Icon name={name} size={32}/></div><Icon className="icon-gallery__muted" name={name} size={20}/><code>{name}</code></div>)}</div></div>)}
+        <div className="icon-gallery__usage"><span><Icon name="search" size={16}/>Search current view</span><button type="button" aria-label="Close preview"><Icon name="close" size={16}/></button><small>Visible label for actions · explicit accessible name for icon-only controls</small></div>
       </section>
 
       <section className="manga-showcase" aria-label="Manga visual effects preview">

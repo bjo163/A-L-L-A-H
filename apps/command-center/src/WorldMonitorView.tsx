@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { WorldMonitoringSnapshot } from "@empire/batteries-world-monitor";
-import { Badge, Button, EmptyState, MangaEffect, MangaTelemetryHero, Panel, TextField } from "@empire/ui";
+import { Badge, Button, EmptyState, Icon, MangaEffect, MangaTelemetryHero, Panel, TextField } from "@empire/ui";
 import { WorldGlobeMap } from "./WorldGlobeMap";
 
 interface WorldMonitorViewProps {
@@ -43,7 +43,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn }:
         eyebrow={<>PLANETARY PULSE <span className="live-pill" data-state={snapshot.status === "operational" ? "ok" : "degraded"}>● ALERT LEVEL {snapshot.globalAlertLevel.toUpperCase()}</span></>}
         title={`${snapshot.regions.length} regions in motion`}
         description="Live node health, latency, and energy signals—combined from bounded Batteries DNA telemetry."
-        metadata={<><span>◷ Updated {new Date(snapshot.timestamp).toLocaleTimeString()}</span><span>🌐 {snapshot.regions.length} Monitored Regions</span><span>⚡ {totalHeliogrid} MW Heliogrid Load</span><span>⌘ {snapshot.dnaSensors.length} DNA Sensor Mappings</span></>}
+        metadata={<><span><Icon name="clock" size={13}/> Updated {new Date(snapshot.timestamp).toLocaleTimeString()}</span><span><Icon name="globe" size={13}/> {snapshot.regions.length} Monitored Regions</span><span><Icon name="spark" size={13}/> {totalHeliogrid} MW Heliogrid Load</span><span><Icon name="command" size={13}/> {snapshot.dnaSensors.length} DNA Sensor Mappings</span></>}
         pulse={`${snapshot.averageGlobalLatencyMs}ms`}
         sfx="RADAR!"
       />
@@ -61,7 +61,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn }:
                 Auto ↻ in {nextRefreshIn}s
               </span>
             )}
-            <Button variant="secondary" onClick={onRefresh}>↻ Refresh Pulse</Button>
+            <Button variant="secondary" onClick={onRefresh}><Icon name="refresh" size={15}/>Refresh Pulse</Button>
           </div>
         </div>
 
@@ -91,7 +91,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn }:
               <Panel manga as="article"><small>HELIOGRID</small><strong>{selectedRegion.heliogridLoadMw} MW</strong></Panel>
             </div>
             <button className="text-button" onClick={() => setSelectedRegionId(undefined)} style={{ marginTop: 8 }}>
-              ✕ Clear selection
+              <Icon name="close" size={14}/>Clear selection
             </button>
           </Panel>
         )}
@@ -142,7 +142,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn }:
               aria-pressed={selectedRegionId === region.id}
             >
               <div className="agent-head">
-                <span className="agent-symbol">🌐</span>
+                <span className="agent-symbol"><Icon name="globe" size={18}/></span>
                 <Badge tone={region.status === "nominal" ? "success" : region.status === "advisory" ? "warning" : "danger"}>
                   {region.status.toUpperCase()}
                 </Badge>

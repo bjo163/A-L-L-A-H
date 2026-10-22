@@ -35,7 +35,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 .nav-item { display: flex; align-items: center; gap: 12px; width: 100%; min-height: 42px; padding: 0 12px; border: 1px solid transparent; border-radius: var(--eol-radius-none); color: var(--eol-color-text-subtle); background: transparent; text-align: left; cursor: pointer; }
 .nav-item:hover { color: var(--eol-color-text); background: var(--eol-color-surface-action); }
 .nav-item.is-active { border: 2px solid var(--eol-manga-ink); color: var(--eol-color-accent-strong); background: var(--eol-color-accent-subtle); box-shadow: 3px 3px 0 var(--eol-manga-ink); }
-.nav-icon { width: 19px; color: var(--eol-color-text-muted); font-size: 17px; text-align: center; }
+.nav-icon { width: 19px; height: 19px; color: var(--eol-color-text-muted); }
 .nav-item > span:nth-child(2) { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
 .nav-item.is-active .nav-icon { color: var(--eol-color-accent); }
 .nav-item em { display: grid; min-width: 20px; height: 20px; place-items: center; margin-left: auto; border-radius: var(--eol-radius-sm); color: var(--eol-color-accent-strong); background: var(--eol-color-accent-subtle); font: normal 10px var(--eol-font-mono); }
@@ -216,7 +216,7 @@ footer { margin: 40px 0 16px; color: var(--eol-color-text-muted); font-size: 8px
   .operator-card { display: none; }.nav-caption, .sidebar-bottom { display: none; }
   .view-switcher { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
   .nav-item { min-width: 0; min-height: 38px; justify-content: flex-start; gap: 7px; padding-inline: 8px; font-size: 10px; white-space: nowrap; }
-  .nav-icon { width: 16px; flex: none; font-size: 13px; }
+  .nav-icon { width: 16px; height: 16px; flex: none; }
   main { padding: 0 16px 28px; }
   .topbar { min-height: 56px; }.breadcrumb > span, .breadcrumb b, .last-check, .api-link { display: none; }
   .top-actions { gap: 7px; }.global-search { width: min(43vw,220px); min-width: 120px; }.top-actions .eol-button { padding-inline: 8px; }

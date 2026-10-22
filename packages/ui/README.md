@@ -20,6 +20,7 @@ This is a planned migration. The current implementation and historical guidance 
 - `MangaSfx` for decorative, screen-reader-hidden manga onomatopoeia.
 - `MangaLoadingState` for a shared manga-styled loading panel and motion.
 - `Badge` for maturity and status labels.
+- `Icon`, `iconNames`, and `iconGroups` for the original shared 24px SVG stroke family. Icons are decorative by default; `label` is for an SVG that carries meaning without an adjacent accessible name.
 - `Notice` for user-facing information that needs clear emphasis.
 - `LoadingState`, `EmptyState`, and `ErrorState` for distinct resource states.
 - `Skeleton` for decorative placeholders while content loads.
@@ -44,6 +45,7 @@ This is a planned migration. The current implementation and historical guidance 
 | MangaOrbit | Span attributes, optional `className`, and `primary`, `secondary`, or `tertiary` variant | Renders a decorative ring with shared glow animation and staggered timing; hidden from assistive technology. |
 | MangaLoadingState | Required accessible `label`; optional `eyebrow`, `sfx`, and `className` | Announces a polite loading status and applies the same panel, speed-line, reveal, orbit, and shimmer treatments. |
 | Badge | `neutral`, `info`, `success`, `warning`, `danger`; span attributes | Displays a text label. Color must accompany a meaningful label; long unbroken text wraps instead of widening its container. |
+| Icon | Required semantic `name`; optional `size`, `className`, and `label` | Inline vector SVG using a 24 × 24 viewBox, `currentColor`, 1.8px stroke and consistent round joins. It is hidden from assistive technology unless `label` is supplied; icon-only controls still need an accessible name on the control. |
 | Notice | `info`, `success`, `warning`, `danger`; div attributes; role `status`, `alert`, or `note` | Defaults to `status`, except `danger` defaults to `alert`; override only when the message urgency and update behavior require it. Long identifiers wrap within the notice. |
 | LoadingState | Required `label`; optional `busy`; div attributes except `aria-busy` | Announces loading politely and marks the region busy by default. Set `busy={false}` when the component reports completion. Pair with `Skeleton` when the expected content shape is known. |
 | EmptyState | Required `title`; optional `description`, `action`; role `status` or `region` | Describes a successful query with no results; use only when the resource itself loaded successfully. Its title labels the state container by default; override `aria-labelledby` when another visible heading should name it. |
@@ -95,8 +97,8 @@ The portal and command center have different jobs and established visual treatme
 
 | Consumer | Shared primitives currently used | Example |
 | --- | --- | --- |
-| Public portal | Badge, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, Panel, SectionHeading, StatGrid, Switch, Tabs, button class helper | Page introductions, loading art, orbit rings, panel effects, and manga SFX lettering use shared components; the explorer selects system metadata with keyboard-accessible tab panels. |
-| 100CENTER | Badge, Button, ConfirmDialog, EmptyState, ErrorState, FieldLabel, LoadingState, MangaEffect, MangaPageIntro, MangaTelemetryHero, Notice, Panel, SelectField, TextArea, TextField | Overview and world telemetry share one hero composition; navigation and workspace actions use package transitions. Module, RFC, and Research Run lists retain distinct resource states. |
+| Public portal | Badge, Icon, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, Panel, SectionHeading, StatGrid, Switch, Tabs, button class helper | Theme and external-link symbols use package vectors; page introductions, loading art, orbit rings, panel effects, and manga SFX lettering use shared components; the explorer selects system metadata with keyboard-accessible tab panels. |
+| 100CENTER | Badge, Button, ConfirmDialog, EmptyState, ErrorState, FieldLabel, Icon, LoadingState, MangaEffect, MangaPageIntro, MangaTelemetryHero, Notice, Panel, SelectField, TextArea, TextField | Overview, access-filtered navigation, workspace cards, search, sync, and World Monitor use package vectors and shared hero composition. Module, RFC, and Research Run lists retain distinct resource states. |
 | UI catalog | Every exported primitive | Standalone visual and interaction examples; actions are fixtures and do not call product APIs. |
 
 ## Local component catalog

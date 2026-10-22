@@ -276,20 +276,20 @@ Owner: brand/vector designer + maintainer. Dependensi: C01. Gate: master vector 
 
 Owner: vector designer + UI maintainer. Dependensi: C01; selaras C02. Gate: ikon UI utama satu keluarga dan terakses.
 
-- [ ] **UI-C03-01** — Kelompokkan semua kebutuhan ikon berdasarkan aksi dan makna.
-- [ ] **UI-C03-02** — Tentukan satu sumber utama: keluarga original atau satu library berlisensi yang dibungkus package.
+- [x] **UI-C03-01** — Kelompokkan semua kebutuhan ikon berdasarkan aksi dan makna.
+- [x] **UI-C03-02** — Tentukan satu sumber utama: keluarga original atau satu library berlisensi yang dibungkus package.
 - [ ] **UI-C03-03** — Catat lisensi dan cegah pencampuran keluarga stroke tanpa keputusan eksplisit.
 - [ ] **UI-C03-04** — Pilih grid, stroke, linecap, linejoin dan ukuran optik melalui sampel.
-- [ ] **UI-C03-05** — Buat navigasi, arrows, chevrons, menu, close dan external-link.
-- [ ] **UI-C03-06** — Buat search, filter, refresh, settings, theme, copy dan download.
-- [ ] **UI-C03-07** — Buat status info/success/warning/error/pending yang dapat dibedakan tanpa warna.
-- [ ] **UI-C03-08** — Buat user/team/lock/logout serta ikon operasi domain yang dibutuhkan.
-- [ ] **UI-C03-09** — Terapkan `currentColor`, ukuran resmi dan alignment terhadap teks/button.
-- [ ] **UI-C03-10** — Buat kontrak decorative versus labelled dan penggunaan IconButton.
+- [x] **UI-C03-05** — Buat navigasi, arrows, chevrons, menu, close dan external-link.
+- [x] **UI-C03-06** — Buat search, filter, refresh, settings, theme, copy dan download.
+- [x] **UI-C03-07** — Buat status info/success/warning/error/pending yang dapat dibedakan tanpa warna.
+- [x] **UI-C03-08** — Buat user/team/lock/logout serta ikon operasi domain yang dibutuhkan.
+- [x] **UI-C03-09** — Terapkan `currentColor`, ukuran resmi dan alignment terhadap teks/button.
+- [x] **UI-C03-10** — Buat kontrak decorative versus labelled dan penggunaan IconButton.
 - [ ] **UI-C03-11** — Tetapkan ikon directional yang boleh dicerminkan untuk RTL.
 - [ ] **UI-C03-12** — Optimalkan SVG dan pastikan ID mask/gradient aman untuk banyak instance.
 - [ ] **UI-C03-13** — Sediakan named exports dan cek biaya bundle per consumer.
-- [ ] **UI-C03-14** — Buat galeri nama semantik, ukuran, warna dan contoh benar/salah.
+- [x] **UI-C03-14** — Buat galeri nama semantik, ukuran, warna dan contoh benar/salah.
 - [ ] **UI-C03-15** — Ganti emoji/simbol navigasi dan aksi dengan ikon resmi.
 - [ ] **UI-C03-16** — Periksa seluruh ikon pada ukuran kecil, forced colors dan kedua tema.
 
@@ -665,10 +665,13 @@ Status penerimaan + tanggal:
 | UI-C00-02 | `apps/portal/app`: `/`, `/systems`, `/roadmap`, root layout, not-found, serta loading root/systems/roadmap. Komponen bersama: `PrimaryNavigation`, `PortalPageChrome`, `Explorer`, `RouteLoading`. `apps/command-center/src/App.tsx`: views `overview`, `world`, `continuum`, `directory`, `knowledge`, `audit`, `cab`, `research`; login dan pemulihan sesi berada sebelum shell; `ConfirmDialog` ada di shell; resource state muncul di view. Peta berada di `WorldMonitorView.tsx` dan `WorldGlobeMap.tsx`. | Inventaris permukaan kode tersedia. Error boundary Portal, seluruh kombinasi permission/state, dan screenshot alur memerlukan review implementasi tambahan; itu tetap tercatat di item khusus, bukan dianggap teruji oleh inventaris. |
 | UI-C00-03 | Enumerasi `packages/ui/src/index.ts`: 52 baris ekspor bertipe/nilai; consumers `apps/portal`, `apps/command-center`, dan `packages/ui/catalog/main.tsx` memakai package entry `@empire/ui`. Stylesheets diekspor melalui subpath `@empire/ui/styles.css` dan `@empire/ui/manga-theme.css` pada `packages/ui/package.json`. | Export dan consumer entry telah ditemukan. Cakupan contoh katalog per ekspor belum dipetakan; tetap harus ditutup pada UI-C15-04. |
 | UI-C01-02, UI-C02-02 | `packages/ui/src/brand/BrandConcepts.tsx` memuat vector path asli untuk tiga arah (aperture, orbit, monogram). `packages/ui/catalog/main.tsx` menaruhnya dalam fixture sama; tiap arah ditampilkan sebagai lockup A-L-L-A-H, lockup 100CENTER, mark kecil, hero, ringkasan status operasional dengan search field, dan dialog konfirmasi. | Tiga kandidat siap dibandingkan dalam dark/light preview katalog. Bukan logo produksi terpilih; review tampilan di viewport nyata dan keputusan konsep final masih terbuka. |
+| UI-C03-01, UI-C03-02, UI-C03-05–10, UI-C03-14 | `packages/ui/src/primitives/Icon.tsx` menjadi sumber tunggal 47 ikon vektor buatan, dikelompokkan tanpa nama ganda ke Navigation, Actions, Status, Identity & access, serta Product & operations. Sistemnya memakai grid 24 × 24, stroke 1.8px, dan `currentColor`; path tidak memakai ID, gradient, raster, library eksternal, atau asset URL. `Icon` menyembunyikan dekorasi dari assistive tech secara default dan menyediakan `label` untuk ikon bermakna mandiri. Galeri katalog memuat semua nama, ukuran 16/20/24/32px, warna aksen/muted, dan contoh pairing aksesibel. Consumer awal: Command Center navigation/workspace/search/sync/logout/API link/World Monitor dan Portal external-link/theme toggle. `pnpm --filter @empire/ui catalog:build` menghasilkan bundle katalog 260.26 KB (79.89 KB gzip) yang mencakup seluruh katalog, bukan ukuran ikon per consumer. | Struktur dan contoh katalog terkompilasi. Belum ada review visual screenshot (browser bridge gagal), ukuran kecil belum disetujui art-direction, lisensi/provenance belum disahkan pemilik, dan perubahan simbol di semua halaman belum selesai. Tidak menutup UI-C03-03/04/11/12/13/15/16 atau penerimaan keseluruhan ikon. |
 
 Dasar bukti di atas adalah pembacaan file dan pencatatan branch/revisi, bukan pengujian visual. ID ini ditutup pada 22 Oktober 2026 sebelum perubahan implementasi; pemeriksaan ulang diperlukan bila baseline/revisi berubah sebelum wave berikutnya.
 
 Pembaruan identitas vector wave W1: `pnpm --filter @empire/ui typecheck`, `pnpm --filter @empire/ui catalog:build`, dan `git diff --check` berhasil. Katalog mengompilasi kandidat SVG sebagai bagian dari package UI. Browser review tidak dilakukan pada sesi login Command Center yang sudah terbuka; perubahan tema dan tampilan tetap menunggu pemeriksaan manual. Kandidat tidak diekspor sebagai logo resmi sampai C02-03 dan keputusan desain berikutnya ditutup.
+
+Pembaruan ikon vector wave W1: `pnpm --filter @empire/ui typecheck`, `pnpm --filter @empire/command-center typecheck`, `pnpm --filter @empire/portal typecheck`, `pnpm --filter @empire/command-center build`, `pnpm --filter @empire/ui catalog:build`, dan `git diff --check` berhasil. `localhost:5173` merespons 200 dengan judul 100CENTER, tetapi transport browser/screenshot Codex gagal tersambung; tidak ada klaim review visual. Whole-app Command Center build mengeluarkan chunk 1,358.49 KB (381.42 KB gzip) beserta peringatan batas chunk 500 KB; angka ini mencakup app/vendor dan bukan pengukuran biaya ikon terisolasi. Bundle katalog juga bukan ukuran consumer. Lisensi eksternal tidak dipakai; penetapan lisensi aset produk masih memerlukan pemilik repo.
 
 ## 16. Definisi selesai program
 

@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-import { Switch } from "@empire/ui";
+import { Icon, Switch } from "@empire/ui";
 import type { PortalLanguage } from "../lib/i18n";
 
 const labels = {
@@ -76,7 +76,7 @@ export function PrimaryNavigation({ language }: { language: PortalLanguage }) {
           const active = "key" in link && current;
           return (
             <Link href={link.href} key={link.key} aria-current={active ? "page" : undefined} aria-label={label} onClick={() => setOpen(false)} {...("external" in link ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
-              {label}{"external" in link && <span aria-hidden="true"> ↗</span>}
+              {label}{"external" in link && <Icon name="externalLink" size={13} />}
             </Link>
           );
         })}
@@ -88,7 +88,7 @@ export function PrimaryNavigation({ language }: { language: PortalLanguage }) {
           {(pending || languagePending) && <span className="language-status" role="status">{copy.loading}</span>}
         </div>
         <Switch className="theme-toggle" checked={theme === "light"} onCheckedChange={changeTheme} aria-label={copy.theme}>
-          <span className="theme-toggle-icon" aria-hidden="true">{theme === "dark" ? "☾" : "☀"}</span>
+          <span className="theme-toggle-icon" aria-hidden="true"><Icon name={theme === "dark" ? "moon" : "sun"} size={15}/></span>
           <span className="theme-toggle-label">{theme === "dark" ? copy.dark : copy.light}</span>
         </Switch>
       </div>
