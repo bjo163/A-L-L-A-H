@@ -8,6 +8,8 @@
 - `AuthLayout`, `NavItem`, `NavGroup`, `DataTable`, `EventList`, `Pagination`, `Disclosure`, `ListDetail`, and review pattern exports.
 - Shared vector icon registry, `LogoMark`, `BrandLockup`, theme tokens, map aliases, and catalog fixtures.
 - `DonutChart` for reusable, accessible distribution charts with semantic status tones.
+- `IllustrationFrame` and standard ratio presets for consistently sized and clipped product artwork.
+- Optional `illustrated` presentation on `EmptyState` and `ErrorState`; each uses package-owned decorative SVG while keeping the message and recovery action primary.
 
 ### Changed
 
@@ -19,6 +21,7 @@
 - Command Center keeps Vite local view state, API permissions, and MapLibre runtime in app code; use package patterns for presentation and native interaction semantics.
 - Native control refs and attributes remain forwarded. `ConfirmDialog` restores opener focus and requires client-owned callbacks.
 - `ResourceState` children remain mounted for `partial` and `stale` states so consumers can preserve usable content.
+- Empty/error illustrations are opt-in; existing states preserve their current plain presentation. Use illustrations only when they add orientation without replacing state copy.
 
 ### Verification
 

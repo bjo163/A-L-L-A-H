@@ -6,6 +6,7 @@ export default function Error({ reset }: { error: Error & { digest?: string }; r
   return (
     <Container>
       <ErrorState
+        illustrated
         title="Portal unavailable"
         description="This page could not be rendered. Try again, or return to the portal home."
         action={<Button variant="secondary" onClick={() => reset()}>Try again</Button>}

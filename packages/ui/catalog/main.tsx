@@ -467,8 +467,10 @@ function Catalog() {
           <LoadingState aria-live="off" label="Loading module registry…" />
           <LoadingState aria-live="off" label="Module registry loaded" busy={false} />
           <EmptyState role="region" title="No modules registered" description="The catalog responded successfully and contains no entries yet." />
+          <EmptyState role="region" illustrated title="No evidence yet" description="The workspace is ready. Evidence will appear here after the first verified run." />
           <EmptyState role="region" title="No matching evidence" description="Change the filters or broaden the search scope to look again." />
           <ErrorState role="region" title="Module catalog unavailable" description="The catalog could not be loaded." action={<Button variant="secondary">Try again</Button>} />
+          <ErrorState role="region" illustrated title="Research service unavailable" description="The request could not be completed. Your draft remains available." action={<Button variant="secondary">Retry request</Button>} />
           <Panel className="catalog-card catalog-skeleton">
             <p className="catalog-caption">Decorative loading placeholder</p>
             <Skeleton width="65%" />
