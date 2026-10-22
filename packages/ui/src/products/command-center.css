@@ -70,7 +70,8 @@ h1 { margin: 8px 0 6px; color: var(--eol-color-text); font-size: clamp(27px, 3vw
 #active-view > section { margin-top: 24px; }
 h2 { margin: 4px 0 0; color: var(--eol-color-text-subtle); font-size: var(--eol-font-size-heading-operational); font-weight: var(--eol-font-weight-medium); letter-spacing: var(--eol-letter-spacing-heading-operational); }
 .muted { color: var(--eol-color-text-muted); font-size: 10px; line-height: 1.6; }
-.button-row, .action-row, .audit-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.action-row, .audit-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
+.button-row { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; }
 .button-row a, .text-button { color: var(--eol-color-accent); font-size: 10px; }
 .text-button { border: 0; background: transparent; cursor: pointer; }
 .sentinel-summary { margin-block-end: var(--eol-space-5); }
@@ -154,7 +155,7 @@ h2 { margin: 4px 0 0; color: var(--eol-color-text-subtle); font-size: var(--eol-
 .action-row { margin-top: 13px; }
 .form-grid { display: grid; gap: 13px; }
 .form-card { max-width: 900px; margin-top: 12px; padding: 17px; border: 1px solid var(--eol-color-border); border-radius: var(--eol-radius-lg); background: var(--eol-color-surface); }
-.form-row, .button-row, .login-health { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+.form-row, .login-health { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
 .form-row > * { flex: 1; min-width: 170px; }
 .form-card .eol-control, .research-card .eol-control { border-color: var(--eol-color-border-strong); border-radius: var(--eol-radius-md); color: var(--eol-color-text); background: var(--eol-color-background); }
 .form-card .eol-field-label, .research-card .eol-field-label { color: var(--eol-color-text-subtle); font-size: 10px; }
