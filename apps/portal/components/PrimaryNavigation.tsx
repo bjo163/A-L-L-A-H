@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-import { ResponsiveNavigation, ThemeControl, ExternalLinkIcon, SunIcon, MoonIcon } from "@empire/ui";
+import { ResponsiveNavigation, ThemeControl } from "@empire/ui/client";
+import { ExternalLinkIcon, SunIcon, MoonIcon } from "@empire/ui";
 import type { PortalLanguage } from "../lib/i18n";
 
 const labels = {

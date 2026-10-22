@@ -5,6 +5,7 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
+    "./client": "./src/client.ts",
     "./ui.css": "./src/ui.css",
     "./portal.css": "./src/portal.css",
     "./command-center.css": "./src/command-center.css",

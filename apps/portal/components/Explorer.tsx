@@ -1,4 +1,5 @@
-import { ResponsiveTabs, SystemDetailPanel, ArrowUpRightIcon } from "@empire/ui";
+import { ResponsiveTabs } from "@empire/ui/client";
+import { SystemDetailPanel, ArrowUpRightIcon } from "@empire/ui";
 import type { TabItem } from "@empire/ui";
 import { getPortalSystems } from "../lib/portal-systems";
 import type { PortalLanguage } from "../lib/i18n";
