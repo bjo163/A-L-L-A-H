@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "generatedAssetPolicy": "Brand concepts are authored as inline SVG components; the provisional Orbit concept in src/brand/BrandConcepts.tsx is the sole editable source for generated mark/favicon/app-icon SVGs. Outputs are deterministic and regenerated with pnpm --filter @empire/ui assets:generate. Final identity approval is tracked in UI-C02.",
+  "generatedAssetPolicy": "Brand concepts are authored as inline SVG components; assets/source/brand/orbit.svg is the single editable Orbit geometry source for the generated LogoMark React component and mark/favicon/app-icon SVGs. Outputs are deterministic and regenerated with pnpm --filter @empire/ui assets:generate. Final identity approval is tracked in UI-C02.",
   "generatedAssetDirectory": "assets/generated",
   "vectors": {
     "icons": {
@@ -70,6 +70,18 @@
         "monogram"
       ],
       "status": "Orbit is a provisional working mark; final identity requires C02 review."
+    },
+    "brandMaster": {
+      "concept": "orbit",
+      "source": "assets/source/brand/orbit.svg",
+      "componentOutput": "src/brand/OrbitMark.generated.tsx",
+      "assetOutputs": [
+        "assets/generated/brand/empire-mark.svg",
+        "assets/generated/icons/favicon.svg",
+        "assets/generated/icons/app-icon-48.svg",
+        "assets/generated/icons/app-icon-192.svg",
+        "assets/generated/icons/app-icon-512.svg"
+      ]
     }
   },
   "fonts": [
@@ -95,28 +107,28 @@
   ],
   "generatedFiles": [
     {
+      "path": "src/brand/OrbitMark.generated.tsx",
+      "sha256": "6bad85531621c6c9c93dbdc80be698e56eda8c7e27f24e7dd1d15863b28c56d5"
+    },
+    {
       "path": "assets/generated/brand/empire-mark.svg",
-      "sha256": "9554f9b73ba0d3d5ff55aaf20f82e298f49679fc8e7ea290895d016e078d8477"
+      "sha256": "ffa402ec4e4715a959d43a55c9d171aa727994d801ad08f3179f9422494aae24"
     },
     {
       "path": "assets/generated/icons/favicon.svg",
-      "sha256": "9e2a9209cd2ac87650be6357f5a968c11c2c02bb53410d5f20123e1a72aa1662"
-    },
-    {
-      "path": "assets/generated/icons/app-icon-32.svg",
-      "sha256": "9e2a9209cd2ac87650be6357f5a968c11c2c02bb53410d5f20123e1a72aa1662"
+      "sha256": "d6c9ccabcde71e2ef90b11fd458b6a9e99fccf029db4a9974da6771bcfad07d5"
     },
     {
       "path": "assets/generated/icons/app-icon-48.svg",
-      "sha256": "f86b7f9a3d367473f48f2ac3a882630d024680f40dc67482eef6b94cd8bd1d00"
+      "sha256": "3d0a070e8d4e567a2c36de9c431b6fb94102d6812a08f50dbbb90140e09341cc"
     },
     {
       "path": "assets/generated/icons/app-icon-192.svg",
-      "sha256": "293347c7b46be439f99194a4ef003d947e73c7480a649bf55d1aeafb88e3a91b"
+      "sha256": "6d1f8d37dbba78c89572afbc3e02e90290a342348c060697d7d913cc960f843f"
     },
     {
       "path": "assets/generated/icons/app-icon-512.svg",
-      "sha256": "79ffc79d3880ea1e7d7e5f20cb42e21b9d2c6a5b4b4e29e95b80dfe07ce75778"
+      "sha256": "27c3486407b37af095a19fb2fd585bda2acc2e10b4fa437592c65273ab68f9eb"
     }
   ]
 }

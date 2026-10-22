@@ -3,6 +3,7 @@ import { Badge } from "../primitives/Badge";
 import { buttonClassName } from "../primitives/Button";
 import { Panel } from "../primitives/Panel";
 import { TextField } from "../primitives/TextField";
+import { OrbitMark } from "./OrbitMark.generated";
 
 export type BrandConcept = "aperture" | "orbit" | "monogram";
 
@@ -47,6 +48,7 @@ export function BrandConceptMark({
   concept,
   ...props
 }: SVGProps<SVGSVGElement> & { concept: BrandConcept }) {
+  if (concept === "orbit") return <OrbitMark {...props} />;
   return (
     <svg
       aria-hidden="true"
@@ -60,14 +62,6 @@ export function BrandConceptMark({
           <path d="M36 5 59 18v29L36 66 13 47V18L36 5Z" />
           <path d="m36 19 17 10-3 19-18 9-14-14 5-17 13-7Z" />
           <path d="m36 19 1 16 13 13M19 43l18-8 16-6" opacity=".72" />
-        </g>
-      ) : concept === "orbit" ? (
-        <g stroke="currentColor" strokeWidth="2.5" strokeLinecap="round">
-          <circle cx="36" cy="36" r="9" fill="currentColor" />
-          <ellipse cx="36" cy="36" rx="29" ry="12" transform="rotate(-35 36 36)" />
-          <ellipse cx="36" cy="36" rx="29" ry="12" transform="rotate(35 36 36)" opacity=".75" />
-          <circle cx="59" cy="22" r="4" fill="currentColor" stroke="none" />
-          <circle cx="14" cy="47" r="3" fill="currentColor" stroke="none" />
         </g>
       ) : (
         <g stroke="currentColor" strokeWidth="3.5" strokeLinecap="square" strokeLinejoin="miter">

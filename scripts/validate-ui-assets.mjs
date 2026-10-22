@@ -43,7 +43,8 @@ if (!Array.isArray(manifest.generatedFiles)) {
     }
     const absolute = resolve(uiRoot, asset.path);
     const withinGenerated = relative(generatedRoot, absolute);
-    if (isAbsolute(asset.path) || withinGenerated === "" || withinGenerated === ".." || withinGenerated.startsWith(`..${sep}`) || isAbsolute(withinGenerated)) {
+    const allowedGeneratedSource = asset.path === "src/brand/OrbitMark.generated.tsx";
+    if (isAbsolute(asset.path) || (!allowedGeneratedSource && (withinGenerated === "" || withinGenerated === ".." || withinGenerated.startsWith(`..${sep}`) || isAbsolute(withinGenerated)))) {
       errors.push(`generated asset path must point to a file beneath ${manifest.generatedAssetDirectory}: ${asset.path}`);
       continue;
     }
@@ -66,6 +67,11 @@ async function walkGenerated(directory) {
   }
 }
 await walkGenerated(generatedRoot);
+const generatedComponentPath = "src/brand/OrbitMark.generated.tsx";
+try {
+  const contents = await read(generatedComponentPath);
+  actualGenerated.set(generatedComponentPath, createHash("sha256").update(contents).digest("hex"));
+} catch (error) { if (error.code !== "ENOENT") throw error; }
 for (const path of new Set([...actualGenerated.keys(), ...expectedGenerated.keys()])) {
   if (!expectedGenerated.has(path)) errors.push(`generated asset missing from manifest: ${path}`);
   else if (!actualGenerated.has(path)) errors.push(`manifested generated asset is missing: ${path}`);
@@ -73,6 +79,16 @@ for (const path of new Set([...actualGenerated.keys(), ...expectedGenerated.keys
 }
 if (!manifest.generatedAssetPolicy?.includes("inline SVG")) errors.push("generated asset policy must document the current inline-SVG source strategy");
 if (manifest.generatedFiles.length > 0 && !manifest.generatedAssetPolicy?.includes("assets:generate")) errors.push("generated assets require a documented deterministic generation command");
+if (!manifest.generatedAssetPolicy?.includes("single editable Orbit geometry source")) errors.push("generated asset policy must identify the single editable Orbit geometry source");
+if (manifest.vectors.brandMaster?.source !== "assets/source/brand/orbit.svg" || manifest.vectors.brandMaster?.componentOutput !== "src/brand/OrbitMark.generated.tsx") errors.push("brand master manifest must point from the editable SVG to the generated React component");
+try {
+  const master = await read("assets/source/brand/orbit.svg");
+  if (!/<svg\b[^>]*viewBox="0 0 72 72"/i.test(master)) errors.push("editable Orbit SVG master requires viewBox 0 0 72 72");
+  if (/<(?:script|foreignObject|image|use)\b/i.test(master) || /\b(?:href|xlink:href)=/i.test(master)) errors.push("editable Orbit SVG master contains an external or unsafe element/reference");
+} catch { errors.push("editable Orbit SVG master is missing"); }
+const manifestOutputs = (manifest.vectors.brandMaster?.assetOutputs ?? []).slice().sort();
+const generatedSvgOutputs = manifest.generatedFiles.filter(({ path }) => path.startsWith(`${manifest.generatedAssetDirectory}/`)).map(({ path }) => path).sort();
+if (JSON.stringify(manifestOutputs) !== JSON.stringify(generatedSvgOutputs)) errors.push("brand master asset outputs differ from the generated-file inventory");
 for (const asset of manifest.generatedFiles) {
   if (!asset.path.endsWith(".svg")) continue;
   const contents = await readFile(resolve(uiRoot, asset.path), "utf8").catch(() => "");
