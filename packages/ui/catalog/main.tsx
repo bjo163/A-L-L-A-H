@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { BrandConcepts } from "../src/brand/BrandConcepts";
-import { Badge, BrandLockup, Button, buttonClassName, ConfirmDialog, Container, DataTable, DecisionSummary, Disclosure, EmptyState, EntityCard, ErrorState, EventList, FieldError, FieldLabel, FilterBar, FormSection, HelpText, Icon, IconText, iconGroups, ListDetail, LoadingState, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MetricGrid, Notice, Panel, Pagination, ReadinessList, RegionSummary, ResourceState, ReviewActions, SectionHeading, SelectField, Skeleton, StatusIndicator, Switch, Tabs, TextArea, TextField, Timeline } from "../src";
+import { Badge, BrandLockup, Button, buttonClassName, ConfirmDialog, Container, DataTable, DecisionSummary, Disclosure, EmptyState, EntityCard, ErrorState, EventList, FieldError, FieldLabel, FilterBar, FormSection, HelpText, Icon, IconText, iconGroups, ListDetail, LoadingState, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MangaTelemetryHero, MetricGrid, Notice, Panel, Pagination, ReadinessList, RegionSummary, ResourceState, ReviewActions, SectionHeading, SelectField, Skeleton, StatusIndicator, Switch, Tabs, TextArea, TextField, Timeline } from "../src";
 import "../src/ui.css";
 import "./catalog.css";
 
