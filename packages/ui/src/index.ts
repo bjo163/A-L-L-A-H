@@ -40,6 +40,8 @@ export { Tabs } from "./primitives/Tabs";
 export type { TabItem, TabsOrientation, TabsProps } from "./primitives/Tabs";
 export { PageIntro } from "./patterns/PageIntro";
 export type { PageIntroProps } from "./patterns/PageIntro";
+export { IconText } from "./patterns/IconText";
+export type { IconTextProps } from "./patterns/IconText";
 export { MangaSfx } from "./patterns/MangaSfx";
 export type { MangaSfxProps } from "./patterns/MangaSfx";
 export { MangaEffect } from "./patterns/MangaEffect";

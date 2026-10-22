@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { PrimaryNavigation } from "../components/PrimaryNavigation";
 import { getPortalLanguage, text } from "../lib/i18n";
-import { BrandLockup } from "@empire/ui";
+import { BrandLockup, IconText } from "@empire/ui";
 import "@empire/ui/portal.css";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -29,12 +29,12 @@ export default async function RootLayout({children}:{children:ReactNode}) {
           <BrandLockup name="A-L-L-A-H" descriptor="EMPIRE OF THE LIGHT" />
         </Link>
         <PrimaryNavigation language={language} />
-        <Link className="header-cta" href="/systems">{text(language,"Jelajahi sistem","Explore systems")} <span aria-hidden="true">↗</span></Link>
+        <Link className="header-cta" href="/systems"><IconText icon="arrowUpRight">{text(language,"Jelajahi sistem","Explore systems")}</IconText></Link>
       </header>
       <main id="main-content" tabIndex={-1}>{children}</main>
       <footer className="site-footer">
         <div className="footer-brand"><BrandLockup size="compact" tone="subtle" name="A-L-L-A-H · EMPIRE OF THE LIGHT" descriptor={text(language,"Belajar dengan terang. Bertindak dengan bukti.","Learn with clarity. Act with evidence.")} /></div>
-        <nav className="footer-right" aria-label={text(language,"Navigasi footer","Footer navigation")}><span>GENESIS v5.0 · {text(language,"PORTAL RISET PUBLIK","PUBLIC RESEARCH PORTAL")}</span><span>{text(language,"Diawasi manusia · Sumber jelas","Human-governed · Source-grounded")}</span><Link href="/#identitas">A-L-L-A-H</Link><Link href="/#ekosistem">{text(language,"Ekosistem","Ecosystem")}</Link><Link href="/systems">{text(language,"Atlas sistem","System atlas")}</Link><Link href="/roadmap">{text(language,"Peta jalan & kesiapan","Roadmap & readiness")}</Link><a href="https://github.com/bjo163/empire-of-the-light" target="_blank" rel="noopener noreferrer">GitHub ↗</a></nav>
+        <nav className="footer-right" aria-label={text(language,"Navigasi footer","Footer navigation")}><span>GENESIS v5.0 · {text(language,"PORTAL RISET PUBLIK","PUBLIC RESEARCH PORTAL")}</span><span>{text(language,"Diawasi manusia · Sumber jelas","Human-governed · Source-grounded")}</span><Link href="/#identitas">A-L-L-A-H</Link><Link href="/#ekosistem">{text(language,"Ekosistem","Ecosystem")}</Link><Link href="/systems">{text(language,"Atlas sistem","System atlas")}</Link><Link href="/roadmap">{text(language,"Peta jalan & kesiapan","Roadmap & readiness")}</Link><a href="https://github.com/bjo163/empire-of-the-light" target="_blank" rel="noopener noreferrer"><IconText icon="externalLink">GitHub</IconText></a></nav>
       </footer>
     </div>
   </body></html>;

@@ -7,7 +7,7 @@ export const iconNames = [
   "info", "success", "warning", "error", "pending", "user", "team", "lock", "agent",
   "modules", "knowledge", "evidence", "history", "audit", "approval", "document", "source",
   "copy", "download", "plus", "edit", "sun", "moon", "chevronDown", "chevronLeft",
-  "chevronRight", "arrowLeft", "arrowRight", "arrowUpRight", "arrowDownRight", "check", "activity", "input", "output", "chevronUp",
+  "chevronRight", "arrowLeft", "arrowRight", "arrowUp", "arrowUpRight", "arrowDownRight", "check", "activity", "input", "output", "chevronUp",
 ] as const;
 
 export type IconName = (typeof iconNames)[number];
@@ -17,7 +17,7 @@ export const directionalIconNames = [
 export type DirectionalIconName = (typeof directionalIconNames)[number];
 
 export const iconGroups: ReadonlyArray<{ label: string; names: readonly IconName[] }> = [
-  { label: "Navigation", names: ["home", "menu", "close", "externalLink", "chevronDown", "chevronLeft", "chevronRight", "chevronUp", "arrowLeft", "arrowRight", "arrowUpRight", "arrowDownRight", "input", "output"] },
+  { label: "Navigation", names: ["home", "menu", "close", "externalLink", "chevronDown", "chevronLeft", "chevronRight", "chevronUp", "arrowLeft", "arrowRight", "arrowUp", "arrowUpRight", "arrowDownRight", "input", "output"] },
   { label: "Actions", names: ["search", "filter", "refresh", "settings", "command", "logOut", "copy", "download", "plus", "edit"] },
   { label: "Status", names: ["info", "success", "warning", "error", "pending", "check", "activity"] },
   { label: "Identity & access", names: ["users", "directory", "user", "team", "lock"] },
@@ -70,6 +70,7 @@ const paths: Record<IconName, ReactNode> = {
   chevronRight: <path d="m9 18 6-6-6-6"/>,
   arrowLeft: <><path d="m14 5-7 7 7 7"/><path d="M7 12h14"/></>,
   arrowRight: <><path d="m10 5 7 7-7 7"/><path d="M17 12H3"/></>,
+  arrowUp: <><path d="m5 10 7-7 7 7"/><path d="M12 3v18"/></>,
   arrowUpRight: <><path d="M7 17 17 7M8 7h9v9"/></>,
   arrowDownRight: <><path d="m7 7 10 10M17 8v9H8"/></>,
   check: <path d="m5 12 4 4L19 6"/>,

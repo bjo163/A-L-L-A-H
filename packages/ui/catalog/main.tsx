@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { BrandConcepts } from "../src/brand/BrandConcepts";
-import { Badge, BrandLockup, Button, buttonClassName, ConfirmDialog, EmptyState, ErrorState, FieldError, FieldLabel, HelpText, Icon, iconGroups, LoadingState, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, Notice, Panel, RegionSummary, SectionHeading, SelectField, Skeleton, StatGrid, StatusIndicator, Switch, Tabs, TextArea, TextField } from "../src";
+import { Badge, BrandLockup, Button, buttonClassName, ConfirmDialog, EmptyState, ErrorState, FieldError, FieldLabel, HelpText, Icon, IconText, iconGroups, LoadingState, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, Notice, Panel, RegionSummary, SectionHeading, SelectField, Skeleton, StatGrid, StatusIndicator, Switch, Tabs, TextArea, TextField } from "../src";
 import "../src/ui.css";
 import "./catalog.css";
 
@@ -100,7 +100,7 @@ function Catalog() {
           <span dir="ltr">LTR <Icon name="arrowLeft"/> <Icon name="arrowUpRight"/> <Icon name="input"/></span>
           <span dir="rtl">RTL <Icon name="arrowLeft"/> <Icon name="arrowUpRight"/> <Icon name="input"/></span>
         </div>
-        <div className="icon-gallery__usage"><span><Icon name="search" size={16}/>Search current view</span><button type="button" aria-label="Close preview"><Icon name="close" size={16}/></button><small>Visible label for actions · explicit accessible name for icon-only controls</small></div>
+        <div className="icon-gallery__usage"><span><Icon name="search" size={16}/>Search current view</span><IconText icon="arrowUpRight">Open related details</IconText><button type="button" aria-label="Close preview"><Icon name="close" size={16}/></button><small>Visible label for actions · explicit accessible name for icon-only controls</small></div>
       </section>
 
       <section className="manga-showcase" aria-label="Manga visual effects preview">
