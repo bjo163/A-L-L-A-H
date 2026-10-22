@@ -81,7 +81,11 @@ const paths: Record<IconName, ReactNode> = {
   output: <><path d="M20 12H7m5 5-5-5 5-5"/><path d="M4 5v14"/></>,
 };
 
-type IconProps = Omit<SVGProps<SVGSVGElement>, "aria-hidden" | "aria-label" | "role"> & {
+type IconProps = Omit<SVGProps<SVGSVGElement>,
+  | "aria-hidden" | "aria-label" | "role" | "focusable"
+  | "fill" | "stroke" | "strokeWidth" | "strokeLinecap" | "strokeLinejoin"
+  | "viewBox" | "width" | "height" | "style"
+> & {
   name: IconName;
   size?: number;
   label?: string;

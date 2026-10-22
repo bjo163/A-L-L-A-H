@@ -12,7 +12,11 @@ const symbolPaths: Record<DomainSymbolName, ReactNode> = {
   ziil: <><path d="M12 2.5 20 6v5.4c0 4.7-3.2 8-8 10.1-4.8-2.1-8-5.4-8-10.1V6l8-3.5Z"/><path d="m8 12.2 2.6 2.6 5.6-5.6"/></>,
 };
 
-export type DomainSymbolProps = SVGProps<SVGSVGElement> & {
+export type DomainSymbolProps = Omit<SVGProps<SVGSVGElement>,
+  | "aria-hidden" | "role" | "focusable"
+  | "fill" | "stroke" | "strokeWidth" | "strokeLinecap" | "strokeLinejoin"
+  | "viewBox" | "width" | "height" | "style"
+> & {
   name: DomainSymbolName;
   size?: number;
 };
