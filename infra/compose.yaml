@@ -20,7 +20,7 @@ services:
 
   api:
     build:
-      context: ..
+      context: .
       dockerfile: apps/api/Dockerfile
     restart: unless-stopped
     environment:
@@ -49,7 +49,7 @@ services:
 
   portal:
     build:
-      context: ..
+      context: .
       dockerfile: apps/portal/Dockerfile
     restart: unless-stopped
     environment:
@@ -71,7 +71,7 @@ services:
 
   command-center:
     build:
-      context: ..
+      context: .
       dockerfile: apps/command-center/Dockerfile
       args:
         NEXT_PUBLIC_API_ORIGIN: ${PUBLIC_API_ORIGIN:-http://localhost:4000}
