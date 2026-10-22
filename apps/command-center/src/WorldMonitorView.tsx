@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { WorldMonitoringSnapshot } from "@empire/batteries-world-monitor";
-import { Badge, Button, EmptyState, Icon, MangaEffect, MangaTelemetryHero, Panel, RegionSummary, StatusIndicator, TextField } from "@empire/ui";
+import { Badge, Button, EmptyState, Icon, MangaEffect, MangaTelemetryHero, MetricGrid, Panel, RegionSummary, StatusIndicator, TextField } from "@empire/ui";
 import { WorldGlobeMap } from "./WorldGlobeMap";
 
 interface WorldMonitorViewProps {
@@ -103,26 +103,12 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
         <div className="section-head">
           <h2>Global System Metrics</h2>
         </div>
-        <div className="metrics world-metrics">
-          <Panel manga as="article">
-            <small>API / DATABASE STATUS</small>
-            <strong data-state={systemState}>
-              {snapshot.status.toUpperCase()}
-            </strong>
-          </Panel>
-          <Panel manga as="article">
-            <small>VERIFIED REGIONAL NODES</small>
-            <strong>{snapshot.totalMonitoredNodes}</strong>
-          </Panel>
-          <Panel manga as="article">
-            <small>MEASURED GLOBAL LATENCY</small>
-            <strong>{metric(snapshot.averageGlobalLatencyMs, " ms")}</strong>
-          </Panel>
-          <Panel manga as="article">
-            <small>HELIOGRID LOAD</small>
-            <strong>{totalHeliogrid}</strong>
-          </Panel>
-        </div>
+        <MetricGrid columns={4} density="compact" items={[
+          { label: "API / database status", value: snapshot.status.toUpperCase(), tone: systemState === "ok" ? "success" : systemState === "unavailable" ? "neutral" : "warning" },
+          { label: "Verified regional nodes", value: snapshot.totalMonitoredNodes },
+          { label: "Measured global latency", value: metric(snapshot.averageGlobalLatencyMs, " ms") },
+          { label: "Heliogrid load", value: totalHeliogrid },
+        ]} />
       </section>
 
       {/* ── Regional Nodes ───────────────────────────────────────────────────── */}
