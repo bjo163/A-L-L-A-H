@@ -5,3 +5,14 @@
   flex: none;
   color: var(--eol-color-accent);
 }
+
+.eol-brand-lockup { display: inline-flex; min-width: 0; align-items: center; gap: 12px; color: var(--eol-color-text); }
+.eol-brand-lockup__mark { display: block; width: 39px; height: 39px; flex: none; }
+.eol-brand-lockup__text { display: grid; min-width: 0; gap: 4px; }
+.eol-brand-lockup__name { overflow-wrap: anywhere; font-size: 14px; font-weight: 700; letter-spacing: .12em; line-height: 1.15; }
+.eol-brand-lockup__descriptor { color: var(--eol-color-text-muted); font: 9px var(--eol-font-mono); letter-spacing: .13em; line-height: 1.35; }
+.eol-brand-lockup--compact { gap: 12px; }
+.eol-brand-lockup--compact .eol-brand-lockup__mark { width: 34px; height: 34px; }
+.eol-brand-lockup--compact .eol-brand-lockup__name { font-size: 12px; }
+.eol-brand-lockup--compact .eol-brand-lockup__descriptor { font-size: 10px; letter-spacing: .06em; }
+.eol-brand-lockup--subtle .eol-brand-lockup__name { color: var(--eol-color-text-subtle); }

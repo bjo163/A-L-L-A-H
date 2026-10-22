@@ -24,6 +24,7 @@ The centralization blueprint tracks the remaining migration and acceptance work.
 - `Badge` for maturity and status labels.
 - `Icon`, `iconNames`, `directionalIconNames`, and `iconGroups` for the original shared 24px SVG stroke family. Arrows, chevrons, and input/output glyphs mirror automatically in RTL; other glyphs do not. Icons are decorative by default; `label` is for an SVG that carries meaning without an adjacent accessible name.
 - `LogoMark` for the shared SVG mark used by Portal and Command Center shells. Orbit is explicitly a provisional working mark; final identity approval, lockups, favicon exports, and optical-size variants remain open in the blueprint.
+- `BrandLockup` for a shared product name/descriptor hierarchy around `LogoMark`, with regular/compact sizes and default/subtle name tones. The vector is decorative and hidden from assistive technology; visible product name and descriptor provide the accessible text inside links or static product identity.
 - `activity`, `input`, and `output` are available as semantic names in the shared icon registry; add new glyphs to a named group and the catalog together.
 - `Notice` for user-facing information that needs clear emphasis.
 - `LoadingState`, `EmptyState`, and `ErrorState` for distinct resource states.

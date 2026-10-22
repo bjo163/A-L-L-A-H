@@ -1,4 +1,4 @@
-import type { SVGProps } from "react";
+import type { ReactNode, SVGProps } from "react";
 import { Badge } from "../primitives/Badge";
 import { buttonClassName } from "../primitives/Button";
 import { Panel } from "../primitives/Panel";
@@ -14,13 +14,35 @@ export function LogoMark(props: SVGProps<SVGSVGElement>) {
   return <BrandConceptMark concept="orbit" className="eol-logo-mark" {...props} />;
 }
 
+export type BrandLockupProps = {
+  name: ReactNode;
+  descriptor: ReactNode;
+  size?: "regular" | "compact";
+  tone?: "default" | "subtle";
+  className?: string;
+};
+
+/** Shared product lockup; its visible name and descriptor supply its text name. */
+export function BrandLockup({ name, descriptor, size = "regular", tone = "default", className = "" }: BrandLockupProps) {
+  const classes = ["eol-brand-lockup", `eol-brand-lockup--${size}`, `eol-brand-lockup--${tone}`, className].filter(Boolean).join(" ");
+  return (
+    <span className={classes}>
+      <span className="eol-brand-lockup__mark" aria-hidden="true"><LogoMark /></span>
+      <span className="eol-brand-lockup__text">
+        <strong className="eol-brand-lockup__name">{name}</strong>
+        <small className="eol-brand-lockup__descriptor">{descriptor}</small>
+      </span>
+    </span>
+  );
+}
+
 const conceptNames: Record<BrandConcept, string> = {
   aperture: "Aperture",
   orbit: "Orbit",
   monogram: "Monogram",
 };
 
-/** Early vector identity studies. Keep these out of product headers until a concept is selected. */
+/** Early vector identity studies; the Orbit working mark is provisional. */
 export function BrandConceptMark({
   concept,
   ...props
