@@ -6,6 +6,17 @@
     "icons": {
       "source": "src/primitives/Icon.tsx",
       "inventoryExport": "iconNames",
+      "provenance": "Original repository-authored SVG paths; no third-party icon library or copied implementation.",
+      "licenseStatus": "External reuse is not granted until the repository owner records an applicable license.",
+      "strokeFamily": {
+        "name": "Empire Line v1",
+        "viewBox": "0 0 24 24",
+        "stroke": "currentColor",
+        "strokeWidth": 1.8,
+        "strokeLinecap": "round",
+        "strokeLinejoin": "round",
+        "perIconOverrides": false
+      },
       "names": [
         "home",
         "globe",

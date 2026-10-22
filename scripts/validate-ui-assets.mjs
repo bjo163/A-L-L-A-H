@@ -22,6 +22,27 @@ const inventory = async (entry, pattern, label) => {
 await inventory(manifest.vectors.icons, /export const iconNames = \[([\s\S]*?)\] as const/, "icons");
 await inventory(manifest.vectors.brandConcepts, /export type BrandConcept = ([^;]+);/, "brand concepts");
 
+const iconSource = await read(manifest.vectors.icons.source);
+const iconSvg = iconSource.match(/<svg\b([\s\S]*?)>/)?.[1] ?? "";
+const family = manifest.vectors.icons.strokeFamily;
+const expectedIconRoot = {
+  viewBox: `viewBox="${family?.viewBox}"`,
+  stroke: `stroke="${family?.stroke}"`,
+  strokeWidth: `strokeWidth="${family?.strokeWidth}"`,
+  strokeLinecap: `strokeLinecap="${family?.strokeLinecap}"`,
+  strokeLinejoin: `strokeLinejoin="${family?.strokeLinejoin}"`,
+};
+for (const [name, attribute] of Object.entries(expectedIconRoot)) {
+  if (!family || !iconSvg.includes(attribute)) errors.push(`icon family ${family?.name ?? "(unnamed)"}: root SVG ${name} differs from the manifest contract`);
+}
+const pathRegistry = iconSource.match(/const paths:[\s\S]*?= \{([\s\S]*?)\n\};\n\ntype IconProps/)?.[1] ?? "";
+if (!pathRegistry) errors.push("icon path registry could not be inspected for per-icon stroke overrides");
+else if (/\b(?:stroke|strokeWidth|strokeLinecap|strokeLinejoin)\s*[:=]/.test(pathRegistry)) errors.push(`icon family ${family?.name ?? "(unnamed)"}: individual paths override the shared stroke family`);
+if (family?.perIconOverrides !== false) errors.push("icon stroke family must explicitly prohibit per-icon stroke overrides");
+if (!family?.name || !manifest.vectors.icons.provenance || !manifest.vectors.icons.licenseStatus) errors.push("icon family requires a name, provenance, and explicit license status");
+const iconLicense = await read("licenses/ICONS.md");
+if (!iconLicense.includes("created from scratch") || !iconLicense.includes("no third-party") || !iconLicense.includes("does not grant a license")) errors.push("licenses/ICONS.md must document original authorship, third-party exclusion, and current reuse limits");
+
 const pkg = JSON.parse(await readFile(resolve(uiRoot, "package.json"), "utf8"));
 const styles = await read("src/styles.css");
 for (const font of manifest.fonts) {
