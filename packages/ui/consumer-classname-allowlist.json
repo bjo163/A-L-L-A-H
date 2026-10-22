@@ -1,0 +1,372 @@
+{
+  "policy": "App-specific class hooks passed to @empire/ui components are compatibility hooks only when listed here and styled by packages/ui/src. They may compose product layout or named presentation patterns; apps may not define their CSS. Runtime classes must be listed explicitly.",
+  "entries": [
+    {
+      "consumer": "apps/portal/app/not-found.tsx",
+      "component": "Container",
+      "prop": "className",
+      "classes": [
+        "not-found"
+      ],
+      "owner": "portal"
+    },
+    {
+      "consumer": "apps/portal/app/page.tsx",
+      "component": "MangaEffect",
+      "prop": "className",
+      "classes": [
+        "principle-strip"
+      ],
+      "runtimeClasses": [
+        "arsy-identity"
+      ],
+      "owner": "portal"
+    },
+    {
+      "consumer": "apps/portal/app/page.tsx",
+      "component": "SectionHeading",
+      "prop": "eyebrowClassName",
+      "classes": [
+        "eyebrow"
+      ],
+      "owner": "portal"
+    },
+    {
+      "consumer": "apps/portal/app/page.tsx",
+      "component": "SectionHeading",
+      "prop": "asideClassName",
+      "classes": [
+        "head-aside"
+      ],
+      "owner": "portal"
+    },
+    {
+      "consumer": "apps/portal/app/roadmap/page.tsx",
+      "component": "Container",
+      "prop": "className",
+      "classes": [
+        "inner-page"
+      ],
+      "owner": "portal"
+    },
+    {
+      "consumer": "apps/portal/app/roadmap/page.tsx",
+      "component": "SectionHeading",
+      "prop": "className",
+      "classes": [
+        "roadmap-section-heading"
+      ],
+      "owner": "portal"
+    },
+    {
+      "consumer": "apps/portal/app/roadmap/page.tsx",
+      "component": "SectionHeading",
+      "prop": "eyebrowClassName",
+      "classes": [
+        "eyebrow"
+      ],
+      "owner": "portal"
+    },
+    {
+      "consumer": "apps/portal/app/systems/page.tsx",
+      "component": "Container",
+      "prop": "className",
+      "classes": [
+        "inner-page"
+      ],
+      "owner": "portal"
+    },
+    {
+      "consumer": "apps/portal/components/Explorer.tsx",
+      "component": "ResponsiveTabs",
+      "prop": "containerClassName",
+      "classes": [
+        "explorer"
+      ],
+      "owner": "portal"
+    },
+    {
+      "consumer": "apps/portal/components/Explorer.tsx",
+      "component": "ResponsiveTabs",
+      "prop": "className",
+      "classes": [
+        "explorer-tabs"
+      ],
+      "owner": "portal"
+    },
+    {
+      "consumer": "apps/portal/components/Explorer.tsx",
+      "component": "ResponsiveTabs",
+      "prop": "listClassName",
+      "classes": [
+        "explorer-menu"
+      ],
+      "owner": "portal"
+    },
+    {
+      "consumer": "apps/portal/components/Explorer.tsx",
+      "component": "ResponsiveTabs",
+      "prop": "tabClassName",
+      "classes": [
+        "explorer-tab"
+      ],
+      "owner": "portal"
+    },
+    {
+      "consumer": "apps/portal/components/Explorer.tsx",
+      "component": "ResponsiveTabs",
+      "prop": "selectedTabClassName",
+      "classes": [
+        "is-active"
+      ],
+      "owner": "portal"
+    },
+    {
+      "consumer": "apps/portal/components/Explorer.tsx",
+      "component": "ResponsiveTabs",
+      "prop": "panelClassName",
+      "classes": [
+        "explorer-tab-panel"
+      ],
+      "owner": "portal"
+    },
+    {
+      "consumer": "apps/portal/components/PortalPageChrome.tsx",
+      "component": "MangaPageIntro",
+      "prop": "className",
+      "classes": [
+        "page-hero"
+      ],
+      "owner": "portal"
+    },
+    {
+      "consumer": "apps/portal/components/PortalPageChrome.tsx",
+      "component": "MangaPageIntro",
+      "prop": "eyebrowClassName",
+      "classes": [
+        "eyebrow"
+      ],
+      "owner": "portal"
+    },
+    {
+      "consumer": "apps/portal/components/PortalPageChrome.tsx",
+      "component": "MangaPageIntro",
+      "prop": "actionsClassName",
+      "classes": [
+        "page-hero-links"
+      ],
+      "owner": "portal"
+    },
+    {
+      "consumer": "apps/command-center/src/App.tsx",
+      "component": "Checkbox",
+      "prop": "className",
+      "classes": [
+        "remember-me"
+      ],
+      "owner": "command-center"
+    },
+    {
+      "consumer": "apps/command-center/src/App.tsx",
+      "component": "NavItem",
+      "prop": "className",
+      "classes": [
+        "nav-item",
+        "is-active"
+      ],
+      "owner": "command-center"
+    },
+    {
+      "consumer": "apps/command-center/src/App.tsx",
+      "component": "MangaEffect",
+      "prop": "className",
+      "classes": [
+        "logout-button"
+      ],
+      "owner": "command-center"
+    },
+    {
+      "consumer": "apps/command-center/src/App.tsx",
+      "component": "Breadcrumbs",
+      "prop": "className",
+      "classes": [
+        "breadcrumb"
+      ],
+      "owner": "command-center"
+    },
+    {
+      "consumer": "apps/command-center/src/App.tsx",
+      "component": "SearchField",
+      "prop": "className",
+      "classes": [
+        "global-search"
+      ],
+      "owner": "command-center"
+    },
+    {
+      "consumer": "apps/command-center/src/App.tsx",
+      "component": "MangaPageIntro",
+      "prop": "className",
+      "classes": [
+        "page-heading"
+      ],
+      "owner": "command-center"
+    },
+    {
+      "consumer": "apps/command-center/src/App.tsx",
+      "component": "Notice",
+      "prop": "className",
+      "classes": [
+        "notice",
+        "notice-panel"
+      ],
+      "owner": "command-center"
+    },
+    {
+      "consumer": "apps/command-center/src/AuditView.tsx",
+      "component": "Pagination",
+      "prop": "className",
+      "classes": [
+        "audit-controls"
+      ],
+      "owner": "command-center"
+    },
+    {
+      "consumer": "apps/command-center/src/AuditView.tsx",
+      "component": "EventList",
+      "prop": "className",
+      "classes": [
+        "event-list",
+        "event-list-large"
+      ],
+      "owner": "command-center"
+    },
+    {
+      "consumer": "apps/command-center/src/CabView.tsx",
+      "component": "MangaEffect",
+      "prop": "className",
+      "classes": [
+        "rfc-item",
+        "rfc-selected"
+      ],
+      "owner": "command-center"
+    },
+    {
+      "consumer": "apps/command-center/src/CabView.tsx",
+      "component": "ReviewActions",
+      "prop": "className",
+      "classes": [
+        "action-row"
+      ],
+      "owner": "command-center"
+    },
+    {
+      "consumer": "apps/command-center/src/ContinuumView.tsx",
+      "component": "Panel",
+      "prop": "className",
+      "classes": [
+        "agent-card"
+      ],
+      "owner": "command-center"
+    },
+    {
+      "consumer": "apps/command-center/src/ContinuumView.tsx",
+      "component": "Notice",
+      "prop": "className",
+      "classes": [
+        "notice-panel"
+      ],
+      "owner": "command-center"
+    },
+    {
+      "consumer": "apps/command-center/src/KnowledgeView.tsx",
+      "component": "Disclosure",
+      "prop": "className",
+      "classes": [
+        "knowledge-card"
+      ],
+      "owner": "command-center"
+    },
+    {
+      "consumer": "apps/command-center/src/OverviewView.tsx",
+      "component": "MangaEffect",
+      "prop": "className",
+      "classes": [
+        "workspace-card"
+      ],
+      "owner": "command-center"
+    },
+    {
+      "consumer": "apps/command-center/src/OverviewView.tsx",
+      "component": "EventList",
+      "prop": "className",
+      "classes": [
+        "event-list"
+      ],
+      "owner": "command-center"
+    },
+    {
+      "consumer": "apps/command-center/src/ResearchCard.tsx",
+      "component": "Panel",
+      "prop": "className",
+      "classes": [
+        "research-card"
+      ],
+      "owner": "command-center"
+    },
+    {
+      "consumer": "apps/command-center/src/WorldGlobeMap.tsx",
+      "component": "MapFrame",
+      "prop": "className",
+      "classes": [
+        "world-map-container"
+      ],
+      "owner": "command-center"
+    },
+    {
+      "consumer": "apps/command-center/src/WorldMonitorView.tsx",
+      "component": "Tabs",
+      "prop": "listClassName",
+      "classes": [
+        "world-subtab-bar"
+      ],
+      "owner": "command-center"
+    },
+    {
+      "consumer": "apps/command-center/src/WorldMonitorView.tsx",
+      "component": "Tabs",
+      "prop": "tabClassName",
+      "classes": [
+        "world-subtab-btn"
+      ],
+      "owner": "command-center"
+    },
+    {
+      "consumer": "apps/command-center/src/WorldMonitorView.tsx",
+      "component": "Tabs",
+      "prop": "selectedTabClassName",
+      "classes": [
+        "world-subtab-btn--active"
+      ],
+      "owner": "command-center"
+    },
+    {
+      "consumer": "apps/command-center/src/YoutubeSentinelView.tsx",
+      "component": "MetricGrid",
+      "prop": "className",
+      "classes": [
+        "sentinel-summary"
+      ],
+      "owner": "command-center"
+    },
+    {
+      "consumer": "apps/command-center/src/YoutubeSentinelView.tsx",
+      "component": "DataTable",
+      "prop": "className",
+      "classes": [
+        "sentinel-table"
+      ],
+      "owner": "command-center"
+    }
+  ]
+}
