@@ -5,6 +5,7 @@ on:
     branches: [dev, main]
   pull_request:
     branches: [main]
+    types: [opened, synchronize, reopened, ready_for_review]
   workflow_dispatch:
 
 permissions:
@@ -103,7 +104,14 @@ jobs:
 
   promote-dev:
     name: Promote dev to main
-    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    if: >-
+      always() &&
+      needs.quality.result == 'success' &&
+      needs.docker-deployment.result == 'success' &&
+      (
+        (github.event_name == 'push' && github.ref == 'refs/heads/dev' && needs.release.result == 'success') ||
+        (github.event_name == 'pull_request' && github.event.action == 'ready_for_review' && github.event.pull_request.head.ref == 'dev' && github.event.pull_request.base.ref == 'main' && needs.release.result == 'skipped')
+      )
     needs: [quality, docker-deployment, release]
     runs-on: ubuntu-latest
     timeout-minutes: 5
@@ -115,8 +123,14 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
+          EVENT_NAME: ${{ github.event_name }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          pr_number="$(gh pr list --base main --head dev --state open --json number --jq '.[0].number // empty')"
+          if [[ "$EVENT_NAME" == "pull_request" ]]; then
+            pr_number="$PR_NUMBER"
+          else
+            pr_number="$(gh pr list --base main --head dev --state open --json number --jq '.[0].number // empty')"
+          fi
           if [[ -z "$pr_number" ]]; then
             gh pr create \
               --base main \
@@ -124,6 +138,11 @@ jobs:
               --title "Promote dev to main" \
               --body "Automated promotion after successful dev CI, Docker builds, and prerelease publication. GitHub auto-merge will wait for main's required checks."
             pr_number="$(gh pr view dev --json number --jq '.number')"
+          fi
+          is_draft="$(gh pr view "$pr_number" --json isDraft --jq '.isDraft')"
+          if [[ "$is_draft" == "true" ]]; then
+            echo "PR #$pr_number is still a draft; auto-merge will be enabled when it is marked ready."
+            exit 0
           fi
           gh pr merge "$pr_number" --auto --merge
 
