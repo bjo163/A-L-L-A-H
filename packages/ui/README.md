@@ -125,7 +125,15 @@ API maturity: primitives and patterns listed in the current contract are **stabl
 
 ## Adding and changing components
 
-Promote a pattern when a real consumer workflow needs it, its interaction or accessibility behavior should stay consistent across applications, and its API can remain independent of product data, routing, and permissions. A primitive may be shared before a second product adopts it when native behavior or accessibility is difficult to reproduce safely; record its first consumer and review another adoption before expanding its API. Keep page composition, product language, artwork, and one-off layouts in the application. A shared component needs a typed contract, named states and keyboard behavior, a catalog example, and a consumer before it is considered ready.
+Use this sequence for every proposed shared component or material API change:
+
+1. **Need:** record the real Portal or Command Center workflow, affected consumers, repeated behavior, accessibility need, and what remains product-owned. Do not promote a component solely because two pages look alike.
+2. **Example:** add a fabricated catalog fixture before expanding the public API. Show the normal and relevant loading, empty, error, disabled, and selected states; include the theme, density, direction, and viewport conditions that can change the contract.
+3. **Contract:** define typed props and exports, semantic HTML, accessible names, keyboard/focus behavior, controlled state, CSS/token ownership, and server/client boundary. Keep product language, routing, permissions, data fetching, and workflow transitions in the consuming app.
+4. **Consumer:** implement the primitive or pattern in `packages/ui`, migrate the affected consumer in the same change, remove its parallel visual rule, and update this contract, catalog fixture, changelog, and migration note when behavior or API changes.
+5. **Review:** have the UI maintainer review package ownership/API and the affected product owner review workflow fit. Run the relevant typecheck/build and UI boundary, token, asset, and duplicate-style gates; inspect the catalog states and record screenshots, accessibility findings, accepted exceptions, and remaining limits in the UI review matrix/blueprint.
+
+Promote a pattern when a real consumer workflow needs it, its interaction or accessibility behavior should stay consistent across applications, and its API can remain independent of product data, routing, and permissions. A primitive may be shared before a second product adopts it when native behavior or accessibility is difficult to reproduce safely; record its first consumer and review another adoption before expanding its API. Keep page composition, product language, artwork, and one-off layouts in the application. A shared component is ready only when its typed contract, named states and keyboard behavior, catalog example, and consumer agree with the review sequence above.
 
 ### Consumer style compatibility
 
