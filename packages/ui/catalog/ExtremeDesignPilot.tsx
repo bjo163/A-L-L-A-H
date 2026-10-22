@@ -1,4 +1,4 @@
-import { Badge, Button, MangaEffect, MangaSfx, Panel } from "../src";
+import { Badge, buttonClassName, MangaEffect, MangaSfx, Panel } from "../src";
 
 type ExtremeDesignPilotProps = {
   language: "en" | "id";
@@ -43,12 +43,12 @@ export function ExtremeDesignPilot({ language }: ExtremeDesignPilotProps) {
                 : "Garis kasar. Tipografi berani. Antarmuka yang berguna. Design system yang hidup—bukan berantakan tanpa tujuan."}
             </p>
             <div className="extreme-pilot__actions">
-              <Button>{en ? "Explore the system" : "Jelajahi sistem"}</Button>
-              <Button variant="secondary">{en ? "Read the principles" : "Baca prinsip"}</Button>
+              <a className={buttonClassName("primary")} href="#preview-controls-heading">{en ? "Explore the system" : "Jelajahi sistem"}</a>
+              <a className={buttonClassName("secondary")} href="#tokens-heading">{en ? "Read the principles" : "Baca prinsip"}</a>
             </div>
           </div>
 
-          <MangaEffect as="div" panel screentone className="extreme-pilot__art" aria-label={en ? "Decorative graphic treatment sample" : "Contoh perlakuan grafis dekoratif"}>
+          <MangaEffect as="div" panel screentone className="extreme-pilot__art" aria-hidden="true">
             <span className="extreme-pilot__art-index">NO. 001 / SIGNAL</span>
             <span className="extreme-pilot__burst" aria-hidden="true" />
             <span className="extreme-pilot__orbit" aria-hidden="true" />
