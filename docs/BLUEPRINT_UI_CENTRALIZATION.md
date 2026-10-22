@@ -373,7 +373,7 @@ Owner: frontend maintainer. Dependensi: C00, C05. Gate: Next, Vite dan catalog m
 - [x] **UI-C06-13** — Tetapkan aturan perubahan breaking dengan migrasi consumer dalam perubahan yang sama.
 - [x] **UI-C06-14** — Catat jalur penghapusan `manga-theme.css` lama bila diserap entry baru.
 
-Consumer stylesheet entry contract ditegakkan oleh `scripts/validate-ui-boundary.mjs`: Portal harus mengimpor `@empire/ui/portal.css` tepat sekali; Command Center harus mengimpor `ui.css`, adapter MapLibre opt-in, dan profil Command Center masing-masing tepat sekali. Ini mencegah entry bersama/produk terlewat atau termuat ganda. `portal-globals.css` dan `portal-manga.css` tetap merupakan profil presentasi Portal di dalam package; keduanya tidak dinyatakan sebagai duplikasi mati atau dihapus tanpa parity review.
+Consumer stylesheet entry contract ditegakkan oleh `scripts/validate-ui-boundary.mjs`: Portal dan Command Center masing-masing harus mengimpor `@empire/ui/ui.css` tepat sekali, hanya dari root layout. Entry `packages/ui/src/ui.css` memuat fondasi, profil Portal (`portal-globals.css` dan `portal-manga.css`), profil Command Center (`command-center.css`), serta adapter yang saat ini diimpor bersama. Validator memastikan tiga stylesheet produk tersebut terdaftar tepat sekali dan urutan cascade-nya stabil, serta menolak import CSS alternatif atau import entry bersama dari komponen/page. Build dan audit source tidak menggantikan pemeriksaan compiled CSS maupun visual browser; dua hal itu tetap menjadi gate terpisah.
 
 ### C07 — Typography, layout dan surface
 
