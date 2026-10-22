@@ -500,7 +500,7 @@ Owner: accessibility reviewer + app maintainers. Dependensi: setiap slice C07–
 - [ ] **UI-C14-09** — Tinjau target sentuh, jarak aksi dan operasi tanpa hover.
 - [ ] **UI-C14-10** — Tinjau reduced motion, forced colors dan preferensi kontras yang didukung.
 - [x] **UI-C14-11** — Tinjau ID/EN, Arabic glyph, transliterasi, tanda baca dan bidi isolation.
-- [ ] **UI-C14-12** — Tinjau string panjang, angka besar, identifier tanpa spasi dan text scaling.
+- [x] **UI-C14-12** — Tinjau string panjang, angka besar, identifier tanpa spasi dan text scaling.
 - [ ] **UI-C14-13** — Tinjau loading/failure/empty/stale/forbidden dengan bantuan teknologi.
 - [ ] **UI-C14-14** — Catat browser/OS/perangkat bukti dan keterbatasan yang belum ditutup.
 
@@ -730,6 +730,7 @@ Status penerimaan + tanggal:
 | UI-C14-03 | Portal and Command Center both expose shared `SkipLink` targeting a focusable `#main-content`; navigation/actions use native links/buttons and shared focus styles. | `pnpm --filter @empire/command-center typecheck` lulus after adding the Command Center skip link; browser keyboard traversal remains part of later rendered review. |
 | UI-C14-04 | Portal mobile navigation now returns focus to its opener after close, including pathname-driven close; shared `ConfirmDialog` restores opener focus after close, and native validation keeps focus on the invalid control. | `pnpm --filter @empire/portal typecheck` and source audit of `PrimaryNavigation`, `ConfirmDialog`, and native form controls. |
 | UI-C14-11 | Knowledge Arabic glyphs now expose `lang="ar"`/`dir="rtl"`, while transliteration/code metadata explicitly remains `dir="ltr"`; Portal ID/EN copy uses the server-selected language helper. | `pnpm --filter @empire/command-center typecheck` and source audit of Portal i18n plus Knowledge view. |
+| UI-C14-12 | Shared tables, disclosures, states, dialogs, entity cards, readiness rows, tabs, headings, and command-center details use `overflow-wrap: anywhere`/`pre-wrap` where identifiers and long copy can occur; catalog includes long title and long identifier fixtures. | CSS/source audit of `packages/ui/src/styles.css`, product styles, and `packages/ui/catalog/main.tsx`; browser zoom/text-scaling acceptance remains part of later rendered review. |
 | UI-C15-12 | `packages/ui/CHANGELOG.md` records added exports, migration notes for Portal/Command Center, behavior changes, and the four successful production verification commands. | Changelog source plus build outputs recorded in the preceding C16-01 evidence. Screenshot/browser visual review remains explicitly open in C15-04/C14. |
 | UI-C13-13 | Research list memakai shared `Panel`, `Badge`, `LoadingState`, `ErrorState`, `EmptyState`, `FieldLabel`, `TextField`, `TextArea`, `SelectField`, `Button`, `Notice`, dan `ConfirmDialog`; create, evidence, completion, approval/rejection, workflow status, dan permission guards tetap berada di app. | Source audit pada `ResearchCard` dan `App.tsx`; `pnpm --filter @empire/command-center typecheck` lulus. |
 | UI-C13-08 | Continuum agent cards memakai shared `Panel`, `Badge`, `Icon`, `MetricGrid`, dan `EmptyState`; invocation form memakai shared `FieldLabel`, `TextField`, dan `Button` dengan permission guard app-owned. | Source audit pada view Continuum dan `pnpm --filter @empire/command-center typecheck` lulus. |
