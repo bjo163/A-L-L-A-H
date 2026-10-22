@@ -1,4 +1,4 @@
-import { Badge, Button, EmptyState, Icon, MetricGrid, Notice, Panel, SectionHeading, TextField } from "@empire/ui";
+import { Badge, Button, EmptyState, Grid, Icon, MetricGrid, Notice, Panel, SectionHeading, TextField } from "@empire/ui";
 
 export type ContinuumAgent = {
   id: string;
@@ -34,7 +34,7 @@ export function ContinuumView({ agentCount, activeAgentCount, lexiconCount, agen
     </section>
     <section>
       <SectionHeading layout="compact" eyebrow="SERAPH REGISTRY" title="Agent fleet" aside={<Badge tone="info">Invocation is audit logged</Badge>} />
-      <div className="agent-grid">
+      <Grid minItemWidth="lg">
         {agents.map((agent) => <Panel manga as="article" key={agent.id} className="agent-card">
           <div className="agent-head"><span className="agent-symbol"><Icon name="agent" size={18} /></span><Badge tone={agent.status === "active" ? "success" : "warning"}>{agent.status}</Badge></div>
           <h3>{agent.term}</h3>
@@ -45,7 +45,7 @@ export function ContinuumView({ agentCount, activeAgentCount, lexiconCount, agen
             <Button disabled={busy || !directive.trim()} type="submit">Invoke agent <Icon name="arrowUpRight" size={12} /></Button>
           </form>}
         </Panel>)}
-      </div>
+      </Grid>
       {agents.length === 0 && <EmptyState title="No agents match" description="Try a different search term." />}
     </section>
     <Notice role="note" className="notice-panel"><Icon name="info" size={16} /><p>Agent invocation records an instruction in the local audit ledger. It does not execute external tools or claim a completed task.</p></Notice>

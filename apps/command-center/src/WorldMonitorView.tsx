@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState } from "react";
 import type { WorldMonitoringSnapshot } from "@empire/batteries-world-monitor";
-import { Badge, Button, EmptyState, Icon, LoadingState, MangaTelemetryHero, MapFrame, MetricGrid, RegionSelectCard, RegionSummary, SectionHeading, SensorDisclosure, StatusIndicator, Tabs, TelemetryEventList } from "@empire/ui";
+import { Badge, Button, EmptyState, Grid, Icon, LoadingState, MangaTelemetryHero, MapFrame, MetricGrid, RegionSelectCard, RegionSummary, SectionHeading, SensorDisclosure, StatusIndicator, Tabs, TelemetryEventList } from "@empire/ui";
 
 const WorldGlobeMap = lazy(async () => ({ default: (await import("./WorldGlobeMap")).WorldGlobeMap }));
 const YoutubeSentinelView = lazy(async () => ({ default: (await import("./YoutubeSentinelView")).YoutubeSentinelView }));
@@ -125,7 +125,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
       {/* ── Regional Nodes ───────────────────────────────────────────────────── */}
       <section>
         <SectionHeading layout="compact" eyebrow="DISTRIBUTED TOPOLOGY" title={<>Regional Reference Locations <span className="count-chip">{visibleRegions.length}</span></>} aside={<span className="muted">Reference locations; live regional data unavailable</span>} />
-        <div className="agent-grid">
+        <Grid minItemWidth="lg">
           {visibleRegions.map((region) => (
             <RegionSelectCard
               key={region.id}
@@ -144,7 +144,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
               ]}
             />
           ))}
-        </div>
+        </Grid>
         {visibleRegions.length === 0 && (
           <EmptyState title="No regions match" description="Try a different search query." />
         )}
