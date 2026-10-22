@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { buttonClassName, Icon, IconText, IdentityCardGroup, MangaEffect, MetricGrid, Panel, PortalDomainCard, PortalOrbitHero, SectionHeading } from "@empire/ui";
+import { ArchitectureLayers, buttonClassName, Icon, IconText, IdentityCardGroup, MangaEffect, MetricGrid, PortalDomainCard, PortalOrbitHero, SectionHeading, WorkflowSteps } from "@empire/ui";
 import { Explorer } from "../components/Explorer";
 import { getPortalLanguage } from "../lib/i18n";
 
@@ -141,8 +141,14 @@ export default async function Home() {
 
     <section className="section eol-container" id="arsitektur">
       <SectionHeading layout="section" eyebrowClassName="eyebrow" asideClassName="head-aside" eyebrow={<>03 / {en?"HOW THE COMPONENTS CONNECT":"BAGAIMANA KOMPONEN TERHUBUNG"}</>} title={en?<>FROM <em>SOURCES TO ACTION.</em></>:<>DARI <em>SUMBER KE AKSI.</em></>} aside={en?<>A traceable workflow.<br/>People review high-impact decisions.</>:<>Alur yang dapat ditelusuri.<br/>Keputusan berdampak tetap ditinjau manusia.</>} />
-      <div className="flow-track" aria-label={en?"A-L-L-A-H workflow":"Alur kerja A-L-L-A-H"}>{flow.map((step, i) => <Panel as="article" manga className="flow-step" key={step.n}><span className="flow-number">{step.n}</span><h3>{step.title}</h3><p>{step.text}</p>{i < flow.length - 1 && <Icon name="arrowRight" className="flow-arrow" size={16}/>}</Panel>)}</div>
-      <div className="plane-layout"><div className="plane-list">{layers.map((l, i) => <MangaEffect as={Link} row className="plane-row" href={`/systems#plane-${i + 1}`} key={l.code}><span>{l.code}</span><strong>{l.label}</strong><p>{l.detail}</p><Icon name="arrowUpRight" size={14}/></MangaEffect>)}</div><MangaEffect as="aside" panel className="plane-aside"><div className="stacks-orbit"><div className="stack-ring ring-large"/><div className="stack-ring ring-mid"/><div className="stack-ring ring-small"/><div className="stack-kernel">ARSY<small>{en?"ORCHESTRATION":"ORKESTRASI"}</small></div></div><p>{en?"Seven layers connect through sources, evidence, approval, and governance. Experimental technology remains research.":"Tujuh lapisan saling terhubung lewat sumber, bukti, persetujuan, dan tata kelola. Teknologi eksperimental tetap berstatus riset."}</p><Link href="/systems"><IconText icon="arrowUpRight">{en?"Explore the seven layers":"Jelajahi tujuh lapisan"}</IconText></Link></MangaEffect></div>
+      <WorkflowSteps label={en ? "A-L-L-A-H workflow" : "Alur kerja A-L-L-A-H"} items={flow.map((step) => ({ id: step.n, number: step.n, title: step.title, description: step.text }))} />
+      <ArchitectureLayers
+        items={layers.map((layer, index) => ({ id: layer.code, code: layer.code, title: layer.label, description: layer.detail, href: `/systems#plane-${index + 1}` }))}
+        renderLink={({ href, className, children, key }) => <MangaEffect as={Link} row href={href} className={className} key={key}>{children}</MangaEffect>}
+        orchestrationLabel={en ? "ORCHESTRATION" : "ORKESTRASI"}
+        summary={en ? "Seven layers connect through sources, evidence, approval, and governance. Experimental technology remains research." : "Tujuh lapisan saling terhubung lewat sumber, bukti, persetujuan, dan tata kelola. Teknologi eksperimental tetap berstatus riset."}
+        action={<Link href="/systems"><IconText icon="arrowUpRight">{en ? "Explore the seven layers" : "Jelajahi tujuh lapisan"}</IconText></Link>}
+      />
     </section>
 
     <section className="section section-alt" id="penjelajah"><div className="eol-container"><SectionHeading layout="section" eyebrowClassName="eyebrow" asideClassName="head-aside" eyebrow={<>04 / {en?"SYSTEM EXPLORER":"PENJELAJAH SISTEM"}</>} title={en?<>VIEW <em>INPUTS & OUTPUTS.</em></>:<>LIHAT <em>MASUKAN &amp; HASIL.</em></>} aside={en?<>Choose a domain to see its purpose,<br/>required data, and boundaries.</>:<>Pilih domain untuk melihat tujuan,<br/>data yang diperlukan, dan batasnya.</>} /><Explorer language={language}/><p className="explorer-footer-link"><Link href="/systems"><IconText icon="arrowUpRight">{en?"Open the complete architecture map":"Buka peta arsitektur lengkap"}</IconText></Link><span>{en?"Portal statuses refer to the blueprint, not live equipment monitoring.":"Semua status di portal ini merujuk pada blueprint, bukan pemantauan perangkat langsung."}</span></p></div></section>

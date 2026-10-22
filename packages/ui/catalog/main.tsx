@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { BrandConcepts } from "../src/brand/BrandConcepts";
-import { ActionGroup, ActionLink, AuthLayout, Badge, BrandLockup, Button, buttonClassName, Card, Checkbox, ConfirmDialog, Container, DataTable, DecisionSummary, Disclosure, EmptyState, EntityCard, ErrorState, EventList, Field, FieldError, FieldLabel, FilterBar, FormSection, Grid, Heading, HelpText, Icon, IconButton, IconText, iconGroups, IdentityCardGroup, Inline, LiveRegion, Metadata, NavGroup, NavItem, LoadingState, ListDetail, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MangaTelemetryHero, MetricGrid, Notice, Panel, Pagination, PortalDomainCard, ReadinessList, RegionSummary, ResourceState, ReviewActions, SectionHeading, SelectField, Skeleton, Stack, StatusIndicator, Tabs, TextArea, Text, TextField, ThemeControl, Timeline } from "../src";
+import { ActionGroup, ActionLink, ArchitectureLayers, AuthLayout, Badge, BrandLockup, Button, buttonClassName, Card, Checkbox, ConfirmDialog, Container, DataTable, DecisionSummary, Disclosure, EmptyState, EntityCard, ErrorState, EventList, Field, FieldError, FieldLabel, FilterBar, FormSection, Grid, Heading, HelpText, Icon, IconButton, IconText, iconGroups, IdentityCardGroup, Inline, LiveRegion, Metadata, NavGroup, NavItem, LoadingState, ListDetail, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MangaTelemetryHero, MetricGrid, Notice, Panel, Pagination, PortalDomainCard, ReadinessList, RegionSummary, ResourceState, ReviewActions, SectionHeading, SelectField, Skeleton, Stack, StatusIndicator, Tabs, TextArea, Text, TextField, ThemeControl, Timeline, WorkflowSteps } from "../src";
 import "../src/portal.css";
 import "./catalog.css";
 
@@ -461,6 +461,8 @@ function Catalog() {
         <AuthLayout brandName="A-L-L-A-H" brandDescriptor="CATALOG FIXTURE" title="Auth layout preview" description="Static composition only." className="catalog-auth-preview"><Button variant="secondary">Continue</Button></AuthLayout>
         <IdentityCardGroup items={[{ id: "fixture-hub", featured: true, label: "FIXTURE HUB", title: "A-L-L-A-H", description: "Static identity card sample." }, { id: "fixture-operator", label: "OPERATOR SPACE", title: "100CENTER", description: "A supporting identity card." }]} />
         <div className="frontier-grid"><PortalDomainCard id="fixture-knowledge" index="05" accent="blue" icon="knowledge" status="METADATA" statusTone="info" descriptor="KNOWLEDGE & SOURCES" title="UNIVERSAL COSMOS" summary="Fabricated catalog summary for the domain-card presentation." action={<a className="card-link" href="#exports-heading">Open fixture details</a>} /></div>
+        <WorkflowSteps label="Fabricated process sample" items={[{ id: "fixture-source", number: "01", title: "Source", description: "Record provenance." }, { id: "fixture-review", number: "02", title: "Review", description: "People inspect evidence." }]} />
+        <ArchitectureLayers items={[{ id: "fixture-layer-1", code: "P01", title: "HUMANS & MISSION", description: "Accountable decisions.", href: "#exports-heading" }, { id: "fixture-layer-2", code: "P02", title: "ARSY", description: "Tools and workflows.", href: "#exports-heading" }]} orchestrationLabel="ORCHESTRATION" summary="Two fabricated layers connected by evidence and review." action={<a href="#exports-heading">Explore fixture layers</a>} />
       </section>
 
       <footer className="catalog-footer">
