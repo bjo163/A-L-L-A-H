@@ -7,6 +7,7 @@ import { notifyNewWorldMonitorAlerts } from "./world-monitor-notifications";
 import { AuthLayout, Badge, Breadcrumbs, BrandLockup, Button, Checkbox, ConfirmDialog, DataTable, DecisionSummary, Disclosure, EmptyState, ErrorState, EventList, FieldLabel, Icon, LoadingState, MangaEffect, MangaPageIntro, MangaTelemetryHero, MetricGrid, NavItem, Notice, Pagination, Panel, ReviewActions, FormSection, SearchField, SelectField, SkipLink, StatusIndicator, TextArea, TextField } from "@empire/ui";
 import type { ConfirmDialogTone, IconName } from "@empire/ui";
 import { WorldMonitorView } from "./WorldMonitorView";
+import { ResearchCard, type ResearchConfirmationRequest } from "./ResearchCard";
 
 type Signal = "checking" | "ok" | "degraded" | "unavailable";
 type Module = { id: string; title: string; version: string; state: string; enabled: boolean };
@@ -19,7 +20,7 @@ type Chronicle = { id: string; action: string; entity: string; entityId?: string
 type DirectoryUser = { id: string; username: string; displayName: string; email?: string; tier: string; status: string; sovereign: boolean; celestial: boolean; roles?: Array<{ name: string; slug: string }> };
 type CreateRfc = { title: string; tier: CabRfc["tier"]; riskLevel: CabRfc["riskLevel"]; summary: string; justification: string; executionPlan: string; rollbackPlan: string; targetService: string; scheduledWindowStart: string; scheduledWindowEnd: string };
 type CreateRun = { title: string; question: string; scope: ResearchRun["scope"] };
-type ConfirmationRequest = { title: string; description: string; confirmLabel: string; tone?: ConfirmDialogTone; successMessage: string; action: () => Promise<unknown> };
+type ConfirmationRequest = ResearchConfirmationRequest;
 
 const api = createApiClient(import.meta.env.VITE_API_ORIGIN || "http://127.0.0.1:4000");
 const initialSnapshot: Snapshot = { health: "checking", readiness: "checking", modules: [], capabilities: [] };
@@ -353,7 +354,7 @@ export function App() {
       </>}
       {tab==="research"&&<>
         {can(entity,"research:write")&&<section><h2>Ajukan riset</h2><form className="form-grid form-card" onSubmit={createResearch}><FieldLabel>Judul<TextField required minLength={3} value={createRun.title} onChange={e=>setCreateRun({...createRun,title:e.target.value})}/></FieldLabel><FieldLabel>Pertanyaan riset<TextArea required minLength={10} value={createRun.question} onChange={e=>setCreateRun({...createRun,question:e.target.value})}/></FieldLabel><FieldLabel>Cakupan<SelectField value={createRun.scope} onChange={e=>setCreateRun({...createRun,scope:e.target.value as ResearchRun["scope"]})}><option value="self">Self</option><option value="community">Community</option><option value="global">Global</option></SelectField></FieldLabel><Button type="submit" disabled={busy}>Kirim untuk persetujuan</Button></form></section>}
-        <section><div className="section-head"><h2>Daftar research run</h2><Button variant="secondary" disabled={loading} onClick={()=>void refresh()}>Muat ulang</Button></div>{visibleRuns.length?<div className="research-list">{visibleRuns.map(run=><ResearchCard key={run.id} run={run} entity={entity} client={client} busy={busy} onAction={perform} onConfirmAction={requestConfirmation} refreshKey={snapshot.checkedAt}/>)}</div>:loading?<LoadingState label="Memuat daftar riset…"/>:error?<ErrorState role="region" title="Daftar riset tidak tersedia" description="Muat ulang daftar untuk mencoba kembali." action={<Button variant="secondary" onClick={()=>void refresh()}>Coba lagi</Button>}/>:<EmptyState title={search?"No research runs match":"Belum ada riset"} description={search?"Try a different search term.":"Belum ada research run pada tenant ini."}/>}</section>
+        <section><div className="section-head"><h2>Daftar research run</h2><Button variant="secondary" disabled={loading} onClick={()=>void refresh()}>Muat ulang</Button></div>{visibleRuns.length?<div className="research-list">{visibleRuns.map(run=><ResearchCard key={run.id} run={run} canApprove={can(entity,"research:approve")} canWrite={can(entity,"research:write")} client={client} busy={busy} onAction={perform} onConfirmAction={requestConfirmation} refreshKey={snapshot.checkedAt}/>)}</div>:loading?<LoadingState label="Memuat daftar riset…"/>:error?<ErrorState role="region" title="Daftar riset tidak tersedia" description="Muat ulang daftar untuk mencoba kembali." action={<Button variant="secondary" onClick={()=>void refresh()}>Coba lagi</Button>}/>:<EmptyState title={search?"No research runs match":"Belum ada riset"} description={search?"Try a different search term.":"Belum ada research run pada tenant ini."}/>}</section>
       </>}
       </div>
       <ConfirmDialog
@@ -370,32 +371,6 @@ export function App() {
       <footer>ONE VOCABULARY · HUMAN APPROVAL · EVERY JOURNEY MATTERS</footer>
     </main></div>;
 }
-
-
-
-function EventRow({event,expanded=false}:{event:Chronicle;expanded?:boolean}) {
-  return <article className={`event-row ${expanded?"event-row-expanded":""}`}><span className="event-marker"><Icon name="activity" size={16}/></span><div className="event-main"><div className="event-title"><strong>{event.action.replaceAll("_"," ")}</strong><Badge tone="neutral">{event.entity}</Badge></div><small>{event.user?.displayName??event.user?.username??"System"}{event.entityId?` · ${event.entityId}`:""}</small>{expanded&&event.payload&&<details className="event-payload"><summary>Event details</summary><pre>{JSON.stringify(event.payload,null,2)}</pre></details>}</div><time dateTime={event.createdAt}>{new Date(event.createdAt).toLocaleString()}</time></article>;
-}
-
-function ResearchCard({run,entity,client,busy,onAction,onConfirmAction,refreshKey}: {run:ResearchRun;entity:AuthEntity;client:typeof api;busy:boolean;onAction:(action:()=>Promise<unknown>,message:string)=>Promise<void>;onConfirmAction:(request:ConfirmationRequest)=>void;refreshKey?:string}) {
-  const [detail,setDetail]=useState<ResearchRun|null>(null);
-  const [title,setTitle]=useState(""); const [sourceUri,setSourceUri]=useState(""); const [excerpt,setExcerpt]=useState(""); const [provenance,setProvenance]=useState("{}"); const [provenanceError,setProvenanceError]=useState(""); const [resultSummary,setResultSummary]=useState("");
-  const [sourceFamily,setSourceFamily]=useState("other"); const [classification,setClassification]=useState("HYPOTHESIS");
-  useEffect(()=>{void client.request<ResearchRun>(`${API_PATHS.researchRuns}/${run.id}`).then(setDetail).catch(()=>setDetail(run));},[run.id,refreshKey]);
-  async function attachEvidence(event:FormEvent){event.preventDefault();let parsed:Record<string,unknown>;try{const candidate=JSON.parse(provenance) as unknown;if(!candidate||typeof candidate!=="object"||Array.isArray(candidate))throw new Error("object required");parsed=candidate as Record<string,unknown>;setProvenanceError("");}catch{setProvenanceError("Provenance harus berupa JSON object yang valid. Isi form tetap dipertahankan.");return;}await onAction(()=>client.request(`${API_PATHS.researchRuns}/${run.id}/evidence`,{method:"POST",body:{title,sourceUri,sourceFamily,classification,excerpt,provenance:parsed}}),"Bukti sumber tersimpan.");}
-  return <Panel manga as="article" className="research-card"><div className="section-head"><div><h3>{run.title}</h3><small>{run.scope} · {run.id}</small></div><Badge tone={run.status==="completed"?"success":run.status==="rejected"?"danger":"warning"}>{run.status}</Badge></div><p>{run.question}</p>{detail?.resultSummary&&<p><strong>Hasil:</strong> {detail.resultSummary}</p>}{detail?.approvals?.map((approval,i)=><p key={i} className="muted">Approval: {approval.decision}{approval.comments?` — ${approval.comments}`:""}</p>)}
-    {detail?.evidence?.map(item=><article key={item.id} className="evidence-item"><strong>{item.title}</strong><small>{item.sourceFamily} · {item.classification} · <a href={item.sourceUri} target="_blank" rel="noreferrer">sumber</a></small><p>{item.excerpt}</p></article>)}
-    <div className="action-row">
-      {run.status==="pending_approval"&&can(entity,"research:approve")&&<>
-        <Button disabled={busy} onClick={()=>onConfirmAction({title:"Setujui research run?",description:`${run.title} · ${run.id}\nPersetujuan akan membuat workflow dan job riset.`,confirmLabel:"Setujui riset",tone:"primary",successMessage:"Research run disetujui; workflow dan job dibuat.",action:()=>client.request(`${API_PATHS.researchRuns}/${run.id}/approval`,{method:"POST",body:{decision:"approved"}})})}>Setujui riset</Button>
-        <Button variant="secondary" disabled={busy} onClick={()=>onConfirmAction({title:"Tolak research run?",description:`${run.title} · ${run.id}\nPenolakan akan dicatat pada riwayat persetujuan.`,confirmLabel:"Tolak riset",tone:"danger",successMessage:"Penolakan dicatat.",action:()=>client.request(`${API_PATHS.researchRuns}/${run.id}/approval`,{method:"POST",body:{decision:"rejected"}})})}>Tolak riset</Button>
-      </>}
-    </div>
-    {(run.status==="queued"||run.status==="running")&&can(entity,"research:write")&&<><form className="form-grid evidence-form" onSubmit={attachEvidence}><strong>Tambahkan bukti</strong>{provenanceError&&<Notice tone="danger" role="alert">{provenanceError}</Notice>}<FieldLabel>Judul sumber<TextField required value={title} onChange={e=>setTitle(e.target.value)}/></FieldLabel><FieldLabel>URL sumber<TextField type="url" required value={sourceUri} onChange={e=>setSourceUri(e.target.value)}/></FieldLabel><div className="form-row"><FieldLabel>Keluarga sumber<SelectField value={sourceFamily} onChange={e=>setSourceFamily(e.target.value)}><option value="quran">Qur'an</option><option value="torah">Torah</option><option value="psalms">Psalms</option><option value="gospels">Gospels</option><option value="other">Lainnya</option></SelectField></FieldLabel><FieldLabel>Klasifikasi<SelectField value={classification} onChange={e=>setClassification(e.target.value)}>{["SCRIPTURE_TEXT","TRADITION_INTERPRETATION","HISTORICAL_CLAIM","VERIFIED_MEASUREMENT","SCIENTIFIC_MODEL","HYPOTHESIS","PROJECT_NARRATIVE","PERSONAL_TESTIMONY"].map(item=><option key={item}>{item}</option>)}</SelectField></FieldLabel></div><FieldLabel>Kutipan / catatan<TextArea required value={excerpt} onChange={e=>setExcerpt(e.target.value)}/></FieldLabel><FieldLabel>Provenance JSON<TextArea value={provenance} onChange={e=>setProvenance(e.target.value)}/></FieldLabel><Button type="submit" disabled={busy}>Simpan bukti</Button></form><form className="form-grid evidence-form" onSubmit={event=>{event.preventDefault();void onAction(()=>client.request(`${API_PATHS.researchRuns}/${run.id}/complete`,{method:"POST",body:{resultSummary}}),"Research run selesai dan diaudit.");}}><FieldLabel>Ringkasan hasil<TextArea required minLength={3} value={resultSummary} onChange={e=>setResultSummary(e.target.value)}/></FieldLabel><Button type="submit" disabled={busy||!(detail?.evidence?.length)}>Selesaikan run</Button></form></>}
-    {detail?.workflow&&<p className="muted">Workflow: {detail.workflow.status}; job: {detail.workflow.jobs.map(job=>`${job.kind} (${job.status})`).join(", ")}</p>}
-  </Panel>;
-}
-
 
 
 
