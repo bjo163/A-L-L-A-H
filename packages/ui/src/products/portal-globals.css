@@ -1,4 +1,4 @@
-/* Document navigation exceptions are limited to html scroll behavior and root scroll padding; all Portal product selectors are scoped to PublicShell. */html{scroll-behavior:smooth}.eol-public-shell ::selection{background:var(--eol-color-accent);color:var(--eol-color-text-inverse)}
+/* The exception manifest records the two document-level scroll-behavior rules; all Portal product selectors are scoped to PublicShell. */html{scroll-behavior:smooth}.eol-public-shell ::selection{background:var(--eol-color-accent);color:var(--eol-color-text-inverse)}
 .eol-public-shell{min-height:100vh;overflow-x:hidden;background:radial-gradient(ellipse at 52% -8%,#e7a91f19 0,transparent 30%),var(--eol-color-background)}
 :where(.eol-public-shell) .eol-public-shell__header{position:relative;z-index:20;max-width:1456px;margin:auto;min-height:82px;padding:0 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--eol-color-border);background:color-mix(in srgb,var(--eol-color-background) 80%,transparent);backdrop-filter:blur(16px)}
 

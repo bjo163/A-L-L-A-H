@@ -1,0 +1,16 @@
+{
+  "policy": "Selectors outside a product root are forbidden except for explicitly owned document-level behavior recorded here.",
+  "exceptions": [
+    {
+      "file": "packages/ui/src/products/portal-globals.css",
+      "product": "portal",
+      "selector": "html",
+      "properties": [
+        "scroll-behavior"
+      ],
+      "occurrences": 2,
+      "owner": "Portal shell",
+      "reason": "Anchor scrolling is a document behavior outside PublicShell; the reduced-motion rule changes smooth scrolling back to automatic."
+    }
+  ]
+}

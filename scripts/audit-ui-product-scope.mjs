@@ -1,5 +1,19 @@
 import { readFileSync } from "node:fs";
 
+const exceptionManifest = JSON.parse(readFileSync("packages/ui/product-css-exceptions.json", "utf8"));
+const approvedExceptions = new Map(exceptionManifest.exceptions.map((entry) => [
+  [entry.file, entry.product, entry.selector, [...entry.properties].sort().join(",")].join("|"),
+  { ...entry, observed: 0 },
+]));
+if (!exceptionManifest.policy || approvedExceptions.size !== exceptionManifest.exceptions.length) {
+  throw new Error("Product CSS exception manifest needs a policy and unique exception entries.");
+}
+for (const [key, exception] of approvedExceptions) {
+  if (!exception.owner || !exception.reason || !Number.isInteger(exception.occurrences) || exception.occurrences < 1) {
+    throw new Error("Product CSS exception needs an owner, reason, and positive occurrence count: " + key);
+  }
+}
+
 const files = [
   ["packages/ui/src/products/portal-globals.css", "portal"],
   ["packages/ui/src/products/portal-manga.css", "portal"],
@@ -138,8 +152,12 @@ function auditFile(file, product) {
           const isPortalDocumentRule = product === "portal" &&
             selector === "html" && propertyList.length === 1 && propertyList[0] === "scroll-behavior";
           if (isPortalDocumentRule) {
-            documentExceptions += 1;
-          } else if (matchesProductScope(selector, product) || selector === ".eol-workspace-shell, .eol-auth-layout") {
+            const exceptionKey = [file, product, selector, propertyList.sort().join(",")].join("|");
+            const exception = approvedExceptions.get(exceptionKey);
+            if (!exception) failures.push(file + ": undocumented document-level exception: " + selector + " (" + propertyList.join(", ") + ")");
+            else if (++exception.observed > exception.occurrences) failures.push(file + ": document-level exception exceeded its approved occurrences: " + selector);
+            else documentExceptions += 1;
+          } else if (matchesProductScope(selector, product)) {
             scoped += 1;
           } else {
             failures.push(`${file}: selector is outside its product root: ${selector}`);
@@ -162,6 +180,12 @@ for (const [file, product] of files) {
   failures.push(...result.failures);
   scoped += result.scoped;
   documentExceptions += result.documentExceptions;
+}
+
+for (const [key, exception] of approvedExceptions) {
+  if (exception.observed !== exception.occurrences) {
+    failures.push(key + ": expected " + exception.occurrences + " documented occurrence(s), observed " + exception.observed);
+  }
 }
 
 if (failures.length) {

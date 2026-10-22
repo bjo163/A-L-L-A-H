@@ -180,6 +180,9 @@ function inspectConsumerJsx(file) {
 
 for (const file of files) inspectConsumerJsx(file);
 for (const [key, entry] of allowedHooks) {
+  if (!entry.owner || !entry.reason?.trim()) {
+    hookErrors.push("Missing product owner or review reason for UI class hook: " + key);
+  }
   const observed = observedHooks.get(key);
   if (!observed) {
     hookErrors.push(`Unused class compatibility entry: ${entry.consumer} ${entry.component}.${entry.prop}`);
