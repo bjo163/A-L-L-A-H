@@ -92,6 +92,13 @@
   --eol-palette-portal-grid-light: #183d3209;
   --eol-palette-portal-gold-glow: #f1c85d5c;
   --eol-palette-portal-core-inset-glow: #70c5e520;
+  --eol-palette-portal-domain-amber: #f0c77b;
+  --eol-palette-portal-domain-violet: #bda5fe;
+  --eol-palette-portal-domain-rose: #ffaab1;
+  --eol-palette-portal-domain-mint: #82e7b3;
+  --eol-palette-portal-domain-blue-manga: #82c8ff;
+  --eol-palette-portal-domain-gold-manga: #f3ce7b;
+  --eol-palette-portal-domain-mint-manga: #82e7d2;
 
   /* Spacing, control size, and reading measure. */
   --eol-space-1: 0.25rem;
