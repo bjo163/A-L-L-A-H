@@ -12,7 +12,7 @@ export type MetricItem = {
 
 export type MetricGridProps = HTMLAttributes<HTMLDivElement> & {
   items: MetricItem[];
-  columns?: 2 | 3 | 4;
+  columns?: 2 | 3 | 4 | 5 | 6;
   profile?: "operational" | "editorial";
   density?: "comfortable" | "compact";
 };

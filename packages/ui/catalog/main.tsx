@@ -316,6 +316,17 @@ function Catalog() {
             { label: "Last refresh", value: "2 min ago", tone: "neutral" },
           ]} />
         </Panel>
+        <Panel className="catalog-card">
+          <h3>Six-column operational metrics</h3>
+          <MetricGrid columns={6} density="compact" items={[
+            { label: "Videos monitored", value: "128" },
+            { label: "Critical", value: "03", tone: "danger" },
+            { label: "High risk", value: "12", tone: "warning" },
+            { label: "Positive", value: "42", tone: "success" },
+            { label: "Actions", value: "08", tone: "info" },
+            { label: "Last scan", value: "2m ago" },
+          ]} />
+        </Panel>
       </section>
 
       <section className="catalog-section" aria-labelledby="map-patterns-heading">

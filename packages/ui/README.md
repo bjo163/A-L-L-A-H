@@ -22,7 +22,7 @@ Run `pnpm audit:ui-css` to find repeated property declarations within the same s
 - `Panel` for semantic, reusable surface containers.
 - `Container` for shared reading, content, and workspace widths with responsive gutters.
 - `PageIntro`, `SectionHeading`, and `MetricGrid` for consistent page composition and both editorial and operational metric presentations.
-- `MetricGrid` accepts label, value, detail, tone, and freshness; apps own business-state mapping and freshness copy.
+- `MetricGrid` accepts 2–6 columns and label, value, detail, tone, and freshness; apps own business-state mapping and freshness copy. Five/six-column grids collapse to three, two, then one column at shared breakpoints.
 - `MangaEffect` for reusable manga panel, screentone, speed-line, spin, reveal, and hover treatments.
 - `MangaOrbit` for decorative orbit rings with the shared glow motion.
 - `MangaPageIntro` for page headings with the shared manga frame and optional SFX lettering.
@@ -59,7 +59,7 @@ Run `pnpm audit:ui-css` to find repeated property declarations within the same s
 | Container | `as` semantic element; `reading`, `content`, or `workspace` width | Applies the shared max-width and responsive gutter tokens. Content and workflow remain in the app. |
 | SectionHeading | Required title; optional eyebrow, aside, heading level, `section` or `compact` layout, and semantic class hooks | Shares heading anatomy and responsive stacking. Apps supply localized copy and actions. |
 | SectionHeading | Required title; optional eyebrow, aside, heading level, `section` or `compact` layout, and semantic class hooks | Shares heading anatomy and responsive stacking. The app supplies localized copy and actions. |
-| MetricGrid | `editorial` or `operational` profile; `comfortable` or `compact` density; 2/3/4 columns; items with label, value, detail, tone, and freshness | Uses one shared anatomy for Portal summary bands and Command Center operational metrics. The app supplies all domain meaning; the editorial profile keeps the value-first band while the operational profile uses label-first cards. |
+| MetricGrid | `editorial` or `operational` profile; `comfortable` or `compact` density; 2–6 columns; items with label, value, detail, tone, and freshness | Uses one shared anatomy for Portal summary bands and Command Center operational metrics. The app supplies all domain meaning; the editorial profile keeps the value-first band while the operational profile uses label-first cards. |
 | MangaEffect | `as` semantic element; optional `panel`, `interactive`, `action`, `row`, `speedLines`, `screentone`, `spin`, and `reveal` flags; element attributes | Composes named manga treatments and transitions from the shared stylesheet. Applications supply content and layout-specific classes. `interactive` includes the common panel treatment. |
 | MangaPageIntro | `PageIntro` content props plus optional `sfx` and `sfxClassName` | Uses the shared angular panel, halftone accent, and reveal treatment; optional SFX lettering stays decorative. Breadcrumbs, copy, and actions remain application content. |
 | MangaTelemetryHero | Required `eyebrow`, `title`, `pulse`, and `sfx`; optional `description`, `metadata`, and `className` | Provides one shared telemetry hero composition, including its orbit, manga panel, reveal motion, and decorative SFX. |
