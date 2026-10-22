@@ -58,6 +58,8 @@ export { MangaTelemetryHero } from "./patterns/MangaTelemetryHero";
 export type { MangaTelemetryHeroProps } from "./patterns/MangaTelemetryHero";
 export { SectionHeading } from "./patterns/SectionHeading";
 export type { SectionHeadingProps } from "./patterns/SectionHeading";
+export { Heading, Metadata, Text } from "./patterns/Typography";
+export type { HeadingProps, MetadataProps, TextProps } from "./patterns/Typography";
 export { Container } from "./patterns/Container";
 export type { ContainerProps, ContainerSize } from "./patterns/Container";
 export { Grid, Inline, Stack } from "./patterns/Layout";
