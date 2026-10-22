@@ -145,6 +145,7 @@
   --eol-font-script: "Noto Sans Arabic", "Noto Sans Hebrew", "Noto Sans Devanagari", var(--eol-font-sans);
   --eol-font-size-xs: 0.6875rem;
   --eol-font-size-2xs: 0.625rem;
+  --eol-font-size-3xs: 0.5625rem;
   --eol-font-size-sm: 0.75rem;
   --eol-font-size-md: 0.875rem;
   --eol-font-size-lg: 1rem;
