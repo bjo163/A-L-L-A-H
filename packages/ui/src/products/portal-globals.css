@@ -1,5 +1,4 @@
 html{scroll-behavior:smooth}body{overflow-x:hidden;background:radial-gradient(circle at 45% -8%,#132c37 0,transparent 24%),var(--eol-color-background)}::selection{background:var(--eol-color-accent);color:var(--eol-color-text-inverse)}
-.skip-link{position:fixed;z-index:100;inset-block-start:var(--eol-space-3);inset-inline-start:var(--eol-space-3);transform:translateY(-160%);padding:var(--eol-space-3) var(--eol-space-4);background:var(--eol-color-surface-raised);color:var(--eol-color-text);border:var(--eol-border-width-strong) solid var(--eol-color-focus)}.skip-link:focus{transform:translateY(0)}
 .site-shell{min-height:100vh}
 .site-header{position:relative;z-index:20;max-width:1456px;margin:auto;min-height:82px;padding:0 40px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid var(--eol-color-border);background:color-mix(in srgb,var(--eol-color-background) 80%,transparent);backdrop-filter:blur(16px)}
 

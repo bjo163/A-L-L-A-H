@@ -81,6 +81,7 @@ The centralization blueprint tracks the remaining migration and acceptance work.
 ### Composition recipes and API maturity
 
 - **Page intro:** `Container` → `MangaPageIntro` or `PageIntro` → app-owned actions → resource content. Keep route copy, permissions, and data mapping in the app.
+- **Public Portal shell:** `PublicShell` owns skip link, header/main/footer landmarks; pass `BrandLockup`, router-aware navigation, action, and localized footer slots. `ResponsiveNavigation` owns the responsive menu disclosure and focus return while the app supplies links, route state, and language/theme controls.
 - **Operational list:** `FilterBar` → `DataTable`/`EventList`/`ListDetail` → `Pagination` → explicit `EmptyState` or `ErrorState`. Do not rebuild table headers, disclosure, or pagination semantics in product CSS.
 - **Review workflow:** `FormSection` → shared native fields → `ReviewActions` → `ConfirmDialog` for consequential actions. Keep server authorization and workflow transitions in the app.
 - **Map surface:** `MapFrame` → vendor map runtime owned by the app → `MapLegend`/`RegionSummary`; load the MapLibre adapter only in the Command Center product entry.
