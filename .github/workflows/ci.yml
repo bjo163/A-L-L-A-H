@@ -100,3 +100,50 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: node scripts/release.mjs
+
+  promote-dev:
+    name: Promote dev to main
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    needs: [quality, docker-deployment, release]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+      pull-requests: write
+    steps:
+      - name: Open or update promotion PR and enable auto-merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+        run: |
+          pr_number="$(gh pr list --base main --head dev --state open --json number --jq '.[0].number // empty')"
+          if [[ -z "$pr_number" ]]; then
+            gh pr create \
+              --base main \
+              --head dev \
+              --title "Promote dev to main" \
+              --body "Automated promotion after successful dev CI, Docker builds, and prerelease publication. GitHub auto-merge will wait for main's required checks."
+            pr_number="$(gh pr view dev --json number --jq '.number')"
+          fi
+          gh pr merge "$pr_number" --auto --merge
+
+  sync-dev:
+    name: Sync main back to dev
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [quality, docker-deployment, release]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Merge promoted main into dev
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git fetch origin dev main
+          git switch --create dev --track origin/dev
+          git merge --no-edit origin/main
+          git push origin dev

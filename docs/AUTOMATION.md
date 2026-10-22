@@ -5,10 +5,13 @@ Repository: https://github.com/bjo163/A-L-L-A-H
 ## Daily work
 
 Only two working branches are used: `dev` and `main`.
-Commit work directly on `dev`, push, then open a pull request from `dev` to `main`.
-Merge using a **merge commit** to preserve the ancestry of the long-lived `dev` branch.
+Commit work directly on `dev` and push. After CI, Docker builds, and the development
+release succeed, GitHub Actions opens or updates the pull request from `dev` to `main`
+and enables auto-merge. GitHub merges it using a **merge commit** when required checks
+pass, preserving the ancestry of the long-lived `dev` branch.
 Do not squash, rebase, delete `dev`, or force-push either branch.
-After a promotion, run `git fetch origin` and `git merge origin/main` on `dev`.
+After the stable release succeeds on `main`, GitHub Actions merges `origin/main`
+back into `dev` to keep the long-lived branches synchronized.
 
 ```sh
 git switch dev
@@ -21,7 +24,8 @@ git push origin dev
 
 CI rejects PRs to `main` from any branch other than this repository's `dev`.
 The repository setup script makes Branch policy, Quality checks, and CodeQL required before merging.
-Review and merge remain deliberate; green CI does not automatically promote unfinished work.
+Promotion runs only after the full `dev` validation and prerelease workflow succeeds;
+the `main` branch protection still blocks auto-merge until required checks pass.
 
 ## Checks
 
@@ -64,7 +68,7 @@ node scripts/configure-repository.mjs --dry-run
 node scripts/configure-repository.mjs
 ```
 
-This installs branch protection, restricts merge methods, and enables vulnerability alerts.
+This installs branch protection, restricts merge methods, enables auto-merge, and enables vulnerability alerts.
 Workflow YAML alone does **not** prevent a direct push or merge of failed checks; GitHub branch protection must also be installed.
 
 Keep `main` as default, permit merge commits only, disable automatic branch deletion,
