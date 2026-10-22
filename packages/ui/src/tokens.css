@@ -221,7 +221,6 @@
   --eol-motion-intensity-map-pulse-end-scale: 2.4;
   --eol-motion-intensity-map-pulse-start-opacity: .9;
   --eol-motion-intensity-map-pulse-end-opacity: 0;
-  --eol-motion-intensity-sentinel-pulse: .85;
   --eol-motion-intensity-shimmer-travel: -220%;
   --eol-opacity-disabled: 0.55;
   --eol-texture-lines: repeating-radial-gradient(ellipse at 0% 50%, transparent 0 13px, var(--eol-palette-texture-amber) 14px 15px, transparent 16px 27px);

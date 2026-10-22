@@ -655,7 +655,6 @@
   background: var(--eol-status-info-surface);
   border: var(--eol-border-width-strong) solid var(--eol-status-info-border);
   border-radius: 6px;
-  animation: pulse-sentinel var(--eol-motion-pulse) infinite var(--eol-easing-in-out);
 }
 .eol-workspace-shell .sentinel-scanning-banner strong {
   display: block;
@@ -677,11 +676,6 @@
   animation: eol-spin var(--eol-motion-spinner) var(--eol-easing-linear) infinite;
   flex-shrink: 0;
 }
-@keyframes pulse-sentinel {
-  0%, 100% { opacity: 1; }
-  50% { opacity: var(--eol-motion-intensity-sentinel-pulse); }
-}
-
 /* -- Sentinel Engine Selector Elements --------------------------- */
 .eol-workspace-shell .sentinel-engine-controls {
   display: flex;
