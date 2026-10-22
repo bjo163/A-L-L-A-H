@@ -24,6 +24,9 @@
   --eol-color-accent-subtle: var(--eol-color-surface-selected);
   --eol-color-focus: var(--eol-palette-dark-cyan);
   --eol-color-gold: var(--eol-palette-light-lime);
+  --eol-texture-portal-grid: linear-gradient(var(--eol-palette-portal-grid-dark) 1px, transparent 1px), linear-gradient(90deg, var(--eol-palette-portal-grid-dark) 1px, transparent 1px);
+  --eol-portal-gold-glow: var(--eol-palette-portal-gold-glow);
+  --eol-portal-core-inset-glow: var(--eol-palette-portal-core-inset-glow);
   --eol-color-danger: var(--eol-palette-dark-danger);
   --eol-system-arsy: var(--eol-palette-system-arsy);
   --eol-system-heliogrid: var(--eol-palette-system-heliogrid);
@@ -95,6 +98,9 @@
   --eol-color-accent-border: var(--eol-palette-light-ink);
   --eol-color-accent-subtle: var(--eol-color-surface-selected);
   --eol-color-focus: var(--eol-palette-light-cyan);
+  --eol-texture-portal-grid: linear-gradient(var(--eol-palette-portal-grid-light) 1px, transparent 1px), linear-gradient(90deg, var(--eol-palette-portal-grid-light) 1px, transparent 1px);
+  --eol-portal-gold-glow: var(--eol-palette-portal-gold-glow);
+  --eol-portal-core-inset-glow: var(--eol-palette-portal-core-inset-glow);
   --eol-color-danger: var(--eol-palette-light-danger);
   --eol-system-arsy: var(--eol-palette-system-arsy);
   --eol-system-heliogrid: var(--eol-palette-system-heliogrid);

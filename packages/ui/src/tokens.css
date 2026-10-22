@@ -88,6 +88,10 @@
   --eol-palette-shadow-ink-3: #49371838;
   --eol-palette-texture-amber: #d9851422;
   --eol-palette-texture-slate: #7564430a;
+  --eol-palette-portal-grid-dark: #ffffff04;
+  --eol-palette-portal-grid-light: #183d3209;
+  --eol-palette-portal-gold-glow: #f1c85d5c;
+  --eol-palette-portal-core-inset-glow: #70c5e520;
 
   /* Spacing, control size, and reading measure. */
   --eol-space-1: 0.25rem;
@@ -222,6 +226,8 @@
   --eol-opacity-disabled: 0.55;
   --eol-texture-lines: repeating-radial-gradient(ellipse at 0% 50%, transparent 0 13px, var(--eol-palette-texture-amber) 14px 15px, transparent 16px 27px);
   --eol-texture-grid: linear-gradient(var(--eol-palette-texture-slate) 1px, transparent 1px), linear-gradient(90deg, var(--eol-palette-texture-slate) 1px, transparent 1px);
+  --eol-texture-portal-grid: linear-gradient(var(--eol-palette-portal-grid-dark) 1px, transparent 1px), linear-gradient(90deg, var(--eol-palette-portal-grid-dark) 1px, transparent 1px);
+  --eol-portal-gold-glow: var(--eol-palette-portal-gold-glow);
 }
 
 [data-density="comfortable"] {
