@@ -1,33 +1,48 @@
-import type { ButtonHTMLAttributes } from "react";
-import { classNames } from "./classNames";
+"use client";
 
-export type ButtonVariant = "primary" | "secondary" | "quiet" | "danger";
+import { forwardRef, useCallback, type ButtonHTMLAttributes } from "react";
+import { classNames } from "./classNames";
+import { buttonClassName, type ButtonVariant } from "./buttonStyles";
+import { useMotionVisibility } from "./useMotionVisibility";
+
+export { buttonClassName } from "./buttonStyles";
+export type { ButtonVariant } from "./buttonStyles";
+export type ButtonSize = "sm" | "md" | "lg";
 
 export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> & {
   variant?: ButtonVariant;
+  size?: ButtonSize;
+  loading?: boolean;
 };
 
-export function buttonClassName(
-  variant: ButtonVariant = "primary",
-  className?: string,
-) {
-  return classNames("eol-button", `eol-button--${variant}`, className);
-}
-
-export function Button({
+export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button({
   children,
   className,
   type = "button",
   variant = "primary",
+  size = "md",
+  loading = false,
+  disabled = false,
   ...props
-}: ButtonProps) {
+}: ButtonProps, ref) {
+  const motionRef = useMotionVisibility<HTMLButtonElement>(loading);
+  const mergedRef = useCallback((element: HTMLButtonElement | null) => {
+    motionRef.current = element;
+    if (typeof ref === "function") ref(element);
+    else if (ref) ref.current = element;
+  }, [motionRef, ref]);
+
   return (
     <button
-      className={buttonClassName(variant, className)}
+      className={classNames(buttonClassName(variant), `eol-button--${size}`, className)}
+      ref={mergedRef}
       type={type}
+      disabled={disabled || loading}
+      aria-busy={loading || undefined}
       {...props}
     >
-      {children}
+      {loading && <span className="eol-button__spinner" aria-hidden="true" />}
+      <span>{children}</span>
     </button>
   );
-}
+});

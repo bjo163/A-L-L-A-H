@@ -1,5 +1,7 @@
 # BLUEPRINT UI — EMPIRE OF THE LIGHT
 
+> **Acuan aktif sentralisasi desain (22 Oktober 2026):** lihat [Blueprint sentralisasi UI](BLUEPRINT_UI_CENTRALIZATION.md). Dokumen tersebut menetapkan target semua presentasi, logo, ikon SVG, token, komponen, dan pola visual dikelola `@empire/ui`, dengan checklist `UI-Cxx-yy` dan gate migrasi Portal/100CENTER. Aturan lama yang membolehkan desain/presentation lokal digantikan oleh target tersebut untuk pekerjaan baru. Dokumen ini tetap menjadi roadmap produk `UI-Uxx-xx` dan arsip bukti historis; bukti tema/kontras lama harus diverifikasi ulang terhadap versi visual terbaru. Ini perubahan rencana, bukan pernyataan migrasi telah selesai.
+
 **Versi:** 1.0 · **Tanggal baseline:** 22 Oktober 2026
 
 **Cakupan:** design system `@empire/ui`, portal publik, 100CENTER, serta pola antarmuka untuk modul yang akan berkembang.

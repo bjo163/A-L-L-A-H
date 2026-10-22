@@ -4,12 +4,39 @@ export const API_PATHS = {
   readiness: "/v1/readiness",
   capabilities: "/v1/metadata/capabilities",
   modules: "/v1/modules",
+  dnaRegistry: "/v1/dna/registry",
   worldMonitor: "/v1/world-monitor",
+  worldMonitorYoutube: "/v1/world-monitor/youtube",
+  worldMonitorYoutubeScan: "/v1/world-monitor/youtube/scan",
+  worldMonitorYoutubeAction: "/v1/world-monitor/youtube/action",
+  worldMonitorYoutubeSnippet: "/v1/world-monitor/youtube/snippet",
+  worldMonitorYoutubeSchedule: "/v1/world-monitor/youtube/schedule",
+  worldMonitorYoutubePartner: "/v1/world-monitor/youtube/partner",
   continuum: "/continuum",
+
   continuumAgents: "/continuum/agents",
   continuumAsma: "/continuum/asma",
   continuumChronicles: "/continuum/chronicles",
   users: "/users",
+  partners: "/partners",
+  workspaces: "/v1/workspaces",
+  projects: "/v1/projects",
+  tasks: "/v1/tasks",
+  documents: "/v1/documents",
+  comments: "/v1/comments",
+  tags: "/v1/tags",
+  tagAssignments: "/v1/tag-assignments",
+  notifications: "/v1/notifications",
+  activity: "/v1/activity",
+  crmOpportunities: "/v1/crm/opportunities",
+  businessPartners: "/v1/business/partners",
+  catalogItems: "/v1/catalog/items",
+  salesQuotes: "/v1/sales/quotes",
+  salesOrders: "/v1/sales/orders",
+  invoices: "/v1/finance/invoices",
+  expenses: "/v1/finance/expenses",
+  activities: "/v1/activities",
+  youtubePartnerLinks: "/v1/youtube-partner-links",
   login: "/auth/login",
   session: "/auth/session",
   logout: "/auth/logout",
@@ -18,9 +45,20 @@ export const API_PATHS = {
   researchRuns: "/v1/research-runs",
 } as const;
 
+export type CrmStage = "qualified" | "proposal" | "negotiation" | "won" | "lost";
+export interface CrmOpportunity { id: string; tenantId: string; partnerId: string; title: string; stage: CrmStage; amount: string | number; currency: string; probability: number; expectedCloseAt?: string | null; ownerId: string }
+export interface CatalogItem { id: string; tenantId: string; sku: string; name: string; kind: "product" | "service"; unit: string; unitPrice: string | number; currency: string; taxRate: string | number; active: boolean }
+export interface SalesQuote { id: string; tenantId: string; partnerId: string; number: string; status: "draft" | "sent" | "accepted" | "rejected" | "expired"; currency: string; subtotal: string | number; taxTotal: string | number; total: string | number; validUntil?: string | null }
+export interface SalesOrder { id: string; tenantId: string; partnerId: string; quoteId?: string | null; number: string; status: string; currency: string; total: string | number; orderedAt: string }
+export interface OperationalInvoice { id: string; tenantId: string; partnerId: string; orderId?: string | null; number: string; status: string; currency: string; amount: string | number; paidAmount: string | number; dueAt?: string | null }
+export interface OperationalPayment { id: string; tenantId: string; invoiceId: string; amount: string | number; currency: string; method: string; reference?: string | null; paidAt: string; recordedBy: string }
+export interface OperationalExpense { id: string; tenantId: string; partnerId?: string | null; category: string; description: string; amount: string | number; currency: string; incurredAt: string; status: string; recordedBy: string }
+export interface CalendarActivity { id: string; tenantId: string; partnerId?: string | null; title: string; kind: string; status: string; startsAt: string; endsAt?: string | null; ownerId: string }
+
 export interface ApiRequestOptions {
-  method?: "GET" | "POST" | "PATCH";
+  method?: "GET" | "POST" | "PATCH" | "DELETE";
   token?: string | null;
+  tenantId?: string | null;
   body?: unknown;
   signal?: AbortSignal;
 }
@@ -39,6 +77,7 @@ export function createApiClient(origin: string) {
       const headers = new Headers({ accept: "application/json" });
       if (options.body !== undefined) headers.set("content-type", "application/json");
       if (options.token) headers.set("authorization", `Bearer ${options.token}`);
+      if (options.tenantId) headers.set("x-tenant-id", options.tenantId);
       const response = await fetch(`${base}${path}`, {
         method: options.method ?? "GET",
         credentials: "include",
@@ -46,6 +85,18 @@ export function createApiClient(origin: string) {
         body: options.body === undefined ? undefined : JSON.stringify(options.body),
         signal: options.signal ?? AbortSignal.timeout(10000),
       });
+      const data = await response.json().catch(() => null) as unknown;
+      if (!response.ok) {
+        const body = data && typeof data === "object" ? data as Record<string, unknown> : {};
+        throw new ApiError(typeof body.message === "string" ? body.message : `API request failed (${response.status})`, response.status, data);
+      }
+      return data as T;
+    },
+    async upload<T>(path: string, file: Blob, options: Pick<ApiRequestOptions, "token" | "tenantId"> = {}): Promise<T> {
+      const headers = new Headers({ "content-type": "application/octet-stream", accept: "application/json" });
+      if (options.token) headers.set("authorization", `Bearer ${options.token}`);
+      if (options.tenantId) headers.set("x-tenant-id", options.tenantId);
+      const response = await fetch(`${base}${path}`, { method: "POST", credentials: "include", headers, body: file, signal: AbortSignal.timeout(60000) });
       const data = await response.json().catch(() => null) as unknown;
       if (!response.ok) {
         const body = data && typeof data === "object" ? data as Record<string, unknown> : {};
@@ -69,8 +120,27 @@ export interface AuthEntity {
   permissions: string[];
 }
 
-export interface LoginResponse { status: "authenticated"; token?: string; entity: AuthEntity }
+export interface LoginResponse { status: "authenticated"; token?: string; entity: AuthEntity; tenants: Array<{ id: string; slug: string; displayName: string; membershipRole: string }> }
 export interface LoginRequest { username: string; password: string; rememberMe?: boolean }
+export type PartnerType = "contact" | "invoice" | "delivery" | "other";
+export interface Partner {
+  id: string; tenantId: string; name: string; companyName?: string | null; type: PartnerType; isCompany: boolean;
+  parentId?: string | null; userId?: string | null; email?: string | null; phone?: string | null;
+  mobile?: string | null; website?: string | null; street?: string | null; street2?: string | null;
+  city?: string | null; state?: string | null; postalCode?: string | null; country?: string | null;
+  vat?: string | null; function?: string | null; notes?: string | null; metadata?: Record<string, unknown> | null;
+  createdAt: string; updatedAt: string;
+}
+export type CreatePartnerRequest = Pick<Partner, "name" | "type" | "isCompany"> & Partial<Omit<Partner, "id" | "tenantId" | "createdAt" | "updatedAt" | "name" | "type" | "isCompany">>;
+export type UpdatePartnerRequest = Partial<CreatePartnerRequest>;
+export interface Workspace { id: string; tenantId: string; slug: string; name: string; description?: string | null; status: "active" | "archived"; createdBy: string; metadata?: Record<string, unknown> | null; createdAt: string; updatedAt: string }
+export interface Project { id: string; tenantId: string; workspaceId: string; slug: string; name: string; description?: string | null; status: "active" | "archived"; createdBy: string; metadata?: Record<string, unknown> | null; createdAt: string; updatedAt: string }
+export interface Task { id: string; tenantId: string; projectId: string; createdBy: string; assignedTo?: string | null; researchRunId?: string | null; title: string; description?: string | null; status: "todo" | "in_progress" | "blocked" | "done" | "cancelled"; priority: "low" | "normal" | "high" | "urgent"; dueAt?: string | null; completedAt?: string | null; createdAt: string; updatedAt: string }
+export interface DocumentRecord { id: string; tenantId: string; projectId: string; taskId?: string | null; researchRunId?: string | null; uploadedBy: string; title: string; fileName: string; storageProvider: string; storageKey: string; mediaType: string; sizeBytes: string; sha256: string; version: number; classification: "public" | "internal" | "confidential" | "restricted"; license?: string | null; provenance?: Record<string, unknown> | null; status: "active" | "archived"; createdAt: string; updatedAt: string }
+export interface CreateProjectRequest { workspaceId: string; slug: string; name: string; description?: string | null; metadata?: Record<string, unknown> | null }
+export interface CreateWorkspaceRequest { slug: string; name: string; description?: string | null; metadata?: Record<string, unknown> | null }
+export interface CreateTaskRequest { projectId: string; title: string; description?: string | null; assignedTo?: string | null; researchRunId?: string | null; status?: Task["status"]; priority?: Task["priority"]; dueAt?: string | null }
+export interface CreateDocumentRequest { projectId: string; taskId?: string | null; researchRunId?: string | null; title: string; fileName: string; storageProvider: string; storageKey: string; mediaType: string; sizeBytes: number; sha256: string; classification?: DocumentRecord["classification"]; license?: string | null; provenance?: Record<string, unknown> | null }
 export type CabTier = "standard" | "significant" | "critical" | "emergency";
 export type CabRiskLevel = "low" | "moderate" | "high" | "critical";
 export type CabReviewVerdict = "affirm" | "inquire" | "dissent";

@@ -16,6 +16,10 @@
 | Concern | Canonical contract | Owner |
 |---|---|---|
 | Concepts, translations, source-aware relations and review | `schemas/unilex.schema.json`; reusable concept: `schemas/concept.schema.json` | UNILEX registry |
+| Tenant ownership, memberships, partners, workspace/project/task/document records | `TENANCY_AND_WORK_MODEL.md` | Batteries models and tenant-scoped API routes |
+| Collaboration comments, tags, inbox notifications and delivery outbox | `TENANCY_AND_WORK_MODEL.md` | Work module; polymorphic records require tenant-aware validation |
+| Tenant CRM, catalog, sales, operational finance, and calendar activities | `TENANCY_AND_WORK_MODEL.md` | Work module and tenant-scoped enterprise API |
+| Private document bytes, integrity, and temporary download authorization | `TENANCY_AND_WORK_MODEL.md` | API local-private storage adapter; 25 MiB maximum per upload |
 | Canonical application dictionary record | `schemas/dictionary-entry.schema.json` | UNILEX-backed dictionary service |
 | Theological source record to bounded project analogy | `schemas/asma-project-mapping.schema.json` | UNILEX editorial governance |
 | Shared localization, source references, provenance, uncertainty, errors and pagination | `schemas/common.schema.json` | API/data platform |
@@ -42,9 +46,10 @@
 ## Current implementation gaps
 
 - Existing UNILEX entries now have English and Indonesian labels and working definitions. The English definitions are editorial translations, not yet source-reviewed; all 71 concepts remain `DRAFT_REVIEW` and the registry remains `PROPOSED_NOT_ADOPTED`.
+- The 99-entry Batteries DNA source mapping is maintained as one metadata registry, not as 99 workspace packages or executable capabilities. Its source-linked records remain `DRAFT_REVIEW` and distinct from the 71 UNILEX concepts.
 - Research routes accept both the legacy flat `sourceUri` evidence payload and a structured v2 source/provenance payload. V2 source metadata is preserved within the existing provenance JSONB column while the SQL table still uses legacy `source_uri`/`source_family`; a later additive migration should normalize those fields into a source-record relation.
 - Existing persistence uses `lexicons` rows with legacy `revelations`/`wisdom` fields. The 99-entry source file is a project mapping seed, not a reviewed scripture dictionary. Automatic schema sync is safe to run; it adds the new locale/editorial columns. Seed content remains marked `DRAFT_REVIEW` and sync inserts missing records without overwriting existing editorial edits.
-- The old `dictionaries` table/model still represents role vocabulary with `revelationOrigin`, `frequencyDomain`, and `esotericDefinition`. It is deprecated for canonical definitions and needs a data-preserving migration into UNILEX-backed dictionary records before the legacy route can be retired.
+- The old `dictionaries` table/model still represents role vocabulary with `revelationOrigin`, `frequencyDomain`, and `esotericDefinition`. It remains the source until reviewed UNILEX mapping is complete. The explicit, copy-only importer stores full snapshots and hashes in `legacy_dictionary_imports`; current consumers read this ledger only when its hashes match the source and otherwise fall back to the source table. Use the dry-run/apply commands and follow the no-auto-match cutover sequence in [TENANCY_AND_WORK_MODEL.md](TENANCY_AND_WORK_MODEL.md).
 - Research request validation now reuses shared TypeScript schemas in the route and package contract. The JSON Schema catalog is not yet the generator for all Fastify validators/OpenAPI response types; remaining route coverage should be migrated to generated contracts.
 
 ## Suggested delivery order

@@ -11,21 +11,32 @@
     "module-registry"
   ],
   "permissions": [
-    "module:read"
+    "module:read",
+    "sentinel:read",
+    "sentinel:scan",
+    "sentinel:review",
+    "sentinel:schedule"
   ],
   "models": [
     "roles",
     "permissions",
     "users",
+    "partners",
     "user_roles",
     "role_permissions",
     "audit_logs",
     "dictionaries",
+    "legacy_dictionary_imports",
     "lexicons",
     "auth_sessions",
     "tenants",
     "tenant_memberships",
     "module_installations"
+    ,"world_monitor_observations"
+    ,"world_monitor_source_runs"
+    ,"world_monitor_aggregates"
+    ,"youtube_sentinel_items"
+    ,"youtube_sentinel_scans"
   ],
   "upgrades": [],
   "uiSlots": [

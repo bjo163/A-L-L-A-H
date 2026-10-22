@@ -11,8 +11,8 @@ The Arabic source forms and the list's transliteration were compared with these 
 
 ## Corrections made
 
-- Entry 27's Arabic is `الْبَصِيرُ` and its source code remains `bashir`, but its transliteration was incorrectly written `Al-Bashir`. It is now `Al-Basir`; its package is `@empire/batteries-dna-basir`. Registry lookup still accepts the old source code `bashir`.
-- Entry 13's `Al-Mushawwir` spelling was corrected to `Al-Musawwir`, matching the Arabic letter ṣād and the reviewed source spellings. The package is `@empire/batteries-dna-musawwir`.
+- Entry 27's Arabic is `الْبَصِيرُ` and its source code remains `bashir`, but its transliteration was incorrectly written `Al-Bashir`. It is now `Al-Basir`; its registry slug is `basir`. Registry lookup still accepts the old source code `bashir`.
+- Entry 13's `Al-Mushawwir` spelling was corrected to `Al-Musawwir`, matching the Arabic letter ṣād and the reviewed source spellings. Its registry slug is `musawwir`.
 - Entry 84 contradicted its own note: it had the technical attribute `ResourceGovernance` while the note explicitly forbade treating Malik al-Mulk as software ownership or authority. It is now a reference-only record with no software capability.
 - English package slugs now normalize the seed's Indonesian spellings (for example, `syahid` → `shahid`, `warits` → `warith`) while retaining the existing lexicon code in each manifest.
 

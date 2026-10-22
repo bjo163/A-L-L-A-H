@@ -1,8 +1,8 @@
-import type { SelectHTMLAttributes } from "react";
+import { forwardRef, type SelectHTMLAttributes } from "react";
 import { classNames } from "./classNames";
 
 export type SelectFieldProps = SelectHTMLAttributes<HTMLSelectElement>;
 
-export function SelectField({ className, ...props }: SelectFieldProps) {
-  return <select className={classNames("eol-control", className)} {...props} />;
-}
+export const SelectField = forwardRef<HTMLSelectElement, SelectFieldProps>(function SelectField({ className, ...props }, ref) {
+  return <select ref={ref} className={classNames("eol-control", className)} {...props} />;
+});

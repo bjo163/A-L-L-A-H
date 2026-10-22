@@ -1,6 +1,9 @@
+"use client";
+
 import { classNames } from "../primitives/classNames";
 import { MangaEffect } from "./MangaEffect";
 import { MangaSfx } from "./MangaSfx";
+import { useMotionVisibility } from "../primitives/useMotionVisibility";
 
 export type MangaLoadingStateProps = {
   label: string;
@@ -16,8 +19,12 @@ export function MangaLoadingState({
   sfx = "WHOOSH!",
   className,
 }: MangaLoadingStateProps) {
+  const motionRef = useMotionVisibility<HTMLDivElement>();
+
   return (
     <MangaEffect
+      as="div"
+      ref={motionRef}
       panel
       speedLines
       reveal

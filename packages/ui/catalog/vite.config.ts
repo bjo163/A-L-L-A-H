@@ -7,6 +7,13 @@ export default defineConfig({
   build: {
     outDir: fileURLToPath(new URL("../../../.artifacts/ui-catalog", import.meta.url)),
     emptyOutDir: true,
+    rollupOptions: {
+      input: {
+        index: fileURLToPath(new URL("./index.html", import.meta.url)),
+        preview: fileURLToPath(new URL("./preview.html", import.meta.url)),
+        workspace: fileURLToPath(new URL("./workspace-preview.html", import.meta.url)),
+      },
+    },
   },
   plugins: [react()],
   server: {

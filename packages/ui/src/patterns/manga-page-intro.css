@@ -1,0 +1,5 @@
+@media (max-width: 480px) {
+  .eol-manga-page-intro--with-sfx .eol-page-intro__decoration { inset-block-start: .25rem; }
+  .eol-manga-page-intro--with-sfx .eol-manga-page-intro__sfx { font-size: 1rem; }
+  .eol-manga-page-intro--with-sfx .eol-page-intro__eyebrow { margin-block-start: .5rem; }
+}

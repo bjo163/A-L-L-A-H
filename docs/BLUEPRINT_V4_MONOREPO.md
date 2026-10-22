@@ -7,7 +7,7 @@
 - **React + Vite + TypeScript**: authenticated 100CENTER operations SPA.
 - **Next.js App Router**: separate public portal, SSR and content.
 - **Fastify 5 + TypeScript**: one controlled local Empire API boundary with generated OpenAPI at `/openapi.json` and a shared `@empire/api-contract` client.
-- **PostgreSQL + Empire Batteries (Knex/Objection)**: API persistence with declarative, additive module schema synchronization at startup. `packages/db` Drizzle definitions are a prototype and are not used by the API runtime.
+- **PostgreSQL + Empire Batteries (Knex/Objection)**: API persistence with declarative, additive module schema synchronization at startup and the sole schema authority.
 - **Module Kit**: first-party manifests, dependency sorting, capability owner checks, isolation, lifecycle proposals.
 - **Local AI**: optional tool adapter with provenance and human approvals; no auto-authorization.
 
@@ -20,7 +20,6 @@ apps/
 packages/
   ui/                      # shared React primitives and design tokens
   module-kit/                 # Manifest validation + deterministic resolver
-  db/                         # Drizzle schema prototype; API runtime uses Batteries models
   api-contract/               # shared API paths, DTOs and fetch client
 modules/
   kernel/ research/ scripture/ journey/ mission/ governance/ ziil/

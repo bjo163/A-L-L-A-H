@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "Registry and lookup API for 99 draft Batteries DNA project mappings.",
+  "description": "Single registry and lookup API for 99 draft Batteries DNA project mappings.",
   "types": "./index.d.ts",
   "exports": {
     ".": {

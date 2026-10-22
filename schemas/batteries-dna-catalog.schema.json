@@ -1,11 +1,11 @@
 {
   "$schema": "https://json-schema.org/draft/2020-12/schema",
   "$id": "https://empireofthelight.example/schemas/batteries-dna-catalog.schema.json",
-  "title": "Batteries DNA Asma Mapping Package Catalog",
+  "title": "Batteries DNA Asma Mapping Registry",
   "description": "A draft, source-linked lexicon catalog and bounded project analogies. Capability strings are proposed identifiers only. The catalog is not a theological authority, executable capability registry, or claim of divine capability for software.",
   "type": "object",
   "additionalProperties": false,
-  "required": ["schemaVersion", "registryId", "language", "locales", "source", "mappingRelation", "authorityGranted", "runtimeEnabled", "description", "packages"],
+  "required": ["schemaVersion", "registryId", "language", "locales", "source", "mappingRelation", "authorityGranted", "runtimeEnabled", "description", "records"],
   "properties": {
     "schemaVersion": { "const": "1.0.0" },
     "registryId": { "const": "BATTERIES_DNA_ASMA_99" },
@@ -21,12 +21,12 @@
     "authorityGranted": { "const": false },
     "runtimeEnabled": { "const": false },
     "description": { "type": "string", "minLength": 1 },
-    "packages": { "type": "array", "minItems": 99, "maxItems": 99, "items": { "$ref": "#/$defs/package" } }
+    "records": { "type": "array", "minItems": 99, "maxItems": 99, "items": { "$ref": "#/$defs/record" } }
   },
   "$defs": {
-    "package": { "type": "object", "additionalProperties": false, "required": ["number", "name", "id", "code", "lexiconCode", "arabic", "transliteration", "label", "attribute", "domain", "wisdom", "mapping", "capability", "recordType", "relation", "scope", "limitations", "status", "authorityGranted", "runtimeEnabled"], "properties": {
+    "record": { "type": "object", "additionalProperties": false, "required": ["number", "slug", "id", "code", "lexiconCode", "arabic", "transliteration", "label", "attribute", "domain", "wisdom", "mapping", "capability", "recordType", "relation", "scope", "limitations", "status", "authorityGranted", "runtimeEnabled"], "properties": {
       "number": { "type": "integer", "minimum": 1, "maximum": 99 },
-      "name": { "type": "string", "pattern": "^@empire/batteries-dna-[a-z0-9]+(?:-[a-z0-9]+)*$" },
+      "slug": { "type": "string", "pattern": "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
       "id": { "type": "string", "pattern": "^dna-[a-z0-9]+(?:-[a-z0-9]+)*$" },
       "code": { "type": "string", "pattern": "^[a-z0-9]+(?:_[a-z0-9]+)*$" },
       "lexiconCode": { "type": "string", "pattern": "^[a-z0-9]+(?:_[a-z0-9]+)*$" },

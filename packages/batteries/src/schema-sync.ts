@@ -30,6 +30,7 @@ const postgresTypes: Record<FieldDefinition["type"], string[]> = {
   timestamp: ["timestamp with time zone"],
   uuid: ["uuid"],
   float: ["real", "double precision"],
+  decimal: ["numeric"],
 };
 
 function camelToSnake(str: string): string {
@@ -116,6 +117,7 @@ function applyColumnType(
     case "timestamp": builder = table.timestamp(colName, { useTz: true }); break;
     case "uuid": builder = table.uuid(colName); break;
     case "float": builder = table.float(colName); break;
+    case "decimal": builder = table.decimal(colName, 20, 4); break;
     default: throw new Error(`Unsupported schema field type: ${String(field.type)}`);
   }
 

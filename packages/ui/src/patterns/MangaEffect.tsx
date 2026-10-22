@@ -1,4 +1,4 @@
-import type { ComponentPropsWithoutRef, ElementType } from "react";
+import type { ComponentPropsWithRef, ElementType } from "react";
 import { classNames } from "../primitives/classNames";
 
 export type MangaEffectProps<T extends ElementType = "div"> = {
@@ -10,9 +10,8 @@ export type MangaEffectProps<T extends ElementType = "div"> = {
   speedLines?: boolean;
   screentone?: boolean;
   reveal?: boolean;
-  spin?: boolean;
   className?: string;
-} & Omit<ComponentPropsWithoutRef<T>, "as" | "className">;
+} & Omit<ComponentPropsWithRef<T>, "as" | "className">;
 
 /** Composes the shared manga panel, texture, and motion treatments. */
 export function MangaEffect<T extends ElementType = "div">({
@@ -24,7 +23,6 @@ export function MangaEffect<T extends ElementType = "div">({
   speedLines = false,
   screentone = false,
   reveal = false,
-  spin = false,
   className,
   ...props
 }: MangaEffectProps<T>) {
@@ -41,7 +39,6 @@ export function MangaEffect<T extends ElementType = "div">({
         speedLines && "eol-manga-speed-lines",
         screentone && "eol-manga-screentone",
         reveal && "eol-manga-reveal",
-        spin && "eol-manga-spin",
         className,
       )}
       {...props}

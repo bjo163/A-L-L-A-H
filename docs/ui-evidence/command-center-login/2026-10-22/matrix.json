@@ -1,0 +1,660 @@
+{
+  "date": "2026-10-22",
+  "browser": "Chrome 156.0.8078.48 via Playwright 1.64.1",
+  "baseUrl": "http://localhost:5173",
+  "reducedMotion": true,
+  "authenticatedFlows": "Not exercised; no credentials entered",
+  "cases": [
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "theme": "dark",
+      "width": 1440,
+      "height": 900,
+      "documentTheme": "dark",
+      "documentLanguage": "id",
+      "title": "A-L-L-A-H Command Center — Empire of the Light",
+      "headings": [
+        "Masuk Command Center"
+      ],
+      "scrollWidth": 1440,
+      "scrollHeight": 900,
+      "formCount": 1,
+      "fields": [
+        {
+          "type": "text",
+          "name": "",
+          "required": true,
+          "label": "Username"
+        },
+        {
+          "type": "password",
+          "name": "",
+          "required": true,
+          "label": "Password"
+        },
+        {
+          "type": "checkbox",
+          "name": "",
+          "required": false,
+          "label": "Ingat saya di perangkat ini selama 30 hari"
+        }
+      ],
+      "visibleControls": [
+        {
+          "name": "Tema tampilan",
+          "left": 819,
+          "right": 903,
+          "top": 201,
+          "bottom": 245,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "name": "Username",
+          "left": 537,
+          "right": 903,
+          "top": 420,
+          "bottom": 464,
+          "width": 366,
+          "height": 44
+        },
+        {
+          "name": "Password",
+          "left": 537,
+          "right": 903,
+          "top": 501,
+          "bottom": 545,
+          "width": 366,
+          "height": 44
+        },
+        {
+          "name": "Ingat saya di perangkat ini selama 30 hari",
+          "left": 537,
+          "right": 555,
+          "top": 558,
+          "bottom": 576,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "name": "Masuk",
+          "left": 537,
+          "right": 903,
+          "top": 589,
+          "bottom": 633,
+          "width": 366,
+          "height": 44
+        },
+        {
+          "name": "Refresh",
+          "left": 816,
+          "right": 903,
+          "top": 655,
+          "bottom": 699,
+          "width": 87,
+          "height": 44
+        }
+      ],
+      "screenshot": "login-desktop-dark.png",
+      "keyboardOrder": [
+        {
+          "tag": "button",
+          "label": "Tema tampilan"
+        },
+        {
+          "tag": "input",
+          "label": "Username"
+        },
+        {
+          "tag": "input",
+          "label": "Password"
+        },
+        {
+          "tag": "input",
+          "label": "Ingat saya di perangkat ini selama 30 hari"
+        },
+        {
+          "tag": "button",
+          "label": "Masuk"
+        },
+        {
+          "tag": "body",
+          "label": "100CENTER\nOPERATOR WORKSPACE\nGelap\nMasuk Command Center\n\nGunakan akun operator lokal yang telah diprovisikan oleh administrator.\n\nUsername\nPassword\nIngat saya di perangkat ini selama 30 hari\nMasuk\nAPI checking\nDatabase checking\nRefresh"
+        },
+        {
+          "tag": "button",
+          "label": "Tema tampilan"
+        }
+      ],
+      "controls": {
+        "rememberChecked": true,
+        "emptyRequiredFieldsInvalid": true,
+        "nativeFormInvalid": true
+      },
+      "pageErrors": [],
+      "loginPosts": [],
+      "checks": {
+        "httpOk": true,
+        "themeMatched": true,
+        "themeSwitchWorks": true,
+        "singleMainHeading": true,
+        "oneLoginForm": true,
+        "noHorizontalOverflow": true,
+        "allControlsWithinViewport": true,
+        "requiredFieldsHaveNativeValidation": true,
+        "rememberMeControlledAfterHydration": true,
+        "noLoginMutation": true,
+        "noPageErrors": true,
+        "keyboardReachesForm": true
+      }
+    },
+    {
+      "viewport": {
+        "name": "desktop",
+        "width": 1440,
+        "height": 900
+      },
+      "theme": "light",
+      "width": 1440,
+      "height": 900,
+      "documentTheme": "light",
+      "documentLanguage": "id",
+      "title": "A-L-L-A-H Command Center — Empire of the Light",
+      "headings": [
+        "Masuk Command Center"
+      ],
+      "scrollWidth": 1440,
+      "scrollHeight": 900,
+      "formCount": 1,
+      "fields": [
+        {
+          "type": "text",
+          "name": "",
+          "required": true,
+          "label": "Username"
+        },
+        {
+          "type": "password",
+          "name": "",
+          "required": true,
+          "label": "Password"
+        },
+        {
+          "type": "checkbox",
+          "name": "",
+          "required": false,
+          "label": "Ingat saya di perangkat ini selama 30 hari"
+        }
+      ],
+      "visibleControls": [
+        {
+          "name": "Tema tampilan",
+          "left": 810,
+          "right": 903,
+          "top": 201,
+          "bottom": 245,
+          "width": 93,
+          "height": 44
+        },
+        {
+          "name": "Username",
+          "left": 537,
+          "right": 903,
+          "top": 420,
+          "bottom": 464,
+          "width": 366,
+          "height": 44
+        },
+        {
+          "name": "Password",
+          "left": 537,
+          "right": 903,
+          "top": 501,
+          "bottom": 545,
+          "width": 366,
+          "height": 44
+        },
+        {
+          "name": "Ingat saya di perangkat ini selama 30 hari",
+          "left": 537,
+          "right": 555,
+          "top": 558,
+          "bottom": 576,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "name": "Masuk",
+          "left": 537,
+          "right": 903,
+          "top": 589,
+          "bottom": 633,
+          "width": 366,
+          "height": 44
+        },
+        {
+          "name": "Refresh",
+          "left": 816,
+          "right": 903,
+          "top": 655,
+          "bottom": 699,
+          "width": 87,
+          "height": 44
+        }
+      ],
+      "screenshot": "login-desktop-light.png",
+      "keyboardOrder": [
+        {
+          "tag": "button",
+          "label": "Tema tampilan"
+        },
+        {
+          "tag": "input",
+          "label": "Username"
+        },
+        {
+          "tag": "input",
+          "label": "Password"
+        },
+        {
+          "tag": "input",
+          "label": "Ingat saya di perangkat ini selama 30 hari"
+        },
+        {
+          "tag": "button",
+          "label": "Masuk"
+        },
+        {
+          "tag": "body",
+          "label": "100CENTER\nOPERATOR WORKSPACE\nTerang\nMasuk Command Center\n\nGunakan akun operator lokal yang telah diprovisikan oleh administrator.\n\nUsername\nPassword\nIngat saya di perangkat ini selama 30 hari\nMasuk\nAPI checking\nDatabase checking\nRefresh"
+        },
+        {
+          "tag": "button",
+          "label": "Tema tampilan"
+        }
+      ],
+      "controls": {
+        "rememberChecked": true,
+        "emptyRequiredFieldsInvalid": true,
+        "nativeFormInvalid": true
+      },
+      "pageErrors": [],
+      "loginPosts": [],
+      "checks": {
+        "httpOk": true,
+        "themeMatched": true,
+        "themeSwitchWorks": true,
+        "singleMainHeading": true,
+        "oneLoginForm": true,
+        "noHorizontalOverflow": true,
+        "allControlsWithinViewport": true,
+        "requiredFieldsHaveNativeValidation": true,
+        "rememberMeControlledAfterHydration": true,
+        "noLoginMutation": true,
+        "noPageErrors": true,
+        "keyboardReachesForm": true
+      }
+    },
+    {
+      "viewport": {
+        "name": "mobile",
+        "width": 375,
+        "height": 812
+      },
+      "theme": "dark",
+      "width": 375,
+      "height": 812,
+      "documentTheme": "dark",
+      "documentLanguage": "id",
+      "title": "A-L-L-A-H Command Center — Empire of the Light",
+      "headings": [
+        "Masuk Command Center"
+      ],
+      "scrollWidth": 375,
+      "scrollHeight": 812,
+      "formCount": 1,
+      "fields": [
+        {
+          "type": "text",
+          "name": "",
+          "required": true,
+          "label": "Username"
+        },
+        {
+          "type": "password",
+          "name": "",
+          "required": true,
+          "label": "Password"
+        },
+        {
+          "type": "checkbox",
+          "name": "",
+          "required": false,
+          "label": "Ingat saya di perangkat ini selama 30 hari"
+        }
+      ],
+      "visibleControls": [
+        {
+          "name": "Tema tampilan",
+          "left": 243,
+          "right": 327,
+          "top": 162,
+          "bottom": 206,
+          "width": 84,
+          "height": 44
+        },
+        {
+          "name": "Username",
+          "left": 48,
+          "right": 327,
+          "top": 417,
+          "bottom": 461,
+          "width": 279,
+          "height": 44
+        },
+        {
+          "name": "Password",
+          "left": 48,
+          "right": 327,
+          "top": 498,
+          "bottom": 542,
+          "width": 279,
+          "height": 44
+        },
+        {
+          "name": "Ingat saya di perangkat ini selama 30 hari",
+          "left": 48,
+          "right": 66,
+          "top": 555,
+          "bottom": 573,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "name": "Masuk",
+          "left": 48,
+          "right": 327,
+          "top": 586,
+          "bottom": 630,
+          "width": 279,
+          "height": 44
+        },
+        {
+          "name": "Refresh",
+          "left": 240,
+          "right": 327,
+          "top": 652,
+          "bottom": 696,
+          "width": 87,
+          "height": 44
+        }
+      ],
+      "screenshot": "login-mobile-dark.png",
+      "keyboardOrder": [
+        {
+          "tag": "button",
+          "label": "Tema tampilan"
+        },
+        {
+          "tag": "input",
+          "label": "Username"
+        },
+        {
+          "tag": "input",
+          "label": "Password"
+        },
+        {
+          "tag": "input",
+          "label": "Ingat saya di perangkat ini selama 30 hari"
+        },
+        {
+          "tag": "button",
+          "label": "Masuk"
+        },
+        {
+          "tag": "body",
+          "label": "100CENTER\nOPERATOR WORKSPACE\nGelap\nMasuk Command Center\n\nGunakan akun operator lokal yang telah diprovisikan oleh administrator.\n\nUsername\nPassword\nIngat saya di perangkat ini selama 30 hari\nMasuk\nAPI checking\nDatabase checking\nRefresh"
+        },
+        {
+          "tag": "button",
+          "label": "Tema tampilan"
+        }
+      ],
+      "controls": {
+        "rememberChecked": true,
+        "emptyRequiredFieldsInvalid": true,
+        "nativeFormInvalid": true
+      },
+      "pageErrors": [],
+      "loginPosts": [],
+      "checks": {
+        "httpOk": true,
+        "themeMatched": true,
+        "themeSwitchWorks": true,
+        "singleMainHeading": true,
+        "oneLoginForm": true,
+        "noHorizontalOverflow": true,
+        "allControlsWithinViewport": true,
+        "requiredFieldsHaveNativeValidation": true,
+        "rememberMeControlledAfterHydration": true,
+        "noLoginMutation": true,
+        "noPageErrors": true,
+        "keyboardReachesForm": true
+      }
+    },
+    {
+      "viewport": {
+        "name": "mobile",
+        "width": 375,
+        "height": 812
+      },
+      "theme": "light",
+      "width": 375,
+      "height": 812,
+      "documentTheme": "light",
+      "documentLanguage": "id",
+      "title": "A-L-L-A-H Command Center — Empire of the Light",
+      "headings": [
+        "Masuk Command Center"
+      ],
+      "scrollWidth": 375,
+      "scrollHeight": 812,
+      "formCount": 1,
+      "fields": [
+        {
+          "type": "text",
+          "name": "",
+          "required": true,
+          "label": "Username"
+        },
+        {
+          "type": "password",
+          "name": "",
+          "required": true,
+          "label": "Password"
+        },
+        {
+          "type": "checkbox",
+          "name": "",
+          "required": false,
+          "label": "Ingat saya di perangkat ini selama 30 hari"
+        }
+      ],
+      "visibleControls": [
+        {
+          "name": "Tema tampilan",
+          "left": 234,
+          "right": 327,
+          "top": 162,
+          "bottom": 206,
+          "width": 93,
+          "height": 44
+        },
+        {
+          "name": "Username",
+          "left": 48,
+          "right": 327,
+          "top": 417,
+          "bottom": 461,
+          "width": 279,
+          "height": 44
+        },
+        {
+          "name": "Password",
+          "left": 48,
+          "right": 327,
+          "top": 498,
+          "bottom": 542,
+          "width": 279,
+          "height": 44
+        },
+        {
+          "name": "Ingat saya di perangkat ini selama 30 hari",
+          "left": 48,
+          "right": 66,
+          "top": 555,
+          "bottom": 573,
+          "width": 18,
+          "height": 18
+        },
+        {
+          "name": "Masuk",
+          "left": 48,
+          "right": 327,
+          "top": 586,
+          "bottom": 630,
+          "width": 279,
+          "height": 44
+        },
+        {
+          "name": "Refresh",
+          "left": 240,
+          "right": 327,
+          "top": 652,
+          "bottom": 696,
+          "width": 87,
+          "height": 44
+        }
+      ],
+      "screenshot": "login-mobile-light.png",
+      "keyboardOrder": [
+        {
+          "tag": "button",
+          "label": "Tema tampilan"
+        },
+        {
+          "tag": "input",
+          "label": "Username"
+        },
+        {
+          "tag": "input",
+          "label": "Password"
+        },
+        {
+          "tag": "input",
+          "label": "Ingat saya di perangkat ini selama 30 hari"
+        },
+        {
+          "tag": "button",
+          "label": "Masuk"
+        },
+        {
+          "tag": "body",
+          "label": "100CENTER\nOPERATOR WORKSPACE\nTerang\nMasuk Command Center\n\nGunakan akun operator lokal yang telah diprovisikan oleh administrator.\n\nUsername\nPassword\nIngat saya di perangkat ini selama 30 hari\nMasuk\nAPI checking\nDatabase checking\nRefresh"
+        },
+        {
+          "tag": "button",
+          "label": "Tema tampilan"
+        }
+      ],
+      "controls": {
+        "rememberChecked": true,
+        "emptyRequiredFieldsInvalid": true,
+        "nativeFormInvalid": true
+      },
+      "pageErrors": [],
+      "loginPosts": [],
+      "checks": {
+        "httpOk": true,
+        "themeMatched": true,
+        "themeSwitchWorks": true,
+        "singleMainHeading": true,
+        "oneLoginForm": true,
+        "noHorizontalOverflow": true,
+        "allControlsWithinViewport": true,
+        "requiredFieldsHaveNativeValidation": true,
+        "rememberMeControlledAfterHydration": true,
+        "noLoginMutation": true,
+        "noPageErrors": true,
+        "keyboardReachesForm": true
+      }
+    }
+  ],
+  "responsiveSupplement": {
+    "date": "2026-10-22",
+    "browser": "Chrome 156.0.8078.48 via Playwright 1.64.1",
+    "target": "http://localhost:5173/",
+    "serverLifecycle": "Reused the user-run server; no server was started or stopped.",
+    "credentialsEntered": false,
+    "reducedMotionOverride": "none",
+    "viewportHeight": 812,
+    "widths": [320, 375, 768, 1024, 1440],
+    "themeCaseCount": 10,
+    "layoutByWidth": [
+      { "width": 320, "pageScrollWidth": 320, "card": { "left": 22, "width": 276, "height": 645.3 }, "formWidth": 224 },
+      { "width": 375, "pageScrollWidth": 375, "card": { "left": 22, "width": 331, "height": 631.3 }, "formWidth": 279 },
+      { "width": 768, "pageScrollWidth": 768, "card": { "left": 159, "width": 450, "height": 578.1 }, "formWidth": 369.2 },
+      { "width": 1024, "pageScrollWidth": 1024, "card": { "left": 287, "width": 450, "height": 581.3 }, "formWidth": 366 },
+      { "width": 1440, "pageScrollWidth": 1440, "card": { "left": 495, "width": 450, "height": 581.3 }, "formWidth": 366 }
+    ],
+    "themeResults": {
+      "dark": {
+        "horizontalOverflowCases": 0,
+        "themeControlHeight": 44,
+        "submitHeight": 44,
+        "logoMarkCount": 1,
+        "contrastRatios": { "headingOnSurface": 16.23, "fieldLabelOnSurface": 14.66, "buttonTextOnAction": 6.77 }
+      },
+      "light": {
+        "horizontalOverflowCases": 0,
+        "themeControlHeight": 44,
+        "submitHeight": 44,
+        "logoMarkCount": 1,
+        "contrastRatios": { "headingOnSurface": 16.85, "fieldLabelOnSurface": 13.94, "buttonTextOnAction": 5.63 }
+      }
+    },
+    "shortHeightRegression": {
+      "viewport": { "width": 320, "height": 568 },
+      "beforeFix": { "documentClientWidth": 305, "authLayoutWidth": 320, "documentScrollWidth": 320, "horizontalOverflow": true },
+      "afterFix": { "documentClientWidth": 305, "authLayoutWidth": 305, "documentScrollWidth": 305, "documentScrollHeight": 725, "card": { "left": 22, "width": 261, "height": 681.3 }, "horizontalOverflow": false, "refreshVisibleAfterVerticalScroll": true },
+      "cssOwner": "packages/ui/src/products/command-center.css",
+      "rule": "min-width: min(320px, 100%)",
+      "themesChecked": ["dark", "light"]
+    },
+    "keyboardFocus": {
+      "sequenceAfterThemeControl": ["Username", "Password", "Remember me", "Masuk", "Refresh"],
+      "focusIndicator": "2px solid rgb(0, 130, 138)"
+    },
+    "serviceHealth": { "api": "ok", "database": "ok" },
+    "pageErrors": [],
+    "uiOwnership": {
+      "packageVersion": "@empire/ui 0.1.0",
+      "tokenVersionBasis": "Package version 0.1.0; there is no separate token schema version field.",
+      "assetManifestSchemaVersion": 1,
+      "brandSourceAssetVersion": 1,
+      "brandConcept": "Orbit is provisional; concept scorecard, final rendered review, rights-holder attribution, and public license remain open under UI-C02-03/UI-C02-13/UI-C02-15.",
+      "productImplementation": "AuthLayout, ThemeControl, Button, Switch, BrandLockup, the Orbit SVG mark, tokens, and product CSS are owned by @empire/ui. Portal and Command Center have no app-owned CSS or SVG files.",
+      "paletteReview": "The active light-theme switch uses the package accent-subtle highlight while the primary action uses rose; review this hierarchy with the brand concept before final approval."
+    },
+    "audits": {
+      "boundary": "Passed: 34 consumer sources, no inline style props, 41 package-owned class hooks; 1,308 scoped selectors across 4 stylesheets and 2 documented Portal exceptions.",
+      "duplicateCss": "Passed: 19 stylesheets, no duplicate declarations in matching selector/context pairs.",
+      "commandCenterBuild": "Passed; existing WorldGlobeMap chunk warning remains at 1,071.22 KB."
+    },
+    "acceptance": "All ten 812px-high width/theme cases and both 320x568 theme cases have no horizontal overflow. The login card stays centered and fits at 812px height; at 568px height the page scrolls vertically and the Refresh control is reachable. This is pre-authentication evidence only; authenticated pages and the full C16-06 behavior matrix remain open."
+  }
+}

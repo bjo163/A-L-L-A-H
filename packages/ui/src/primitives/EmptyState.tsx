@@ -1,10 +1,12 @@
 import { useId, type HTMLAttributes, type ReactNode } from "react";
 import { classNames } from "./classNames";
+import { StateArtwork } from "../patterns/StateArtwork";
 
 export type EmptyStateProps = Omit<HTMLAttributes<HTMLDivElement>, "role"> & {
   title: ReactNode;
   description?: ReactNode;
   action?: ReactNode;
+  illustrated?: boolean;
   role?: "status" | "region";
 };
 
@@ -12,6 +14,7 @@ export function EmptyState({
   title,
   description,
   action,
+  illustrated = false,
   role = "status",
   className,
   "aria-labelledby": ariaLabelledBy,
@@ -21,11 +24,12 @@ export function EmptyState({
 
   return (
     <div
-      className={classNames("eol-state", "eol-state--empty", className)}
+      className={classNames("eol-state", "eol-state--empty", illustrated && "eol-state--illustrated", className)}
       role={role}
       aria-labelledby={ariaLabelledBy ?? titleId}
       {...props}
     >
+      {illustrated ? <span className="eol-state__illustration" aria-hidden="true"><StateArtwork variant="empty" /></span> : null}
       <h3 id={titleId} className="eol-state__title">{title}</h3>
       {description ? <p className="eol-state__description">{description}</p> : null}
       {action ? <div className="eol-state__action">{action}</div> : null}

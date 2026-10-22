@@ -5,10 +5,12 @@ import {
   RoleModel,
   PermissionModel,
   UserModel,
+  PartnerModel,
   UserRoleModel,
   RolePermissionModel,
   AuditLogModel,
   DictionaryModel,
+  LegacyDictionaryImportModel,
   LexiconModel,
   AuthSessionModel,
   ChangeRequestModel,
@@ -22,6 +24,23 @@ import {
   ResearchEvidenceModel,
   ResearchApprovalModel,
   ModuleInstallationModel,
+  WorldMonitorObservationModel,
+  WorldMonitorSourceRunModel,
+  WorldMonitorAggregateModel,
+  YoutubeSentinelItemModel,
+  YoutubeSentinelScanModel,
+  ProjectModel,
+  TaskModel,
+  DocumentModel,
+  CommentModel,
+  NotificationModel,
+  NotificationOutboxModel,
+  TagModel,
+  TagAssignmentModel,
+  WorkspaceModel,
+  YoutubeSentinelPartnerLinkModel,
+  CrmOpportunityModel, CatalogItemModel, SalesQuoteModel, SalesQuoteLineModel, SalesOrderModel,
+  OperationalInvoiceModel, OperationalPaymentModel, OperationalExpenseModel, CalendarActivityModel, SalesOrderLineModel,
 } from "./models/index.js";
 import { ASMAUL_HUSNA_99 } from "./data/asmaul-husna.js";
 
@@ -29,15 +48,22 @@ const kernelModels = [
   RoleModel,
   PermissionModel,
   UserModel,
+  PartnerModel,
   UserRoleModel,
   RolePermissionModel,
   AuditLogModel,
   DictionaryModel,
+  LegacyDictionaryImportModel,
   LexiconModel,
   AuthSessionModel,
   TenantModel,
   TenantMembershipModel,
   ModuleInstallationModel,
+  WorldMonitorObservationModel,
+  WorldMonitorSourceRunModel,
+  WorldMonitorAggregateModel,
+  YoutubeSentinelItemModel,
+  YoutubeSentinelScanModel,
 ];
 
 const governanceModels = [
@@ -54,10 +80,13 @@ const researchModels = [
   ResearchApprovalModel,
 ];
 
+const workModels = [WorkspaceModel, ProjectModel, TaskModel, DocumentModel, CommentModel, NotificationModel, NotificationOutboxModel, TagModel, TagAssignmentModel, YoutubeSentinelPartnerLinkModel, CrmOpportunityModel, CatalogItemModel, SalesQuoteModel, SalesQuoteLineModel, SalesOrderModel, SalesOrderLineModel, OperationalInvoiceModel, OperationalPaymentModel, OperationalExpenseModel, CalendarActivityModel];
+
 const moduleModelRegistry: Record<string, Record<string, Array<typeof BatteriesModelClass>>> = {
   kernel: Object.fromEntries(kernelModels.map((model) => [model.tableName, [model]])),
   governance: Object.fromEntries(governanceModels.map((model) => [model.tableName, [model]])),
   research: Object.fromEntries(researchModels.map((model) => [model.tableName, [model]])),
+  work: Object.fromEntries(workModels.map((model) => [model.tableName, [model]])),
 };
 
 export interface SchemaModuleManifest {
@@ -410,6 +439,31 @@ async function syncBaseModuleUnlocked(knex: Knex, modules: readonly SchemaModule
     });
   }
 
+  // Legacy partners predate tenant ownership. Preserve every row and attach them to
+  // the existing local tenant before tenant-scoped routes become available.
+  const duplicatePartnerUsers = await knex("partners")
+    .where((builder) => builder.whereNull("tenant_id").orWhere("tenant_id", tenantId))
+    .whereNotNull("user_id")
+    .select("user_id")
+    .groupBy("user_id")
+    .havingRaw("count(*) > 1")
+    .first();
+  if (duplicatePartnerUsers) throw new Error("Duplicate user-linked partners exist within a tenant; resolve them before enabling tenant partner uniqueness.");
+  await knex("partners").whereNull("tenant_id").update({ tenant_id: tenantId, updated_at: knex.fn.now() });
+  const tenantCheck = await knex.raw(
+    "SELECT 1 FROM pg_constraint c JOIN pg_class r ON r.oid = c.conrelid JOIN pg_namespace n ON n.oid = r.relnamespace WHERE c.conname = ? AND r.relname = 'partners' AND n.nspname = current_schema()",
+    ["partners_tenant_id_present_check"],
+  );
+  if (!tenantCheck.rows.length) await knex.raw("ALTER TABLE ?? ADD CONSTRAINT ?? CHECK (tenant_id IS NOT NULL) NOT VALID", ["partners", "partners_tenant_id_present_check"]);
+  await knex.raw("ALTER TABLE ?? VALIDATE CONSTRAINT ??", ["partners", "partners_tenant_id_present_check"]);
+  // Older installs may have the former global user_id unique constraint. Replace
+  // it with the declared per-tenant constraint after confirming data is compatible.
+  const currentSchema = (await knex.raw("SELECT current_schema() AS schema_name")).rows[0]?.schema_name as string;
+  const oldPartnerConstraint = await knex("information_schema.table_constraints")
+    .where({ table_schema: currentSchema, table_name: "partners", constraint_name: "partners_user_id_unique", constraint_type: "UNIQUE" })
+    .first();
+  if (oldPartnerConstraint) await knex.raw('ALTER TABLE "partners" DROP CONSTRAINT "partners_user_id_unique"');
+
   const ownerPassword = process.env.EMPIRE_OWNER_PASSWORD;
   const architectPassword = process.env.EMPIRE_ARCHITECT_PASSWORD;
 
@@ -482,6 +536,12 @@ async function syncBaseModuleUnlocked(knex: Knex, modules: readonly SchemaModule
     { id: uuidv7(), name: "Research Read", slug: "research:read", description: "Read research runs in the current tenant" },
     { id: uuidv7(), name: "Research Write", slug: "research:write", description: "Create runs and attach evidence" },
     { id: uuidv7(), name: "Research Approval", slug: "research:approve", description: "Approve or reject research runs" },
+    { id: uuidv7(), name: "Work Read", slug: "work:read", description: "Read projects, tasks, and document records in the active tenant" },
+    { id: uuidv7(), name: "Work Write", slug: "work:write", description: "Manage projects, tasks, and document records in the active tenant" },
+    { id: uuidv7(), name: "Sentinel Read", slug: "sentinel:read", description: "Read YouTube Sentinel monitoring records and scheduler status" },
+    { id: uuidv7(), name: "Sentinel Scan", slug: "sentinel:scan", description: "Run bounded YouTube Sentinel searches" },
+    { id: uuidv7(), name: "Sentinel Review", slug: "sentinel:review", description: "Update YouTube Sentinel review decisions" },
+    { id: uuidv7(), name: "Sentinel Schedule", slug: "sentinel:schedule", description: "Trigger or configure YouTube Sentinel scheduled scans" },
   ];
 
   for (const perm of permissions) {
@@ -535,10 +595,12 @@ async function syncBaseModuleUnlocked(knex: Knex, modules: readonly SchemaModule
       "continuum:read", "continuum:invoke", "users:manage", "cab:read", "cab:write",
       "cab:review", "cab:audit", "cab:decree", "cab:execute", "research:read",
       "research:write", "research:approve",
+      "work:read", "work:write",
+      "sentinel:read", "sentinel:scan", "sentinel:review", "sentinel:schedule",
     ],
     oracle: ["continuum:read", "research:read"],
     arbiter: ["continuum:read", "research:read", "cab:read", "cab:audit"],
-    sentinel: ["continuum:read", "research:read", "cab:read", "cab:audit"],
+    sentinel: ["continuum:read", "research:read", "cab:read", "cab:audit", "sentinel:read", "sentinel:scan", "sentinel:review", "sentinel:schedule"],
     bastion: ["continuum:read", "research:read", "cab:read", "cab:audit"],
     reaper: ["continuum:read", "research:read", "cab:read", "cab:audit"],
   };

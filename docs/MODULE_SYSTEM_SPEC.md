@@ -17,6 +17,10 @@ Example manifest:
 7. Lifecycle transitions, approval, compatibility and rollback recorded in persistent audit when implemented.
 8. Permissions are **server-side**. A manifest never grants user privileges.
 
+## Current implementation status
+
+The local activation config currently enables `kernel`, `governance`, and `research`. `scripture`, `journey`, `mission`, and `ziil` are cataloged as `scaffold_only`; their manifests reserve names and dependency metadata but have no registered models or executable domain routes. The API exposes their catalog status; it does not imply those capabilities are implemented.
+
 ## Planned Odoo-like features
 - Module catalog, versioned install/upgrade/disable, per-tenant enablement.
 - Declared data models, menus/slots, policy hooks, navigation contributions.

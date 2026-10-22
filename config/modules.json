@@ -3,7 +3,8 @@
   "approvedEnabled": [
     "kernel",
     "governance",
-    "research"
+    "research",
+    "work"
   ],
-  "note": "Local first-party activation: kernel, governance, and research. Production release gates remain separate."
+  "note": "Local first-party activation: kernel, governance, research, and tenant work management. Production release gates remain separate."
 }

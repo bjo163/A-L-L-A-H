@@ -3,7 +3,8 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-import { Switch } from "@empire/ui";
+import { PageNavigationFocus, ResponsiveNavigation, ThemeControl } from "@empire/ui/client";
+import { ExternalLinkIcon, SunIcon, MoonIcon } from "@empire/ui";
 import type { PortalLanguage } from "../lib/i18n";
 
 const labels = {
@@ -23,10 +24,8 @@ export function PrimaryNavigation({ language }: { language: PortalLanguage }) {
   const pathname = usePathname();
   const router = useRouter();
   const [hash, setHash] = useState("");
-  const [open, setOpen] = useState(false);
   const [pending, startTransition] = useTransition();
   const [languagePending, setLanguagePending] = useState(false);
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
   const copy = labels[language];
 
   useEffect(() => {
@@ -37,22 +36,8 @@ export function PrimaryNavigation({ language }: { language: PortalLanguage }) {
   }, []);
 
   useEffect(() => {
-    setOpen(false);
-  }, [pathname]);
-
-  useEffect(() => {
-    const saved = window.localStorage.getItem("eol-theme");
-    const current = saved === "light" ? "light" : "dark";
-    setTheme(current);
-    document.documentElement.dataset.theme = current;
-  }, []);
-
-  function changeTheme(isLight: boolean) {
-    const next = isLight ? "light" : "dark";
-    setTheme(next);
-    document.documentElement.dataset.theme = next;
-    window.localStorage.setItem("eol-theme", next);
-  }
+    setLanguagePending(false);
+  }, [language]);
 
   function changeLanguage(nextLanguage: PortalLanguage) {
     if (nextLanguage === language) return;
@@ -62,12 +47,9 @@ export function PrimaryNavigation({ language }: { language: PortalLanguage }) {
   }
 
   return (
-    <nav className={`portal-nav${open ? " is-open" : ""}`} aria-label={copy.navigation}>
-      <button className="nav-toggle" type="button" aria-expanded={open} aria-controls="primary-navigation-links" aria-label={open ? copy.close : copy.open} onClick={() => setOpen((value) => !value)}>
-        <span className="nav-toggle-icon" aria-hidden="true"><i/><i/><i/></span>
-        <span>{open ? copy.close : copy.open}</span>
-      </button>
-      <div className="nav-links" id="primary-navigation-links">
+    <>
+      <PageNavigationFocus navigationKey={pathname} />
+      <ResponsiveNavigation label={copy.navigation} openLabel={copy.open} closeLabel={copy.close} resetKey={pathname}>
         {links.map((link) => {
           const current = "external" in link ? false : link.key === "ecosystem"
             ? pathname === "/" && (hash === "#ekosistem" || hash === "#arsy")
@@ -75,8 +57,8 @@ export function PrimaryNavigation({ language }: { language: PortalLanguage }) {
           const label = "key" in link ? copy[link.key] : copy.github;
           const active = "key" in link && current;
           return (
-            <Link href={link.href} key={link.key} aria-current={active ? "page" : undefined} aria-label={label} onClick={() => setOpen(false)} {...("external" in link ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
-              {label}{"external" in link && <span aria-hidden="true"> ↗</span>}
+            <Link href={link.href} key={link.key} aria-current={active ? "page" : undefined} aria-label={label} {...("external" in link ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
+              {label}{"external" in link && <ExternalLinkIcon size={13} />}
             </Link>
           );
         })}
@@ -87,11 +69,8 @@ export function PrimaryNavigation({ language }: { language: PortalLanguage }) {
           <button type="button" aria-pressed={language === "en"} onClick={() => changeLanguage("en")} disabled={pending || languagePending}>EN</button>
           {(pending || languagePending) && <span className="language-status" role="status">{copy.loading}</span>}
         </div>
-        <Switch className="theme-toggle" checked={theme === "light"} onCheckedChange={changeTheme} aria-label={copy.theme}>
-          <span className="theme-toggle-icon" aria-hidden="true">{theme === "dark" ? "☾" : "☀"}</span>
-          <span className="theme-toggle-label">{theme === "dark" ? copy.dark : copy.light}</span>
-        </Switch>
-      </div>
-    </nav>
+        <ThemeControl label={copy.theme} lightLabel={copy.light} darkLabel={copy.dark} lightIcon={<SunIcon size={15}/>} darkIcon={<MoonIcon size={15}/>} />
+      </ResponsiveNavigation>
+    </>
   );
 }

@@ -5,12 +5,14 @@
   "type": "module",
   "exports": {
     ".": "./src/index.ts",
-    "./styles.css": "./src/styles.css",
-    "./manga-theme.css": "./src/manga-theme.css"
+    "./client": "./src/client.ts",
+    "./ui.css": "./src/ui.css",
+    "./brand-assets": "./src/brand/BrandAssets.generated.ts"
   },
   "scripts": {
     "build": "tsc --noEmit",
     "typecheck": "tsc --noEmit",
+    "assets:generate": "node scripts/generate-brand-assets.mjs",
     "catalog": "vite --config catalog/vite.config.ts --host 127.0.0.1 --port 4173",
     "catalog:build": "vite build --config catalog/vite.config.ts"
   },
@@ -28,6 +30,7 @@
   },
   "dependencies": {
     "@fontsource-variable/space-grotesk": "5.3.0",
-    "@fontsource/dm-mono": "5.3.0"
+    "@fontsource/dm-mono": "5.3.0",
+    "maplibre-gl": "^6.15.0"
   }
 }

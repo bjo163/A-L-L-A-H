@@ -7,21 +7,13 @@ import {
   ResearchJobModel,
   ResearchRunModel,
   ResearchWorkflowModel,
-  TenantMembershipModel,
 } from "@empire/batteries-base";
 import { getDatabase } from "@empire/batteries";
-import type { Knex } from "knex";
 import { requirePermission, requireSession } from "./auth.js";
+import { requireTenant, resolveRequestTenant } from "./tenant-context.js";
 import { RESEARCH_CLASSIFICATIONS, RESEARCH_EVIDENCE_REQUEST_SCHEMA, RESEARCH_REQUEST_SCHEMAS, RESEARCH_SOURCE_FAMILIES } from "@empire/api-contract";
 
 type ApprovalDecision = "approved" | "rejected";
-
-async function resolveTenant(userId: string, trx?: Knex.Transaction) {
-  const membership = await TenantMembershipModel.query(trx)
-    .where({ user_id: userId, status: "active" })
-    .first();
-  return membership?.tenantId;
-}
 
 function auditPayload(input: Record<string, unknown>) {
   return Object.fromEntries(
@@ -31,13 +23,13 @@ function auditPayload(input: Record<string, unknown>) {
 
 export async function researchRoutes(app: FastifyInstance) {
   app.addHook("preHandler", requireSession);
+  app.addHook("preHandler", requireTenant);
 
   app.get(
     "/v1/research-runs",
     { preHandler: requirePermission("research:read") },
     async (request, reply) => {
-      const tenantId = await resolveTenant(request.authUser!.id);
-      if (!tenantId) return reply.code(403).send({ status: "forbidden", message: "Keanggotaan tenant aktif diperlukan." });
+      const tenantId = request.tenantId!;
       const query = request.query as { page?: string; limit?: string; status?: string };
       const page = Math.max(1, Number(query.page) || 1);
       const limit = Math.min(100, Math.max(1, Number(query.limit) || 20));
@@ -60,8 +52,7 @@ export async function researchRoutes(app: FastifyInstance) {
     },
     async (request, reply) => {
       const { id } = request.params as { id: string };
-      const tenantId = await resolveTenant(request.authUser!.id);
-      if (!tenantId) return reply.code(403).send({ status: "forbidden", message: "Keanggotaan tenant aktif diperlukan." });
+      const tenantId = request.tenantId!;
       const run = await ResearchRunModel.query().where({ id, tenant_id: tenantId }).first();
       if (!run) return reply.code(404).send({ status: "not_found", message: "Research run tidak ditemukan." });
       const [approvals, workflow] = await Promise.all([
@@ -95,8 +86,9 @@ export async function researchRoutes(app: FastifyInstance) {
         return reply.code(400).send({ status: "invalid_request", message: "Scope harus self, community, atau global." });
       const user = request.authUser!;
       const created = await getDatabase().transaction(async (trx) => {
-        const tenantId = await resolveTenant(user.id, trx);
-        if (!tenantId) return null;
+        const tenantResult = await resolveRequestTenant(request, trx);
+        if ("error" in tenantResult) return null;
+        const tenantId = tenantResult.tenantId;
         const run = await ResearchRunModel.query(trx).insert({
           tenantId,
           requestedBy: user.id,
@@ -141,8 +133,9 @@ export async function researchRoutes(app: FastifyInstance) {
         return reply.code(400).send({ status: "invalid_request", message: "Komentar maksimal 5000 karakter." });
       const user = request.authUser!;
       const result = await getDatabase().transaction(async (trx) => {
-        const tenantId = await resolveTenant(user.id, trx);
-        if (!tenantId) return { error: "membership" as const };
+        const tenantResult = await resolveRequestTenant(request, trx);
+        if ("error" in tenantResult) return { error: "membership" as const };
+        const tenantId = tenantResult.tenantId;
         const run = await ResearchRunModel.query(trx).where({ id, tenant_id: tenantId }).forUpdate().first();
         if (!run) return { error: "missing" as const };
         if (run.status !== "pending_approval") return { error: "state" as const };
@@ -190,8 +183,9 @@ export async function researchRoutes(app: FastifyInstance) {
       const body = request.body as Record<string, unknown>;
       const user = request.authUser!;
       const inserted = await getDatabase().transaction(async (trx) => {
-        const tenantId = await resolveTenant(user.id, trx);
-        if (!tenantId) return { error: "membership" as const };
+        const tenantResult = await resolveRequestTenant(request, trx);
+        if ("error" in tenantResult) return { error: "membership" as const };
+        const tenantId = tenantResult.tenantId;
         const run = await ResearchRunModel.query(trx).where({ id, tenant_id: tenantId }).forUpdate().first();
         if (!run) return { error: "missing" as const };
         if (run.status !== "queued" && run.status !== "running") return { error: "state" as const };
@@ -292,8 +286,9 @@ export async function researchRoutes(app: FastifyInstance) {
       const summary = body.resultSummary.trim();
       const user = request.authUser!;
       const result = await getDatabase().transaction(async (trx) => {
-        const tenantId = await resolveTenant(user.id, trx);
-        if (!tenantId) return { error: "membership" as const };
+        const tenantResult = await resolveRequestTenant(request, trx);
+        if ("error" in tenantResult) return { error: "membership" as const };
+        const tenantId = tenantResult.tenantId;
         const run = await ResearchRunModel.query(trx).where({ id, tenant_id: tenantId }).forUpdate().first();
         if (!run) return { error: "missing" as const };
         if (run.status !== "running" && run.status !== "queued") return { error: "state" as const };

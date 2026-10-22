@@ -6,7 +6,9 @@
 The user requested a unified React Vite/Next + Fastify + ORM system with Odoo-style modules, prioritizing operational 100CENTER rather than more fictional roles.
 
 ## Proposed choice
-pnpm workspaces, Vite for admin, Next.js for public, Fastify for canonical/integration API, Drizzle ORM for Postgres, first-party declarative modules and explicit human approvals.
+pnpm workspaces, Vite for admin, Next.js for public, Fastify for canonical/integration API, PostgreSQL persistence through Empire Batteries (Knex/Objection), first-party declarative modules and explicit human approvals.
+
+The initial Drizzle ORM proposal was superseded by the implemented Empire Batteries Knex/Objection schema-sync layer. No Drizzle package or parallel schema authority is maintained.
 
 ## Consequences
 Fewer independent deployable components, one coherent capability catalog, typed schema, deterministic module dependency order, better local AI maintainability. Added responsibilities: schema migrations, module versioning, database ownership, tenant auth and high-quality integration tests.

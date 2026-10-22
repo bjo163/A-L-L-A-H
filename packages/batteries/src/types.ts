@@ -50,7 +50,7 @@ export interface DatabaseConfig {
 }
 
 export type FieldType =
-  "string" | "text" | "integer" | "bigint" | "boolean" | "jsonb" | "timestamp" | "uuid" | "float";
+  "string" | "text" | "integer" | "bigint" | "boolean" | "jsonb" | "timestamp" | "uuid" | "float" | "decimal";
 
 export interface FieldDefinition {
   type: FieldType;

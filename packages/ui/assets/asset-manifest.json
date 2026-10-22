@@ -1,0 +1,238 @@
+{
+  "schemaVersion": 1,
+  "generatedAssetPolicy": "Brand concepts are authored as inline SVG components; assets/source/brand/orbit.svg is the single editable standard-size Orbit geometry source, with assets/source/brand/orbit-small.svg as its package-owned small-size optical correction. Both sources generate the LogoMark components, full-brand/monochrome/inverse variants, and favicon/app-icon SVGs. Outputs are deterministic and regenerated with pnpm --filter @empire/ui assets:generate. Final identity approval is tracked in UI-C02.",
+  "generatedAssetDirectory": "assets/generated",
+  "vectors": {
+    "icons": {
+      "source": "src/primitives/Icon.tsx",
+      "inventoryExport": "iconNames",
+      "provenance": "Original repository-authored SVG paths; no third-party icon library or copied implementation.",
+      "licenseStatus": "External reuse is not granted until the repository owner records an applicable license.",
+      "strokeFamily": {
+        "name": "Empire Line v1",
+        "viewBox": "0 0 24 24",
+        "stroke": "currentColor",
+        "strokeWidth": 1.8,
+        "strokeLinecap": "round",
+        "strokeLinejoin": "round",
+        "recommendedDisplaySizes": [
+          16,
+          20,
+          24,
+          32
+        ],
+        "perIconOverrides": false
+      },
+      "names": [
+        "home",
+        "globe",
+        "spark",
+        "users",
+        "directory",
+        "clock",
+        "arrows",
+        "menu",
+        "search",
+        "filter",
+        "refresh",
+        "settings",
+        "command",
+        "logOut",
+        "externalLink",
+        "close",
+        "info",
+        "success",
+        "warning",
+        "error",
+        "pending",
+        "user",
+        "team",
+        "lock",
+        "agent",
+        "modules",
+        "knowledge",
+        "evidence",
+        "history",
+        "audit",
+        "approval",
+        "document",
+        "source",
+        "copy",
+        "download",
+        "plus",
+        "edit",
+        "sun",
+        "moon",
+        "chevronDown",
+        "chevronLeft",
+        "chevronRight",
+        "arrowLeft",
+        "arrowRight",
+        "arrowUp",
+        "arrowUpRight",
+        "arrowDownRight",
+        "check",
+        "activity",
+        "input",
+        "output",
+        "chevronUp"
+      ]
+    },
+    "domainSymbols": {
+      "source": "src/patterns/DomainSymbol.tsx",
+      "inventoryExport": "domainSymbolNames",
+      "names": [
+        "arsy",
+        "heliogrid",
+        "qrealm",
+        "forge",
+        "cosmos",
+        "ziil"
+      ],
+      "provenance": "Original repository-authored line symbols using the Empire Line v1 geometry rules.",
+      "strokeFamily": "Empire Line v1",
+      "status": "Shared vector candidates; verify domain-owner interpretation and visual legibility."
+    },
+    "brandConcepts": {
+      "source": "src/brand/BrandIdentity.tsx",
+      "inventoryType": "BrandConcept",
+      "names": [
+        "aperture",
+        "orbit",
+        "monogram"
+      ],
+      "status": "Orbit is a provisional working mark; final identity requires C02 review."
+    },
+    "brandMaster": {
+      "concept": "orbit",
+      "source": "assets/source/brand/orbit.svg",
+      "sourceRecord": {
+        "assetVersion": 1,
+        "status": "provisional",
+        "creator": "Codex-assisted original vector work under repository-owner direction; human author and rights-holder attribution remain unconfirmed.",
+        "provenance": "Editable geometry authored in this repository; no third-party logo artwork, font outlines, or copied vector paths are embedded.",
+        "licenseStatus": "No external license has been granted. The repository owner must confirm the rights holder and redistribution terms before public release.",
+        "review": {
+          "status": "pending",
+          "requiredBlueprintGates": ["UI-C02-03", "UI-C02-13", "UI-C02-15"]
+        }
+      },
+      "componentOutput": "src/brand/OrbitMark.generated.tsx",
+      "assetModuleOutput": "src/brand/BrandAssets.generated.ts",
+      "opticalMaster": {
+        "source": "assets/source/brand/orbit-small.svg",
+        "componentOutput": "src/brand/OrbitMarkSmall.generated.tsx",
+        "sizes": [
+          {
+            "size": 16,
+            "path": "assets/generated/brand/empire-mark-small-16.svg"
+          },
+          {
+            "size": 24,
+            "path": "assets/generated/brand/empire-mark-small-24.svg"
+          },
+          {
+            "size": 32,
+            "path": "assets/generated/icons/favicon.svg"
+          }
+        ]
+      },
+      "variants": {
+        "fullBrand": {
+          "path": "assets/generated/brand/empire-mark.svg",
+          "color": "#f1b84b"
+        },
+        "monochrome": {
+          "path": "assets/generated/brand/empire-mark-monochrome.svg",
+          "color": "#201832"
+        },
+        "inverse": {
+          "path": "assets/generated/brand/empire-mark-inverse.svg",
+          "color": "#ffffff"
+        }
+      },
+      "assetOutputs": [
+        "assets/generated/brand/empire-mark.svg",
+        "assets/generated/brand/empire-mark-monochrome.svg",
+        "assets/generated/brand/empire-mark-inverse.svg",
+        "assets/generated/brand/empire-mark-small-16.svg",
+        "assets/generated/brand/empire-mark-small-24.svg",
+        "assets/generated/icons/favicon.svg",
+        "assets/generated/icons/app-icon-48.svg",
+        "assets/generated/icons/app-icon-192.svg",
+        "assets/generated/icons/app-icon-512.svg"
+      ]
+    }
+  },
+  "fonts": [
+    {
+      "package": "@fontsource-variable/space-grotesk",
+      "version": "5.3.0",
+      "license": "SIL Open Font License 1.1",
+      "licenseFile": "licenses/SPACE-GROTESK-OFL-1.1.txt",
+      "imports": [
+        "@fontsource-variable/space-grotesk/wght.css"
+      ]
+    },
+    {
+      "package": "@fontsource/dm-mono",
+      "version": "5.3.0",
+      "license": "SIL Open Font License 1.1",
+      "licenseFile": "licenses/DM-MONO-OFL-1.1.txt",
+      "imports": [
+        "@fontsource/dm-mono/latin-400.css",
+        "@fontsource/dm-mono/latin-500.css"
+      ]
+    }
+  ],
+  "generatedFiles": [
+    {
+      "path": "src/brand/OrbitMark.generated.tsx",
+      "sha256": "3139cadcd4687b550e8db77a43fbbacfe0eaf8b3358a3edca8a8003822c9018a"
+    },
+    {
+      "path": "src/brand/OrbitMarkSmall.generated.tsx",
+      "sha256": "0340947b83059c7e5dfde590c73f69ccf8a1ba2be891bbf4dec8469c804137f4"
+    },
+    {
+      "path": "src/brand/BrandAssets.generated.ts",
+      "sha256": "f1292a414255f6a2ef457a6207998578bcf7c5f70e7a244cc10817ad426afa70"
+    },
+    {
+      "path": "assets/generated/brand/empire-mark.svg",
+      "sha256": "ffa402ec4e4715a959d43a55c9d171aa727994d801ad08f3179f9422494aae24"
+    },
+    {
+      "path": "assets/generated/brand/empire-mark-monochrome.svg",
+      "sha256": "881999e7c9d903e58b1cd8d4390c52cbe9873ed8b411d0f4d9142c300f37ccc0"
+    },
+    {
+      "path": "assets/generated/brand/empire-mark-inverse.svg",
+      "sha256": "d540214a0fab68a2869337f8ba2e7e4258950f9f0074a58195d53b27a773bba1"
+    },
+    {
+      "path": "assets/generated/brand/empire-mark-small-16.svg",
+      "sha256": "ecb9dd6d041fdd4e79449af5e7ab8daf63e85fd546dc00ac00c20fb89bd0230d"
+    },
+    {
+      "path": "assets/generated/brand/empire-mark-small-24.svg",
+      "sha256": "63100d435e43493dbfb3ded17bda5a2948605b84c9d98f5293ccd8834da24f68"
+    },
+    {
+      "path": "assets/generated/icons/favicon.svg",
+      "sha256": "975bf11b996a273ccd63dff6a859ee8c5424bfc69ad1800a5e1fc4768c94b747"
+    },
+    {
+      "path": "assets/generated/icons/app-icon-48.svg",
+      "sha256": "3d0a070e8d4e567a2c36de9c431b6fb94102d6812a08f50dbbb90140e09341cc"
+    },
+    {
+      "path": "assets/generated/icons/app-icon-192.svg",
+      "sha256": "6d1f8d37dbba78c89572afbc3e02e90290a342348c060697d7d913cc960f843f"
+    },
+    {
+      "path": "assets/generated/icons/app-icon-512.svg",
+      "sha256": "27c3486407b37af095a19fb2fd585bda2acc2e10b4fa437592c65273ab68f9eb"
+    }
+  ]
+}

@@ -1,0 +1,494 @@
+{
+  "date": "2026-10-22",
+  "browser": "Chrome 156.0.8078.48 via Playwright 1.64.1",
+  "server": "Existing user-started Portal at localhost:3300",
+  "routes": [
+    "/#ekosistem",
+    "/systems",
+    "/roadmap"
+  ],
+  "viewports": [
+    320,
+    375,
+    768,
+    1024,
+    1440
+  ],
+  "themes": [
+    "dark",
+    "light"
+  ],
+  "reducedMotion": true,
+  "cases": [
+    {
+      "width": 320,
+      "height": 900,
+      "theme": "dark",
+      "mobile": true,
+      "anchor": {
+        "hash": "#ekosistem",
+        "scrollY": 3006,
+        "activeId": "ekosistem",
+        "tabIndex": "-1",
+        "targetTop": 136,
+        "targetBottom": 3114,
+        "scrollMargin": "136px",
+        "headerTop": 0,
+        "headerBottom": 97,
+        "headerPosition": "sticky",
+        "rootOverflowX": "clip",
+        "scrollWidth": 320
+      },
+      "systems": {
+        "path": "/systems",
+        "activeTag": "H1",
+        "activeText": "TIAP LAPISAN.SATU TUJUAN.",
+        "heading": "TIAP LAPISAN.SATU TUJUAN.",
+        "scrollWidth": 320
+      },
+      "roadmap": {
+        "path": "/roadmap",
+        "activeTag": "H1",
+        "activeText": "BERANI MEMBAYANGKAN.JUJUR PADA BUKTI.",
+        "heading": "BERANI MEMBAYANGKAN.JUJUR PADA BUKTI.",
+        "scrollWidth": 320
+      },
+      "checks": {
+        "httpOk": true,
+        "themeApplied": true,
+        "anchorFocus": true,
+        "anchorScrollsToSharedOffset": true,
+        "stickyHeaderRemainsVisible": true,
+        "rootDoesNotCaptureStickyScroll": true,
+        "routeHeadingFocusSystems": true,
+        "routeHeadingFocusRoadmap": true,
+        "noHorizontalOverflow": true,
+        "noPageErrors": true
+      },
+      "errors": []
+    },
+    {
+      "width": 320,
+      "height": 900,
+      "theme": "light",
+      "mobile": true,
+      "anchor": {
+        "hash": "#ekosistem",
+        "scrollY": 3006,
+        "activeId": "ekosistem",
+        "tabIndex": "-1",
+        "targetTop": 136,
+        "targetBottom": 3114,
+        "scrollMargin": "136px",
+        "headerTop": 0,
+        "headerBottom": 97,
+        "headerPosition": "sticky",
+        "rootOverflowX": "clip",
+        "scrollWidth": 320
+      },
+      "systems": {
+        "path": "/systems",
+        "activeTag": "H1",
+        "activeText": "TIAP LAPISAN.SATU TUJUAN.",
+        "heading": "TIAP LAPISAN.SATU TUJUAN.",
+        "scrollWidth": 320
+      },
+      "roadmap": {
+        "path": "/roadmap",
+        "activeTag": "H1",
+        "activeText": "BERANI MEMBAYANGKAN.JUJUR PADA BUKTI.",
+        "heading": "BERANI MEMBAYANGKAN.JUJUR PADA BUKTI.",
+        "scrollWidth": 320
+      },
+      "checks": {
+        "httpOk": true,
+        "themeApplied": true,
+        "anchorFocus": true,
+        "anchorScrollsToSharedOffset": true,
+        "stickyHeaderRemainsVisible": true,
+        "rootDoesNotCaptureStickyScroll": true,
+        "routeHeadingFocusSystems": true,
+        "routeHeadingFocusRoadmap": true,
+        "noHorizontalOverflow": true,
+        "noPageErrors": true
+      },
+      "errors": []
+    },
+    {
+      "width": 375,
+      "height": 900,
+      "theme": "dark",
+      "mobile": true,
+      "anchor": {
+        "hash": "#ekosistem",
+        "scrollY": 2803,
+        "activeId": "ekosistem",
+        "tabIndex": "-1",
+        "targetTop": 136,
+        "targetBottom": 3025,
+        "scrollMargin": "136px",
+        "headerTop": 0,
+        "headerBottom": 97,
+        "headerPosition": "sticky",
+        "rootOverflowX": "clip",
+        "scrollWidth": 375
+      },
+      "systems": {
+        "path": "/systems",
+        "activeTag": "H1",
+        "activeText": "TIAP LAPISAN.SATU TUJUAN.",
+        "heading": "TIAP LAPISAN.SATU TUJUAN.",
+        "scrollWidth": 375
+      },
+      "roadmap": {
+        "path": "/roadmap",
+        "activeTag": "H1",
+        "activeText": "BERANI MEMBAYANGKAN.JUJUR PADA BUKTI.",
+        "heading": "BERANI MEMBAYANGKAN.JUJUR PADA BUKTI.",
+        "scrollWidth": 375
+      },
+      "checks": {
+        "httpOk": true,
+        "themeApplied": true,
+        "anchorFocus": true,
+        "anchorScrollsToSharedOffset": true,
+        "stickyHeaderRemainsVisible": true,
+        "rootDoesNotCaptureStickyScroll": true,
+        "routeHeadingFocusSystems": true,
+        "routeHeadingFocusRoadmap": true,
+        "noHorizontalOverflow": true,
+        "noPageErrors": true
+      },
+      "errors": []
+    },
+    {
+      "width": 375,
+      "height": 900,
+      "theme": "light",
+      "mobile": true,
+      "anchor": {
+        "hash": "#ekosistem",
+        "scrollY": 2803,
+        "activeId": "ekosistem",
+        "tabIndex": "-1",
+        "targetTop": 136,
+        "targetBottom": 3025,
+        "scrollMargin": "136px",
+        "headerTop": 0,
+        "headerBottom": 97,
+        "headerPosition": "sticky",
+        "rootOverflowX": "clip",
+        "scrollWidth": 375
+      },
+      "systems": {
+        "path": "/systems",
+        "activeTag": "H1",
+        "activeText": "TIAP LAPISAN.SATU TUJUAN.",
+        "heading": "TIAP LAPISAN.SATU TUJUAN.",
+        "scrollWidth": 375
+      },
+      "roadmap": {
+        "path": "/roadmap",
+        "activeTag": "H1",
+        "activeText": "BERANI MEMBAYANGKAN.JUJUR PADA BUKTI.",
+        "heading": "BERANI MEMBAYANGKAN.JUJUR PADA BUKTI.",
+        "scrollWidth": 375
+      },
+      "checks": {
+        "httpOk": true,
+        "themeApplied": true,
+        "anchorFocus": true,
+        "anchorScrollsToSharedOffset": true,
+        "stickyHeaderRemainsVisible": true,
+        "rootDoesNotCaptureStickyScroll": true,
+        "routeHeadingFocusSystems": true,
+        "routeHeadingFocusRoadmap": true,
+        "noHorizontalOverflow": true,
+        "noPageErrors": true
+      },
+      "errors": []
+    },
+    {
+      "width": 768,
+      "height": 900,
+      "theme": "dark",
+      "mobile": true,
+      "anchor": {
+        "hash": "#ekosistem",
+        "scrollY": 2394,
+        "activeId": "ekosistem",
+        "tabIndex": "-1",
+        "targetTop": 136,
+        "targetBottom": 1520,
+        "scrollMargin": "136px",
+        "headerTop": 0,
+        "headerBottom": 98,
+        "headerPosition": "sticky",
+        "rootOverflowX": "clip",
+        "scrollWidth": 768
+      },
+      "systems": {
+        "path": "/systems",
+        "activeTag": "H1",
+        "activeText": "TIAP LAPISAN.SATU TUJUAN.",
+        "heading": "TIAP LAPISAN.SATU TUJUAN.",
+        "scrollWidth": 768
+      },
+      "roadmap": {
+        "path": "/roadmap",
+        "activeTag": "H1",
+        "activeText": "BERANI MEMBAYANGKAN.JUJUR PADA BUKTI.",
+        "heading": "BERANI MEMBAYANGKAN.JUJUR PADA BUKTI.",
+        "scrollWidth": 768
+      },
+      "checks": {
+        "httpOk": true,
+        "themeApplied": true,
+        "anchorFocus": true,
+        "anchorScrollsToSharedOffset": true,
+        "stickyHeaderRemainsVisible": true,
+        "rootDoesNotCaptureStickyScroll": true,
+        "routeHeadingFocusSystems": true,
+        "routeHeadingFocusRoadmap": true,
+        "noHorizontalOverflow": true,
+        "noPageErrors": true
+      },
+      "errors": []
+    },
+    {
+      "width": 768,
+      "height": 900,
+      "theme": "light",
+      "mobile": true,
+      "anchor": {
+        "hash": "#ekosistem",
+        "scrollY": 2394,
+        "activeId": "ekosistem",
+        "tabIndex": "-1",
+        "targetTop": 136,
+        "targetBottom": 1520,
+        "scrollMargin": "136px",
+        "headerTop": 0,
+        "headerBottom": 98,
+        "headerPosition": "sticky",
+        "rootOverflowX": "clip",
+        "scrollWidth": 768
+      },
+      "systems": {
+        "path": "/systems",
+        "activeTag": "H1",
+        "activeText": "TIAP LAPISAN.SATU TUJUAN.",
+        "heading": "TIAP LAPISAN.SATU TUJUAN.",
+        "scrollWidth": 768
+      },
+      "roadmap": {
+        "path": "/roadmap",
+        "activeTag": "H1",
+        "activeText": "BERANI MEMBAYANGKAN.JUJUR PADA BUKTI.",
+        "heading": "BERANI MEMBAYANGKAN.JUJUR PADA BUKTI.",
+        "scrollWidth": 768
+      },
+      "checks": {
+        "httpOk": true,
+        "themeApplied": true,
+        "anchorFocus": true,
+        "anchorScrollsToSharedOffset": true,
+        "stickyHeaderRemainsVisible": true,
+        "rootDoesNotCaptureStickyScroll": true,
+        "routeHeadingFocusSystems": true,
+        "routeHeadingFocusRoadmap": true,
+        "noHorizontalOverflow": true,
+        "noPageErrors": true
+      },
+      "errors": []
+    },
+    {
+      "width": 1024,
+      "height": 900,
+      "theme": "dark",
+      "mobile": false,
+      "anchor": {
+        "hash": "#ekosistem",
+        "scrollY": 1751,
+        "activeId": "ekosistem",
+        "tabIndex": "-1",
+        "targetTop": 94,
+        "targetBottom": 1571,
+        "scrollMargin": "94px",
+        "headerTop": 0,
+        "headerBottom": 78,
+        "headerPosition": "sticky",
+        "rootOverflowX": "clip",
+        "scrollWidth": 1024
+      },
+      "systems": {
+        "path": "/systems",
+        "activeTag": "H1",
+        "activeText": "TIAP LAPISAN.SATU TUJUAN.",
+        "heading": "TIAP LAPISAN.SATU TUJUAN.",
+        "scrollWidth": 1024
+      },
+      "roadmap": {
+        "path": "/roadmap",
+        "activeTag": "H1",
+        "activeText": "BERANI MEMBAYANGKAN.JUJUR PADA BUKTI.",
+        "heading": "BERANI MEMBAYANGKAN.JUJUR PADA BUKTI.",
+        "scrollWidth": 1024
+      },
+      "checks": {
+        "httpOk": true,
+        "themeApplied": true,
+        "anchorFocus": true,
+        "anchorScrollsToSharedOffset": true,
+        "stickyHeaderRemainsVisible": true,
+        "rootDoesNotCaptureStickyScroll": true,
+        "routeHeadingFocusSystems": true,
+        "routeHeadingFocusRoadmap": true,
+        "noHorizontalOverflow": true,
+        "noPageErrors": true
+      },
+      "errors": []
+    },
+    {
+      "width": 1024,
+      "height": 900,
+      "theme": "light",
+      "mobile": false,
+      "anchor": {
+        "hash": "#ekosistem",
+        "scrollY": 1751,
+        "activeId": "ekosistem",
+        "tabIndex": "-1",
+        "targetTop": 94,
+        "targetBottom": 1571,
+        "scrollMargin": "94px",
+        "headerTop": 0,
+        "headerBottom": 78,
+        "headerPosition": "sticky",
+        "rootOverflowX": "clip",
+        "scrollWidth": 1024
+      },
+      "systems": {
+        "path": "/systems",
+        "activeTag": "H1",
+        "activeText": "TIAP LAPISAN.SATU TUJUAN.",
+        "heading": "TIAP LAPISAN.SATU TUJUAN.",
+        "scrollWidth": 1024
+      },
+      "roadmap": {
+        "path": "/roadmap",
+        "activeTag": "H1",
+        "activeText": "BERANI MEMBAYANGKAN.JUJUR PADA BUKTI.",
+        "heading": "BERANI MEMBAYANGKAN.JUJUR PADA BUKTI.",
+        "scrollWidth": 1024
+      },
+      "checks": {
+        "httpOk": true,
+        "themeApplied": true,
+        "anchorFocus": true,
+        "anchorScrollsToSharedOffset": true,
+        "stickyHeaderRemainsVisible": true,
+        "rootDoesNotCaptureStickyScroll": true,
+        "routeHeadingFocusSystems": true,
+        "routeHeadingFocusRoadmap": true,
+        "noHorizontalOverflow": true,
+        "noPageErrors": true
+      },
+      "errors": []
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "theme": "dark",
+      "mobile": false,
+      "anchor": {
+        "hash": "#ekosistem",
+        "scrollY": 1731,
+        "activeId": "ekosistem",
+        "tabIndex": "-1",
+        "targetTop": 94,
+        "targetBottom": 1582,
+        "scrollMargin": "94px",
+        "headerTop": 0,
+        "headerBottom": 78,
+        "headerPosition": "sticky",
+        "rootOverflowX": "clip",
+        "scrollWidth": 1440
+      },
+      "systems": {
+        "path": "/systems",
+        "activeTag": "H1",
+        "activeText": "TIAP LAPISAN.SATU TUJUAN.",
+        "heading": "TIAP LAPISAN.SATU TUJUAN.",
+        "scrollWidth": 1440
+      },
+      "roadmap": {
+        "path": "/roadmap",
+        "activeTag": "H1",
+        "activeText": "BERANI MEMBAYANGKAN.JUJUR PADA BUKTI.",
+        "heading": "BERANI MEMBAYANGKAN.JUJUR PADA BUKTI.",
+        "scrollWidth": 1440
+      },
+      "checks": {
+        "httpOk": true,
+        "themeApplied": true,
+        "anchorFocus": true,
+        "anchorScrollsToSharedOffset": true,
+        "stickyHeaderRemainsVisible": true,
+        "rootDoesNotCaptureStickyScroll": true,
+        "routeHeadingFocusSystems": true,
+        "routeHeadingFocusRoadmap": true,
+        "noHorizontalOverflow": true,
+        "noPageErrors": true
+      },
+      "errors": []
+    },
+    {
+      "width": 1440,
+      "height": 900,
+      "theme": "light",
+      "mobile": false,
+      "anchor": {
+        "hash": "#ekosistem",
+        "scrollY": 1731,
+        "activeId": "ekosistem",
+        "tabIndex": "-1",
+        "targetTop": 94,
+        "targetBottom": 1582,
+        "scrollMargin": "94px",
+        "headerTop": 0,
+        "headerBottom": 78,
+        "headerPosition": "sticky",
+        "rootOverflowX": "clip",
+        "scrollWidth": 1440
+      },
+      "systems": {
+        "path": "/systems",
+        "activeTag": "H1",
+        "activeText": "TIAP LAPISAN.SATU TUJUAN.",
+        "heading": "TIAP LAPISAN.SATU TUJUAN.",
+        "scrollWidth": 1440
+      },
+      "roadmap": {
+        "path": "/roadmap",
+        "activeTag": "H1",
+        "activeText": "BERANI MEMBAYANGKAN.JUJUR PADA BUKTI.",
+        "heading": "BERANI MEMBAYANGKAN.JUJUR PADA BUKTI.",
+        "scrollWidth": 1440
+      },
+      "checks": {
+        "httpOk": true,
+        "themeApplied": true,
+        "anchorFocus": true,
+        "anchorScrollsToSharedOffset": true,
+        "stickyHeaderRemainsVisible": true,
+        "rootDoesNotCaptureStickyScroll": true,
+        "routeHeadingFocusSystems": true,
+        "routeHeadingFocusRoadmap": true,
+        "noHorizontalOverflow": true,
+        "noPageErrors": true
+      },
+      "errors": []
+    }
+  ]
+}

@@ -1,0 +1,18 @@
+<!doctype html>
+<html lang="en" data-theme="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#080b12" />
+    <title>Responsive package fixture — Empire of the Light UI</title>
+    <script>
+      const settings = new URLSearchParams(location.search);
+      document.documentElement.dataset.theme = settings.get("theme") === "light" ? "light" : "dark";
+      document.documentElement.lang = settings.get("language") === "id" ? "id" : "en";
+    </script>
+  </head>
+  <body>
+    <div id="preview-root"></div>
+    <script type="module" src="/preview.tsx"></script>
+  </body>
+</html>

@@ -31,4 +31,4 @@ For this container, set `DATABASE_URL` to `postgresql://empire_local:<password>@
 
 The API synchronizes active module model declarations during startup. Run `pnpm db:preflight` for a read-only change report, `pnpm db:sync` to install/sync, and `pnpm db:sync:smoke` for isolated PostgreSQL integration checks. Sync is serialized across replicas and transactional. It creates missing tables and adds safe new columns; it never drops data, changes an existing column type, or silently tightens nullability. A required new column on a populated table needs a declared database default or an explicit reviewed backfill/upgrade rule. Seed synchronization inserts missing records and does not reset existing user passwords or overwrite edited records.
 
-The Fastify API currently uses the Empire Batteries Knex/Objection layer. Drizzle definitions in `packages/db` are a prototype and are not used by this runtime.
+The Fastify API uses the Empire Batteries Knex/Objection layer as its persistence and schema-sync authority.

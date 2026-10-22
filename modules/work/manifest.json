@@ -1,0 +1,14 @@
+{
+  "id": "work",
+  "title": "Work, CRM & Business Operations",
+  "version": "0.2.0",
+  "owner": "platform-core",
+  "state": "bootstrap_ready",
+  "dependencies": ["kernel", "research"],
+  "capabilities": ["tenant-projects", "tasks", "document-metadata", "comments", "notifications", "tags", "crm-opportunities", "product-service-catalog", "sales-quotes-orders", "operational-invoicing-payments", "expense-recording", "calendar-activities"],
+  "permissions": ["work:read", "work:write"],
+  "models": ["workspaces", "projects", "tasks", "documents", "comments", "notifications", "notification_outbox", "tags", "tag_assignments", "youtube_sentinel_partner_links", "crm_opportunities", "catalog_items", "sales_quotes", "sales_quote_lines", "sales_orders", "sales_order_lines", "operational_invoices", "operational_payments", "operational_expenses", "calendar_activities"],
+  "upgrades": [],
+  "uiSlots": ["operations.projects", "operations.business"],
+  "runMode": "first_party_allowlisted"
+}

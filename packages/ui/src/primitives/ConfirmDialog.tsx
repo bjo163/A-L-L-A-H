@@ -36,14 +36,25 @@ export function ConfirmDialog({
   onOpenChange,
 }: ConfirmDialogProps) {
   const dialogRef = useRef<HTMLDialogElement>(null);
+  const openerRef = useRef<HTMLElement | null>(null);
   const id = useId().replaceAll(":", "");
 
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
 
-    if (open && !dialog.open) dialog.showModal();
-    else if (!open && dialog.open) dialog.close();
+    if (open && !dialog.open) {
+      const active = document.activeElement;
+      openerRef.current = active instanceof HTMLElement && !dialog.contains(active) ? active : null;
+      dialog.showModal();
+    } else if (!open && dialog.open) {
+      dialog.close();
+      requestAnimationFrame(() => {
+        const opener = openerRef.current;
+        if (opener && opener.isConnected && !opener.hasAttribute("disabled")) opener.focus();
+        openerRef.current = null;
+      });
+    }
   }, [open]);
 
   useEffect(() => {
