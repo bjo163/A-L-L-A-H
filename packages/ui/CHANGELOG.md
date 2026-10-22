@@ -15,6 +15,7 @@
 
 ### Changed
 
+- `PortalOrbitHero` now renders its center symbol and optional watermark from the package `LogoMark`; replace the removed `watermark` node prop with `brandWatermark={false}` only when the mark should be hidden.
 - Brand concept studies now use the package-owned lockup frame and typography; catalog CSS only supplies preview surfaces instead of duplicating product lockup geometry.
 - Restrict `IconGlyphProps` to `className`, `size`, `label`, and `directional`; `DomainSymbolProps` to `name`, `size`, and `className`; and `LogoMarkProps` to `className`. Consumers should put interactions on a containing control rather than the SVG.
 - Decorative `MangaOrbit` rings are static to avoid perpetual animation of artwork that conveys no changing state; the no-longer-meaningful ring `variant` prop was removed. `MangaEffect.spin` was removed because its pseudo-element had no generated content and never produced a visible effect. Loading and active-state indicators retain their motion. Consumers should remove the obsolete props; neither changed the visible result after this cleanup.

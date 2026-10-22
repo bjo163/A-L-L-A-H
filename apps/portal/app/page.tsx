@@ -60,7 +60,6 @@ export default async function Home() {
       coordinates={<>{en ? "SOURCES → ANALYSIS → REVIEW → DECISION" : "SUMBER → ANALISIS → TINJAUAN → KEPUTUSAN"}<br/>{en ? "MANDATE & EVIDENCE SET SYSTEM BOUNDARIES" : "MANDAT & BUKTI MENJAGA BATAS SISTEM"}</>}
       stamp={en ? "HUMAN POWER" : "KUASA MANUSIA"}
       soundEffect={en ? "ZAP!" : "JRENG!"}
-      watermark={<>A<span>05</span></>}
     />
 
     <section className="stat-band" aria-label={en ? "Blueprint summary" : "Ringkasan blueprint"}><div className="eol-container"><MetricGrid profile="editorial" items={markers.map((m) => ({ value: m.number, label: m.label }))} /></div></section>
