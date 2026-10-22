@@ -1,5 +1,6 @@
-import { readFile } from "node:fs/promises";
-import { resolve, dirname } from "node:path";
+import { createHash } from "node:crypto";
+import { readFile, readdir } from "node:fs/promises";
+import { isAbsolute, relative, resolve, dirname, sep } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
@@ -28,8 +29,47 @@ for (const font of manifest.fonts) {
   for (const importPath of font.imports) if (!styles.includes(`@import \"${importPath}\"`)) errors.push(`${font.package}: stylesheet import missing: ${importPath}`);
   try { await readFile(resolve(uiRoot, font.licenseFile)); } catch { errors.push(`${font.package}: license file missing: ${font.licenseFile}`); }
 }
-if (!Array.isArray(manifest.generatedFiles) || manifest.generatedFiles.length !== 0) {
-  errors.push("generatedFiles must list reviewed generated assets; no generated asset output is currently expected");
+const expectedGeneratedDirectory = "assets/generated";
+if (manifest.generatedAssetDirectory !== expectedGeneratedDirectory) errors.push(`generatedAssetDirectory must remain ${expectedGeneratedDirectory}`);
+const generatedRoot = resolve(uiRoot, expectedGeneratedDirectory);
+const expectedGenerated = new Map();
+if (!Array.isArray(manifest.generatedFiles)) {
+  errors.push("generatedFiles must be an array of path and SHA-256 records");
+} else {
+  for (const asset of manifest.generatedFiles) {
+    if (typeof asset?.path !== "string" || !/^[a-f0-9]{64}$/i.test(asset.sha256 ?? "")) {
+      errors.push("generatedFiles entries require a relative path and 64-character SHA-256 digest");
+      continue;
+    }
+    const absolute = resolve(uiRoot, asset.path);
+    const withinGenerated = relative(generatedRoot, absolute);
+    if (isAbsolute(asset.path) || withinGenerated === "" || withinGenerated === ".." || withinGenerated.startsWith(`..${sep}`) || isAbsolute(withinGenerated)) {
+      errors.push(`generated asset path must point to a file beneath ${manifest.generatedAssetDirectory}: ${asset.path}`);
+      continue;
+    }
+    expectedGenerated.set(asset.path.replaceAll("\\", "/"), asset.sha256.toLowerCase());
+  }
+}
+const actualGenerated = new Map();
+async function walkGenerated(directory) {
+  let entries;
+  try { entries = await readdir(directory, { withFileTypes: true }); }
+  catch (error) { if (error.code === "ENOENT") return; throw error; }
+  for (const entry of entries) {
+    const absolute = resolve(directory, entry.name);
+    if (entry.isDirectory()) await walkGenerated(absolute);
+    else if (entry.isFile()) {
+      const path = relative(uiRoot, absolute).split(sep).join("/");
+      const digest = createHash("sha256").update(await readFile(absolute)).digest("hex");
+      actualGenerated.set(path, digest);
+    }
+  }
+}
+await walkGenerated(generatedRoot);
+for (const path of new Set([...actualGenerated.keys(), ...expectedGenerated.keys()])) {
+  if (!expectedGenerated.has(path)) errors.push(`generated asset missing from manifest: ${path}`);
+  else if (!actualGenerated.has(path)) errors.push(`manifested generated asset is missing: ${path}`);
+  else if (actualGenerated.get(path) !== expectedGenerated.get(path)) errors.push(`generated asset hash drift: ${path}`);
 }
 if (!manifest.generatedAssetPolicy?.includes("inline SVG")) errors.push("generated asset policy must document the current inline-SVG source strategy");
 

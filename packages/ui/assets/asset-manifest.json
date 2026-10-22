@@ -1,6 +1,7 @@
 {
   "schemaVersion": 1,
   "generatedAssetPolicy": "UI assets are authored as inline SVG components; generated binary/vector outputs are not currently checked in.",
+  "generatedAssetDirectory": "assets/generated",
   "vectors": {
     "icons": {
       "source": "src/primitives/Icon.tsx",
