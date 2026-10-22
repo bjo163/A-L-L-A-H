@@ -148,3 +148,101 @@ html[data-theme="dark"] :where(.eol-public-shell) .stat-band { background: var(-
 @media (prefers-reduced-motion: reduce) {
   :where(.eol-public-shell) .frontier-card:hover { transform: none !important; }
 }
+
+
+/* Production rollout: Funky Grunge identity on the actual public Portal. */
+:where(.eol-public-shell) .hero {
+  isolation: isolate;
+}
+:where(.eol-public-shell) .hero-copy > .eyebrow {
+  display: inline-flex;
+  align-items: center;
+  gap: .55rem;
+  width: fit-content;
+  padding: .45rem .65rem;
+  border: 2px solid var(--eol-manga-ink);
+  background: var(--eol-manga-highlight);
+  color: var(--eol-manga-ink) !important;
+  box-shadow: 3px 3px 0 var(--eol-manga-ink);
+  transform: rotate(-1.5deg);
+}
+:where(.eol-public-shell) .hero h1 {
+  max-width: 9ch;
+  line-height: .88;
+  text-wrap: balance;
+}
+:where(.eol-public-shell) .hero-lede {
+  max-width: 54ch;
+  font-size: clamp(1rem, 1.25vw, 1.18rem);
+  line-height: 1.7;
+}
+:where(.eol-public-shell) .hero-buttons {
+  gap: .9rem;
+}
+:where(.eol-public-shell) .hero-buttons a,
+:where(.eol-public-shell) .closing-section a {
+  min-height: 48px;
+  transition: transform 140ms ease, box-shadow 140ms ease, background-color 140ms ease;
+}
+:where(.eol-public-shell) .hero-buttons a:hover,
+:where(.eol-public-shell) .closing-section a:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--eol-manga-ink);
+}
+:where(.eol-public-shell) .stat-band {
+  border-block: 3px solid var(--eol-manga-ink);
+  box-shadow: 0 5px 0 color-mix(in srgb, var(--eol-manga-ink) 20%, transparent);
+}
+:where(.eol-public-shell) .section h2 {
+  text-wrap: balance;
+}
+:where(.eol-public-shell) .frontier-card,
+:where(.eol-public-shell) .identity-row > div,
+:where(.eol-public-shell) .roadmap-teaser {
+  border: 2px solid var(--eol-manga-ink) !important;
+  box-shadow: 4px 4px 0 var(--eol-manga-ink);
+}
+:where(.eol-public-shell) a:focus-visible,
+:where(.eol-public-shell) button:focus-visible,
+:where(.eol-public-shell) input:focus-visible,
+:where(.eol-public-shell) select:focus-visible,
+:where(.eol-public-shell) textarea:focus-visible {
+  outline: 3px solid var(--eol-color-accent);
+  outline-offset: 4px;
+}
+html[data-theme="light"] :where(.eol-public-shell) .hero-copy > .eyebrow {
+  background: var(--eol-manga-highlight);
+  color: var(--eol-manga-ink) !important;
+}
+html[data-theme="dark"] :where(.eol-public-shell) .frontier-card,
+html[data-theme="dark"] :where(.eol-public-shell) .identity-row > div,
+html[data-theme="dark"] :where(.eol-public-shell) .roadmap-teaser {
+  border-color: var(--eol-manga-ink) !important;
+}
+@media (prefers-reduced-motion: reduce) {
+  :where(.eol-public-shell) .hero-buttons a,
+  :where(.eol-public-shell) .closing-section a {
+    transition: none;
+  }
+  :where(.eol-public-shell) .hero-buttons a:hover,
+  :where(.eol-public-shell) .closing-section a:hover {
+    transform: none;
+  }
+}
+@media (max-width: 570px) {
+  :where(.eol-public-shell) .hero-copy > .eyebrow {
+    max-width: 100%;
+    font-size: 10px;
+  }
+  :where(.eol-public-shell) .hero-buttons {
+    align-items: stretch;
+  }
+  :where(.eol-public-shell) .hero-buttons a {
+    justify-content: center;
+  }
+  :where(.eol-public-shell) .frontier-card,
+  :where(.eol-public-shell) .identity-row > div,
+  :where(.eol-public-shell) .roadmap-teaser {
+    box-shadow: 3px 3px 0 var(--eol-manga-ink);
+  }
+}
