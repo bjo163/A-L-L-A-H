@@ -20,6 +20,8 @@ body { margin: 0; min-width: 0; }
 .catalog-header > p:last-child,.catalog-section-heading > p,.catalog-card > p:last-child,.catalog-caption,.catalog-footer { color: var(--eol-color-text-muted); line-height: var(--eol-line-height-relaxed); }
 .catalog-section { padding: 32px 0; border-bottom: 1px solid var(--eol-color-border); }
 .brand-concepts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.brand-concept__active { display: flex; align-items: center; gap: 9px; margin: 12px 0 18px; color: var(--eol-color-text-muted); font: var(--eol-font-size-xs) var(--eol-font-mono); }
+.brand-concept__active svg { width: 36px; height: 36px; color: var(--eol-color-accent); }
 .brand-concept { min-width: 0; padding: 18px; border: 1px solid var(--eol-color-border-strong); background: var(--eol-color-surface); }
 .brand-concept__heading { display: flex; align-items: center; gap: 12px; min-height: 56px; }
 .brand-concept__mark { width: 48px; height: 48px; flex: none; color: var(--eol-color-accent); }

@@ -1,5 +1,6 @@
 export { Badge } from "./primitives/Badge";
 export type { BadgeProps, BadgeTone } from "./primitives/Badge";
+export { LogoMark } from "./brand/BrandConcepts";
 export { Icon, iconGroups, iconNames } from "./primitives/Icon";
 export { directionalIconNames } from "./primitives/Icon";
 export type { DirectionalIconName, IconName } from "./primitives/Icon";

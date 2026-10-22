@@ -6,6 +6,14 @@ import { TextField } from "../primitives/TextField";
 
 export type BrandConcept = "aperture" | "orbit" | "monogram";
 
+/**
+ * Shared working mark for product shells. Orbit is provisional: the brand
+ * concept and final logo system remain subject to the C02 review gate.
+ */
+export function LogoMark(props: SVGProps<SVGSVGElement>) {
+  return <BrandConceptMark concept="orbit" className="eol-logo-mark" {...props} />;
+}
+
 const conceptNames: Record<BrandConcept, string> = {
   aperture: "Aperture",
   orbit: "Orbit",

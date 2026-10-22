@@ -16,7 +16,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 .shell { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
 .sidebar { position: sticky; top: 0; display: flex; flex-direction: column; height: 100vh; padding: 25px 16px 18px; border-right: 1px solid var(--eol-color-border); background: linear-gradient(180deg, var(--eol-color-surface-inset) 0%, var(--eol-color-background) 100%); }
 .brand { display: flex; align-items: center; gap: 12px; padding: 2px 12px 28px; }
-.brand-mark { display: grid; width: 39px; height: 39px; place-items: center; border: 2px solid var(--eol-manga-ink); border-radius: var(--eol-radius-none); color: var(--eol-manga-ink); background: var(--eol-manga-highlight); font-size: 22px; box-shadow: 3px 3px 0 var(--eol-manga-ink); transform: rotate(-3deg); }
+.brand-mark { display: block; width: 39px; height: 39px; flex: none; }
 .brand strong, .brand small, .operator-meta strong, .operator-meta small { display: block; }
 .brand strong { font-size: 14px; letter-spacing: .11em; }
 .brand small { margin-top: 3px; color: var(--eol-color-text-muted); font: 9px var(--eol-font-mono); letter-spacing: .13em; }

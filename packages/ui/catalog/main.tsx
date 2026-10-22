@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { BrandConcepts } from "../src/brand/BrandConcepts";
-import { Badge, Button, buttonClassName, ConfirmDialog, EmptyState, ErrorState, FieldError, FieldLabel, HelpText, Icon, iconGroups, LoadingState, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, Notice, Panel, RegionSummary, SectionHeading, SelectField, Skeleton, StatGrid, StatusIndicator, Switch, Tabs, TextArea, TextField } from "../src";
+import { Badge, Button, buttonClassName, ConfirmDialog, EmptyState, ErrorState, FieldError, FieldLabel, HelpText, Icon, iconGroups, LoadingState, LogoMark, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, Notice, Panel, RegionSummary, SectionHeading, SelectField, Skeleton, StatGrid, StatusIndicator, Switch, Tabs, TextArea, TextField } from "../src";
 import "../src/ui.css";
 import "./catalog.css";
 
@@ -77,8 +77,9 @@ function Catalog() {
             <p className="catalog-eyebrow">VECTOR IDENTITY STUDY</p>
             <h2 id="brand-concepts-heading">One family, three marks</h2>
           </div>
-          <p>Early SVG concepts shown in portal, operator, and small-icon contexts. These are review candidates, not a selected production logo.</p>
+          <p>Orbit is the provisional shared working mark used by the app shells; compare all three SVG candidates here. Final logo selection and visual approval remain open.</p>
         </div>
+        <div className="brand-concept__active"><LogoMark /><span>Provisional working mark · Orbit</span></div>
         <BrandConcepts />
       </section>
 

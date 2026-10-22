@@ -3,7 +3,7 @@ import type { FormEvent } from "react";
 import { API_PATHS, ApiError, createApiClient } from "@empire/api-contract";
 import type { AuthEntity, CabRfc, CabSummary, LoginResponse, ResearchRun } from "@empire/api-contract";
 import type { WorldMonitoringSnapshot } from "@empire/batteries-world-monitor";
-import { Badge, Button, ConfirmDialog, EmptyState, ErrorState, FieldLabel, Icon, LoadingState, MangaEffect, MangaPageIntro, MangaTelemetryHero, Notice, Panel, SelectField, StatusIndicator, TextArea, TextField } from "@empire/ui";
+import { Badge, Button, ConfirmDialog, EmptyState, ErrorState, FieldLabel, Icon, LoadingState, LogoMark, MangaEffect, MangaPageIntro, MangaTelemetryHero, Notice, Panel, SelectField, StatusIndicator, TextArea, TextField } from "@empire/ui";
 import type { ConfirmDialogTone, IconName } from "@empire/ui";
 import { WorldMonitorView } from "./WorldMonitorView";
 
@@ -290,7 +290,7 @@ export function App() {
     || (key === "cab" && canCab)
     || (key === "research" && canResearch);
   const activePage = pageItems.find(({ key }) => key === tab)!;
-  return <div className="shell"><aside className="sidebar"><a className="brand" href="#overview" onClick={e=>{e.preventDefault();setTab("overview");}}><span className="brand-mark">◈</span><span><strong>100CENTER</strong><small>EMPIRE OF THE LIGHT</small></span></a>
+  return <div className="shell"><aside className="sidebar"><a className="brand" href="#overview" onClick={e=>{e.preventDefault();setTab("overview");}}><span className="brand-mark" aria-hidden="true"><LogoMark /></span><span><strong>100CENTER</strong><small>EMPIRE OF THE LIGHT</small></span></a>
     <div className="operator-card"><span className="avatar">{entity.displayName.slice(0,1).toUpperCase()}</span><span className="operator-meta"><strong>{entity.displayName}</strong><small>{entity.role} · {entity.username}</small></span><span className="online-dot" title="Sesi aktif"/></div>
     <p className="nav-caption">OPERATIONS</p><div className="view-switcher" role="navigation" aria-label="Command Center sections">{pageItems.filter(({key})=>pageAllowed(key)).map(({key,label})=><MangaEffect as="button" action type="button" key={key} className={`nav-item ${tab===key?"is-active":""}`} aria-current={tab===key?"page":undefined} onClick={()=>setTab(key)}><Icon name={pageIcons[key]} className="nav-icon" size={18}/><span>{label}</span>{key==="cab"&&summary?.active? <em>{summary.active}</em>:null}{key==="research"&&runs.filter(run=>run.status==="pending_approval").length>0?<em>{runs.filter(run=>run.status==="pending_approval").length}</em>:null}</MangaEffect>)}</div>
     <div className="sidebar-bottom"><div className="connection-card"><span className="online-dot" data-state={snapshot.readiness} aria-hidden="true"/><span><strong>Local cluster</strong><small>PostgreSQL · API :4000</small></span><Badge tone={snapshot.readiness==="ok"?"success":snapshot.readiness==="unavailable"?"danger":"warning"}>{snapshot.readiness}</Badge></div><MangaEffect as="button" action type="button" className="logout-button" onClick={()=>void perform(async()=>{await client.request(API_PATHS.logout,{method:"POST"});clearSession();},"Sesi ditutup.")}><Icon name="logOut" size={16}/><span>Keluar dari sesi</span></MangaEffect><small className="build-label">A-L-L-A-H COMMAND CENTER · ARSY</small></div></aside>

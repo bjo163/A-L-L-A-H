@@ -13,12 +13,6 @@ html[data-theme="light"] body {
 .language-switch button[aria-pressed="true"] { border: 2px solid var(--eol-manga-ink) !important; background: var(--eol-manga-highlight) !important; color: var(--eol-manga-ink) !important; box-shadow: 2px 2px 0 var(--eol-manga-ink); }
 .theme-toggle { border: 2px solid var(--eol-manga-ink) !important; border-radius: var(--eol-radius-none) !important; box-shadow: 3px 3px 0 var(--eol-manga-ink); }
 .theme-toggle:hover { background: var(--eol-manga-rose) !important; color: var(--eol-manga-ink) !important; }
-.brand-sigil { background: var(--eol-manga-highlight); border-color: var(--eol-manga-ink); box-shadow: 3px 3px 0 var(--eol-manga-ink); }
-.sigil-core { background: var(--eol-color-accent) !important; box-shadow: 2px 2px 0 var(--eol-manga-ink) !important; }
-html[data-theme="light"] .site-header .brand-sigil { background: var(--eol-manga-stage) !important; border: 2px solid var(--eol-manga-ink) !important; box-shadow: 3px 3px 0 var(--eol-manga-ink) !important; }
-html[data-theme="light"] .site-header .brand-sigil:before { border: 2px solid var(--eol-manga-highlight) !important; }
-html[data-theme="light"] .site-header .brand-sigil:after { border: 2px solid var(--eol-color-accent) !important; }
-html[data-theme="light"] .site-header .brand-sigil .sigil-core { background: var(--eol-manga-secondary-bright) !important; box-shadow: 0 0 0 2px var(--eol-manga-ink) !important; }
 .nav-toggle-icon i { background: var(--eol-color-accent) !important; }
 
 .hero h1 em, .section h2 em { color: var(--eol-manga-rose) !important; }
