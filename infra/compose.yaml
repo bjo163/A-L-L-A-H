@@ -1,5 +1,11 @@
 name: empire-of-the-light
 
+x-frontend: &frontend
+  restart: unless-stopped
+  depends_on:
+    api:
+      condition: service_healthy
+
 services:
   postgres:
     image: postgres:18-alpine
@@ -15,7 +21,6 @@ services:
       interval: 10s
       timeout: 5s
       retries: 5
-      start_period: 10s
 
   api:
     build:
@@ -23,13 +28,10 @@ services:
       dockerfile: apps/api/Dockerfile
     restart: unless-stopped
     environment:
-      NODE_ENV: production
-      API_HOST: 0.0.0.0
-      API_PORT: 4000
       DATABASE_URL: postgres://empire:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@postgres:5432/empire
       FILE_STORAGE_DIR: /workspace/var/private-files
       FILE_STORAGE_SIGNING_SECRET: ${FILE_STORAGE_SIGNING_SECRET:?Set FILE_STORAGE_SIGNING_SECRET in .env}
-      CORS_ORIGINS: ${PUBLIC_ORIGIN:?Set PUBLIC_ORIGIN in .env},http://localhost:3300,http://localhost:3400
+      CORS_ORIGINS: ${PUBLIC_ORIGIN:?Set PUBLIC_ORIGIN in .env}
       PUBLIC_API_ORIGIN: ${PUBLIC_API_ORIGIN:-http://localhost:4000}
       EMPIRE_OWNER_PASSWORD: ${EMPIRE_OWNER_PASSWORD:-}
       EMPIRE_ARCHITECT_PASSWORD: ${EMPIRE_ARCHITECT_PASSWORD:-}
@@ -48,44 +50,37 @@ services:
       start_period: 30s
 
   portal:
+    <<: *frontend
     build:
       context: .
       dockerfile: apps/portal/Dockerfile
       args:
         NEXT_PUBLIC_API_ORIGIN: ${PUBLIC_API_ORIGIN:-http://localhost:4000}
-    restart: unless-stopped
     ports:
       - "${BIND_ADDRESS:-127.0.0.1}:${PORTAL_PORT:-3300}:3300"
-    depends_on:
-      api:
-        condition: service_healthy
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3300/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 15s
       timeout: 5s
       retries: 3
-      start_period: 15s
 
   command-center:
+    <<: *frontend
     build:
       context: .
       dockerfile: apps/command-center/Dockerfile
       args:
         NEXT_PUBLIC_API_ORIGIN: ${PUBLIC_API_ORIGIN:-http://localhost:4000}
-    restart: unless-stopped
     ports:
       - "${BIND_ADDRESS:-127.0.0.1}:${COMMAND_CENTER_PORT:-3400}:3400"
-    depends_on:
-      api:
-        condition: service_healthy
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3400/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 15s
       timeout: 5s
       retries: 3
-      start_period: 15s
 
 volumes:
   postgres_data:
   private_files:
+
 
