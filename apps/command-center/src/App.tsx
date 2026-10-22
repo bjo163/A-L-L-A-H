@@ -4,7 +4,7 @@ import { API_PATHS, ApiError, createApiClient } from "@empire/api-contract";
 import type { AuthEntity, CabRfc, CabSummary, LoginResponse, ResearchRun } from "@empire/api-contract";
 import type { WorldMonitoringSnapshot } from "@empire/batteries-world-monitor";
 import { notifyNewWorldMonitorAlerts } from "./world-monitor-notifications";
-import { AuthLayout, Badge, BrandLockup, Button, ConfirmDialog, EmptyState, ErrorState, FieldLabel, Icon, LoadingState, MangaEffect, MangaPageIntro, MangaTelemetryHero, MetricGrid, Notice, Panel, SelectField, StatusIndicator, TextArea, TextField } from "@empire/ui";
+import { AuthLayout, Badge, BrandLockup, Button, Checkbox, ConfirmDialog, EmptyState, ErrorState, FieldLabel, Icon, LoadingState, MangaEffect, MangaPageIntro, MangaTelemetryHero, MetricGrid, Notice, Panel, SelectField, StatusIndicator, TextArea, TextField } from "@empire/ui";
 import type { ConfirmDialogTone, IconName } from "@empire/ui";
 import { WorldMonitorView } from "./WorldMonitorView";
 
@@ -278,7 +278,7 @@ export function App() {
   if (!entity && restoringSession) return <AuthLayout brandName="100CENTER" brandDescriptor="EMPIRE OF THE LIGHT · OPERATOR" title="Memulihkan sesi" description="Memeriksa sesi operator yang tersimpan." />;
   if (!entity) return <AuthLayout brandName="100CENTER" brandDescriptor="EMPIRE OF THE LIGHT · OPERATOR" title="Masuk Command Center" description="Gunakan akun operator lokal yang telah diprovisikan oleh administrator.">
     {error && <Notice tone="danger">{error}</Notice>}
-    <form className="form-grid" onSubmit={signIn}><FieldLabel>Username<TextField autoComplete="username" value={login.username} onChange={e=>setLogin({...login,username:e.target.value})} required/></FieldLabel><FieldLabel>Password<TextField type="password" autoComplete="current-password" value={login.password} onChange={e=>setLogin({...login,password:e.target.value})} required/></FieldLabel><label className="remember-me"><input type="checkbox" checked={rememberMe} onChange={event=>setRememberMe(event.target.checked)}/><span>Ingat saya di perangkat ini selama 30 hari</span></label><Button type="submit" disabled={busy}>{busy?"Memeriksa…":"Masuk"}</Button></form>
+    <form className="form-grid" onSubmit={signIn}><FieldLabel>Username<TextField autoComplete="username" value={login.username} onChange={e=>setLogin({...login,username:e.target.value})} required/></FieldLabel><FieldLabel>Password<TextField type="password" autoComplete="current-password" value={login.password} onChange={e=>setLogin({...login,password:e.target.value})} required/></FieldLabel><Checkbox className="remember-me" label="Ingat saya di perangkat ini selama 30 hari" checked={rememberMe} onChange={event=>setRememberMe(event.target.checked)}/><Button type="submit" disabled={busy}>{busy?"Memeriksa…":"Masuk"}</Button></form>
     <div className="login-health"><span>API {snapshot.health}</span><span>Database {snapshot.readiness}</span><Button variant="secondary" disabled={loading} onClick={()=>void refresh()}>Refresh</Button></div>
   </AuthLayout>;
 
