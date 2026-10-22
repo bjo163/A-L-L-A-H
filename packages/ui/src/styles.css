@@ -55,6 +55,9 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .eol-key-value-list dt { color: var(--eol-color-text-muted); font: var(--eol-font-size-xs)/var(--eol-line-height-normal) var(--eol-font-mono); }
 .eol-key-value-list dd { margin: 0; color: var(--eol-color-text); overflow-wrap: anywhere; }
 .eol-code-block { max-width: 100%; margin: 0; padding: var(--eol-space-4); overflow: auto; border: var(--eol-border-width) solid var(--eol-color-border); border-radius: var(--eol-radius-sm); color: var(--eol-color-text-subtle); background: var(--eol-color-surface-inset); font: var(--eol-font-size-xs)/var(--eol-line-height-relaxed) var(--eol-font-mono); tab-size: 2; }
+.eol-action-group { display: flex; flex-wrap: wrap; align-items: center; justify-content: flex-end; gap: var(--eol-space-3); min-width: 0; }
+.eol-action-group--start { justify-content: flex-start; }.eol-action-group--center { justify-content: center; }.eol-action-group--between { justify-content: space-between; }
+@media (max-width: 520px) { .eol-action-group { align-items: stretch; }.eol-action-group > * { flex: 1 1 auto; } }
 
 .eol-icon {
   display: inline-block;
