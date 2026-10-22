@@ -8,6 +8,8 @@ The [UI centralization blueprint](../../docs/BLUEPRINT_UI_CENTRALIZATION.md) def
 
 The centralization blueprint tracks the remaining migration and acceptance work. Existing contrast measurements are historical and must be rechecked against the final token/theme version before acceptance.
 
+The visual catalog uses static local fixtures and does not call product APIs. Its responsive preview offers repeatable theme, density, language, and iframe viewport settings; use those settings when capturing comparison screenshots.
+
 ## Current exports
 
 - `Button` for consistent native button actions.

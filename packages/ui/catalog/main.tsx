@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { BrandConcepts } from "../src/brand/BrandConcepts";
 import { ActionGroup, ActionLink, ActionPanel, ArchitectureLayers, AuthLayout, Badge, BrandLockup, Button, buttonClassName, CallToAction, Card, Checkbox, ConfirmDialog, Container, DataTable, DecisionSummary, Disclosure, EmptyState, EntityCard, ErrorState, EventList, Field, FieldError, FieldLabel, FilterBar, FormSection, Grid, Heading, HelpText, Icon, IconButton, IconText, iconGroups, IdentityCardGroup, Inline, LiveRegion, Metadata, NavGroup, NavItem, LoadingState, ListDetail, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MangaTelemetryHero, MetricGrid, ModuleGrid, Notice, PageCrosslinks, Panel, Pagination, PortalDomainCard, ReadinessBoard, ReadinessList, RegionSummary, RepositoryOverview, ResourceState, ReviewActions, ResponsiveTabs, RoadmapPreview, RoadmapTimeline, SectionHeading, SelectField, Skeleton, Stack, StatusIndicator, SystemAtlas, SystemDetailPanel, Tabs, TextArea, Text, TextField, ThemeControl, Timeline, WorkflowSteps } from "../src";
@@ -7,6 +7,10 @@ import "./catalog.css";
 
 function Catalog() {
   const [busy, setBusy] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [density, setDensity] = useState<"comfortable" | "compact">("comfortable");
+  const [language, setLanguage] = useState<"en" | "id">("en");
+  const [viewport, setViewport] = useState("375");
   const [activeTab, setActiveTab] = useState("overview");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmBusy, setConfirmBusy] = useState(false);
@@ -18,12 +22,15 @@ function Catalog() {
     { value: "long-label", label: "UnbrokenLabelForNarrowViewportsAndTranslatedContent", content: <TabMountExample name="Long label" /> },
     { value: "disabled", label: "Unavailable", content: <p>This panel is unavailable.</p>, disabled: true },
   ];
-  function syncThemeColor() {
+  const syncThemeColor = useCallback((nextTheme: "dark" | "light") => {
+    setTheme(nextTheme);
     const canvas = getComputedStyle(document.documentElement)
       .getPropertyValue("--eol-color-background")
       .trim();
     document.querySelector('meta[name="theme-color"]')?.setAttribute("content", canvas);
-  }
+  }, []);
+
+  const previewUrl = `/preview.html?theme=${theme}&density=${density}&language=${language}`;
 
   function openConfirmationPreview() {
     setConfirmError(undefined);
@@ -52,7 +59,7 @@ function Catalog() {
   ];
 
   return (
-    <main className="catalog-shell">
+    <main className="catalog-shell" lang={language} data-density={density}>
       <header className="catalog-header">
         <p className="catalog-eyebrow">EMPIRE OF THE LIGHT / MANGA EDITION</p>
         <h1>Stories in every line.</h1>
@@ -64,6 +71,39 @@ function Catalog() {
         <span className="catalog-burst" aria-hidden="true" />
         <ThemeControl label="Preview color theme" lightLabel="Light" darkLabel="Dark" lightIcon={<Icon name="sun" size={16}/>} darkIcon={<Icon name="moon" size={16}/>} onThemeChange={syncThemeColor} />
       </header>
+
+      <section className="catalog-preview-controls" aria-labelledby="preview-controls-heading">
+        <div className="catalog-section-heading">
+          <div><p className="catalog-eyebrow">REPRODUCIBLE PREVIEW</p><h2 id="preview-controls-heading">Review the same fixture across settings</h2></div>
+          <p>Theme, density, language, and the iframe viewport are explicit so screenshots can be compared consistently.</p>
+        </div>
+        <div className="catalog-preview-control-row">
+          <div className="catalog-preview-control">
+            <span id="density-preview-label">Density</span>
+            <div role="group" aria-labelledby="density-preview-label">
+              <button type="button" aria-pressed={density === "comfortable"} onClick={() => setDensity("comfortable")}>Comfortable</button>
+              <button type="button" aria-pressed={density === "compact"} onClick={() => setDensity("compact")}>Compact</button>
+            </div>
+          </div>
+          <div className="catalog-preview-control">
+            <span id="language-preview-label">Language</span>
+            <div role="group" aria-labelledby="language-preview-label">
+              <button type="button" aria-pressed={language === "en"} onClick={() => setLanguage("en")}>English</button>
+              <button type="button" aria-pressed={language === "id"} onClick={() => setLanguage("id")}>Bahasa Indonesia</button>
+            </div>
+          </div>
+          <Field label="Viewport width" control={<SelectField value={viewport} onChange={(event) => setViewport(event.currentTarget.value)}>
+            <option value="375">Phone · 375 px</option>
+            <option value="768">Tablet · 768 px</option>
+            <option value="1024">Desktop · 1024 px</option>
+            <option value="1440">Wide · 1440 px</option>
+          </SelectField>} />
+        </div>
+        <div className="catalog-preview-frame-wrap">
+          <p className="catalog-preview-frame-label" aria-live="polite">{viewport} × 900 px · {theme} · {density} · {language.toUpperCase()}</p>
+          <iframe key={previewUrl} className="catalog-preview-frame" title={`Responsive package preview at ${viewport} pixels`} src={previewUrl} style={{ width: `${viewport}px` }} />
+        </div>
+      </section>
 
       <section className="catalog-section" aria-labelledby="brand-concepts-heading">
         <div className="catalog-section-heading">
@@ -255,7 +295,7 @@ function Catalog() {
             sfx="BAM!"
           />
           <MangaTelemetryHero eyebrow="SYSTEM TELEMETRY" title="Fixture shell status" pulse="Operational" sfx="PING!" description="A static telemetry composition for visual review; it does not call an API." metadata={<span>Fixture · 2026-10-22</span>} />
-          <MetricGrid profile="editorial" items={[
+          <MetricGrid profile="editorial" density={density} items={[
             { value: "07", label: "Architecture layers" },
             { value: "06", label: "Technology domains" },
             { value: "01", label: "Human decision authority" },
