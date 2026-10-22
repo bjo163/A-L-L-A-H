@@ -9,7 +9,7 @@ COPY . .
 RUN pnpm install --frozen-lockfile
 ARG NEXT_PUBLIC_API_ORIGIN=http://localhost:4000
 ENV NEXT_PUBLIC_API_ORIGIN=$NEXT_PUBLIC_API_ORIGIN
-RUN pnpm --filter @empire/api-contract build && pnpm --filter @empire/command-center build
+RUN pnpm --filter @empire/command-center... build
 
 FROM node:24-alpine AS runtime
 ENV NODE_ENV=production

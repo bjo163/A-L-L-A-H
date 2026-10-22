@@ -32,6 +32,13 @@ export function formatChanges(log) {
   return [...groups].filter(([, items]) => items.length).map(([title, items]) => `## ${title}\n\n${items.join('\n')}`).join('\n\n') || 'No additional commits.';
 }
 
+export function findExistingRelease(releases, { branch, runId, sha }) {
+  return releases.find(release => release.body?.includes(`<!-- workflow-run:${runId} -->`)) ??
+    (branch === 'main' ? releases.find(release =>
+      /^v\d+\.\d+\.\d+$/.test(release.tag_name) &&
+      release.body?.includes(`\nSource: ${sha}\n`)) : undefined);
+}
+
 export function publish() {
   const { GITHUB_REPOSITORY: repository, GITHUB_REF_NAME: branch, GITHUB_SHA: sha,
     GITHUB_RUN_ID: runId, GITHUB_RUN_NUMBER: runNumber, GITHUB_STEP_SUMMARY: summary } = process.env;
@@ -41,7 +48,11 @@ export function publish() {
   // Run identity survives retries, even after a tag was created but asset upload failed.
   const pages = JSON.parse(run('gh', ['api', '--paginate', '--slurp', `repos/${repository}/releases?per_page=100`]));
   const marker = `<!-- workflow-run:${runId} -->`;
-  const existing = pages.flat().find(release => release.body?.includes(marker));
+  const existing = findExistingRelease(pages.flat(), { branch, runId, sha });
+  if (existing && !existing.draft && branch === 'main') {
+    console.log(`Main source ${sha} already published as ${existing.tag_name}`);
+    return;
+  }
   const tags = git('tag', '--list').split('\n').filter(Boolean);
   const pkg = JSON.parse(readFileSync('package.json', 'utf8'));
   const version = existing ? existing.tag_name.slice(1) : nextVersion(pkg.version, tags, branch, runNumber);

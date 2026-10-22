@@ -20,6 +20,9 @@
         "^build"
       ]
     },
+    "@empire/batteries-world-monitor#test": {
+      "dependsOn": ["build"]
+    },
     "dev": {
       "cache": false,
       "persistent": true

@@ -1,0 +1,64 @@
+name: Complete promotion
+
+# A merge performed with GITHUB_TOKEN may not emit a new push workflow.
+# workflow_run and explicit dispatch keep publication working without a PAT.
+on:
+  workflow_run:
+    workflows: [CI, Security]
+    types: [completed]
+    branches: [dev]
+
+permissions:
+  contents: read
+  pull-requests: read
+  actions: write
+
+concurrency:
+  group: promotion-follow-up
+  cancel-in-progress: false
+
+jobs:
+  publish-main:
+    if: github.event.workflow_run.conclusion == 'success' && github.event.workflow_run.head_repository.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 3
+    steps:
+      # No checkout: this privileged workflow executes only this trusted metadata
+      # lookup, never scripts or artifacts from the triggering dev/PR run.
+      - name: Dispatch main validation and publication after auto-merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          SOURCE_SHA: ${{ github.event.workflow_run.head_sha }}
+        run: |
+          [[ "$SOURCE_SHA" =~ ^[0-9a-f]{40}$ ]]
+          eligible="$(gh api "repos/$GH_REPO/commits/$SOURCE_SHA/pulls" --jq ".[] | select(.base.ref == \"main\" and .head.ref == \"dev\" and .head.sha == \"$SOURCE_SHA\" and (.merged_at != null or .auto_merge != null)) | .number")"
+          if [[ -z "$eligible" ]]; then
+            echo 'No merged or auto-merging promotion for this source commit.'
+            exit 0
+          fi
+          for attempt in {1..12}; do
+            merge_sha="$(gh api "repos/$GH_REPO/commits/$SOURCE_SHA/pulls" --jq ".[] | select(.base.ref == \"main\" and .head.ref == \"dev\" and .head.sha == \"$SOURCE_SHA\" and .merged_at != null) | .merge_commit_sha" | head -n 1)"
+            if [[ -n "$merge_sha" ]]; then break; fi
+            sleep 5
+          done
+          if [[ -z "$merge_sha" ]]; then
+            echo 'No completed promotion for this source commit.'
+            exit 0
+          fi
+          main_sha="$(gh api "repos/$GH_REPO/branches/main" --jq '.commit.sha')"
+          if [[ "$main_sha" != "$merge_sha" ]]; then
+            echo 'A newer main commit is already present.'
+            exit 0
+          fi
+          published="$(gh api --paginate "repos/$GH_REPO/releases?per_page=100" --jq ".[] | select(.draft == false and .prerelease == false and ((.body // \"\") | contains(\"Source: $merge_sha\"))) | .tag_name")"
+          if [[ -n "$published" ]]; then
+            echo "Main already published: $published"
+            exit 0
+          fi
+          active="$(gh api "repos/$GH_REPO/actions/workflows/ci.yml/runs?branch=main&head_sha=$merge_sha&per_page=100" --jq '.workflow_runs[] | select(.status != "completed") | .id')"
+          if [[ -n "$active" ]]; then
+            echo 'Main validation/publication is already running.'
+            exit 0
+          fi
+          gh workflow run ci.yml --ref main -f publish_main=true -f "source_sha=$merge_sha"
