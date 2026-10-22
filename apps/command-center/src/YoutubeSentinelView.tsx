@@ -386,14 +386,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                   {item.matchedRules.slice(0, 2).map((r, idx) => (
                     <span
                       key={idx}
-                      style={{
-                        fontSize: 10,
-                        padding: "1px 5px",
-                        background: r.weight > 0 ? "rgba(239, 68, 68, 0.15)" : "rgba(34, 197, 94, 0.15)",
-                        color: r.weight > 0 ? "#f87171" : "#4ade80",
-                        border: `1px solid ${r.weight > 0 ? "rgba(239, 68, 68, 0.3)" : "rgba(34, 197, 94, 0.3)"}`,
-                        borderRadius: 2,
-                      }}
+                      className={`sentinel-matched-rule${r.weight > 0 ? " sentinel-matched-rule--risk" : " sentinel-matched-rule--safe"}`}
                     >
                       {r.weight > 0 ? `⚠️ ${r.label}` : `🛡️ ${r.label}`}
                     </span>
@@ -461,11 +454,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
         cell: (item: YoutubeMonitoredItem) => (
           <div>
             <span
-              style={{
-                fontWeight: 700,
-                fontFamily: "var(--eol-font-mono)",
-                color: item.direction === "POSITIVE" ? "#10b981" : item.riskScore >= 70 ? "#ff4d4d" : item.riskScore >= 40 ? "#f59e0b" : "#10b981",
-              }}
+              className={`sentinel-risk-score sentinel-risk-score--${item.direction === "POSITIVE" ? "positive" : item.riskScore >= 70 ? "high" : item.riskScore >= 40 ? "medium" : "low"}`}
             >
               {item.direction === "POSITIVE" ? "100" : item.riskScore}
             </span>
@@ -838,7 +827,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               checked={hideResolved}
               onChange={(e) => setHideResolved(e.target.checked)}
             />
-            <span style={{ color: hideResolved ? "var(--eol-manga-status-success-strong)" : "inherit", fontWeight: hideResolved ? 700 : 400 }}>
+            <span className={`sentinel-filter-state${hideResolved ? " sentinel-filter-state--active-success" : ""}`}>
               🗑️ Eliminasi yang Selesai / Dilaporkan
             </span>
           </label>
@@ -849,7 +838,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               checked={onlyNew}
               onChange={(e) => setOnlyNew(e.target.checked)}
             />
-            <span style={{ color: onlyNew ? "var(--eol-manga-status-warning-strong)" : "inherit", fontWeight: onlyNew ? 700 : 400 }}>
+            <span className={`sentinel-filter-state${onlyNew ? " sentinel-filter-state--active-warning" : ""}`}>
               ✨ Hanya Temuan Baru
             </span>
           </label>
