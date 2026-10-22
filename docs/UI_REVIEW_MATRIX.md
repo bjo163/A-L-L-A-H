@@ -58,6 +58,10 @@ The user-provided `http://localhost:5173/` Command Center login was visually rev
 
 The package catalog now has a no-default weighted scorecard for the three vector identity concepts. Its six weights total 100% and match the blueprint rubric; each candidate includes its own risk prompt. A weighted mean appears only after all six criteria are rated, the current catalog language (English or Indonesian) localizes the worksheet, and scores remain tab-local with no persistence. Package typecheck and catalog production build passed, alongside CSS/token/boundary and SVG/asset audits. The worksheet has not received browser visual/keyboard review or reviewer scores; this is source/build evidence only, and no logo concept is approved from it.
 
+## Brand source and rights record — 2026-10-22
+
+The Orbit working source record now tracks asset version, provisional state, Codex-assisted creation attribution, source provenance, the absence of an external license grant, and the pending concept/render/rights gates. The generated-asset validator requires these fields and verifies that the final approval gates stay pending. `pnpm validate:ui-assets` passes with the record and generated hashes. This improves source governance but does not establish a human rights holder, trademark clearance, final concept approval, or redistribution license; UI-C02-15 remains open.
+
 ## Product presentation source ownership — 2026-10-22
 
 Current-source scan found no `.css`, `.scss`, or `.sass` files under `apps/portal` or `apps/command-center`, and no inline SVG, `style` prop, path geometry, or literal hex fill in active product TS/TSX. `pnpm audit:ui-boundary` confirms 34 consumer source files, no inline style props, 40 package-owned class hooks, and 1,300 scoped selectors in the package product/adapter stylesheets. UI/package catalog, Portal, and Command Center production builds pass. This verifies stylesheet/vector ownership and source cutover for UI-C04-12; route/theme/viewport visual parity remains open in the surface rows and C06/C14/C16.

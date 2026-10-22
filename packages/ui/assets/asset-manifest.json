@@ -106,6 +106,17 @@
     "brandMaster": {
       "concept": "orbit",
       "source": "assets/source/brand/orbit.svg",
+      "sourceRecord": {
+        "assetVersion": 1,
+        "status": "provisional",
+        "creator": "Codex-assisted original vector work under repository-owner direction; human author and rights-holder attribution remain unconfirmed.",
+        "provenance": "Editable geometry authored in this repository; no third-party logo artwork, font outlines, or copied vector paths are embedded.",
+        "licenseStatus": "No external license has been granted. The repository owner must confirm the rights holder and redistribution terms before public release.",
+        "review": {
+          "status": "pending",
+          "requiredBlueprintGates": ["UI-C02-03", "UI-C02-13", "UI-C02-15"]
+        }
+      },
       "componentOutput": "src/brand/OrbitMark.generated.tsx",
       "assetModuleOutput": "src/brand/BrandAssets.generated.ts",
       "opticalMaster": {

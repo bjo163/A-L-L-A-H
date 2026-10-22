@@ -130,7 +130,18 @@ for (const path of new Set([...actualGenerated.keys(), ...expectedGenerated.keys
 if (!manifest.generatedAssetPolicy?.includes("inline SVG")) errors.push("generated asset policy must document the current inline-SVG source strategy");
 if (manifest.generatedFiles.length > 0 && !manifest.generatedAssetPolicy?.includes("assets:generate")) errors.push("generated assets require a documented deterministic generation command");
 if (!manifest.generatedAssetPolicy?.includes("single editable standard-size Orbit geometry source")) errors.push("generated asset policy must identify the single editable standard-size Orbit geometry source");
-if (manifest.vectors.brandMaster?.source !== "assets/source/brand/orbit.svg" || manifest.vectors.brandMaster?.componentOutput !== "src/brand/OrbitMark.generated.tsx" || manifest.vectors.brandMaster?.assetModuleOutput !== "src/brand/BrandAssets.generated.ts") errors.push("brand master manifest must point from the editable SVG to its generated React component and public asset module");
+const brandMaster = manifest.vectors.brandMaster;
+const brandSourceRecord = brandMaster?.sourceRecord;
+if (brandMaster?.source !== "assets/source/brand/orbit.svg" || brandMaster?.componentOutput !== "src/brand/OrbitMark.generated.tsx" || brandMaster?.assetModuleOutput !== "src/brand/BrandAssets.generated.ts") errors.push("brand master manifest must point from the editable SVG to its generated React component and public asset module");
+const brandReviewGates = ["UI-C02-03", "UI-C02-13", "UI-C02-15"];
+if (!Number.isInteger(brandSourceRecord?.assetVersion) || brandSourceRecord.assetVersion < 1 || !["provisional", "approved"].includes(brandSourceRecord.status)) errors.push("brand source record requires a positive asset version and supported provisional/approved status");
+if (![brandSourceRecord?.creator, brandSourceRecord?.provenance, brandSourceRecord?.licenseStatus].every((value) => typeof value === "string" && value.trim())) errors.push("brand source record requires creator, provenance, and license status");
+if (!brandReviewGates.every((gate) => brandSourceRecord?.review?.requiredBlueprintGates?.includes(gate))) errors.push("brand source record must retain concept, visual, and rights-review gates");
+if (brandSourceRecord?.status === "provisional" && brandSourceRecord.review?.status !== "pending") errors.push("provisional brand source review must remain pending");
+if (brandSourceRecord?.status === "approved") {
+  if (brandSourceRecord.review?.status !== "approved" || typeof brandSourceRecord.review.approvedBy !== "string" || !brandSourceRecord.review.approvedBy.trim() || !/^\d{4}-\d{2}-\d{2}$/.test(brandSourceRecord.review.approvedAt ?? "")) errors.push("approved brand source requires an approved review status, reviewer, and ISO date");
+  if (!brandReviewGates.every((gate) => brandSourceRecord.review.approvedBlueprintGates?.includes(gate))) errors.push("approved brand source must record approval for every required blueprint gate");
+}
 const requiredBrandVariants = {
   fullBrand: { path: "assets/generated/brand/empire-mark.svg", color: "#f1b84b" },
   monochrome: { path: "assets/generated/brand/empire-mark-monochrome.svg", color: "#201832" },

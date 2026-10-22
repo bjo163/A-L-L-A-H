@@ -48,3 +48,13 @@ The optical drawing is a deliberate simplification: it replaces the two intersec
 ## Source and licensing
 
 `assets/source/brand/orbit.svg` is editable and generates the current Orbit React mark, full-brand/monochrome/inverse standalone marks, and 48px+ app-icon variants. `assets/source/brand/orbit-small.svg` is its package-owned optical correction for LogoMark small sizes and 16/24/32px standalone outputs, including the favicon. Generated files are validated for source/hash drift. Product names remain live text; no outlined wordmark is distributed. Font licenses are tracked in `licenses/`. Asset provenance does not grant rights to the project name or to external reuse; record the repository and trademark review before public brand release.
+
+The machine-readable source record is stored with `brandMaster` in `assets/asset-manifest.json` and currently states:
+
+- Asset version `1`, status **provisional**.
+- Creator attribution: Codex-assisted original vector work under repository-owner direction; the human author and rights holder still need confirmation.
+- Provenance: editable geometry authored in this repository without third-party logo artwork, outlined fonts, or copied vector paths.
+- License: no external license has been granted; the repository owner must confirm ownership and redistribution terms before public release.
+- Required review gates: concept scoring (`UI-C02-03`), grayscale/theme/background rendering (`UI-C02-13`), and rights/trademark review (`UI-C02-15`).
+
+The asset validator enforces the presence and pending status of this record. Version `1` tracks the editable brand source only; it does not signal concept approval or permission for public use.
