@@ -26,6 +26,8 @@ export { HelpText } from "./primitives/HelpText";
 export type { HelpTextProps } from "./primitives/HelpText";
 export { LoadingState } from "./primitives/LoadingState";
 export type { LoadingStateProps } from "./primitives/LoadingState";
+export { LiveRegion } from "./primitives/LiveRegion";
+export type { LiveRegionProps } from "./primitives/LiveRegion";
 export { Skeleton } from "./primitives/Skeleton";
 export type { SkeletonProps } from "./primitives/Skeleton";
 export { Notice } from "./primitives/Notice";
