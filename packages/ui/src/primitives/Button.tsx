@@ -1,5 +1,8 @@
-import { forwardRef, type ButtonHTMLAttributes } from "react";
+"use client";
+
+import { forwardRef, useCallback, type ButtonHTMLAttributes } from "react";
 import { classNames } from "./classNames";
+import { useMotionVisibility } from "./useMotionVisibility";
 
 export type ButtonVariant = "primary" | "secondary" | "quiet" | "danger";
 export type ButtonSize = "sm" | "md" | "lg";
@@ -27,10 +30,17 @@ export const Button = forwardRef<HTMLButtonElement, ButtonProps>(function Button
   disabled = false,
   ...props
 }: ButtonProps, ref) {
+  const motionRef = useMotionVisibility<HTMLButtonElement>(loading);
+  const mergedRef = useCallback((element: HTMLButtonElement | null) => {
+    motionRef.current = element;
+    if (typeof ref === "function") ref(element);
+    else if (ref) ref.current = element;
+  }, [motionRef, ref]);
+
   return (
     <button
       className={classNames(buttonClassName(variant), `eol-button--${size}`, className)}
-      ref={ref}
+      ref={mergedRef}
       type={type}
       disabled={disabled || loading}
       aria-busy={loading || undefined}

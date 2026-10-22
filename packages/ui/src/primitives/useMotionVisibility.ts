@@ -3,12 +3,16 @@
 import { useEffect, useRef } from "react";
 
 /** Pauses package-owned animation descendants while their region is offscreen or the page is hidden. */
-export function useMotionVisibility<T extends HTMLElement>() {
+export function useMotionVisibility<T extends HTMLElement>(enabled = true) {
   const ref = useRef<T>(null);
 
   useEffect(() => {
     const element = ref.current;
     if (!element) return;
+    if (!enabled) {
+      element.removeAttribute("data-eol-motion-paused");
+      return;
+    }
 
     let intersectsViewport = true;
     const updatePausedState = () => {
@@ -34,7 +38,7 @@ export function useMotionVisibility<T extends HTMLElement>() {
       document.removeEventListener("visibilitychange", updatePausedState);
       element.removeAttribute("data-eol-motion-paused");
     };
-  }, []);
+  }, [enabled]);
 
   return ref;
 }
