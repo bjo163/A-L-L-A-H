@@ -1,0 +1,134 @@
+{
+  "schemaVersion": "5.0.0",
+  "registryType": "PROPOSED_CAPABILITY_HORIZONS",
+  "policy": "concept_records_do_not_enable_runtime",
+  "horizons": [
+    {
+      "id": "H0",
+      "meaning": "EXISTING_CODE_OR_REFERENCE",
+      "note": "Does not mean production ready"
+    },
+    {
+      "id": "H1",
+      "meaning": "DEPLOYABLE_COMMERCIAL_AFTER_INTEGRATION",
+      "note": "May require equipment procurement and safety certification"
+    },
+    {
+      "id": "H2",
+      "meaning": "LAB_OR_PARTNER_RESEARCH",
+      "note": "No project-owned implementation proven"
+    },
+    {
+      "id": "H3",
+      "meaning": "SPECULATIVE_OR_CONCEPT",
+      "note": "No scientific capability inferred"
+    }
+  ],
+  "capabilities": [
+    {
+      "id": "heliogrid-energy-os",
+      "owner": "energy-rnd-unassigned",
+      "projectStatus": "DESIGN",
+      "horizon": "H1",
+      "type": "energy-telemetry",
+      "dependency": "certified energy meters and safe read-only gateway"
+    },
+    {
+      "id": "photovoltaic-grid-battery",
+      "owner": "energy-rnd-unassigned",
+      "projectStatus": "NOT_INSTALLED",
+      "horizon": "H1",
+      "type": "physical-energy",
+      "dependency": "site survey, electrical safety, solar/grid/BMS"
+    },
+    {
+      "id": "hydrogen-pem",
+      "owner": "energy-rnd-unassigned",
+      "projectStatus": "DESIGN",
+      "horizon": "H2",
+      "type": "proton-electrochemistry",
+      "dependency": "licensed vendor, fuel/hydrogen supply, safety"
+    },
+    {
+      "id": "protonic-neuromorphic",
+      "owner": "materials-rnd-unassigned",
+      "projectStatus": "LITERATURE_ONLY",
+      "horizon": "H2",
+      "type": "materials-compute",
+      "dependency": "research partner; no generator claims"
+    },
+    {
+      "id": "photon-ai",
+      "owner": "materials-rnd-unassigned",
+      "projectStatus": "LITERATURE_ONLY",
+      "horizon": "H2",
+      "type": "photonic-compute",
+      "dependency": "hardware benchmark whole-system power"
+    },
+    {
+      "id": "quantum-cloud",
+      "owner": "research-unassigned",
+      "projectStatus": "CONCEPT",
+      "horizon": "H2",
+      "type": "qpu-experiment",
+      "dependency": "approved provider/budget, classical baseline"
+    },
+    {
+      "id": "post-quantum-crypto",
+      "owner": "security-unassigned",
+      "projectStatus": "DESIGN",
+      "horizon": "H1",
+      "type": "cryptography",
+      "dependency": "NIST standards compatibility review"
+    },
+    {
+      "id": "materials-forge",
+      "owner": "research-unassigned",
+      "projectStatus": "DESIGN",
+      "horizon": "H1",
+      "type": "simulation-rnd",
+      "dependency": "reproducible models, source datasets"
+    },
+    {
+      "id": "multi-tradition-knowledge",
+      "owner": "corpus-unassigned",
+      "projectStatus": "METADATA_PROPOSAL",
+      "horizon": "H1",
+      "type": "corpus",
+      "dependency": "license and expert review"
+    },
+    {
+      "id": "sidra-tree",
+      "owner": "knowledge-unassigned",
+      "projectStatus": "CONCEPT",
+      "horizon": "H3",
+      "type": "ontology-graph",
+      "dependency": "ADR and domain ownership"
+    },
+    {
+      "id": "muntaha",
+      "owner": "governance-unassigned",
+      "projectStatus": "CONCEPT",
+      "horizon": "H3",
+      "type": "epistemic-gate",
+      "dependency": "clear naming, rules and tests"
+    },
+    {
+      "id": "phonny",
+      "owner": "unassigned",
+      "projectStatus": "NAME_UNCONFIRMED",
+      "horizon": "H3",
+      "type": "communication-surface",
+      "dependency": "confirm product name and access scope"
+    }
+  ],
+  "invariants": [
+    "No spiritual or divine operational authority",
+    "No perpetual motion or free energy claims",
+    "Hardware safety and human approval required",
+    "Scientific results measured with units/provenance",
+    "Keep MoonWitness Gen2 one public API until ADR approved",
+    "No source religion truth ranking",
+    "AI predictions not certified materials"
+  ]
+}

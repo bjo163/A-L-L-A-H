@@ -1,0 +1,15 @@
+{
+  "name": "@empire/batteries-dna-halim",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Draft Batteries DNA bounded project mapping for Al-Halim (Forbearance); lexicon source halim.",
+  "exports": {
+    ".": "./index.mjs",
+    "./manifest": "./manifest.json"
+  },
+  "files": [
+    "index.mjs",
+    "manifest.json"
+  ]
+}

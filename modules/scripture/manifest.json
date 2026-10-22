@@ -1,0 +1,24 @@
+{
+  "id": "scripture",
+  "title": "Universal Scripture Corpus",
+  "version": "0.1.0",
+  "owner": "corpus",
+  "state": "scaffold_only",
+  "dependencies": [
+    "kernel"
+  ],
+  "capabilities": [
+    "unilex",
+    "scripture-search"
+  ],
+  "permissions": [
+    "scripture:read",
+    "scripture:curate"
+  ],
+  "models": [],
+  "upgrades": [],
+  "uiSlots": [
+    "research.scripture"
+  ],
+  "runMode": "first_party_allowlisted"
+}

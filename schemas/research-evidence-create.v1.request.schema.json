@@ -1,0 +1,17 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://empireofthelight.example/schemas/research-evidence-create.v1.request.schema.json",
+  "title": "Legacy Research Evidence Request v1",
+  "deprecated": true,
+  "description": "Compatibility contract for the current endpoint. Migrate clients to the structured v2 source/provenance contract.",
+  "type": "object", "additionalProperties": false,
+  "required": ["title", "sourceUri", "sourceFamily", "classification", "excerpt", "provenance"],
+  "properties": {
+    "title": { "type": "string", "minLength": 3, "maxLength": 300 },
+    "sourceUri": { "type": "string", "format": "uri", "maxLength": 2048 },
+    "sourceFamily": { "enum": ["quran", "torah", "psalms", "gospels", "other"] },
+    "classification": { "enum": ["SCRIPTURE_TEXT", "TRADITION_INTERPRETATION", "HISTORICAL_CLAIM", "VERIFIED_MEASUREMENT", "SCIENTIFIC_MODEL", "HYPOTHESIS", "PROJECT_NARRATIVE", "PERSONAL_TESTIMONY"] },
+    "excerpt": { "type": "string", "minLength": 1, "maxLength": 20000 },
+    "provenance": { "type": "object", "additionalProperties": true }
+  }
+}

@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://empire.example/schemas/schema-preflight.schema.json",
+  "title": "Batteries Schema Preflight Report",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["ok", "models"],
+  "properties": {
+    "ok": { "type": "boolean" },
+    "models": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": ["table", "state", "operations", "blockers"],
+        "properties": {
+          "table": { "type": "string", "minLength": 1 },
+          "state": { "enum": ["current", "safe_changes", "blocked"] },
+          "operations": { "type": "array", "items": { "type": "string" } },
+          "blockers": { "type": "array", "items": { "type": "string" } }
+        }
+      }
+    }
+  }
+}

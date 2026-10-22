@@ -1,0 +1,24 @@
+{
+  "id": "journey",
+  "title": "Journey & Path",
+  "version": "0.1.0",
+  "owner": "journey",
+  "state": "scaffold_only",
+  "dependencies": [
+    "kernel"
+  ],
+  "capabilities": [
+    "journeys",
+    "paths"
+  ],
+  "permissions": [
+    "journey:read",
+    "journey:write"
+  ],
+  "models": [],
+  "upgrades": [],
+  "uiSlots": [
+    "operations.journey"
+  ],
+  "runMode": "first_party_allowlisted"
+}

@@ -1,0 +1,15 @@
+{
+  "name": "@empire/batteries-dna-basith",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Draft Batteries DNA bounded project mapping for Al-Basith (Expansion); lexicon source basith.",
+  "exports": {
+    ".": "./index.mjs",
+    "./manifest": "./manifest.json"
+  },
+  "files": [
+    "index.mjs",
+    "manifest.json"
+  ]
+}

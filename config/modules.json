@@ -1,0 +1,9 @@
+{
+  "schemaVersion": "1.0.0",
+  "approvedEnabled": [
+    "kernel",
+    "governance",
+    "research"
+  ],
+  "note": "Local first-party activation: kernel, governance, and research. Production release gates remain separate."
+}

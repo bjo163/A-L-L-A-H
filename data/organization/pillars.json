@@ -1,0 +1,44 @@
+{
+  "schemaVersion": "1.0.0",
+  "scopeModel": [
+    "SELF",
+    "COMMUNITY",
+    "GLOBAL"
+  ],
+  "pillars": [
+    {
+      "id": "PATHFINDING",
+      "title": "PATHFINDING",
+      "roles": [
+        "SEEKER",
+        "RAID_PATHFINDER"
+      ],
+      "function": "Explore alternatives and design paths with authorization"
+    },
+    {
+      "id": "TRUTH_GUIDANCE",
+      "title": "TRUTH & GUIDANCE",
+      "roles": [
+        "WITNESS",
+        "GUIDE"
+      ],
+      "function": "Preserve evidence and communicate source limits"
+    },
+    {
+      "id": "RENEWAL",
+      "title": "RENEWAL",
+      "roles": [
+        "RENEWAL_STEWARD"
+      ],
+      "function": "Maintain versioned paths and correct failures"
+    },
+    {
+      "id": "PROTECTION",
+      "title": "PROTECTION",
+      "roles": [
+        "ZIIL"
+      ],
+      "function": "Protect dignity, privacy, safety, consent and appeal"
+    }
+  ]
+}

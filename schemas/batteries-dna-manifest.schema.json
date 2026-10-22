@@ -1,0 +1,55 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://empireofthelight.example/schemas/batteries-dna-manifest.schema.json",
+  "title": "Batteries DNA Package Manifest",
+  "description": "Draft metadata linking a source lexicon record to either a bounded project analogy or a reference-only record. Capability strings are proposed identifiers only. Manifests do not enable runtime behavior or grant authority.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "id", "packageName", "number", "recordType", "lexicon", "projectMapping", "status", "runtimeEnabled", "authorityGranted", "permissions", "dependencies"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "id": { "type": "string", "pattern": "^dna-[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "packageName": { "type": "string", "pattern": "^@empire/batteries-dna-[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    "number": { "type": "integer", "minimum": 1, "maximum": 99 },
+    "recordType": { "enum": ["bounded_project_mapping", "reference_only"] },
+    "lexicon": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["registry", "sourcePath", "code", "sourceLanguage", "arabic", "transliteration", "canonicalLanguage", "label", "domain", "editorialStatus"],
+      "properties": {
+        "registry": { "const": "BATTERIES_BASE_LEXICON_SEED" },
+        "sourcePath": { "const": "packages/batteries-base/src/data/asmaul-husna.ts" },
+        "code": { "type": "string", "pattern": "^[a-z0-9]+(?:_[a-z0-9]+)*$" },
+        "sourceLanguage": { "const": "ar" },
+        "arabic": { "type": "string", "minLength": 1 },
+        "transliteration": { "type": "string", "minLength": 1 },
+        "canonicalLanguage": { "const": "en" },
+        "label": { "type": "string", "minLength": 1 },
+        "domain": { "type": "string", "minLength": 1 },
+        "editorialStatus": { "const": "DRAFT_REVIEW" }
+      }
+    },
+    "projectMapping": {
+      "type": ["object", "null"],
+      "additionalProperties": false,
+      "required": ["relation", "attribute", "capability", "scope", "description", "limitations"],
+      "properties": {
+        "relation": { "const": "inspiredBy" },
+        "attribute": { "type": "string", "minLength": 1 },
+        "capability": { "type": "string", "pattern": "^[a-z][a-z0-9]+(?:-[a-z0-9]+)*$" },
+        "scope": { "type": "string", "minLength": 1 },
+        "description": { "type": "string", "minLength": 1 },
+        "limitations": { "type": "array", "minItems": 2, "items": { "type": "string", "minLength": 1 } }
+      }
+    },
+    "status": { "const": "DRAFT_REVIEW" },
+    "runtimeEnabled": { "const": false },
+    "authorityGranted": { "const": false },
+    "permissions": { "type": "array", "maxItems": 0 },
+    "dependencies": { "type": "array", "maxItems": 0 }
+  },
+  "allOf": [
+    { "if": { "properties": { "recordType": { "const": "reference_only" } }, "required": ["recordType"] }, "then": { "properties": { "projectMapping": { "const": null } } } },
+    { "if": { "properties": { "recordType": { "const": "bounded_project_mapping" } }, "required": ["recordType"] }, "then": { "properties": { "projectMapping": { "type": "object" } } } }
+  ]
+}

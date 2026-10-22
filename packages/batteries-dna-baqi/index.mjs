@@ -1,0 +1,45 @@
+const deepFreeze = (value) => {
+  if (value && typeof value === "object" && !Object.isFrozen(value)) {
+    Object.values(value).forEach(deepFreeze);
+    Object.freeze(value);
+  }
+  return value;
+};
+
+export const batteriesDna = deepFreeze({
+  "schemaVersion": "1.0.0",
+  "id": "dna-baqi",
+  "packageName": "@empire/batteries-dna-baqi",
+  "number": 96,
+  "recordType": "bounded_project_mapping",
+  "lexicon": {
+    "registry": "BATTERIES_BASE_LEXICON_SEED",
+    "sourcePath": "packages/batteries-base/src/data/asmaul-husna.ts",
+    "code": "baqi",
+    "sourceLanguage": "ar",
+    "arabic": "الْبَاقِي",
+    "transliteration": "Al-Baqi",
+    "canonicalLanguage": "en",
+    "label": "Everlastingness",
+    "domain": "Reliability",
+    "editorialStatus": "DRAFT_REVIEW"
+  },
+  "projectMapping": {
+    "relation": "inspiredBy",
+    "attribute": "ServiceContinuity",
+    "capability": "service-continuity-baqi",
+    "scope": "Only service-continuity-baqi within reliability; work is limited to configured, connected, authorized system inputs and the package's stated technical behavior.",
+    "description": "Draft project analogy for proposed capability service-continuity-baqi in reliability: Service continuity requires maintenance, backups, and recovery planning.",
+    "limitations": [
+      "This is a project analogy inspiredBy a lexicon record, not a theological definition or equivalent.",
+      "The package has no independent authority, user permissions, or divine capability.",
+      "Draft project analogy for proposed capability service-continuity-baqi in reliability: Service continuity requires maintenance, backups, and recovery planning."
+    ]
+  },
+  "status": "DRAFT_REVIEW",
+  "runtimeEnabled": false,
+  "authorityGranted": false,
+  "permissions": [],
+  "dependencies": []
+});
+export default batteriesDna;

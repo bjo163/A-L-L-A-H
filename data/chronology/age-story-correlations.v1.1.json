@@ -1,0 +1,344 @@
+{
+  "schemaVersion": "1.1.0",
+  "registryId": "AGE_STORY_CORRELATIONS",
+  "status": "PROPOSED_PROJECT_NARRATIVE",
+  "description": "References for story-age numbers remembered from earlier MoonWitness concepts. Not personal identity records and not religious rulings.",
+  "epistemicRules": [
+    "Treat human age, fictional visual age, service tenure, narrative duration, scriptural account and cosmic age as distinct dimensions.",
+    "40 years in Quran 46:15 is a reflection reference, not a magical promotion threshold.",
+    "Under-40 story label is not a believer gate; all adults may participate within lawful role constraints.",
+    "100 years in Nevermore is an aspiration not an unconditional lifespan guarantee.",
+    "950 Quranic years denotes time among Noah's people, not confirmed total lifespan.",
+    "Unknown angel ages are null; 25–45 is only the fictional visual design of a WINGS representative.",
+    "Age-related forgiveness and punishment are never automated or divinely ranked.",
+    "Year unit and calendar method must be explicit; 63 lunar years is not 63 solar years.",
+    "40 days and 40 nights is a campaign period and not a character's chronological age.",
+    "Keep project testimony separated from scripture, historicity, prediction and empirical measurement."
+  ],
+  "yearUnits": [
+    "SOLAR_YEAR_AGE",
+    "AGE_YEARS_EXCLUSIVE_UPPER",
+    "AGE_YEARS",
+    "DAYS_AND_NIGHTS",
+    "LUNAR_YEARS",
+    "LIFESPAN_YEARS_AT_LEAST",
+    "SCRIPTURAL_YEARS",
+    "SCRIPTURAL_YEARS_ADDED",
+    "SCRIPTURAL_YEARS_AMONG_PEOPLE",
+    "SCRIPTURAL_YEARS_REPORTED",
+    "APPROXIMATE_AGE_YEARS",
+    "UNKNOWN_AGE",
+    "UNQUANTIFIED_AGE",
+    "NO_OPERABLE_AGE",
+    "LEVEL_INDEX_NOT_YEARS",
+    "COSMIC_TIME_NOT_HUMAN_AGE",
+    "FICTIONAL_VISUAL_AGE_YEARS"
+  ],
+  "records": [
+    {
+      "id": "N01",
+      "key": "AGE_MODIFIER_19",
+      "title": "AWS / Angel With a Shotgun — Age Modifier",
+      "category": "NARRATIVE_CASE",
+      "numericValue": 19,
+      "unit": "SOLAR_YEAR_AGE",
+      "sourceClass": "PROJECT_NARRATIVE",
+      "description": "A remembered age-19 case proposes context-sensitive assessment of maturity, capacity, dependence and responsibility. It does not justify automatic mercy, punishment, or theological judgment.",
+      "sourceReferences": [],
+      "status": "DRAFT_REVIEW",
+      "usableForAuthorization": false,
+      "usableForDivineJudgment": false
+    },
+    {
+      "id": "N02",
+      "key": "WE_ARE_SAVAGES_UNDER_40",
+      "title": "WE ARE SAVAGES — Under 40",
+      "category": "NARRATIVE_GROUP",
+      "numericValue": 40,
+      "unit": "AGE_YEARS_EXCLUSIVE_UPPER",
+      "sourceClass": "PROJECT_NARRATIVE",
+      "description": "Project narrative category for people under 40, associated in prior storytelling with commitments and ethical actions; NEVER use as a minimum faith requirement or a disqualifier for older persons.",
+      "sourceReferences": [],
+      "status": "DRAFT_REVIEW",
+      "usableForAuthorization": false,
+      "usableForDivineJudgment": false
+    },
+    {
+      "id": "N03",
+      "key": "MATURITY_40_QURAN",
+      "title": "Age 40 — maturity and gratitude",
+      "category": "SCRIPTURAL_MILESTONE",
+      "numericValue": 40,
+      "unit": "AGE_YEARS",
+      "sourceClass": "SCRIPTURE_TEXT",
+      "description": "Quran 46:15 mentions forty years in a reflection on maturity, gratitude, parents and descendants. It is not a universal automatic promotion or moral score.",
+      "sourceReferences": [
+        {
+          "ref": "QURAN:46:15",
+          "url": "https://legacy.quran.com/46/15"
+        }
+      ],
+      "status": "DRAFT_REVIEW",
+      "usableForAuthorization": false,
+      "usableForDivineJudgment": false
+    },
+    {
+      "id": "N04",
+      "key": "ROAD_TO_40D40N",
+      "title": "Road to 40 — Forty Days and Forty Nights",
+      "category": "MISSION_DURATION",
+      "numericValue": 40,
+      "unit": "DAYS_AND_NIGHTS",
+      "sourceClass": "PROJECT_NARRATIVE",
+      "description": "A forty-day/forty-night program duration, not a person's 40th birthday or proof of supernatural occurrences. Event observations, including astronomical/night/subuh observations, remain separately logged with timestamps and corroboration.",
+      "sourceReferences": [],
+      "status": "DRAFT_REVIEW",
+      "usableForAuthorization": false,
+      "usableForDivineJudgment": false
+    },
+    {
+      "id": "N05",
+      "key": "LUNAR_63_RECONSTRUCTION",
+      "title": "63 lunar years — age-reconstruction hypothesis",
+      "category": "CHRONOLOGICAL_HYPOTHESIS",
+      "numericValue": 63,
+      "unit": "LUNAR_YEARS",
+      "sourceClass": "PROJECT_HYPOTHESIS",
+      "description": "A remembered reconstruction used lunar counting; calendar model, exact endpoints, conversion and uncertainty are mandatory. Another historical MoonWitness calculation suggested roughly 64.1 lunar years under different dates; do not silently combine competing chronologies.",
+      "sourceReferences": [],
+      "status": "DRAFT_REVIEW",
+      "usableForAuthorization": false,
+      "usableForDivineJudgment": false
+    },
+    {
+      "id": "N06",
+      "key": "NEVERMORE_100_PLUS",
+      "title": "NEVERMORE / ANTIDOTE — Story of the Years",
+      "category": "PERSONAL_NARRATIVE_ASPIRATION",
+      "numericValue": 100,
+      "unit": "LIFESPAN_YEARS_AT_LEAST",
+      "sourceClass": "PROJECT_NARRATIVE",
+      "description": "A prior project story expressed a hope or prayer for a century or more of opportunities for repentance, worship and good deeds. It is not a biomedical guarantee, fate, eligibility test or automated promise.",
+      "sourceReferences": [
+        {
+          "ref": "ISAIAH:65:20",
+          "url": "https://www.biblegateway.com/verse/en/Isaiah%2065%3A20"
+        }
+      ],
+      "status": "DRAFT_REVIEW",
+      "usableForAuthorization": false,
+      "usableForDivineJudgment": false
+    },
+    {
+      "id": "N07",
+      "key": "ISAIAH_100",
+      "title": "Isaiah 65:20 — 100 years",
+      "category": "SCRIPTURAL_AGE_IMAGE",
+      "numericValue": 100,
+      "unit": "SCRIPTURAL_YEARS",
+      "sourceClass": "SCRIPTURE_TEXT",
+      "description": "In a prophetic restoration context the passage depicts a hundred years as young. Not a universal human biological threshold, a modern mortality prediction or proof anyone who dies younger is cursed.",
+      "sourceReferences": [
+        {
+          "ref": "ISAIAH:65:20",
+          "url": "https://www.biblegateway.com/verse/en/Isaiah%2065%3A20"
+        }
+      ],
+      "status": "DRAFT_REVIEW",
+      "usableForAuthorization": false,
+      "usableForDivineJudgment": false
+    },
+    {
+      "id": "N08",
+      "key": "HEZEKIAH_15_ADDED",
+      "title": "Hezekiah — fifteen added years",
+      "category": "SCRIPTURAL_EPISODE",
+      "numericValue": 15,
+      "unit": "SCRIPTURAL_YEARS_ADDED",
+      "sourceClass": "SCRIPTURE_TEXT",
+      "description": "A particular account of fifteen additional years for Hezekiah; not a general procedure to extend a person's lifetime.",
+      "sourceReferences": [
+        {
+          "ref": "ISAIAH:38:5",
+          "url": "https://www.biblegateway.com/verse/en/Isaiah%2038%3A5"
+        },
+        {
+          "ref": "2KINGS:20:6",
+          "url": "https://www.biblegateway.com/verse/en/2%20Kings%2020%3A6"
+        }
+      ],
+      "status": "DRAFT_REVIEW",
+      "usableForAuthorization": false,
+      "usableForDivineJudgment": false
+    },
+    {
+      "id": "N09",
+      "key": "NOAH_950_AMONG_PEOPLE",
+      "title": "Noah — 950 years among his people",
+      "category": "SCRIPTURAL_DURATION",
+      "numericValue": 950,
+      "unit": "SCRIPTURAL_YEARS_AMONG_PEOPLE",
+      "sourceClass": "SCRIPTURE_TEXT",
+      "description": "Quran 29:14 says Noah stayed among his people a thousand less fifty years. This is NOT a direct statement of his complete biological lifespan.",
+      "sourceReferences": [
+        {
+          "ref": "QURAN:29:14",
+          "url": "https://quran.com/id/laba-laba/14"
+        }
+      ],
+      "status": "DRAFT_REVIEW",
+      "usableForAuthorization": false,
+      "usableForDivineJudgment": false
+    },
+    {
+      "id": "N10",
+      "key": "METHUSELAH_969",
+      "title": "Methuselah — 969 years",
+      "category": "SCRIPTURAL_REPORTED_LIFESPAN",
+      "numericValue": 969,
+      "unit": "SCRIPTURAL_YEARS_REPORTED",
+      "sourceClass": "SCRIPTURE_TEXT",
+      "description": "Genesis 5:27 attributes 969 years to Methuselah. Store as a textual claim in its tradition; do not treat as a validated target or general biological benchmark.",
+      "sourceReferences": [
+        {
+          "ref": "GENESIS:5:27",
+          "url": "https://www.biblegateway.com/verse/en/Genesis5%3A27"
+        }
+      ],
+      "status": "DRAFT_REVIEW",
+      "usableForAuthorization": false,
+      "usableForDivineJudgment": false
+    },
+    {
+      "id": "N11",
+      "key": "JESUS_ABOUT_30",
+      "title": "Jesus/Isa — about thirty at ministry start",
+      "category": "SCRIPTURAL_APPROXIMATION",
+      "numericValue": 30,
+      "unit": "APPROXIMATE_AGE_YEARS",
+      "sourceClass": "SCRIPTURE_TEXT",
+      "description": "Luke 3:23 says Jesus was about thirty as he began his ministry. Other estimates such as approximately 33 are inferences, not exact dates stated in the Quran.",
+      "sourceReferences": [
+        {
+          "ref": "LUKE:3:23",
+          "url": "https://www.biblegateway.com/verse/en/Luke%203%3A23"
+        }
+      ],
+      "status": "DRAFT_REVIEW",
+      "usableForAuthorization": false,
+      "usableForDivineJudgment": false
+    },
+    {
+      "id": "N12",
+      "key": "ANGEL_AGE_UNKNOWN",
+      "title": "Actual angels — no numeric age in Quran",
+      "category": "SCRIPTURAL_UNKNOWN",
+      "numericValue": null,
+      "unit": "UNKNOWN_AGE",
+      "sourceClass": "SCRIPTURAL_UNKNOWN",
+      "description": "No reliable numerical age is provided in the cited Quran verses; WINGS 10 is a human organizational design and has no angel biological birthday.",
+      "sourceReferences": [
+        {
+          "ref": "QURAN:35:1",
+          "url": "https://legacy.quran.com/35/1"
+        },
+        {
+          "ref": "QURAN:66:6",
+          "url": "https://legacy.quran.com/66/6"
+        }
+      ],
+      "status": "DRAFT_REVIEW",
+      "usableForAuthorization": false,
+      "usableForDivineJudgment": false
+    },
+    {
+      "id": "N13",
+      "key": "SWAP_KARUNIA_LONGEVITY",
+      "title": "Swap Karunia — renouncing personal longevity",
+      "category": "PERSONAL_NARRATIVE_ASPIRATION",
+      "numericValue": null,
+      "unit": "UNQUANTIFIED_AGE",
+      "sourceClass": "PROJECT_NARRATIVE",
+      "description": "A prior MoonWitness story expresses preferring others' welfare over receiving longevity/immortality personally; model only as attributed testimony or narrative intent, never as proof of a supernatural transfer.",
+      "sourceReferences": [],
+      "status": "DRAFT_REVIEW",
+      "usableForAuthorization": false,
+      "usableForDivineJudgment": false
+    },
+    {
+      "id": "N14",
+      "key": "RETURN_TO_LIFE_NARRATIVE",
+      "title": "Future Is Now — return-to-life hope",
+      "category": "SCRIPTURAL_RESEARCH_THEME",
+      "numericValue": null,
+      "unit": "NO_OPERABLE_AGE",
+      "sourceClass": "PROJECT_NARRATIVE",
+      "description": "A theme about a second chance after death. Quran 23:99–100 describes the request to return and a barrier until resurrection; no software age engine can resurrect a person or mark such an event as verified.",
+      "sourceReferences": [
+        {
+          "ref": "QURAN:23:99-100",
+          "url": "https://quran.com/id/orang-orang-mukmin/99-100"
+        }
+      ],
+      "status": "DRAFT_REVIEW",
+      "usableForAuthorization": false,
+      "usableForDivineJudgment": false
+    },
+    {
+      "id": "N15",
+      "key": "AETHERION_LEVELS_NOT_AGE",
+      "title": "Aetherion — 33 open / 100 planned levels",
+      "category": "PROGRESSION_NOT_AGE",
+      "numericValue": null,
+      "unit": "LEVEL_INDEX_NOT_YEARS",
+      "sourceClass": "PROJECT_NARRATIVE",
+      "description": "33 and 100 are journey or game-like progression markers, not biological age, guaranteed heaven admission or spiritual rank.",
+      "sourceReferences": [],
+      "status": "DRAFT_REVIEW",
+      "usableForAuthorization": false,
+      "usableForDivineJudgment": false
+    },
+    {
+      "id": "N16",
+      "key": "COSMIC_AGE_NOT_HUMAN",
+      "title": "Cosmic chronology vs lunar cycles",
+      "category": "COSMIC_CHRONOLOGY",
+      "numericValue": null,
+      "unit": "COSMIC_TIME_NOT_HUMAN_AGE",
+      "sourceClass": "EMPIRICAL_MODEL_CONTEXT",
+      "description": "Cosmic age depends on observational cosmology and a declared model. Antikythera-style cycles and lunar phase age cannot be used to calculate human or universal age directly.",
+      "sourceReferences": [],
+      "status": "DRAFT_REVIEW",
+      "usableForAuthorization": false,
+      "usableForDivineJudgment": false
+    },
+    {
+      "id": "N17",
+      "key": "WINGS_VISUAL_RANGE",
+      "title": "WINGS 10 visual range 25–45",
+      "category": "FICTIONAL_VISUAL_AGE",
+      "numericValue": null,
+      "unit": "FICTIONAL_VISUAL_AGE_YEARS",
+      "sourceClass": "PROJECT_DESIGN",
+      "description": "The appearance range 25–45 is a purely art-direction default for human representation; there is no scripture-based age of the ten named angel motifs.",
+      "sourceReferences": [],
+      "status": "DRAFT_REVIEW",
+      "usableForAuthorization": false,
+      "usableForDivineJudgment": false
+    },
+    {
+      "id": "N18",
+      "key": "GOD99_VISUAL_RANGE",
+      "title": "G.O.D. 99 visual range 18–39",
+      "category": "FICTIONAL_VISUAL_AGE",
+      "numericValue": null,
+      "unit": "FICTIONAL_VISUAL_AGE_YEARS",
+      "sourceClass": "PROJECT_DESIGN",
+      "description": "The 18–39 design range can visually echo the project's under-40 youth aesthetic, but confers no faith ranking, biological age requirement, role promotion or spiritual identity.",
+      "sourceReferences": [],
+      "status": "DRAFT_REVIEW",
+      "usableForAuthorization": false,
+      "usableForDivineJudgment": false
+    }
+  ]
+}

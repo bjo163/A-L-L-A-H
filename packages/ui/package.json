@@ -1,0 +1,33 @@
+{
+  "name": "@empire/ui",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": "./src/index.ts",
+    "./styles.css": "./src/styles.css",
+    "./manga-theme.css": "./src/manga-theme.css"
+  },
+  "scripts": {
+    "build": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "catalog": "vite --config catalog/vite.config.ts --host 127.0.0.1 --port 4173",
+    "catalog:build": "vite build --config catalog/vite.config.ts"
+  },
+  "peerDependencies": {
+    "react": "^19.0.0"
+  },
+  "devDependencies": {
+    "@types/react": "^19.2.0",
+    "@types/react-dom": "^19.2.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "react": "^19.2.0",
+    "react-dom": "^19.2.0",
+    "typescript": "^5.9.3",
+    "vite": "^7.2.0"
+  },
+  "dependencies": {
+    "@fontsource-variable/space-grotesk": "5.3.0",
+    "@fontsource/dm-mono": "5.3.0"
+  }
+}

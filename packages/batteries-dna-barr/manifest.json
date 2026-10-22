@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "dna-barr",
+  "packageName": "@empire/batteries-dna-barr",
+  "number": 79,
+  "recordType": "bounded_project_mapping",
+  "lexicon": {
+    "registry": "BATTERIES_BASE_LEXICON_SEED",
+    "sourcePath": "packages/batteries-base/src/data/asmaul-husna.ts",
+    "code": "barr",
+    "sourceLanguage": "ar",
+    "arabic": "الْبَرُّ",
+    "transliteration": "Al-Barr",
+    "canonicalLanguage": "en",
+    "label": "Righteousness",
+    "domain": "PeopleOperations",
+    "editorialStatus": "DRAFT_REVIEW"
+  },
+  "projectMapping": {
+    "relation": "inspiredBy",
+    "attribute": "UserWellbeing",
+    "capability": "user-wellbeing-barr",
+    "scope": "Only user-wellbeing-barr within people operations; work is limited to configured, connected, authorized system inputs and the package's stated technical behavior.",
+    "description": "Draft project analogy for proposed capability user-wellbeing-barr in people operations: Product decisions should support user well-being and respect user rights.",
+    "limitations": [
+      "This is a project analogy inspiredBy a lexicon record, not a theological definition or equivalent.",
+      "The package has no independent authority, user permissions, or divine capability.",
+      "Draft project analogy for proposed capability user-wellbeing-barr in people operations: Product decisions should support user well-being and respect user rights."
+    ]
+  },
+  "status": "DRAFT_REVIEW",
+  "runtimeEnabled": false,
+  "authorityGranted": false,
+  "permissions": [],
+  "dependencies": []
+}

@@ -1,0 +1,14 @@
+{
+  "name": "@empire/batteries-dna-fusion",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.d.mts",
+      "import": "./src/index.mjs",
+      "default": "./src/index.mjs"
+    }
+  },
+  "files": ["src"]
+}

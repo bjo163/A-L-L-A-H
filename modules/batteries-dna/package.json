@@ -1,0 +1,16 @@
+{
+  "name": "@empire/batteries-dna",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Registry and lookup API for 99 draft Batteries DNA project mappings.",
+  "types": "./index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./index.d.ts",
+      "default": "./index.mjs"
+    },
+    "./catalog": "./catalog.json"
+  },
+  "files": ["index.mjs", "index.d.ts", "catalog.json"]
+}

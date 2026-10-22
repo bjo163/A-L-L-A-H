@@ -1,0 +1,8 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://empireofthelight.example/schemas/research-run-complete.request.schema.json",
+  "title": "Complete Research Run Request",
+  "type": "object", "additionalProperties": false,
+  "required": ["resultSummary"],
+  "properties": { "resultSummary": { "type": "string", "minLength": 3, "maxLength": 5000 } }
+}

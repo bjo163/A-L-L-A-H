@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "dna-fattah",
+  "packageName": "@empire/batteries-dna-fattah",
+  "number": 18,
+  "recordType": "bounded_project_mapping",
+  "lexicon": {
+    "registry": "BATTERIES_BASE_LEXICON_SEED",
+    "sourcePath": "packages/batteries-base/src/data/asmaul-husna.ts",
+    "code": "fattah",
+    "sourceLanguage": "ar",
+    "arabic": "الْفَتَّاحُ",
+    "transliteration": "Al-Fattah",
+    "canonicalLanguage": "en",
+    "label": "Opening",
+    "domain": "ServiceAccess",
+    "editorialStatus": "DRAFT_REVIEW"
+  },
+  "projectMapping": {
+    "relation": "inspiredBy",
+    "attribute": "ServiceGateway",
+    "capability": "service-gateway-fattah",
+    "scope": "Only service-gateway-fattah within service access; work is limited to configured, connected, authorized system inputs and the package's stated technical behavior.",
+    "description": "Draft project analogy for proposed capability service-gateway-fattah in service access: Access pathways follow approved service policy.",
+    "limitations": [
+      "This is a project analogy inspiredBy a lexicon record, not a theological definition or equivalent.",
+      "The package has no independent authority, user permissions, or divine capability.",
+      "Draft project analogy for proposed capability service-gateway-fattah in service access: Access pathways follow approved service policy."
+    ]
+  },
+  "status": "DRAFT_REVIEW",
+  "runtimeEnabled": false,
+  "authorityGranted": false,
+  "permissions": [],
+  "dependencies": []
+}

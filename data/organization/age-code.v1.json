@@ -1,0 +1,194 @@
+{
+  "schemaVersion": "1.1.0",
+  "standardId": "AGE_CODE",
+  "status": "PROPOSED",
+  "scope": "Empirе of the Light fictional personas and consented human operations",
+  "purpose": "Separate character appearance, real human age, tenure, and unknowable religious-age claims.",
+  "categories": [
+    {
+      "code": "AGE-HUMAN",
+      "meaning": "chronological age of a real human",
+      "type": "number_or_verified_adult_flag",
+      "source": "lawful age verification",
+      "personallyIdentifiable": true
+    },
+    {
+      "code": "AGE-VISUAL",
+      "meaning": "apparent age range of a fictional character",
+      "type": "narrative_range",
+      "source": "creative direction",
+      "personallyIdentifiable": false
+    },
+    {
+      "code": "AGE-TENURE",
+      "meaning": "time in an actual mandate",
+      "type": "duration",
+      "source": "appointment events",
+      "personallyIdentifiable": false
+    },
+    {
+      "code": "AGE-THEOLOGY",
+      "meaning": "age of angels as described in scriptural source records",
+      "type": "unknown",
+      "source": "source attribution",
+      "personallyIdentifiable": false
+    },
+    {
+      "code": "AGE-SYSTEM",
+      "meaning": "age/version of a software service",
+      "type": "duration",
+      "source": "deployment records",
+      "personallyIdentifiable": false
+    }
+  ],
+  "humanAgeBands": [
+    {
+      "id": "CHILD",
+      "minInclusive": 0,
+      "maxExclusive": 13,
+      "scope": "protected participant only"
+    },
+    {
+      "id": "TEEN",
+      "minInclusive": 13,
+      "maxExclusive": 18,
+      "scope": "protected participant; supervised participation when lawful"
+    },
+    {
+      "id": "YOUNG_ADULT",
+      "minInclusive": 18,
+      "maxExclusive": 30,
+      "scope": "adult participant/operator if additionally qualified"
+    },
+    {
+      "id": "ADULT",
+      "minInclusive": 30,
+      "maxExclusive": 45,
+      "scope": "adult participant/operator if additionally qualified"
+    },
+    {
+      "id": "MID_LIFE",
+      "minInclusive": 45,
+      "maxExclusive": 60,
+      "scope": "adult participant/operator if additionally qualified"
+    },
+    {
+      "id": "SENIOR",
+      "minInclusive": 60,
+      "maxExclusive": null,
+      "scope": "adult participant/operator if additionally qualified"
+    }
+  ],
+  "minimumIndependentOperatorAgeYears": 18,
+  "roleFamilies": [
+    {
+      "id": "GOD99",
+      "kind": "FICTIONAL_DUTY_PERSONA",
+      "fictionalApparentAgeYears": {
+        "min": 18,
+        "max": 39
+      },
+      "realOperatorMinimumAgeYears": 18,
+      "roleAgeUpperLimitYears": null,
+      "notes": "Apparent ages are visual style defaults, not personal ages or a rank. Exceptions may be approved for adult-appearing mentors or seniors.",
+      "narrativeCorrelationId": "N18"
+    },
+    {
+      "id": "WINGS10",
+      "kind": "HUMAN_SPECIALIST_DEPARTMENT",
+      "fictionalApparentAgeYears": {
+        "min": 25,
+        "max": 45
+      },
+      "realOperatorMinimumAgeYears": 18,
+      "roleAgeUpperLimitYears": null,
+      "notes": "Wing itself has NO biological age. Apparent ages are only a creative design cue for human depictions; specialist competence and safeguarding training govern assignments.",
+      "narrativeCorrelationId": "N17"
+    },
+    {
+      "id": "RAID",
+      "kind": "HUMAN_PATHFINDER_ROLE",
+      "fictionalApparentAgeYears": null,
+      "realOperatorMinimumAgeYears": 18,
+      "roleAgeUpperLimitYears": null,
+      "notes": "Adult Pathfinder eligibility requires authorization and competence, not seniority."
+    },
+    {
+      "id": "MUJADDID",
+      "kind": "HUMAN_RENEWAL_STEWARD_ROLE",
+      "fictionalApparentAgeYears": null,
+      "realOperatorMinimumAgeYears": 18,
+      "roleAgeUpperLimitYears": null,
+      "notes": "Not a religious title; appointment based on review, responsible owner, prior work and competency."
+    },
+    {
+      "id": "ZIIL",
+      "kind": "HUMAN_GUARDIAN_ROLE",
+      "fictionalApparentAgeYears": null,
+      "realOperatorMinimumAgeYears": 18,
+      "roleAgeUpperLimitYears": null,
+      "notes": "Risk-aware duties require additional context-specific safeguarding authorization."
+    }
+  ],
+  "youthPolicy": {
+    "ageBelowYears": 18,
+    "independentHighRiskMissionAuthority": false,
+    "thirdPartyDataAccessByDefault": false,
+    "independentCriticalApproval": false,
+    "participation": "Protected participation only where lawful, age appropriate and with required parent/guardian consent, supervision and child safeguards."
+  },
+  "rankPolicy": {
+    "automaticPromotionFromAge": false,
+    "automaticPromotionFromTenure": false,
+    "adultAgeUpperLimit": null,
+    "appointmentBasedOn": [
+      "verified competence",
+      "safety training as needed",
+      "scope-limited mandate",
+      "human approval",
+      "conduct and feedback"
+    ],
+    "tenureDurationSource": "mandate.start and mandate.end events"
+  },
+  "scriptureAge": {
+    "subject": "REAL_ANGELS",
+    "chronologicalAgeYears": null,
+    "evidenceStatus": "NOT_SPECIFIED_AS_NUMERIC_AGE_IN_QURAN",
+    "doNotInfer": [
+      "numeric age",
+      "human life stage",
+      "mortality or immortality from absence of age"
+    ],
+    "exampleReferences": [
+      "QURAN:35:1",
+      "QURAN:66:6"
+    ],
+    "fictionalWingDepictionsAreNotAngels": true
+  },
+  "privacy": {
+    "storeExactBirthdateByDefault": false,
+    "prefer": "age eligibility flag or protected band rather than full date of birth",
+    "protectPII": true,
+    "retention": "justified, documented and time-limited",
+    "ageProof": "minimal, lawful and reviewable"
+  },
+  "tags": [
+    "age",
+    "eligibility",
+    "fiction",
+    "consent",
+    "privacy",
+    "religion",
+    "organization"
+  ],
+  "storyOfTheYears": {
+    "registry": "data/chronology/age-story-correlations.v1.1.json",
+    "documentation": "docs/AGE_STORY_CORRELATION.md",
+    "status": "PROJECT_NARRATIVE_MAPPING",
+    "narrativeUnder40": "NOT_A_FAITH_OR_ACCESS_TEST",
+    "milestone40": "OPTIONAL_REFLECTION_NOT_PROMOTION",
+    "lifespan100": "ASPIRATIONAL_NOT_GUARANTEED",
+    "lunarYear63": "REQUIRES_CALENDAR_ASSUMPTIONS",
+    "angelNumericYears": null
+  }
+}

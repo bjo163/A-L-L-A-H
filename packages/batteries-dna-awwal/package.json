@@ -1,0 +1,15 @@
+{
+  "name": "@empire/batteries-dna-awwal",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Draft Batteries DNA bounded project mapping for Al-Awwal (Firstness); lexicon source awwal.",
+  "exports": {
+    ".": "./index.mjs",
+    "./manifest": "./manifest.json"
+  },
+  "files": [
+    "index.mjs",
+    "manifest.json"
+  ]
+}

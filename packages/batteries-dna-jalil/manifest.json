@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "dna-jalil",
+  "packageName": "@empire/batteries-dna-jalil",
+  "number": 41,
+  "recordType": "bounded_project_mapping",
+  "lexicon": {
+    "registry": "BATTERIES_BASE_LEXICON_SEED",
+    "sourcePath": "packages/batteries-base/src/data/asmaul-husna.ts",
+    "code": "jalil",
+    "sourceLanguage": "ar",
+    "arabic": "الْجَلِيلُ",
+    "transliteration": "Al-Jalil",
+    "canonicalLanguage": "en",
+    "label": "Majesty",
+    "domain": "PeopleOperations",
+    "editorialStatus": "DRAFT_REVIEW"
+  },
+  "projectMapping": {
+    "relation": "inspiredBy",
+    "attribute": "HumanDignity",
+    "capability": "human-dignity-jalil",
+    "scope": "Only human-dignity-jalil within people operations; work is limited to configured, connected, authorized system inputs and the package's stated technical behavior.",
+    "description": "Draft project analogy for proposed capability human-dignity-jalil in people operations: Human dignity is a value guiding product and operational decisions.",
+    "limitations": [
+      "This is a project analogy inspiredBy a lexicon record, not a theological definition or equivalent.",
+      "The package has no independent authority, user permissions, or divine capability.",
+      "Draft project analogy for proposed capability human-dignity-jalil in people operations: Human dignity is a value guiding product and operational decisions."
+    ]
+  },
+  "status": "DRAFT_REVIEW",
+  "runtimeEnabled": false,
+  "authorityGranted": false,
+  "permissions": [],
+  "dependencies": []
+}

@@ -1,0 +1,19 @@
+services:
+  postgres:
+    image: postgres:18-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: empire_local
+      POSTGRES_DB: empire
+      POSTGRES_PASSWORD: ${LOCAL_POSTGRES_PASSWORD:?Set a strong LOCAL_POSTGRES_PASSWORD in your shell}
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - empire_pgdata:/var/lib/postgresql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U empire_local -d empire"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+volumes:
+  empire_pgdata:

@@ -1,0 +1,36 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "dna-awwal",
+  "packageName": "@empire/batteries-dna-awwal",
+  "number": 73,
+  "recordType": "bounded_project_mapping",
+  "lexicon": {
+    "registry": "BATTERIES_BASE_LEXICON_SEED",
+    "sourcePath": "packages/batteries-base/src/data/asmaul-husna.ts",
+    "code": "awwal",
+    "sourceLanguage": "ar",
+    "arabic": "الأَوَّلُ",
+    "transliteration": "Al-Awwal",
+    "canonicalLanguage": "en",
+    "label": "Firstness",
+    "domain": "Deployment",
+    "editorialStatus": "DRAFT_REVIEW"
+  },
+  "projectMapping": {
+    "relation": "inspiredBy",
+    "attribute": "SystemLifecycle",
+    "capability": "service-initialization",
+    "scope": "Only service-initialization within deployment; work is limited to configured, connected, authorized system inputs and the package's stated technical behavior.",
+    "description": "Draft project analogy for proposed capability service-initialization in deployment: The system lifecycle begins when software runs on available infrastructure.",
+    "limitations": [
+      "This is a project analogy inspiredBy a lexicon record, not a theological definition or equivalent.",
+      "The package has no independent authority, user permissions, or divine capability.",
+      "Draft project analogy for proposed capability service-initialization in deployment: The system lifecycle begins when software runs on available infrastructure."
+    ]
+  },
+  "status": "DRAFT_REVIEW",
+  "runtimeEnabled": false,
+  "authorityGranted": false,
+  "permissions": [],
+  "dependencies": []
+}

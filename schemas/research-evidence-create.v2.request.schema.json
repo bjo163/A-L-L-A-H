@@ -1,0 +1,38 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://empireofthelight.example/schemas/research-evidence-create.v2.request.schema.json",
+  "title": "Source-Grounded Research Evidence Request v2",
+  "type": "object", "additionalProperties": false,
+  "required": ["title", "source", "classification", "excerpt", "provenance"],
+  "properties": {
+    "title": { "type": "string", "minLength": 3, "maxLength": 300 },
+    "source": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sourceId", "familyId", "url", "license"],
+      "properties": {
+        "sourceId": { "type": "string", "minLength": 1 },
+        "familyId": { "enum": ["quran", "torah", "psalms", "gospels", "other"] },
+        "edition": { "type": "string" }, "locator": { "type": "string" },
+        "url": { "type": "string", "format": "uri", "maxLength": 2048 },
+        "languageTag": { "$ref": "common.schema.json#/$defs/locale" },
+        "license": { "type": "string", "minLength": 1 },
+        "contentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+        "note": { "type": "string" }
+      }
+    },
+    "classification": { "enum": ["SCRIPTURE_TEXT", "TRADITION_INTERPRETATION", "HISTORICAL_CLAIM", "VERIFIED_MEASUREMENT", "SCIENTIFIC_MODEL", "HYPOTHESIS", "PROJECT_NARRATIVE", "PERSONAL_TESTIMONY"] },
+    "excerpt": { "type": "string", "minLength": 1, "maxLength": 20000 },
+    "provenance": {
+      "type": "object", "additionalProperties": false,
+      "required": ["sourceId", "collectedAt", "method"],
+      "properties": {
+        "sourceId": { "type": "string", "minLength": 1 },
+        "collectedAt": { "$ref": "common.schema.json#/$defs/dateTime" },
+        "method": { "type": "string", "minLength": 1 },
+        "collectorId": { "type": "string" }, "sourceVersion": { "type": "string" },
+        "contentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" }, "notes": { "type": "string" }
+      }
+    },
+    "uncertainty": { "$ref": "common.schema.json#/$defs/uncertainty" }
+  }
+}

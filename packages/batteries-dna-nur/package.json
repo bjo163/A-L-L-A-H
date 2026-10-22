@@ -1,0 +1,15 @@
+{
+  "name": "@empire/batteries-dna-nur",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Draft Batteries DNA bounded project mapping for An-Nur (Light); lexicon source nur.",
+  "exports": {
+    ".": "./index.mjs",
+    "./manifest": "./manifest.json"
+  },
+  "files": [
+    "index.mjs",
+    "manifest.json"
+  ]
+}

@@ -1,0 +1,25 @@
+{
+  "schemaVersion": "1.0.0",
+  "id": "dna-malik-al-mulk",
+  "packageName": "@empire/batteries-dna-malik-al-mulk",
+  "number": 84,
+  "recordType": "reference_only",
+  "lexicon": {
+    "registry": "BATTERIES_BASE_LEXICON_SEED",
+    "sourcePath": "packages/batteries-base/src/data/asmaul-husna.ts",
+    "code": "malik_mulk",
+    "sourceLanguage": "ar",
+    "arabic": "مَالِكُ الْمُلْكِ",
+    "transliteration": "Malik al-Mulk",
+    "canonicalLanguage": "en",
+    "label": "Sovereignty",
+    "domain": "Theology",
+    "editorialStatus": "DRAFT_REVIEW"
+  },
+  "projectMapping": null,
+  "status": "DRAFT_REVIEW",
+  "runtimeEnabled": false,
+  "authorityGranted": false,
+  "permissions": [],
+  "dependencies": []
+}

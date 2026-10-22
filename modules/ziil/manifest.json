@@ -1,0 +1,25 @@
+{
+  "id": "ziil",
+  "title": "Protection & Safeguarding",
+  "version": "0.1.0",
+  "owner": "ziil",
+  "state": "scaffold_only",
+  "dependencies": [
+    "kernel",
+    "governance"
+  ],
+  "capabilities": [
+    "safety-review",
+    "safeguarding"
+  ],
+  "permissions": [
+    "ziil:read",
+    "ziil:review"
+  ],
+  "models": [],
+  "upgrades": [],
+  "uiSlots": [
+    "operations.safety"
+  ],
+  "runMode": "first_party_allowlisted"
+}

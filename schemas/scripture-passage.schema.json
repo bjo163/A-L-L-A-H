@@ -1,0 +1,71 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "Source-aware Scripture Passage",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "familyId",
+    "witnessId",
+    "editionId",
+    "languageTag",
+    "passageRef",
+    "license",
+    "sourceUrl",
+    "evidenceClass"
+  ],
+  "properties": {
+    "familyId": {
+      "enum": [
+        "SRC-TOR",
+        "SRC-ZAB",
+        "SRC-INJ",
+        "SRC-QUR"
+      ]
+    },
+    "witnessId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "editionId": {
+      "type": "string",
+      "minLength": 1
+    },
+    "languageTag": {
+      "type": "string",
+      "minLength": 2
+    },
+    "passageRef": {
+      "type": "string",
+      "minLength": 1
+    },
+    "license": {
+      "type": "string",
+      "minLength": 1
+    },
+    "sourceUrl": {
+      "type": "string",
+      "format": "uri"
+    },
+    "evidenceClass": {
+      "enum": [
+        "SCRIPTURE_TEXT",
+        "TAFSIR_COMMENTARY",
+        "HADITH_TRADITION",
+        "HISTORICAL_CLAIM",
+        "USER_ATTESTED_BELIEF",
+        "PROJECT_ANALOGY",
+        "EMPIRICAL_RESULT",
+        "AI_HYPOTHESIS"
+      ]
+    },
+    "passageText": {
+      "type": "string"
+    },
+    "translationId": {
+      "type": "string"
+    },
+    "hash": {
+      "type": "string"
+    }
+  }
+}

@@ -1,0 +1,45 @@
+const deepFreeze = (value) => {
+  if (value && typeof value === "object" && !Object.isFrozen(value)) {
+    Object.values(value).forEach(deepFreeze);
+    Object.freeze(value);
+  }
+  return value;
+};
+
+export const batteriesDna = deepFreeze({
+  "schemaVersion": "1.0.0",
+  "id": "dna-rafi",
+  "packageName": "@empire/batteries-dna-rafi",
+  "number": 23,
+  "recordType": "bounded_project_mapping",
+  "lexicon": {
+    "registry": "BATTERIES_BASE_LEXICON_SEED",
+    "sourcePath": "packages/batteries-base/src/data/asmaul-husna.ts",
+    "code": "rafi",
+    "sourceLanguage": "ar",
+    "arabic": "الرَّافِعُ",
+    "transliteration": "Ar-Rafi",
+    "canonicalLanguage": "en",
+    "label": "Raising",
+    "domain": "TaskPriority",
+    "editorialStatus": "DRAFT_REVIEW"
+  },
+  "projectMapping": {
+    "relation": "inspiredBy",
+    "attribute": "PriorityAssignment",
+    "capability": "priority-assignment-rafi",
+    "scope": "Only priority-assignment-rafi within task priority; work is limited to configured, connected, authorized system inputs and the package's stated technical behavior.",
+    "description": "Draft project analogy for proposed capability priority-assignment-rafi in task priority: Priority assignment follows documented service rules, not judgments about people.",
+    "limitations": [
+      "This is a project analogy inspiredBy a lexicon record, not a theological definition or equivalent.",
+      "The package has no independent authority, user permissions, or divine capability.",
+      "Draft project analogy for proposed capability priority-assignment-rafi in task priority: Priority assignment follows documented service rules, not judgments about people."
+    ]
+  },
+  "status": "DRAFT_REVIEW",
+  "runtimeEnabled": false,
+  "authorityGranted": false,
+  "permissions": [],
+  "dependencies": []
+});
+export default batteriesDna;

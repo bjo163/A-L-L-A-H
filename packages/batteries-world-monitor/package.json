@@ -1,0 +1,20 @@
+{
+  "name": "@empire/batteries-world-monitor",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "World Monitoring System Engine with Batteries DNA telemetry fusion for Command Center",
+  "exports": {
+    ".": "./src/index.ts"
+  },
+  "scripts": {
+    "typecheck": "tsc --noEmit",
+    "test": "node --test tests/*.test.mjs"
+  },
+  "dependencies": {
+    "@empire/batteries-dna": "workspace:*"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3"
+  }
+}

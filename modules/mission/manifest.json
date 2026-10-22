@@ -1,0 +1,25 @@
+{
+  "id": "mission",
+  "title": "Missions & Assignments",
+  "version": "0.1.0",
+  "owner": "missions",
+  "state": "scaffold_only",
+  "dependencies": [
+    "kernel",
+    "research"
+  ],
+  "capabilities": [
+    "missions",
+    "assignments"
+  ],
+  "permissions": [
+    "mission:read",
+    "mission:write"
+  ],
+  "models": [],
+  "upgrades": [],
+  "uiSlots": [
+    "operations.missions"
+  ],
+  "runMode": "first_party_allowlisted"
+}

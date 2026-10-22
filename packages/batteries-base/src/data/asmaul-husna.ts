@@ -1,0 +1,121 @@
+/**
+ * Legacy project mapping for the 99 Asma al-Husna records.
+ *
+ * English is the canonical application language. Arabic and transliteration
+ * preserve source identity. `term`, `attribute`, and `domain` are project
+ * metadata, not theological definitions or grants of authority. `wisdom` is
+ * a scoped project note and requires editorial/source review before adoption.
+ * This list is not a substitute for a reviewed, cited scripture lexicon.
+ */
+export interface AsmaItem {
+  number: number;
+  code: string;
+  arabic: string;
+  translit: string;
+  term: string;
+  attribute: string;
+  domain: string;
+  wisdom: string;
+}
+
+export const ASMAUL_HUSNA_99: AsmaItem[] = [
+  { number: 1, code: "rahman", arabic: "الرَّحْمَنُ", translit: "Ar-Rahman", term: "Mercy", attribute: "UniversalMercy", domain: "Care", wisdom: "Project analogy: care-oriented services operate within defined scope and available resources." },
+  { number: 2, code: "rahim", arabic: "الرَّحِيمُ", translit: "Ar-Rahim", term: "Compassion", attribute: "ContextualCare", domain: "UserSupport", wisdom: "Project analogy: provide support according to user needs, policy, and context." },
+  { number: 3, code: "malik", arabic: "الْمَلِكُ", translit: "Al-Malik", term: "Sovereignty", attribute: "Governance", domain: "Governance", wisdom: "Islamic theological name; this project mapping grants no absolute authority to software or operators." },
+  { number: 4, code: "quddus", arabic: "الْقُدُّوسُ", translit: "Al-Quddus", term: "Purity", attribute: "IntegrityChecks", domain: "Integrity", wisdom: "Project analogy: checks can detect defined classes of integrity issues, not every possible defect." },
+  { number: 5, code: "salam", arabic: "السَّلاَمُ", translit: "As-Salam", term: "Peace", attribute: "ServiceResilience", domain: "Reliability", wisdom: "Project analogy: services aim to reduce disruption but remain subject to failure." },
+  { number: 6, code: "mumin", arabic: "الْمُؤْمِنُ", translit: "Al-Mu'min", term: "Trust", attribute: "SecurityAssurance", domain: "Security", wisdom: "Security controls reduce risk; they cannot guarantee perfect security." },
+  { number: 7, code: "muhaymin", arabic: "الْمُهَيْمِنُ", translit: "Al-Muhaymin", term: "Oversight", attribute: "Observability", domain: "BoundedMonitoring", wisdom: "Islamic theological name; software observes only connected, authorized sources and activity." },
+  { number: 8, code: "aziz", arabic: "الْعَزِيزُ", translit: "Al-Aziz", term: "Strength", attribute: "SystemProtection", domain: "Security", wisdom: "Project analogy: protections reduce risk but do not make a system invulnerable." },
+  { number: 9, code: "jabbar", arabic: "الْجَبَّارُ", translit: "Al-Jabbar", term: "Restoration", attribute: "RecoveryWorkflow", domain: "Recovery", wisdom: "Recovery follows approved procedures and uses verified backups where available." },
+  { number: 10, code: "mutakabbir", arabic: "الْمُتَكَبِّرُ", translit: "Al-Mutakabbir", term: "Grandeur", attribute: "TheologicalReference", domain: "Theology", wisdom: "Theological reference only; it does not describe a software capability or hierarchy." },
+  { number: 11, code: "khaliq", arabic: "الْخَالِقُ", translit: "Al-Khaliq", term: "Creation", attribute: "SchemaDesign", domain: "SoftwareDesign", wisdom: "Project analogy: software schemas are designed from specifications and reviewed requirements." },
+  { number: 12, code: "bari", arabic: "الْبَارِئُ", translit: "Al-Bari", term: "Development", attribute: "BuildWorkflow", domain: "SoftwareDevelopment", wisdom: "Project analogy: builds produce software from reviewed source and declared configuration." },
+  { number: 13, code: "mushawwir", arabic: "الْمُصَوِّرُ", translit: "Al-Musawwir", term: "Form", attribute: "DataFormatting", domain: "DataModeling", wisdom: "Data formatting follows declared schemas and requires validation." },
+  { number: 14, code: "ghaffar", arabic: "الْغَفَّارُ", translit: "Al-Ghaffar", term: "Forgiveness", attribute: "ErrorRecovery", domain: "Recovery", wisdom: "Error handling follows retention policy; audit records are not erased without an approved basis." },
+  { number: 15, code: "qahhar", arabic: "الْقَهَّارُ", translit: "Al-Qahhar", term: "Control", attribute: "ProcessControl", domain: "Operations", wisdom: "Processes may be stopped only under defined operational rules and permissions." },
+  { number: 16, code: "wahhab", arabic: "الْوَهَّابُ", translit: "Al-Wahhab", term: "Giving", attribute: "QuotaManagement", domain: "ResourceManagement", wisdom: "Quotas follow policy and available resources." },
+  { number: 17, code: "razzaq", arabic: "الرَّزَّاقُ", translit: "Ar-Razzaq", term: "Provision", attribute: "ResourceAllocation", domain: "ComputeResources", wisdom: "Compute uses available resources; its availability is not guaranteed." },
+  { number: 18, code: "fattah", arabic: "الْفَتَّاحُ", translit: "Al-Fattah", term: "Opening", attribute: "ServiceGateway", domain: "ServiceAccess", wisdom: "Access pathways follow approved service policy." },
+  { number: 19, code: "alim", arabic: "الْعَلِيمُ", translit: "Al-Alim", term: "Knowledge", attribute: "KnowledgeManagement", domain: "Information", wisdom: "Islamic theological name; software processes available information and does not know everything." },
+  { number: 20, code: "qabidh", arabic: "الْقَابِضُ", translit: "Al-Qabidh", term: "Restriction", attribute: "RateLimiting", domain: "LoadControl", wisdom: "Rate limiting helps control load but does not guarantee service stability." },
+  { number: 21, code: "basith", arabic: "الْبَاسِطُ", translit: "Al-Basith", term: "Expansion", attribute: "CapacityScaling", domain: "ServiceCapacity", wisdom: "Scaling can add capacity within infrastructure and configuration limits." },
+  { number: 22, code: "khafidh", arabic: "الْخَافِضُ", translit: "Al-Khafid", term: "Lowering", attribute: "PriorityReduction", domain: "TaskPriority", wisdom: "Service priorities follow transparent operational policy." },
+  { number: 23, code: "rafi", arabic: "الرَّافِعُ", translit: "Ar-Rafi", term: "Raising", attribute: "PriorityAssignment", domain: "TaskPriority", wisdom: "Priority assignment follows documented service rules, not judgments about people." },
+  { number: 24, code: "muizz", arabic: "الْمُعِزُّ", translit: "Al-Mu'izz", term: "Honor", attribute: "AccessGranting", domain: "AccessManagement", wisdom: "Access follows task need, least privilege, and applicable approval." },
+  { number: 25, code: "mudzill", arabic: "الْمُذِلُّ", translit: "Al-Mudhill", term: "Humbling", attribute: "AccessRestriction", domain: "AccessControl", wisdom: "Restrictions follow access policy, evidence, and review procedures." },
+  { number: 26, code: "sami", arabic: "السَّمِيعُ", translit: "As-Sami", term: "Hearing", attribute: "EventProcessing", domain: "Events", wisdom: "Islamic theological name; software receives only events sent to its services." },
+  { number: 27, code: "bashir", arabic: "الْبَصِيرُ", translit: "Al-Basir", term: "Sight", attribute: "TelemetryObservation", domain: "BoundedMonitoring", wisdom: "Islamic theological name; software observes available, authorized telemetry and cannot see through encryption." },
+  { number: 28, code: "hakam", arabic: "الْحَكَمُ", translit: "Al-Hakam", term: "Judgment", attribute: "PolicyEvaluation", domain: "Governance", wisdom: "Policy evaluation provides reviewable findings; consequential decisions require authorized human oversight." },
+  { number: 29, code: "adl", arabic: "الْعَدْلُ", translit: "Al-Adl", term: "Justice", attribute: "FairAllocation", domain: "Fairness", wisdom: "Allocation rules should be documented, measurable, and open to review." },
+  { number: 30, code: "lathif", arabic: "اللَّطِيفُ", translit: "Al-Latif", term: "Subtlety", attribute: "EfficientProcessing", domain: "Optimization", wisdom: "Optimization is measured; changes can still have effects that require evaluation." },
+  { number: 31, code: "khabir", arabic: "الْخَبِيرُ", translit: "Al-Khabir", term: "Insight", attribute: "DataAnalysis", domain: "Analytics", wisdom: "Islamic theological name; software analysis is limited to provided data and context." },
+  { number: 32, code: "halim", arabic: "الْحَلِيمُ", translit: "Al-Halim", term: "Forbearance", attribute: "GracePeriod", domain: "FailureHandling", wisdom: "A grace period allows recovery before an authorized automated action." },
+  { number: 33, code: "azhim", arabic: "الْعَظِيمُ", translit: "Al-Azim", term: "Greatness", attribute: "CapacityPlanning", domain: "Storage", wisdom: "Storage is limited by infrastructure, quotas, and retention policy." },
+  { number: 34, code: "ghafur", arabic: "الْغَفُورُ", translit: "Al-Ghafur", term: "Forgiveness", attribute: "LogRetention", domain: "Audit", wisdom: "Log deletion follows retention policy, audit obligations, and approved procedures." },
+  { number: 35, code: "syakur", arabic: "الشَّكُورُ", translit: "Ash-Shakur", term: "Gratitude", attribute: "ContributionRecognition", domain: "PeopleOperations", wisdom: "Contributions may be recognized using transparent criteria." },
+  { number: 36, code: "aliyy", arabic: "الْعَلِيُّ", translit: "Al-Aliyy", term: "Exaltedness", attribute: "TheologicalReference", domain: "Theology", wisdom: "Theological reference only; it does not imply a software hierarchy." },
+  { number: 37, code: "kabir", arabic: "الْكَبِيرُ", translit: "Al-Kabir", term: "Magnitude", attribute: "CapacityPlanning", domain: "Infrastructure", wisdom: "System scale is limited by available infrastructure and configuration." },
+  { number: 38, code: "hafizh", arabic: "الْحَفِيظُ", translit: "Al-Hafiz", term: "Preservation", attribute: "DataProtection", domain: "DataIntegrity", wisdom: "Protection reduces data-loss risk but cannot guarantee that data is never lost." },
+  { number: 39, code: "muqit", arabic: "الْمُقِيتُ", translit: "Al-Muqit", term: "Sustenance", attribute: "EnergyMonitoring", domain: "Energy", wisdom: "Energy monitoring covers connected equipment and available telemetry." },
+  { number: 40, code: "hasib", arabic: "الْحَسِيبُ", translit: "Al-Hasib", term: "Accounting", attribute: "AuditLogging", domain: "Audit", wisdom: "Audit records describe recorded system events; they do not assess moral deeds." },
+  { number: 41, code: "jalil", arabic: "الْجَلِيلُ", translit: "Al-Jalil", term: "Majesty", attribute: "HumanDignity", domain: "PeopleOperations", wisdom: "Human dignity is a value guiding product and operational decisions." },
+  { number: 42, code: "karim", arabic: "الْكَرِيمُ", translit: "Al-Karim", term: "Generosity", attribute: "ResourceAllocation", domain: "ResourceManagement", wisdom: "Resources are allocated according to policy and availability." },
+  { number: 43, code: "raqib", arabic: "الرَّقِيبُ", translit: "Ar-Raqib", term: "Watchfulness", attribute: "ScheduledMonitoring", domain: "BoundedMonitoring", wisdom: "Monitoring depends on schedules, sensors, and connectivity; gaps are possible." },
+  { number: 44, code: "mujib", arabic: "الْمُجِيبُ", translit: "Al-Mujib", term: "Response", attribute: "RequestHandling", domain: "ServiceOperations", wisdom: "Response handling processes received requests; success and timing depend on service availability." },
+  { number: 45, code: "wasi", arabic: "الْوَاسِعُ", translit: "Al-Wasi", term: "Vastness", attribute: "CapacityLimits", domain: "Infrastructure", wisdom: "Service capacity is limited by infrastructure and configuration." },
+  { number: 46, code: "hakim", arabic: "الْحَكِيمُ", translit: "Al-Hakim", term: "Wisdom", attribute: "DecisionSupport", domain: "DecisionMaking", wisdom: "Heuristics support decisions but can be incomplete and require evaluation." },
+  { number: 47, code: "wadud", arabic: "الْوَدُودُ", translit: "Al-Wadud", term: "Love", attribute: "RespectfulExperience", domain: "UserExperience", wisdom: "User experience should reflect care, accessibility, and respect." },
+  { number: 48, code: "majid", arabic: "الْمَجِيدُ", translit: "Al-Majid", term: "Glory", attribute: "TheologicalReference", domain: "Theology", wisdom: "Theological reference only; it is not a product status or achievement metric." },
+  { number: 49, code: "baits", arabic: "الْبَاعِثُ", translit: "Al-Ba'ith", term: "Resurrection", attribute: "ServiceRecovery", domain: "Recovery", wisdom: "Theological reference only; service recovery restores a selected state from an available verified backup." },
+  { number: 50, code: "syahid", arabic: "الشَّهِيدُ", translit: "Ash-Shahid", term: "Witness", attribute: "EvidenceRecording", domain: "Evidence", wisdom: "Islamic theological name; software can record received evidence with source and time." },
+  { number: 51, code: "haqq", arabic: "الْحَقُّ", translit: "Al-Haqq", term: "Truth", attribute: "EvidenceProvenance", domain: "InformationIntegrity", wisdom: "Islamic theological name; system claims require evidence, context, and review." },
+  { number: 52, code: "wakil", arabic: "الْوَكِيلُ", translit: "Al-Wakil", term: "Trust", attribute: "TaskDelegation", domain: "Workflows", wisdom: "Task delegation follows explicit authorization, scope, and audit requirements." },
+  { number: 53, code: "qawiyy", arabic: "الْقَوِيُّ", translit: "Al-Qawiyy", term: "Strength", attribute: "ComputePerformance", domain: "Infrastructure", wisdom: "Compute performance depends on hardware, energy, workload, and operational limits." },
+  { number: 54, code: "matin", arabic: "الْمَتِينُ", translit: "Al-Matin", term: "Firmness", attribute: "ServiceAvailability", domain: "Reliability", wisdom: "Service availability is monitored and improved, but interruptions remain possible." },
+  { number: 55, code: "waliyy", arabic: "الْوَلِيُّ", translit: "Al-Waliyy", term: "Guardianship", attribute: "TeamSupport", domain: "PeopleOperations", wisdom: "Organizational roles are assignments and confer no supernatural status." },
+  { number: 56, code: "hamid", arabic: "الْحَمِيدُ", translit: "Al-Hamid", term: "Praise", attribute: "ContributionRecognition", domain: "PeopleOperations", wisdom: "Contribution recognition follows clear, reviewable criteria." },
+  { number: 57, code: "muhshi", arabic: "الْمُحْصِي", translit: "Al-Muhsi", term: "Enumeration", attribute: "TelemetryCounting", domain: "Observability", wisdom: "Islamic theological name; software counts only available and reachable records." },
+  { number: 58, code: "mubdi", arabic: "الْمُبْدِئُ", translit: "Al-Mubdi", term: "Origination", attribute: "ServiceInitialization", domain: "Deployment", wisdom: "Service initialization starts from provided software and configuration." },
+  { number: 59, code: "muid", arabic: "الْمُعِيدُ", translit: "Al-Mu'id", term: "Restoration", attribute: "BackupRecovery", domain: "Recovery", wisdom: "Recovery returns data or services to a selected, verified backup state." },
+  { number: 60, code: "muhyi", arabic: "الْمُحْيِي", translit: "Al-Muhyi", term: "Revival", attribute: "HealthChecks", domain: "ServiceHealth", wisdom: "Health checks report service status based on available signals." },
+  { number: 61, code: "mumit", arabic: "الْمُمِيتُ", translit: "Al-Mumit", term: "Taking Life", attribute: "ControlledShutdown", domain: "ServiceLifecycle", wisdom: "Theological term; software shutdown follows approved and auditable procedures." },
+  { number: 62, code: "hayy", arabic: "الْحَيُّ", translit: "Al-Hayy", term: "Life", attribute: "ServiceAvailability", domain: "Reliability", wisdom: "Software services depend on infrastructure and require maintenance." },
+  { number: 63, code: "qayyum", arabic: "الْقَيُّومُ", translit: "Al-Qayyum", term: "Self-Subsistence", attribute: "ServiceMaintenance", domain: "Operations", wisdom: "Service maintenance requires resources, monitoring, and operational intervention." },
+  { number: 64, code: "wajid", arabic: "الْوَاجِدُ", translit: "Al-Wajid", term: "Finding", attribute: "ResourceDiscovery", domain: "ResourceManagement", wisdom: "Search covers only registered and accessible resources." },
+  { number: 65, code: "majid2", arabic: "الْمَاجِدُ", translit: "Al-Maajid", term: "Nobility", attribute: "TheologicalReference", domain: "Theology", wisdom: "Theological reference only; it is not a system quality metric." },
+  { number: 66, code: "wahid", arabic: "الْوَاحِدُ", translit: "Al-Wahid", term: "Oneness", attribute: "UniqueIdentity", domain: "DataIdentity", wisdom: "Record identity distinguishes entries or sources within the system scope." },
+  { number: 67, code: "ahad", arabic: "الأَحَدُ", translit: "Al-Ahad", term: "Oneness", attribute: "TheologicalReference", domain: "Theology", wisdom: "Divine oneness is a theological concept, not a software architecture property." },
+  { number: 68, code: "samad", arabic: "الصَّمَدُ", translit: "As-Samad", term: "Eternity", attribute: "DependencyManagement", domain: "ServiceDependencies", wisdom: "Services have technical dependencies that should be recorded and managed." },
+  { number: 69, code: "qadir", arabic: "الْقَادِرُ", translit: "Al-Qadir", term: "Power", attribute: "ControlledExecution", domain: "Operations", wisdom: "Execution is limited by permissions, policy, and technical capability." },
+  { number: 70, code: "muqtadir", arabic: "الْمُقْتَدِرُ", translit: "Al-Muqtadir", term: "Power", attribute: "CapacityLimits", domain: "Infrastructure", wisdom: "System capacity has technical limits and does not determine reality beyond processed data." },
+  { number: 71, code: "muqaddim", arabic: "الْمُقَدِّمُ", translit: "Al-Muqaddim", term: "Advancing", attribute: "TaskPrioritization", domain: "Workflows", wisdom: "Task priority follows configured rules and available capacity." },
+  { number: 72, code: "muakhkhir", arabic: "الْمُؤَخِّرُ", translit: "Al-Mu'akhkhir", term: "Delaying", attribute: "QueueScheduling", domain: "Workflows", wisdom: "Task delays follow configured queue and retry policies." },
+  { number: 73, code: "awwal", arabic: "الأَوَّلُ", translit: "Al-Awwal", term: "Firstness", attribute: "SystemLifecycle", domain: "Deployment", wisdom: "The system lifecycle begins when software runs on available infrastructure." },
+  { number: 74, code: "akhir", arabic: "الآخِرُ", translit: "Al-Akhir", term: "Lastness", attribute: "SystemLifecycle", domain: "Deployment", wisdom: "A system lifecycle can end through approved shutdown or deletion." },
+  { number: 75, code: "zhahir", arabic: "الظَّاهِرُ", translit: "Az-Zahir", term: "Manifestation", attribute: "DataPresentation", domain: "Observability", wisdom: "Displayed data should include its source and context." },
+  { number: 76, code: "bathin", arabic: "الْبَاطِنُ", translit: "Al-Bathin", term: "Hiddenness", attribute: "DataPrivacy", domain: "Privacy", wisdom: "Internal data access follows permissions and privacy policy." },
+  { number: 77, code: "wali", arabic: "الْوَالِي", translit: "Al-Wali", term: "Governance", attribute: "SystemGovernance", domain: "Governance", wisdom: "System governance uses reviewable policies and permissions." },
+  { number: 78, code: "mutaali", arabic: "الْمُتَعَالِي", translit: "Al-Muta'ali", term: "Transcendence", attribute: "TheologicalReference", domain: "Theology", wisdom: "Theological reference only; operational limits remain explicit and enforceable." },
+  { number: 79, code: "barr", arabic: "الْبَرُّ", translit: "Al-Barr", term: "Righteousness", attribute: "UserWellbeing", domain: "PeopleOperations", wisdom: "Product decisions should support user well-being and respect user rights." },
+  { number: 80, code: "tawwab", arabic: "التَّوَّابُ", translit: "At-Tawwab", term: "Repentance", attribute: "CorrectionWorkflow", domain: "Governance", wisdom: "Correction processes provide review under applicable policy and authority." },
+  { number: 81, code: "muntaqim", arabic: "الْمُنْتَقِمُ", translit: "Al-Muntaqim", term: "Retribution", attribute: "AccessEnforcement", domain: "Governance", wisdom: "Access enforcement requires evidence, applicable policy, and appropriate review." },
+  { number: 82, code: "afuww", arabic: "العَفُوُّ", translit: "Al-'Afuww", term: "Pardon", attribute: "RetentionManagement", domain: "DataGovernance", wisdom: "Data deletion follows retention policy and audit obligations." },
+  { number: 83, code: "rauf", arabic: "الرَّؤُوفُ", translit: "Ar-Ra'uf", term: "Compassion", attribute: "UserProtection", domain: "Safety", wisdom: "User protection prioritizes safety, privacy, and risk handling." },
+  { number: 84, code: "malik_mulk", arabic: "مَالِكُ الْمُلْكِ", translit: "Malik al-Mulk", term: "Sovereignty", attribute: "TheologicalReference", domain: "Theology", wisdom: "Theological reference only; it establishes no ownership or authority over software." },
+  { number: 85, code: "dzul_jalal", arabic: "ذُو الْجَلاَلِ وَالإِكْرَامِ", translit: "Dhu al-Jalal wa-l-Ikram", term: "Majesty", attribute: "TheologicalReference", domain: "Theology", wisdom: "Theological reference only; it is not a software attribute." },
+  { number: 86, code: "muqsit", arabic: "الْمُقْسِطُ", translit: "Al-Muqsit", term: "Equity", attribute: "FairProcedures", domain: "Governance", wisdom: "Fair procedures require transparent rules, relevant evidence, and review mechanisms." },
+  { number: 87, code: "jami", arabic: "الْجَامِعُ", translit: "Al-Jami", term: "Gathering", attribute: "DataAggregation", domain: "DataIntegration", wisdom: "Aggregation includes only data from connected and authorized sources." },
+  { number: 88, code: "ghaniyy", arabic: "الْغَنِيُّ", translit: "Al-Ghaniyy", term: "Self-Sufficiency", attribute: "DependencyManagement", domain: "ServiceDependencies", wisdom: "Services depend on infrastructure, providers, energy, and maintenance." },
+  { number: 89, code: "mughni", arabic: "الْمُغْنِي", translit: "Al-Mughni", term: "Enrichment", attribute: "CapacityPlanning", domain: "ServiceCapacity", wisdom: "Capacity improvements are bounded by infrastructure and configuration." },
+  { number: 90, code: "mani", arabic: "الْمَانِعُ", translit: "Al-Mani", term: "Prevention", attribute: "ThreatPrevention", domain: "Security", wisdom: "Security controls help prevent or detect some threats; residual risk remains." },
+  { number: 91, code: "dharr", arabic: "الضَّارُّ", translit: "Ad-Darr", term: "Harm", attribute: "ResilienceTesting", domain: "Testing", wisdom: "Resilience testing occurs within an approved environment and safety scope." },
+  { number: 92, code: "nafi", arabic: "النَّافِعُ", translit: "An-Nafi", term: "Benefit", attribute: "UtilityEvaluation", domain: "ProductEvaluation", wisdom: "System utility is assessed against user needs and observed outcomes." },
+  { number: 93, code: "nur", arabic: "النُّورُ", translit: "An-Nur", term: "Light", attribute: "InformationPresentation", domain: "UserExperience", wisdom: "Information presentation helps users understand data within system scope." },
+  { number: 94, code: "hadi", arabic: "الْهَادِي", translit: "Al-Hadi", term: "Guidance", attribute: "DataRouting", domain: "Networking", wisdom: "Routing follows configured network tables and policy." },
+  { number: 95, code: "badi", arabic: "الْبَدِيعُ", translit: "Al-Badi", term: "Origination", attribute: "ProductInnovation", domain: "ProductDevelopment", wisdom: "Product innovation is assessed against needs, evidence, and user evaluation." },
+  { number: 96, code: "baqi", arabic: "الْبَاقِي", translit: "Al-Baqi", term: "Everlastingness", attribute: "ServiceContinuity", domain: "Reliability", wisdom: "Service continuity requires maintenance, backups, and recovery planning." },
+  { number: 97, code: "warits", arabic: "الْوَارِثُ", translit: "Al-Warith", term: "Inheritance", attribute: "AssetLifecycle", domain: "Governance", wisdom: "Asset management follows ownership, contract, and organizational policy." },
+  { number: 98, code: "rasyid", arabic: "الرَّشِيدُ", translit: "Ar-Rashid", term: "Right Guidance", attribute: "DecisionSupport", domain: "DecisionMaking", wisdom: "Decision support presents information and rationale; people retain responsibility." },
+  { number: 99, code: "shabur", arabic: "الصَّبُورُ", translit: "Ash-Shabur", term: "Patience", attribute: "RetryPolicy", domain: "Reliability", wisdom: "Process resilience uses configured timeouts and retry limits." }
+];

@@ -1,0 +1,15 @@
+{
+  "name": "@empire/batteries-dna-mutaali",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Draft Batteries DNA reference only for Al-Muta'ali (Transcendence); lexicon source mutaali.",
+  "exports": {
+    ".": "./index.mjs",
+    "./manifest": "./manifest.json"
+  },
+  "files": [
+    "index.mjs",
+    "manifest.json"
+  ]
+}

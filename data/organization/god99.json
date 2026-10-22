@@ -1,0 +1,2243 @@
+{
+  "schemaVersion": "1.0.0",
+  "status": "PROPOSED_NOT_ASSIGNED",
+  "title": "G.O.D. 99 — GODS ON DUTY",
+  "fictionalSetting": true,
+  "designNote": "Fictional organizational positions inspired by ethically framed values. Theological Asma name variants do not confer divine attributes, power, faith rank or appointments.",
+  "departments": [
+    {
+      "id": "D01",
+      "name": "WOLF PACK",
+      "pillar": "PATHFINDING",
+      "expectedPersonnel": 11
+    },
+    {
+      "id": "D02",
+      "name": "SIGNAL RUNNERS",
+      "pillar": "PATHFINDING",
+      "expectedPersonnel": 11
+    },
+    {
+      "id": "D03",
+      "name": "PROOF LAB",
+      "pillar": "TRUTH_GUIDANCE",
+      "expectedPersonnel": 11
+    },
+    {
+      "id": "D04",
+      "name": "PEACE RIOT",
+      "pillar": "TRUTH_GUIDANCE",
+      "expectedPersonnel": 11
+    },
+    {
+      "id": "D05",
+      "name": "FORGE LAB",
+      "pillar": "RENEWAL",
+      "expectedPersonnel": 11
+    },
+    {
+      "id": "D06",
+      "name": "PATCH & RESTORE",
+      "pillar": "RENEWAL",
+      "expectedPersonnel": 11
+    },
+    {
+      "id": "D07",
+      "name": "COMMONS CREW",
+      "pillar": "RENEWAL",
+      "expectedPersonnel": 11
+    },
+    {
+      "id": "D08",
+      "name": "SHADOW GUARD",
+      "pillar": "PROTECTION",
+      "expectedPersonnel": 11
+    },
+    {
+      "id": "D09",
+      "name": "MERCY RESCUE",
+      "pillar": "PROTECTION",
+      "expectedPersonnel": 11
+    }
+  ],
+  "personnel": [
+    {
+      "id": "GOD-001",
+      "slot": 1,
+      "departmentId": "D09",
+      "codename": "OPEN HEART",
+      "mission": "Mengorganisasi dukungan kemanusiaan",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 1,
+        "name": "Ar-Rahman",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-002",
+      "slot": 2,
+      "departmentId": "D09",
+      "codename": "CARE LOOP",
+      "mission": "Menindaklanjuti bantuan sampai selesai",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 2,
+        "name": "Ar-Rahim",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-003",
+      "slot": 3,
+      "departmentId": "D07",
+      "codename": "CIVIC LEAD",
+      "mission": "Memastikan kepemimpinan melayani dan terbatas",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 3,
+        "name": "Al-Malik",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-004",
+      "slot": 4,
+      "departmentId": "D08",
+      "codename": "CLEAN CORE",
+      "mission": "Menjaga kebersihan etika dan prosedur",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 4,
+        "name": "Al-Quddus",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-005",
+      "slot": 5,
+      "departmentId": "D04",
+      "codename": "PEACE RIOTER",
+      "mission": "Mengupayakan penyelesaian konflik damai",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 5,
+        "name": "As-Salam",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-006",
+      "slot": 6,
+      "departmentId": "D08",
+      "codename": "SAFE PASS",
+      "mission": "Meningkatkan keamanan akses layanan",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 6,
+        "name": "Al-Mumin",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-007",
+      "slot": 7,
+      "departmentId": "D08",
+      "codename": "WATCH WARDEN",
+      "mission": "Memantau keselamatan secara sah dan terbatas",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 7,
+        "name": "Al-Muhaymin",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-008",
+      "slot": 8,
+      "departmentId": "D05",
+      "codename": "COURAGE CIRCUIT",
+      "mission": "Mendorong ketangguhan menghadapi masalah",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 8,
+        "name": "Al-Aziz",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-009",
+      "slot": 9,
+      "departmentId": "D06",
+      "codename": "BROKEN FIXER",
+      "mission": "Memperbaiki proses atau fasilitas yang rusak",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 9,
+        "name": "Al-Jabbar",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-010",
+      "slot": 10,
+      "departmentId": "D05",
+      "codename": "EGO BREAKER",
+      "mission": "Menguji dan mengoreksi klaim superioritas",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 10,
+        "name": "Al-Mutakabbir",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-011",
+      "slot": 11,
+      "departmentId": "D05",
+      "codename": "IDEA FORGE",
+      "mission": "Mengembangkan gagasan manusia yang dapat diuji",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 11,
+        "name": "Al-Khaliq",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-012",
+      "slot": 12,
+      "departmentId": "D05",
+      "codename": "BUILDSHIFT",
+      "mission": "Membangun prototipe yang aman",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 12,
+        "name": "Al-Bari",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-013",
+      "slot": 13,
+      "departmentId": "D05",
+      "codename": "SHAPE ZERO",
+      "mission": "Merancang bentuk, antarmuka dan visual",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 13,
+        "name": "Al-Musawwir",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-014",
+      "slot": 14,
+      "departmentId": "D09",
+      "codename": "FORGIVE FORGE",
+      "mission": "Memfasilitasi dialog dan proses maaf sukarela",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 14,
+        "name": "Al-Ghaffar",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-015",
+      "slot": 15,
+      "departmentId": "D06",
+      "codename": "BULLY STOPPER",
+      "mission": "Mengurangi dominasi dan penyalahgunaan kuasa",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 15,
+        "name": "Al-Qahhar",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-016",
+      "slot": 16,
+      "departmentId": "D07",
+      "codename": "GIVEAWAY",
+      "mission": "Mengatur bantuan sukarela transparan",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 16,
+        "name": "Al-Wahhab",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-017",
+      "slot": 17,
+      "departmentId": "D07",
+      "codename": "FOOD GRID",
+      "mission": "Meningkatkan akses pangan dan kebutuhan pokok",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 17,
+        "name": "Ar-Razzaq",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-018",
+      "slot": 18,
+      "departmentId": "D01",
+      "codename": "GATECRASHER",
+      "mission": "Membuka akses yang sah ke kesempatan belajar",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 18,
+        "name": "Al-Fattah",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-019",
+      "slot": 19,
+      "departmentId": "D02",
+      "codename": "KNOWLEDGE HUNTER",
+      "mission": "Mengumpulkan referensi yang dapat diuji",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 19,
+        "name": "Al-Alim",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-020",
+      "slot": 20,
+      "departmentId": "D06",
+      "codename": "RATE LIMIT",
+      "mission": "Mencegah kelebihan beban dan eksploitasi",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 20,
+        "name": "Al-Qabid",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-021",
+      "slot": 21,
+      "departmentId": "D06",
+      "codename": "OPEN HAND",
+      "mission": "Mengurangi hambatan layanan yang tidak perlu",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 21,
+        "name": "Al-Basit",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-022",
+      "slot": 22,
+      "departmentId": "D06",
+      "codename": "EGO DOWN",
+      "mission": "Membatasi ego dan kekuasaan yang berlebihan",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 22,
+        "name": "Al-Khafid",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-023",
+      "slot": 23,
+      "departmentId": "D06",
+      "codename": "LIFT UP",
+      "mission": "Membantu pemulihan kapasitas orang terdampak",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 23,
+        "name": "Ar-Rafi",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-024",
+      "slot": 24,
+      "departmentId": "D04",
+      "codename": "RESPECT RISE",
+      "mission": "Memperkuat penghormatan pada sesama",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 24,
+        "name": "Al-Muizz",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-025",
+      "slot": 25,
+      "departmentId": "D04",
+      "codename": "HUMILITY CHECK",
+      "mission": "Mencegah perundungan dan penghinaan",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 25,
+        "name": "Al-Mudhill",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-026",
+      "slot": 26,
+      "departmentId": "D02",
+      "codename": "ECHO SCOUT",
+      "mission": "Mendengarkan kebutuhan warga",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 26,
+        "name": "As-Sami",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-027",
+      "slot": 27,
+      "departmentId": "D02",
+      "codename": "NIGHT LENS",
+      "mission": "Mengamati masalah secara hati-hati dan sah",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 27,
+        "name": "Al-Basir",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-028",
+      "slot": 28,
+      "departmentId": "D03",
+      "codename": "FAIR VERDICT",
+      "mission": "Menjaga prosedur penilaian yang adil",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 28,
+        "name": "Al-Hakam",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-029",
+      "slot": 29,
+      "departmentId": "D04",
+      "codename": "EQUAL SIGN",
+      "mission": "Memastikan perlakuan adil",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 29,
+        "name": "Al-Adl",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-030",
+      "slot": 30,
+      "departmentId": "D04",
+      "codename": "SOFT POWER",
+      "mission": "Menggunakan komunikasi yang empatik",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 30,
+        "name": "Al-Latif",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-031",
+      "slot": 31,
+      "departmentId": "D02",
+      "codename": "DEEP INTEL",
+      "mission": "Meneliti konteks sebelum mengambil keputusan",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 31,
+        "name": "Al-Khabir",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-032",
+      "slot": 32,
+      "departmentId": "D04",
+      "codename": "COOL HEAD",
+      "mission": "Meredakan eskalasi dan sengketa",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 32,
+        "name": "Al-Halim",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-033",
+      "slot": 33,
+      "departmentId": "D05",
+      "codename": "BIG PICTURE",
+      "mission": "Menangani masalah sistemik secara proporsional",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 33,
+        "name": "Al-Azim",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-034",
+      "slot": 34,
+      "departmentId": "D09",
+      "codename": "HEALING ROUTE",
+      "mission": "Membantu pemulihan setelah konflik atau kerugian",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 34,
+        "name": "Al-Ghafur",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-035",
+      "slot": 35,
+      "departmentId": "D09",
+      "codename": "GRATITUDE CLUB",
+      "mission": "Mengapresiasi kontribusi yang sering terlupakan",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 35,
+        "name": "Ash-Shakur",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-036",
+      "slot": 36,
+      "departmentId": "D08",
+      "codename": "HIGH STANDARD",
+      "mission": "Memelihara standar perlindungan minimum",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 36,
+        "name": "Al-Aliyy",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-037",
+      "slot": 37,
+      "departmentId": "D08",
+      "codename": "BIG SHIELD",
+      "mission": "Menyiapkan kesiapsiagaan komunitas",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 37,
+        "name": "Al-Kabir",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-038",
+      "slot": 38,
+      "departmentId": "D08",
+      "codename": "ARCHIVE GUARD",
+      "mission": "Melindungi catatan pribadi dan izin akses",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 38,
+        "name": "Al-Hafiz",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-039",
+      "slot": 39,
+      "departmentId": "D07",
+      "codename": "SUPPLY LINE",
+      "mission": "Menjaga ketahanan pasokan dasar",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 39,
+        "name": "Al-Muqit",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-040",
+      "slot": 40,
+      "departmentId": "D02",
+      "codename": "ACCOUNT GRID",
+      "mission": "Menghasilkan laporan dan audit statistik",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 40,
+        "name": "Al-Hasib",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-041",
+      "slot": 41,
+      "departmentId": "D04",
+      "codename": "DIGNITY LINE",
+      "mission": "Menjaga martabat peserta",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 41,
+        "name": "Al-Jalil",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-042",
+      "slot": 42,
+      "departmentId": "D07",
+      "codename": "GENEROUS HAND",
+      "mission": "Memfasilitasi kontribusi sukarela",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 42,
+        "name": "Al-Karim",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-043",
+      "slot": 43,
+      "departmentId": "D02",
+      "codename": "RADAR PUNK",
+      "mission": "Mendeteksi perubahan dengan menghormati privasi",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 43,
+        "name": "Ar-Raqib",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-044",
+      "slot": 44,
+      "departmentId": "D02",
+      "codename": "ANSWERLINE",
+      "mission": "Merespons permintaan bantuan dengan jelas",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 44,
+        "name": "Al-Mujib",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-045",
+      "slot": 45,
+      "departmentId": "D02",
+      "codename": "WIDE BAND",
+      "mission": "Memperluas akses informasi dan layanan",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 45,
+        "name": "Al-Wasi",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-046",
+      "slot": 46,
+      "departmentId": "D03",
+      "codename": "WISDOM ENGINE",
+      "mission": "Menguji pertimbangan keputusan dengan sumber",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 46,
+        "name": "Al-Hakim",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-047",
+      "slot": 47,
+      "departmentId": "D09",
+      "codename": "HEARTBEAT",
+      "mission": "Membangun hubungan saling peduli",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 47,
+        "name": "Al-Wadud",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-048",
+      "slot": 48,
+      "departmentId": "D03",
+      "codename": "HONOR CODE",
+      "mission": "Menjaga integritas dan etika penelitian",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 48,
+        "name": "Al-Majid",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-049",
+      "slot": 49,
+      "departmentId": "D02",
+      "codename": "WAKE SIGNAL",
+      "mission": "Mengaktifkan tindak lanjut dari laporan masalah",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 49,
+        "name": "Al-Baith",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-050",
+      "slot": 50,
+      "departmentId": "D02",
+      "codename": "FIELD WITNESS",
+      "mission": "Mencatat temuan lapangan secara akurat",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 50,
+        "name": "Ash-Shahid",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-051",
+      "slot": 51,
+      "departmentId": "D03",
+      "codename": "FACT ANCHOR",
+      "mission": "Memeriksa klaim dan mengoreksi kesalahan",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 51,
+        "name": "Al-Haqq",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-052",
+      "slot": 52,
+      "departmentId": "D07",
+      "codename": "TRUST BROKER",
+      "mission": "Mengelola mandat dan sumber daya transparan",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 52,
+        "name": "Al-Wakil",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-053",
+      "slot": 53,
+      "departmentId": "D05",
+      "codename": "STRONGHOLD",
+      "mission": "Memperkuat keandalan infrastruktur",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 53,
+        "name": "Al-Qawiyy",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-054",
+      "slot": 54,
+      "departmentId": "D03",
+      "codename": "STABLE CORE",
+      "mission": "Memelihara keandalan bukti dan sistem",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 54,
+        "name": "Al-Matin",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-055",
+      "slot": 55,
+      "departmentId": "D08",
+      "codename": "WINGMATE",
+      "mission": "Menjadi pendamping yang dapat dipercaya",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 55,
+        "name": "Al-Waliyy",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-056",
+      "slot": 56,
+      "departmentId": "D09",
+      "codename": "THANK YOU CLUB",
+      "mission": "Menyampaikan pengakuan kontribusi tim",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 56,
+        "name": "Al-Hamid",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-057",
+      "slot": 57,
+      "departmentId": "D02",
+      "codename": "DATA COUNT",
+      "mission": "Mengukur kebutuhan tanpa memanipulasi angka",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 57,
+        "name": "Al-Muhsi",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-058",
+      "slot": 58,
+      "departmentId": "D05",
+      "codename": "FIRST DRAFT",
+      "mission": "Menciptakan versi pertama suatu metode",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 58,
+        "name": "Al-Mubdi",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-059",
+      "slot": 59,
+      "departmentId": "D06",
+      "codename": "RESTORE POINT",
+      "mission": "Melakukan pemulihan versi dan layanan",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 59,
+        "name": "Al-Muid",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-060",
+      "slot": 60,
+      "departmentId": "D09",
+      "codename": "LIFE SUPPORT",
+      "mission": "Mendukung kesehatan dan penyelamatan sesuai kompetensi",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 60,
+        "name": "Al-Muhyi",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-061",
+      "slot": 61,
+      "departmentId": "D09",
+      "codename": "LAST MILE CARE",
+      "mission": "Mendampingi akhir hayat secara etis, bukan menyebabkan kematian",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 61,
+        "name": "Al-Mumit",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-062",
+      "slot": 62,
+      "departmentId": "D09",
+      "codename": "LIVING WELL",
+      "mission": "Mendukung kesehatan dan kualitas hidup",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 62,
+        "name": "Al-Hayy",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-063",
+      "slot": 63,
+      "departmentId": "D03",
+      "codename": "UPTIME KEEPER",
+      "mission": "Menjaga layanan pengetahuan tetap tersedia",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 63,
+        "name": "Al-Qayyum",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-064",
+      "slot": 64,
+      "departmentId": "D01",
+      "codename": "FINDER X",
+      "mission": "Menemukan kebutuhan dan peluang yang terlewat",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 64,
+        "name": "Al-Wajid",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-065",
+      "slot": 65,
+      "departmentId": "D05",
+      "codename": "PRIDE IN CRAFT",
+      "mission": "Menjaga kualitas dan kejujuran hasil karya",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 65,
+        "name": "Al-Maajid",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-066",
+      "slot": 66,
+      "departmentId": "D03",
+      "codename": "ONE THREAD",
+      "mission": "Menyatukan catatan yang kompatibel tanpa menghapus beda",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 66,
+        "name": "Al-Wahid",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-067",
+      "slot": 67,
+      "departmentId": "D03",
+      "codename": "NO COUNTERFEIT",
+      "mission": "Mendeteksi penyamaran sumber dan pemalsuan data",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 67,
+        "name": "Al-Ahad",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-068",
+      "slot": 68,
+      "departmentId": "D08",
+      "codename": "SAFE HARBOR",
+      "mission": "Membantu membangun tempat dan layanan aman",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 68,
+        "name": "As-Samad",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-069",
+      "slot": 69,
+      "departmentId": "D05",
+      "codename": "CAPACITY BOOST",
+      "mission": "Menguatkan kemampuan tim",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 69,
+        "name": "Al-Qadir",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-070",
+      "slot": 70,
+      "departmentId": "D05",
+      "codename": "POWER BUDGET",
+      "mission": "Menetapkan batas energi, biaya dan risiko",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 70,
+        "name": "Al-Muqtadir",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-071",
+      "slot": 71,
+      "departmentId": "D01",
+      "codename": "FIRST MOVER",
+      "mission": "Membuat rintisan kecil yang dapat diuji",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 71,
+        "name": "Al-Muqaddim",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-072",
+      "slot": 72,
+      "departmentId": "D06",
+      "codename": "PAUSE BUTTON",
+      "mission": "Menghentikan rilis saat ada risiko signifikan",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 72,
+        "name": "Al-Muakhkhir",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-073",
+      "slot": 73,
+      "departmentId": "D01",
+      "codename": "ZERO POINT",
+      "mission": "Menyusun langkah awal sebuah perjalanan",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 73,
+        "name": "Al-Awwal",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-074",
+      "slot": 74,
+      "departmentId": "D03",
+      "codename": "LAST CHECK",
+      "mission": "Melakukan review final sebelum publikasi",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 74,
+        "name": "Al-Akhir",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-075",
+      "slot": 75,
+      "departmentId": "D01",
+      "codename": "DAYLIGHT",
+      "mission": "Memperjelas pilihan dan peta perjalanan",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 75,
+        "name": "Az-Zahir",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-076",
+      "slot": 76,
+      "departmentId": "D01",
+      "codename": "HIDDEN TRAIL",
+      "mission": "Meneliti jalur yang belum tampak",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 76,
+        "name": "Al-Batin",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-077",
+      "slot": 77,
+      "departmentId": "D08",
+      "codename": "BOUNDARY CAPTAIN",
+      "mission": "Menegakkan batas mandat dan persetujuan",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 77,
+        "name": "Al-Waali",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-078",
+      "slot": 78,
+      "departmentId": "D04",
+      "codename": "HUMBLE STANDARD",
+      "mission": "Memastikan tidak ada jabatan kebal kritik",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 78,
+        "name": "Al-Mutaali",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-079",
+      "slot": 79,
+      "departmentId": "D04",
+      "codename": "GOODWILL",
+      "mission": "Mengorganisasi bantuan yang beritikad baik",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 79,
+        "name": "Al-Barr",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-080",
+      "slot": 80,
+      "departmentId": "D06",
+      "codename": "SECOND CHANCE",
+      "mission": "Menjalankan proses koreksi dan reintegrasi",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 80,
+        "name": "At-Tawwab",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-081",
+      "slot": 81,
+      "departmentId": "D06",
+      "codename": "NO REVENGE",
+      "mission": "Menuntut akuntabilitas tanpa balas dendam",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 81,
+        "name": "Al-Muntaqim",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-082",
+      "slot": 82,
+      "departmentId": "D04",
+      "codename": "CLEAN SLATE",
+      "mission": "Memfasilitasi pemulihan dan pengampunan sukarela",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 82,
+        "name": "Al-Afuww",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-083",
+      "slot": 83,
+      "departmentId": "D09",
+      "codename": "GENTLE HAND",
+      "mission": "Membantu orang rentan dengan penuh hormat",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 83,
+        "name": "Ar-Rauf",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-084",
+      "slot": 84,
+      "departmentId": "D07",
+      "codename": "MANDATE CHECK",
+      "mission": "Memastikan keputusan pengelola dapat diaudit",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 84,
+        "name": "Malik-al-Mulk",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-085",
+      "slot": 85,
+      "departmentId": "D08",
+      "codename": "DIGNITY GUARD",
+      "mission": "Melindungi martabat dalam penanganan risiko",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 85,
+        "name": "Dhul-Jalal-wal-Ikram",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-086",
+      "slot": 86,
+      "departmentId": "D04",
+      "codename": "FAIR SHARE",
+      "mission": "Memperjuangkan pembagian kesempatan yang adil",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 86,
+        "name": "Al-Muqsit",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-087",
+      "slot": 87,
+      "departmentId": "D01",
+      "codename": "CROSSROADS",
+      "mission": "Mempertemukan relawan, komunitas, dan rute",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 87,
+        "name": "Al-Jami",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-088",
+      "slot": 88,
+      "departmentId": "D07",
+      "codename": "RESOURCE ZERO",
+      "mission": "Mengurangi pemborosan sumber daya",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 88,
+        "name": "Al-Ghani",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-089",
+      "slot": 89,
+      "departmentId": "D07",
+      "codename": "LIVELIHOOD LAB",
+      "mission": "Mendukung kesempatan ekonomi yang berkeadilan",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 89,
+        "name": "Al-Mughni",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-090",
+      "slot": 90,
+      "departmentId": "D07",
+      "codename": "ACCESS CONTROL",
+      "mission": "Mencegah penyalahgunaan akses dan aset",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 90,
+        "name": "Al-Mani",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-091",
+      "slot": 91,
+      "departmentId": "D08",
+      "codename": "HARM DETECTOR",
+      "mission": "Mencegah dan melaporkan potensi bahaya",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 91,
+        "name": "Ad-Darr",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-092",
+      "slot": 92,
+      "departmentId": "D07",
+      "codename": "GOOD RETURN",
+      "mission": "Mengukur manfaat nyata suatu program",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 92,
+        "name": "An-Nafi",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-093",
+      "slot": 93,
+      "departmentId": "D01",
+      "codename": "GLOWRUNNER",
+      "mission": "Mengembangkan literasi agar orang melihat pilihan",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 93,
+        "name": "An-Nur",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-094",
+      "slot": 94,
+      "departmentId": "D01",
+      "codename": "COMPASS KID",
+      "mission": "Membantu orang memilih arah berdasar informasi",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 94,
+        "name": "Al-Hadi",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-095",
+      "slot": 95,
+      "departmentId": "D01",
+      "codename": "WILD CARD",
+      "mission": "Merancang alternatif kreatif yang aman",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 95,
+        "name": "Al-Badi",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-096",
+      "slot": 96,
+      "departmentId": "D03",
+      "codename": "LONG RECORD",
+      "mission": "Mengarsipkan sejarah perubahan dan pembelajaran",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 96,
+        "name": "Al-Baqi",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-097",
+      "slot": 97,
+      "departmentId": "D06",
+      "codename": "HANDOVER",
+      "mission": "Menjaga pewarisan pengetahuan dan tugas",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 97,
+        "name": "Al-Warith",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-098",
+      "slot": 98,
+      "departmentId": "D01",
+      "codename": "WOLFGUARD",
+      "mission": "Menjadi penunjuk arah dan pendamping pack",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 98,
+        "name": "Ar-Rashid",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    },
+    {
+      "id": "GOD-099",
+      "slot": 99,
+      "departmentId": "D03",
+      "codename": "PATIENCE PATCH",
+      "mission": "Menunda kesimpulan hingga bukti cukup",
+      "roleType": "FICTIONAL_OPERATIONAL_PERSONA",
+      "inspiration": {
+        "catalog": "POPULAR_99_ASMA_VARIANT",
+        "ordinal": 99,
+        "name": "As-Sabur",
+        "relationship": "ETHICAL_ANALOGY_NOT_IDENTITY"
+      },
+      "authority": "ASSIGNED_HUMAN_MANDATE_ONLY",
+      "scopesAllowed": [
+        "SELF",
+        "COMMUNITY",
+        "GLOBAL"
+      ],
+      "powers": "NONE",
+      "status": "UNASSIGNED"
+    }
+  ]
+}

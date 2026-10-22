@@ -1,0 +1,15 @@
+{
+  "name": "@empire/batteries-dna-rauf",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Draft Batteries DNA bounded project mapping for Ar-Ra'uf (Compassion); lexicon source rauf.",
+  "exports": {
+    ".": "./index.mjs",
+    "./manifest": "./manifest.json"
+  },
+  "files": [
+    "index.mjs",
+    "manifest.json"
+  ]
+}

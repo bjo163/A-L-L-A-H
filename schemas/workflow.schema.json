@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://empireofthelight.example/schemas/workflow.schema.json",
+  "title": "Governed Workflow",
+  "type": "object", "additionalProperties": false,
+  "required": ["id", "tenantId", "requestedBy", "kind", "status", "createdAt"],
+  "properties": {
+    "id": { "$ref": "common.schema.json#/$defs/uuid" },
+    "tenantId": { "$ref": "common.schema.json#/$defs/uuid" },
+    "requestedBy": { "$ref": "common.schema.json#/$defs/uuid" },
+    "kind": { "type": "string", "minLength": 1 },
+    "status": { "enum": ["draft", "pending_approval", "approved", "queued", "running", "completed", "rejected", "failed", "cancelled"] },
+    "scope": { "enum": ["self", "community", "global"] },
+    "approvalIds": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/uuid" } },
+    "evidenceIds": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/uuid" } },
+    "createdAt": { "$ref": "common.schema.json#/$defs/dateTime" },
+    "approvedAt": { "$ref": "common.schema.json#/$defs/dateTime" },
+    "completedAt": { "$ref": "common.schema.json#/$defs/dateTime" },
+    "error": { "$ref": "common.schema.json#/$defs/localizedError" }
+  }
+}

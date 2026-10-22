@@ -1,0 +1,32 @@
+{
+  "id": "research",
+  "title": "Research & Evidence",
+  "version": "0.1.0",
+  "owner": "research",
+  "state": "bootstrap_ready",
+  "dependencies": [
+    "kernel"
+  ],
+  "capabilities": [
+    "research-runs",
+    "workflows",
+    "jobs",
+    "evidence"
+  ],
+  "permissions": [
+    "research:read",
+    "research:write"
+  ],
+  "models": [
+    "research_runs",
+    "research_workflows",
+    "research_jobs",
+    "research_evidence",
+    "research_approvals"
+  ],
+  "upgrades": [],
+  "uiSlots": [
+    "operations.research"
+  ],
+  "runMode": "first_party_allowlisted"
+}

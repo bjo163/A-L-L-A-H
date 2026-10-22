@@ -1,0 +1,102 @@
+# @empire/ui
+
+Shared React primitives and visual tokens for the public portal and 100CENTER.
+
+## Current exports
+
+- `Button` for consistent native button actions.
+- `Panel` for semantic, reusable surface containers.
+- `PageIntro`, `SectionHeading`, and `StatGrid` for consistent page composition.
+- `MangaEffect` for reusable manga panel, screentone, speed-line, spin, reveal, and hover treatments.
+- `MangaOrbit` for decorative orbit rings with the shared glow motion.
+- `MangaPageIntro` for page headings with the shared manga frame and optional SFX lettering.
+- `MangaTelemetryHero` for a shared status hero with a manga orbit, speed lines, and SFX lettering.
+- `MangaSfx` for decorative, screen-reader-hidden manga onomatopoeia.
+- `MangaLoadingState` for a shared manga-styled loading panel and motion.
+- `Badge` for maturity and status labels.
+- `Notice` for user-facing information that needs clear emphasis.
+- `LoadingState`, `EmptyState`, and `ErrorState` for distinct resource states.
+- `Skeleton` for decorative placeholders while content loads.
+- `FieldLabel`, `TextField`, `TextArea`, and `SelectField` for native form controls with shared focus and invalid-state styling.
+- `HelpText` and `FieldError` for supporting and validation text connected with native `aria-describedby` IDs.
+- `Tabs` for controlled tab lists with roving focus, orientation-aware arrow keys, Home/End, disabled tabs, and linked panels.
+- `ConfirmDialog` for consequential decisions using native modal semantics, a verified Tab/Shift+Tab focus cycle, and Escape behavior.
+- `styles.css` for the `--eol-*` design tokens and primitive styles.
+- `manga-theme.css` for the shared manga palette and semantic color aliases.
+- `buttonClassName` for styling Next.js Link or an anchor with the shared action variants.
+
+## Component contract
+
+| Component | Variants and native attributes | Behavior |
+| --- | --- | --- |
+| Button | `primary`, `secondary`, `quiet`, `danger`; native button attributes | Renders a native button and defaults to `type="button"`. Loading state and its accessible label are owned by the consuming workflow. Long labels may wrap within the available width. |
+| Panel | `as` semantic element, optional `manga` surface treatment, `className`, element attributes | Renders a surface; `manga` applies the shared ink border, offset shadow, and transition without taking over app layout. Refs are not part of the current contract. |
+| MangaEffect | `as` semantic element; optional `panel`, `interactive`, `action`, `row`, `speedLines`, `screentone`, `spin`, and `reveal` flags; element attributes | Composes named manga treatments and transitions from the shared stylesheet. Applications supply content and layout-specific classes. `interactive` includes the common panel treatment. |
+| MangaPageIntro | `PageIntro` content props plus optional `sfx` and `sfxClassName` | Uses the shared angular panel, halftone accent, and reveal treatment; optional SFX lettering stays decorative. Breadcrumbs, copy, and actions remain application content. |
+| MangaTelemetryHero | Required `eyebrow`, `title`, `pulse`, and `sfx`; optional `description`, `metadata`, and `className` | Provides one shared telemetry hero composition, including its orbit, manga panel, reveal motion, and decorative SFX. |
+| MangaSfx | Required `text`; optional `className` | Decorative manga onomatopoeia, hidden from assistive technology. It does not play audio. |
+| MangaOrbit | Span attributes, optional `className`, and `primary`, `secondary`, or `tertiary` variant | Renders a decorative ring with shared glow animation and staggered timing; hidden from assistive technology. |
+| MangaLoadingState | Required accessible `label`; optional `eyebrow`, `sfx`, and `className` | Announces a polite loading status and applies the same panel, speed-line, reveal, orbit, and shimmer treatments. |
+| Badge | `neutral`, `info`, `success`, `warning`, `danger`; span attributes | Displays a text label. Color must accompany a meaningful label; long unbroken text wraps instead of widening its container. |
+| Notice | `info`, `success`, `warning`, `danger`; div attributes; role `status`, `alert`, or `note` | Defaults to `status`, except `danger` defaults to `alert`; override only when the message urgency and update behavior require it. Long identifiers wrap within the notice. |
+| LoadingState | Required `label`; optional `busy`; div attributes except `aria-busy` | Announces loading politely and marks the region busy by default. Set `busy={false}` when the component reports completion. Pair with `Skeleton` when the expected content shape is known. |
+| EmptyState | Required `title`; optional `description`, `action`; role `status` or `region` | Describes a successful query with no results; use only when the resource itself loaded successfully. Its title labels the state container by default; override `aria-labelledby` when another visible heading should name it. |
+| ErrorState | Required `title`; optional `description`, `action`; role `alert` or `region` | Defaults to `role="alert"` for an actionable failure state; use `region` when the failure is already announced through another mechanism. Its title labels the state container by default; override `aria-labelledby` when another visible heading should name it. |
+| Skeleton | `text`, `rect`, or `circle`; optional width and height | Decorative only (`aria-hidden`); the loading label remains the accessible announcement. |
+| FieldLabel | Native label attributes and children | Use `htmlFor` with a control ID, or wrap the control so the browser provides the label association. |
+| TextField | Native input attributes | Native input types, required/min/max constraints, read-only, disabled, and keyboard behavior are preserved. |
+| TextArea | Native textarea attributes | Native multiline editing, read-only/disabled states, and constraints are preserved. |
+| SelectField | Native select attributes and option children | Native select behavior, disabled state, validation state, and keyboard interaction are preserved. |
+| Switch | Required controlled `checked` and `onCheckedChange`; button attributes and children | Renders a native button with `role="switch"` and `aria-checked`; the accessible name comes from its children or an explicit ARIA label. Disabled behavior and keyboard activation follow native button behavior. |
+| HelpText | Paragraph attributes and children | Give it an ID and reference it from `aria-describedby` on the control. |
+| FieldError | Paragraph attributes and children | Defaults to `role="alert"`; set the control's `aria-invalid` and include this ID in `aria-describedby` when the error applies. |
+| Tabs | Controlled `items`, `value`, `onValueChange`, accessible `label`, orientation, and styling hooks | Uses a 44px minimum hit area by default through `--eol-control-size-md`; a consumer may override it for an intentional layout after reviewing touch usability. Arrow keys follow the declared orientation; Home/End select the first/last enabled tab. Exactly one tab is in the normal tab order. Every tab controls an existing linked panel element; inactive panel shells stay empty and hidden while only the selected panel content is mounted. Switching tabs remounts that content, so keep transient form state above `Tabs` when it must survive a switch. |
+| ConfirmDialog | Controlled `open`, `title`, `description`, `confirmLabel`, `onConfirm`, `onOpenChange`; optional tone, busy, error, cancel label, and localized busy label | Uses `<dialog>.showModal()`, cycles Tab/Shift+Tab among visible dialog controls, and returns focus to the opener when closed. Escape closes unless busy. Pending requests set `aria-busy="true"`, disable both actions, and show the localized busy label; API errors render inside the modal. Set `busyLabel` and `cancelLabel` to match the consuming UI language. Server authorization remains authoritative. |
+| buttonClassName | Variant and optional extra classes | Adds the shared action styles to an app-owned link while preserving its native routing and semantics. |
+
+## Adding and changing components
+
+Promote a pattern when a real consumer workflow needs it, its interaction or accessibility behavior should stay consistent across applications, and its API can remain independent of product data, routing, and permissions. A primitive may be shared before a second product adopts it when native behavior or accessibility is difficult to reproduce safely; record its first consumer and review another adoption before expanding its API. Keep page composition, product language, artwork, and one-off layouts in the application. A shared component needs a typed contract, named states and keyboard behavior, a catalog example, and a consumer before it is considered ready.
+
+`@empire/ui` is private and changes ship with this workspace; it has no independent published semver contract. Additive compatible changes can land with their consumer. For a breaking change, update all consumers, catalog examples, and this contract in the same change and include migration notes. If consumers ever need a staggered migration, retain the old export with a deprecation note for one migration cycle, then remove it only after a repository-wide usage check. Revisit public semver and a formal deprecation window before publishing the package independently.
+
+The primitives have no internal state or browser effects, except `ConfirmDialog`, which synchronizes a controlled `open` prop with the native dialog lifecycle. In Next.js App Router, `Tabs` and `Switch` need a Client Component owner because they require callbacks; `Button`, form controls, and layout primitives can render from a Server Component when no client event handler is passed. A `Button` click handler or controlled form event belongs to a Client Component. `ConfirmDialog` declares its own client boundary, but its callbacks must still be created by a client owner because functions cannot cross the Server-to-Client Component boundary. Static primitives and `buttonClassName` can be used in server-rendered UI. Form controls preserve native HTML validation and do not replace server-side validation. CSS is imported once by each consuming app. The package targets React 19, matching the applications; the portal uses Next.js transpilation and Vite consumes the workspace TypeScript source.
+
+### Token layers
+
+The entry stylesheet loads tokens from src/tokens.css. Raw palette values use the eol-palette namespace. Components consume semantic eol-color and eol-status aliases; layout tokens cover spacing, controls, reading width, and sidebar width. Typography, shape, focus, layer, elevation, icon, and motion tokens provide shared defaults. `--eol-color-border` is a subtle divider for nonessential grouping; use `--eol-color-border-strong` for controls whose boundary needs to remain visible. Apps can define local aliases while they migrate; new shared primitives should not add one-off palette values. The catalog renders semantic color swatches, component states, and skeleton shapes for visual inspection. Its theme preview toggles the shared light and dark token palettes across the same component examples.
+
+### Contrast baseline
+
+Static WCAG relative-luminance calculations for the opaque semantic tokens give these dark-theme ratios: text/background 16.91:1, muted/background 7.79:1, text/surface 15.56:1, muted/surface 7.17:1, accent/background 14.42:1, and every status foreground on its matching surface at least 8.91:1. In light theme: text/background 14.64:1, muted/background 5.48:1, text/surface 15.95:1, muted/surface 5.97:1, accent/background 4.61:1, and every status foreground on its matching surface at least 6.11:1. These text pairs exceed 4.5:1. The strong border on a light surface is 3.55:1 (above the 3:1 non-text target); the subtle group divider is not intended to identify a control boundary. This token-level baseline does not cover translucent overlays, artwork, browser rendering, focus indicators per route, or all text/background combinations. See the UI Blueprint for remaining contrast and visual review work.
+### Theme and density support
+
+The dark Empire palette is the default. tokens.css also provides a light semantic palette selected with data-theme="light" on the document root; the Portal exposes a persistent switch while Command Center remains dark. Portal light styling has had a desktop visual pass on the home, systems, and roadmap routes. Contrast across route-specific art and overlays, narrow screens, zoom, and high-contrast settings remains under review; this is not a full accessibility sign-off. Compact density is not supported. Revisit light coverage after route/accessibility review and revisit density only when measured operator tasks need it.
+
+The shared stylesheet includes a `forced-colors: active` fallback that switches component surfaces, controls, selected tabs, and focus indicators to platform system colors. Browser and operating-system validation is still required before claiming forced-colors support as reviewed.
+
+The catalog uses static, fabricated examples and local-only interactions. It makes no API requests and contains no tenant or production records; do not add real user data or credentials to its fixtures. The button section includes an app-owned anchor styled through `buttonClassName`, so consumers can inspect the shared variant without changing link semantics. The dialog preview simulates pending and error states locally and never submits data.
+
+### Font delivery
+
+`styles.css` self-hosts Space Grotesk Variable (Latin, Latin Extended, and Vietnamese subsets) and DM Mono 400/500 (Latin subset) through Fontsource packages. The fonts use `font-display: swap`; system sans/mono stacks remain fallbacks. This avoids Google Fonts runtime requests and keeps both applications consistent. The selected WOFF2 assets total about 78 KB before transfer compression; unicode ranges let browsers fetch only matching Space Grotesk subsets. The SIL Open Font License 1.1 texts are kept in `licenses/` beside this package's font dependencies.
+
+Apps import the stylesheet once in their entry point and keep page layout, navigation, and domain-specific composition in the app. This package does not own product data, routes, authentication, API access, or domain workflows.
+
+The portal and command center have different jobs and established visual treatments. Shared tokens establish a common palette and component behavior; each app can keep local layout and presentation where its context requires it.
+
+### Current consumer map
+
+| Consumer | Shared primitives currently used | Example |
+| --- | --- | --- |
+| Public portal | Badge, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, Panel, SectionHeading, StatGrid, Switch, Tabs, button class helper | Page introductions, loading art, orbit rings, panel effects, and manga SFX lettering use shared components; the explorer selects system metadata with keyboard-accessible tab panels. |
+| 100CENTER | Badge, Button, ConfirmDialog, EmptyState, ErrorState, FieldLabel, LoadingState, MangaEffect, MangaPageIntro, MangaTelemetryHero, Notice, Panel, SelectField, TextArea, TextField | Overview and world telemetry share one hero composition; navigation and workspace actions use package transitions. Module, RFC, and Research Run lists retain distinct resource states. |
+| UI catalog | Every exported primitive | Standalone visual and interaction examples; actions are fixtures and do not call product APIs. |
+
+## Local component catalog
+
+Run pnpm --filter @empire/ui catalog from the monorepo root and open http://127.0.0.1:4173. The catalog shows the current primitives and their visual states without adding a route to either product app. Its fixtures are examples, not live product data. Static Notice samples use `note` semantics to avoid announcing the entire gallery on page load; the two “Add update” controls insert live `status` and `alert` examples on demand.
+
+## Long-term direction
+
+Read the [UI Blueprint and checklist](../../docs/BLUEPRINT_UI.md) for the baseline audit, token and component contracts, user journeys, phased backlog, and evidence needed to close a task. Use its stable `UI-Uxx-xx` IDs when implementing or reviewing UI changes. The blueprint owns the roadmap; this README describes the package currently available.
