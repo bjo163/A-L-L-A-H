@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { BrandConcepts } from "../src/brand/BrandConcepts";
-import { Badge, BrandLockup, Button, buttonClassName, ConfirmDialog, Container, EmptyState, ErrorState, FieldError, FieldLabel, HelpText, Icon, IconText, iconGroups, LoadingState, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MetricGrid, Notice, Panel, RegionSummary, SectionHeading, SelectField, Skeleton, StatusIndicator, Switch, Tabs, TextArea, TextField } from "../src";
+import { Badge, BrandLockup, Button, buttonClassName, ConfirmDialog, Container, DataTable, DecisionSummary, Disclosure, EmptyState, EntityCard, ErrorState, EventList, FieldError, FieldLabel, FilterBar, FormSection, HelpText, Icon, IconText, iconGroups, ListDetail, LoadingState, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MetricGrid, Notice, Panel, Pagination, ReadinessList, RegionSummary, ResourceState, ReviewActions, SectionHeading, SelectField, Skeleton, StatusIndicator, Switch, Tabs, TextArea, TextField, Timeline } from "../src";
 import "../src/ui.css";
 import "./catalog.css";
 
@@ -426,6 +426,37 @@ function Catalog() {
           onConfirm={simulateConfirmationFailure}
           onOpenChange={setConfirmOpen}
         />
+      </section>
+
+      <section className="catalog-section" aria-labelledby="patterns-heading">
+        <div className="catalog-section-heading">
+          <div>
+            <p className="catalog-eyebrow">OPERATIONAL PATTERN FIXTURES</p>
+            <h2 id="patterns-heading">Long, empty, partial, and failed data</h2>
+          </div>
+          <p>Every shared data pattern is exercised with realistic long content and explicit resource states before app adoption.</p>
+        </div>
+        <Panel className="catalog-card">
+          <FilterBar resultLabel="2 of 24 records" clearAction={<Button variant="quiet">Clear filters</Button>}>
+            <TextField aria-label="Filter fixture records" placeholder="Filter records…" />
+            <SelectField aria-label="Fixture status" defaultValue="all"><option value="all">All statuses</option><option value="ready">Ready</option><option value="partial">Partial</option></SelectField>
+          </FilterBar>
+          <DataTable caption="Fixture records" responsiveLabel="Scrollable fixture records" rowKey={(row) => row.id} rows={[{ id: "long-reference-001", name: "Long evidence record with a deliberately extended title for narrow layouts", status: "Ready" }, { id: "partial-reference-002", name: "Partial source record", status: "Partial" }]} columns={[{ key: "name", header: "Record", cell: (row) => row.name }, { key: "status", header: "Status", cell: (row) => row.status }]} />
+          <Pagination page={1} totalPages={3} onPageChange={() => undefined} />
+        </Panel>
+        <div className="catalog-panels">
+          <ResourceState state="partial" title="Partial resource" description="The primary record loaded, but supplemental evidence is still unavailable."><Notice role="note">Primary content remains available for review.</Notice></ResourceState>
+          <ResourceState state="error" title="Failed resource" description="The fixture service did not respond." action={<Button variant="secondary">Retry fixture</Button>} />
+        </div>
+        <Panel className="catalog-card">
+          <ListDetail items={[{ id: "one", title: "Selected record", summary: "Long detail content remains readable and bounded inside the detail pane." }, { id: "two", title: "Second record", summary: "A second fixture demonstrates selection changes." }]} selectedKey="one" getKey={(item) => item.id} renderListItem={(item) => <span>{item.title}</span>} renderDetail={(item) => <EntityCard title={item.title} summary={item.summary} status={<Badge tone="success">Ready</Badge>} />} onSelect={() => undefined} />
+          <Disclosure summary="Payload and source summary"><code>{`{"source":"fixture","complete":false,"records":2}`}</code></Disclosure>
+          <EventList events={[{ id: "event-1", timestamp: "2026-10-22T10:00:00Z", actor: "Operator", action: "Reviewed evidence", details: "Long details stay behind a native disclosure." }]} />
+          <Timeline items={[{ id: "t1", label: "Snapshot", title: "Evidence captured", description: "This timestamp is a fixture snapshot." }]} />
+          <ReadinessList items={[{ id: "r1", label: "Source coverage", status: "partial", detail: "One source remains pending." }]} />
+          <FormSection title="Review fixture" description="A complete form section keeps context before actions."><ReviewActions><Button>Approve fixture</Button><Button variant="secondary">Request changes</Button></ReviewActions></FormSection>
+          <DecisionSummary title="Decision summary" decision="Pending review" rationale="The final decision remains app-owned and explicit." />
+        </Panel>
       </section>
 
       <footer className="catalog-footer">
