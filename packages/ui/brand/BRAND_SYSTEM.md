@@ -31,6 +31,20 @@ Do not skew, stretch, crop, add outlines or shadows to the SVG, recolor paths in
 
 The current source review shows a 34px compact mark with a 12px computed gap in the Command Center login. Minimum display size is not yet approved: standard geometry should not be assumed legible below the sizes actually reviewed, and the optical source/16px favicon need comparison on light, dark, grayscale, and busy backgrounds before any final minimum is published. Numeric clear space and minimum size remain open in C02-09; full visual review and final concept selection remain open in C02-03/C02-13. Full-brand, monochrome, inverse, and small optical source outputs come from package-owned geometry and are declared in `assets/asset-manifest.json`; their availability does not mean colors or Orbit concept are approved.
 
+## Working Orbit geometry reference
+
+These measurements document the current editable candidate so its package outputs can be maintained consistently. They do not select Orbit as the final identity.
+
+| Geometry | Standard source `orbit.svg` | Optical source `orbit-small.svg` |
+| --- | --- | --- |
+| Canvas and center | `viewBox="0 0 72 72"`; center `(36,36)` | `viewBox="0 0 72 72"`; center `(36,36)` |
+| Core | Filled circle, radius `9` | Filled circle, radius `11.5` |
+| Orbital structure | Two ellipses, radii `29 × 12`, rotated `-35°` and `+35°`; round caps; stroke `2.5`; second path opacity `.75` | One circular ring, radius `24`; round caps/joins; stroke `4` |
+| Satellite points | Filled circles at `(59,22)` radius `4`, and `(14,47)` radius `3` | Filled circles at `(17,17)` and `(55,55)`, each radius `5` |
+| Stroke at 16/24/32px | `0.56 / 0.83 / 1.11px` | `0.89 / 1.33 / 1.78px` |
+
+The optical drawing is a deliberate simplification: it replaces the two intersecting elliptical paths with one ring, thickens the outline from `2.5` to `4` viewBox units, enlarges the center and satellites, and makes the satellite pair equal. Use the standard source for regular product marks and the generated optical source where the small-size study calls for it. These calculations document scale behavior only; the smallest legible rendered size and the point at which to switch optical sources still require the C02-09/C02-13 review.
+
 ## Source and licensing
 
 `assets/source/brand/orbit.svg` is editable and generates the current Orbit React mark, full-brand/monochrome/inverse standalone marks, and 48px+ app-icon variants. `assets/source/brand/orbit-small.svg` is its package-owned optical correction for LogoMark small sizes and 16/24/32px standalone outputs, including the favicon. Generated files are validated for source/hash drift. Product names remain live text; no outlined wordmark is distributed. Font licenses are tracked in `licenses/`. Asset provenance does not grant rights to the project name or to external reuse; record the repository and trademark review before public brand release.
