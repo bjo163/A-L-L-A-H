@@ -106,7 +106,7 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 .eol-page-intro__title { margin: 0; font-size: var(--eol-font-size-heading-1); line-height: var(--eol-line-height-display); letter-spacing: var(--eol-letter-spacing-display); }
 .eol-page-intro__title:focus-visible { outline: var(--eol-focus-width) solid var(--eol-color-focus); outline-offset: var(--eol-focus-offset); }
 .eol-page-intro__description { max-width: var(--eol-content-width); margin: 0; color: var(--eol-color-text-muted); font-size: var(--eol-font-size-lg); line-height: var(--eol-line-height-relaxed); }
-.eol-page-intro__actions { display: flex; flex-wrap: wrap; gap: var(--eol-space-3); }
+.eol-page-intro__meta, .eol-page-intro__actions { display: flex; flex-wrap: wrap; gap: var(--eol-space-3); }
 .eol-section-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: var(--eol-space-6); }
 .eol-section-heading--section { margin-block-end: 1.875rem; }
 .eol-section-heading--compact { align-items: center; gap: 0.875rem; margin-block-end: 0.875rem; }

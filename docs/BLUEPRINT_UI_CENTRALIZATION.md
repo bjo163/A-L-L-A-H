@@ -106,7 +106,7 @@ Nama kerja arah visual: **Empire Ink**. Identitas dibangun dari tinta tegas, rua
 
 | Elemen | Prinsip | Implementasi target |
 | --- | --- | --- |
-| Hierarki | Satu fokus utama dalam setiap section | H1 jelas, ringkasan singkat, aksi utama, informasi sekunder |
+| Hierarki | Satu fokus utama dalam setiap section | Context/eyebrow → satu H1 → ringkasan → metadata atau aksi → konten; aksi utama didahulukan saat ada beberapa aksi |
 | Surface | Canvas tenang; panel penting lebih kuat | Default, inset, raised, selected, emphasis memakai token terpisah |
 | Aksen | Satu aksen aksi dominan per konteks | Dekorasi memakai brand tokens; status memakai status tokens |
 | Tipografi | Body terbaca, mono untuk kode/metrik | Body awal 16px editorial dan 14px operasional; metadata umumnya ≥12px sebagai target produk |
@@ -263,7 +263,7 @@ Owner: design + UI maintainer. Dependensi: C00. Gate: satu arah dipilih melalui 
 - [x] **UI-C01-02** — Buat dua atau tiga eksplorasi dalam fixture hero, tabel, form, dan dialog yang sama.
 - [ ] **UI-C01-03** — Tentukan peran aksen utama, aksen dekoratif, dan warna status.
 - [ ] **UI-C01-04** — Tetapkan hirarki display, heading, body, metadata dan angka.
-- [ ] **UI-C01-05** — Tetapkan anatomi halaman: context, title, summary, primary action, content.
+- [x] **UI-C01-05** — Tetapkan anatomi halaman: context, title, summary, primary action, content. `PageIntro` di `packages/ui` memegang breadcrumb/eyebrow, satu H1, ringkasan, metadata non-interaktif (`meta`) dan aksi (`actions`) dengan urutan tetap; konten view menyusul di main region. Portal root memakai varian editorial `PortalOrbitHero`, route interior memakai `PortalPageIntro`→`MangaPageIntro`, dan Command Center memakai `WorkspaceShell`→`MangaPageIntro`→view. Workspace mengirim status API/database melalui `meta`, bukan slot aksi. Fixture workspace katalog memperagakan pola status; aplikasi tetap memasok copy, link, data, dan aksi bisnis.
 - [ ] **UI-C01-06** — Tentukan aturan flat section versus panel agar halaman tidak berisi kartu berlebihan.
 - [ ] **UI-C01-07** — Tetapkan aturan tinta, offset shadow dan focus agar tidak bersaing.
 - [ ] **UI-C01-08** — Tetapkan profil editorial dan operational beserta batas ornamentasi.

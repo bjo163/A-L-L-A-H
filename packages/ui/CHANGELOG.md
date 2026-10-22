@@ -9,6 +9,7 @@
 - Shared vector icon registry, `LogoMark`, `BrandLockup`, theme tokens, map aliases, and catalog fixtures.
 - `DonutChart` for reusable, accessible distribution charts with semantic status tones.
 - `IllustrationFrame` and standard ratio presets for consistently sized and clipped product artwork.
+- `PageIntro.meta` for non-interactive status and freshness information, kept separate from `actions`; `MangaPageIntro` inherits the slot and the Command Center health cluster now uses it.
 - Optional `illustrated` presentation on `EmptyState` and `ErrorState`; each uses package-owned decorative SVG while keeping the message and recovery action primary.
 - Illustration frames are pointer-transparent and their inner art subtree is inert, preventing artwork from becoming a focus stop or intercepting neighboring interactions.
 
@@ -25,6 +26,7 @@
 
 - Portal keeps Next.js routing and language/theme persistence in app code; use router-neutral package patterns and `buttonClassName` for links.
 - Command Center keeps Vite local view state, API permissions, and MapLibre runtime in app code; use package patterns for presentation and native interaction semantics.
+- When migrating a status-only page-intro node, pass it through `meta`; reserve `actions` for controls or navigational actions.
 - Native control refs and attributes remain forwarded. `ConfirmDialog` restores opener focus and requires client-owned callbacks.
 - `ResourceState` children remain mounted for `partial` and `stale` states so consumers can preserve usable content.
 - Empty/error illustrations are opt-in; existing states preserve their current plain presentation. Use illustrations only when they add orientation without replacing state copy.
@@ -35,5 +37,8 @@
 - `pnpm --filter @empire/ui catalog:build`
 - `pnpm --filter @empire/portal build`
 - `pnpm --filter @empire/command-center build`
+- `pnpm audit:ui-boundary`
+- `pnpm audit:ui-css`
+- `git diff --check`
 
 All commands passed in the current workspace; the Command Center build reports only a non-failing chunk-size warning.

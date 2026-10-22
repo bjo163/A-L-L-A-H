@@ -81,3 +81,7 @@ The user-provided Portal at `http://localhost:3300/` rendered its shared shell b
 ## Command Center primary heading follow-up — 2026-10-22
 
 The shared workspace view contained both a visually-hidden topbar `<h1>` and the visible `<h1>` emitted by `MangaPageIntro`. The topbar heading was redundant: the visible intro owns the active view title, while `WorkspaceShell` already focuses the first visible heading after navigation and the breadcrumb names the current location. The hidden heading was removed; the topbar retains only its breadcrumb and controls. `pnpm --filter @empire/command-center build` passes. The running `5173` session remained unauthenticated, so this is source/build evidence; authenticated runtime heading announcements and screen-reader review remain open.
+
+## Shared page anatomy and metadata slot — 2026-10-22
+
+`PageIntro` now separates non-interactive metadata from `actions`; the Command Center API/database health cluster uses `meta`, and the package workspace fixture shows status indicators in the same slot. The package contract documents context/eyebrow → one H1 → summary → metadata/actions → view content. Portal's homepage hero and interior pages plus the Command Center view follow the same hierarchy while retaining their product-specific compositions. UI package typecheck, Portal and Command Center production builds, UI catalog production build, package boundary audit, CSS duplicate audit, and `git diff --check` pass. Responsive visual review remains open in the matrix.

@@ -59,7 +59,7 @@
 .eol-workspace-shell .page-heading .eol-page-intro__eyebrow { color: var(--eol-color-accent-strong); }
 .eol-workspace-shell .page-heading .eol-page-intro__description { max-width: 720px; margin: 0; color: var(--eol-color-text-muted); font-size: 12px; line-height: 1.65; }
 .eol-workspace-shell .page-heading .eol-page-intro__title { font-size: clamp(24px, 2.5vw, 32px); font-weight: 700; }
-.eol-workspace-shell .page-heading .eol-page-intro__actions { align-self: end; }
+.eol-workspace-shell .page-heading .eol-page-intro__meta { align-self: end; }
 .eol-workspace-shell .health-cluster { display: flex; gap: 16px; padding-bottom: 4px; color: var(--eol-color-text-muted); font: 8px var(--eol-font-mono); letter-spacing: .07em; white-space: nowrap; }
 .eol-workspace-shell .health-cluster > span { display: flex; align-items: center; gap: 7px; }
 .eol-workspace-shell .health-cluster i { display: inline-block; width: 6px; height: 6px; border-radius: 50%; background: var(--eol-status-neutral-foreground); }

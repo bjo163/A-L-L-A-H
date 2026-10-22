@@ -30,7 +30,7 @@ Run `pnpm audit:ui-css` to find repeated identical property declarations within 
 - `Button` for consistent native button actions.
 - `Panel` for semantic, reusable surface containers.
 - `Container` for shared reading, content, and workspace widths with responsive gutters.
-- `PageIntro`, `SectionHeading`, and `MetricGrid` for consistent page composition and both editorial and operational metric presentations.
+- `PageIntro`, `SectionHeading`, and `MetricGrid` for consistent page composition and both editorial and operational metric presentations. `PageIntro` owns context/eyebrow → one H1 → summary → optional metadata or actions; page content follows it in the consumer's main region.
 - `DonutChart` for token-colored distribution rings with an accessible text summary; data aggregation, visible legends, and filtering stay consumer-owned.
 - `MetricGrid` accepts 2–6 columns and label, value, detail, tone, and freshness; apps own business-state mapping and freshness copy. Five/six-column grids collapse to three, two, then one column at shared breakpoints.
 - `MangaEffect` for reusable manga panel, screentone, speed-line, reveal, and hover treatments.
@@ -68,6 +68,7 @@ Run `pnpm audit:ui-css` to find repeated identical property declarations within 
 | Button | `primary`, `secondary`, `quiet`, `danger`; native button attributes | Renders a native button and defaults to `type="button"`. Loading state and its accessible label are owned by the consuming workflow. Long labels may wrap within the available width. |
 | Panel | `as` semantic element, optional `manga` surface treatment, `className`, element attributes | Renders a surface; `manga` applies the shared ink border, offset shadow, and transition without taking over app layout. Refs are not part of the current contract. |
 | Container | `as` semantic element; `reading`, `content`, or `workspace` width | Applies the shared max-width and responsive gutter tokens. Content and workflow remain in the app. |
+| PageIntro | Optional breadcrumb; required eyebrow and title; optional summary, metadata, or action group | Renders context, one page H1, summary, then metadata/actions in that order. `meta` is non-interactive status/freshness information; `actions` is for actual actions. Follow it with the page's content patterns inside the main region. |
 | SectionHeading | Required title; optional eyebrow, aside, heading level, `section` or `compact` layout, and semantic class hooks | Shares heading anatomy and responsive stacking. The app supplies localized copy and actions. |
 | MetricGrid | `editorial` or `operational` profile; `comfortable` or `compact` density; 2–6 columns; items with label, value, detail, tone, and freshness | Uses one shared anatomy for Portal summary bands and Command Center operational metrics. The app supplies all domain meaning; the editorial profile keeps the value-first band while the operational profile uses label-first cards. |
 | DonutChart | Accessible `label`, localized `centerLabel`, and segments with stable `id`, text `label`, nonnegative `value`, and semantic `tone` | Owns SVG geometry, theme-aware status strokes, center total, and accessible text summary. The app owns aggregation, business meaning, filtering, and the visible interactive legend. Zero-value segments are omitted and a zero-total chart remains a labeled empty ring. |

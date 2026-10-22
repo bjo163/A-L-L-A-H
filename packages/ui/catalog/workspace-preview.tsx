@@ -1,6 +1,6 @@
 import { useState } from "react";
 import { createRoot } from "react-dom/client";
-import { Badge, BrandLockup, Breadcrumbs, Button, Icon, MangaPageIntro, MetricGrid, NavItem, Panel, SectionHeading, WorkspaceShell } from "../src";
+import { Badge, BrandLockup, Breadcrumbs, Button, Icon, MangaPageIntro, MetricGrid, NavItem, Panel, SectionHeading, StatusIndicator, WorkspaceShell } from "../src";
 import "../src/ui.css";
 import "../src/command-center.css";
 import "./workspace-preview.css";
@@ -24,7 +24,7 @@ function WorkspacePreview() {
     </aside>}
     header={<header className="topbar"><Breadcrumbs className="breadcrumb" label="Workspace location" items={[{ label: "COMMAND CENTER" }, { label: active, current: true }]} /><Button variant="secondary" size="sm"><Icon name="refresh" size={14}/>Sync fixture</Button></header>}
   >
-    <MangaPageIntro className="page-heading" eyebrow="WORKSPACE SHELL FIXTURE" title={active} description="Navigation, skip link, responsive shell, header and main landmark are shared by the package." />
+    <MangaPageIntro className="page-heading" eyebrow="WORKSPACE SHELL FIXTURE" title={active} description="Navigation, skip link, responsive shell, header and main landmark are shared by the package." meta={<><StatusIndicator tone="success">API connected</StatusIndicator><StatusIndicator tone="neutral">Local snapshot</StatusIndicator></>} />
     <SectionHeading layout="compact" title={`${active} overview`} aside={<Badge tone="info">Static fixture</Badge>} />
     <MetricGrid columns={3} density="compact" items={[{ label: "Navigation", value: "Shared" }, { label: "Content", value: "App slot" }, { label: "Permissions", value: "Consumer" }]} />
     <Panel className="workspace-preview-note"><p>Resize the catalog viewport and use the navigation toggle. Opening it reveals operator identity and the sign-out action. Select a page to focus its new heading, or press Escape to close navigation and return focus to the toggle.</p></Panel>
