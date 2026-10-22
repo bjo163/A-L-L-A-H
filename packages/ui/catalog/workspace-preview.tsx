@@ -27,7 +27,7 @@ function WorkspacePreview() {
     <MangaPageIntro className="page-heading" eyebrow="WORKSPACE SHELL FIXTURE" title={active} description="Navigation, skip link, responsive shell, header and main landmark are shared by the package." />
     <SectionHeading layout="compact" title={`${active} overview`} aside={<Badge tone="info">Static fixture</Badge>} />
     <MetricGrid columns={3} density="compact" items={[{ label: "Navigation", value: "Shared" }, { label: "Content", value: "App slot" }, { label: "Permissions", value: "Consumer" }]} />
-    <Panel className="workspace-preview-note"><p>Resize the catalog viewport and use the navigation toggle. On small screens, select a page or press Escape to close navigation and return focus to the toggle.</p></Panel>
+    <Panel className="workspace-preview-note"><p>Resize the catalog viewport and use the navigation toggle. On small screens, select a page to focus its new heading, or press Escape to close navigation and return focus to the toggle.</p></Panel>
   </WorkspaceShell>;
 }
 

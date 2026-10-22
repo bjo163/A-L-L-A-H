@@ -167,7 +167,7 @@
 .eol-workspace-shell .evidence-item strong { font-size: 10px; }.eol-workspace-shell .evidence-item p { white-space: pre-wrap; }
 .eol-auth-layout { display: grid; min-height: 100vh; place-items: center; padding: 22px; }
 :where(.eol-auth-layout) .eol-auth-card { display: grid; width: min(100%, 450px); gap: 14px; padding: clamp(24px, 5vw, 40px); background: var(--eol-color-surface); }
-:where(.eol-auth-layout) .eol-auth-card h1 { font-size: 28px; }:where(.eol-auth-layout) .eol-auth-card > p { color: var(--eol-color-text-muted); font-size: 11px; line-height: 1.65; }
+:where(.eol-auth-layout) .eol-auth-card h1 { font-size: 28px; }:where(.eol-auth-layout) .eol-auth-card h1:focus-visible { outline: var(--eol-focus-width) solid var(--eol-color-focus); outline-offset: var(--eol-focus-offset); }:where(.eol-auth-layout) .eol-auth-card > p { color: var(--eol-color-text-muted); font-size: 11px; line-height: 1.65; }
 :where(.eol-workspace-shell) .eol-nav-item { display: flex; align-items: center; gap: 10px; width: 100%; }:where(.eol-workspace-shell) .eol-nav-item__icon { display: inline-grid; place-items: center; }:where(.eol-workspace-shell) .eol-nav-item em { margin-left: auto; }
 .eol-auth-layout .remember-me { display: flex; align-items: center; gap: 10px; color: var(--eol-color-text-subtle); font-size: 11px; cursor: pointer; }
 .eol-auth-layout .remember-me input { appearance: none; display: grid; width: 18px; height: 18px; flex: none; place-items: center; margin: 0; border: 2px solid var(--eol-manga-ink); border-radius: var(--eol-radius-none); background: var(--eol-color-surface); box-shadow: 2px 2px 0 var(--eol-manga-ink); cursor: pointer; }
@@ -210,6 +210,7 @@
 }
 @media (forced-colors: active) {
   .eol-workspace-shell .global-search:focus-within { outline-color: Highlight; }
+  :where(.eol-auth-layout) .eol-auth-card h1:focus-visible { outline-color: Highlight; }
 }
 
 /* ── World Monitor ─────────────────────────────────────────────────────────── */
