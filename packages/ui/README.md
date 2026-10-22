@@ -20,8 +20,9 @@ The centralization blueprint tracks the remaining migration and acceptance work.
 - `MangaSfx` for decorative, screen-reader-hidden manga onomatopoeia.
 - `MangaLoadingState` for a shared manga-styled loading panel and motion.
 - `MapFrame`, `MapLegend`, and `RegionSummary` for map source states and shared map information patterns.
+- `StatusIndicator` for a compact status label with a non-color shape cue and shared semantic tones.
 - `Badge` for maturity and status labels.
-- `Icon`, `iconNames`, and `iconGroups` for the original shared 24px SVG stroke family. Icons are decorative by default; `label` is for an SVG that carries meaning without an adjacent accessible name.
+- `Icon`, `iconNames`, `directionalIconNames`, and `iconGroups` for the original shared 24px SVG stroke family. Arrows, chevrons, and input/output glyphs mirror automatically in RTL; other glyphs do not. Icons are decorative by default; `label` is for an SVG that carries meaning without an adjacent accessible name.
 - `activity`, `input`, and `output` are available as semantic names in the shared icon registry; add new glyphs to a named group and the catalog together.
 - `Notice` for user-facing information that needs clear emphasis.
 - `LoadingState`, `EmptyState`, and `ErrorState` for distinct resource states.

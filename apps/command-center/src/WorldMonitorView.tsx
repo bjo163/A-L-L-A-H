@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { WorldMonitoringSnapshot } from "@empire/batteries-world-monitor";
-import { Badge, Button, EmptyState, Icon, MangaEffect, MangaTelemetryHero, Panel, RegionSummary, TextField } from "@empire/ui";
+import { Badge, Button, EmptyState, Icon, MangaEffect, MangaTelemetryHero, Panel, RegionSummary, StatusIndicator, TextField } from "@empire/ui";
 import { WorldGlobeMap } from "./WorldGlobeMap";
 
 interface WorldMonitorViewProps {
@@ -46,7 +46,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
   return (
     <>
       <MangaTelemetryHero
-        eyebrow={<>SERVICE STATUS <span className="live-pill" data-state={systemState}>{snapshot.globalAlertLevel === "unknown" ? "STATUS UNKNOWN" : `ALERT LEVEL ${snapshot.globalAlertLevel.toUpperCase()}`}</span></>}
+        eyebrow={<>SERVICE STATUS <StatusIndicator tone={systemState === "ok" ? "success" : systemState === "unavailable" ? "neutral" : "warning"}>{snapshot.globalAlertLevel === "unknown" ? "STATUS UNKNOWN" : `ALERT LEVEL ${snapshot.globalAlertLevel.toUpperCase()}`}</StatusIndicator></>}
         title="System and regional monitoring"
         description="API and database health are checked live. Regional infrastructure, energy, and DNA sensor sources are not connected yet."
         metadata={<><span><Icon name="clock" size={13}/> Updated {new Date(snapshot.timestamp).toLocaleTimeString()}</span><span><Icon name="globe" size={13}/> {snapshot.regions.length} Reference Regions</span><span><Icon name="spark" size={13}/> {totalHeliogrid} Heliogrid Load</span><span><Icon name="command" size={13}/> {snapshot.dnaSensors.length} DNA Mappings</span></>}

@@ -3,7 +3,7 @@ import type { FormEvent } from "react";
 import { API_PATHS, ApiError, createApiClient } from "@empire/api-contract";
 import type { AuthEntity, CabRfc, CabSummary, LoginResponse, ResearchRun } from "@empire/api-contract";
 import type { WorldMonitoringSnapshot } from "@empire/batteries-world-monitor";
-import { Badge, Button, ConfirmDialog, EmptyState, ErrorState, FieldLabel, Icon, LoadingState, MangaEffect, MangaPageIntro, MangaTelemetryHero, Notice, Panel, SelectField, TextArea, TextField } from "@empire/ui";
+import { Badge, Button, ConfirmDialog, EmptyState, ErrorState, FieldLabel, Icon, LoadingState, MangaEffect, MangaPageIntro, MangaTelemetryHero, Notice, Panel, SelectField, StatusIndicator, TextArea, TextField } from "@empire/ui";
 import type { ConfirmDialogTone, IconName } from "@empire/ui";
 import { WorldMonitorView } from "./WorldMonitorView";
 
@@ -300,7 +300,7 @@ export function App() {
       <div id="active-view" role="region" aria-labelledby="active-view-heading">
       {tab==="overview"&&<>
         <MangaTelemetryHero
-          eyebrow={<>SYSTEM PULSE <span className="live-pill" data-state={snapshot.readiness}>{snapshot.readiness.toUpperCase()}</span></>}
+          eyebrow={<>SYSTEM PULSE <StatusIndicator tone={snapshot.readiness === "ok" ? "success" : snapshot.readiness === "unavailable" ? "neutral" : "warning"}>{snapshot.readiness.toUpperCase()}</StatusIndicator></>}
           title={snapshot.readiness === "ok" ? "All local systems are responding" : "System needs attention"}
           description="API gateway, PostgreSQL readiness, governance and research are refreshed every 30 seconds."
           metadata={<><span><Icon name="clock" size={13}/> {snapshot.checkedAt ? new Date(snapshot.checkedAt).toLocaleString() : "Awaiting first sync"}</span><span><Icon name="command" size={13}/> {snapshot.capabilities.length} active capabilities</span><span><Icon name="arrows" size={13}/> {String(continuum?.status ?? "pending")} continuum</span></>}

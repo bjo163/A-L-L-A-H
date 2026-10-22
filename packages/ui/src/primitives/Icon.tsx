@@ -11,6 +11,10 @@ export const iconNames = [
 ] as const;
 
 export type IconName = (typeof iconNames)[number];
+export const directionalIconNames = [
+  "chevronLeft", "chevronRight", "arrowLeft", "arrowRight", "arrowUpRight", "arrowDownRight", "input", "output",
+] as const satisfies readonly IconName[];
+export type DirectionalIconName = (typeof directionalIconNames)[number];
 
 export const iconGroups: ReadonlyArray<{ label: string; names: readonly IconName[] }> = [
   { label: "Navigation", names: ["home", "menu", "close", "externalLink", "chevronDown", "chevronLeft", "chevronRight", "chevronUp", "arrowLeft", "arrowRight", "arrowUpRight", "arrowDownRight", "input", "output"] },
@@ -78,14 +82,17 @@ type IconProps = Omit<SVGProps<SVGSVGElement>, "aria-hidden" | "aria-label" | "r
   name: IconName;
   size?: number;
   label?: string;
+  directional?: boolean;
 };
 
-export function Icon({ name, size = 20, label, ...props }: IconProps) {
+export function Icon({ name, size = 20, label, directional, ...props }: IconProps) {
+  const shouldMirror = directional ?? (directionalIconNames as readonly string[]).includes(name);
   return (
     <svg
       aria-hidden={label ? undefined : true}
       aria-label={label}
       className={props.className ? `eol-icon ${props.className}` : "eol-icon"}
+      data-directional={shouldMirror ? "true" : undefined}
       fill="none"
       focusable="false"
       height={size}

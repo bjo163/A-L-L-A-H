@@ -1,7 +1,8 @@
 export { Badge } from "./primitives/Badge";
 export type { BadgeProps, BadgeTone } from "./primitives/Badge";
 export { Icon, iconGroups, iconNames } from "./primitives/Icon";
-export type { IconName } from "./primitives/Icon";
+export { directionalIconNames } from "./primitives/Icon";
+export type { DirectionalIconName, IconName } from "./primitives/Icon";
 export { Button, buttonClassName } from "./primitives/Button";
 export type { ButtonProps, ButtonVariant } from "./primitives/Button";
 export { ConfirmDialog } from "./primitives/ConfirmDialog";
@@ -52,5 +53,6 @@ export { SectionHeading } from "./patterns/SectionHeading";
 export type { SectionHeadingProps } from "./patterns/SectionHeading";
 export { StatGrid } from "./patterns/StatGrid";
 export type { StatGridProps, StatItem } from "./patterns/StatGrid";
+export { StatusIndicator } from "./patterns/StatusIndicator";
 export { MapFrame, MapLegend, RegionSummary } from "./patterns/MapPatterns";
 export type { MapFrameState, MapLegendItem, MapStatus, RegionSummaryMetric } from "./patterns/MapPatterns";
