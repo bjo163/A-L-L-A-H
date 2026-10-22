@@ -65,7 +65,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
           <div className="button-row world-map-actions">
             {nextRefreshIn !== undefined && (
               <span className="muted world-map-countdown">
-                Auto ↻ in {nextRefreshIn}s
+                <Icon name="refresh" size={12} /> Auto in {nextRefreshIn}s
               </span>
             )}
             <Button variant="secondary" onClick={onRefresh}><Icon name="refresh" size={15}/>Refresh Pulse</Button>
