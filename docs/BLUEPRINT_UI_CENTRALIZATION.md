@@ -38,6 +38,18 @@ Baseline bersumber dari kode workspace pada 22 Oktober 2026. Banyak file sedang 
 
 Jangan memakai jumlah baris CSS sebagai ukuran kualitas: banyak aturan saat ini ditulis dalam satu baris. Gunakan inventaris selector, deklarasi, pemakaian, duplikasi bermakna, dan hasil render.
 
+### Register bukti visual lama yang wajib diukur ulang
+
+Register ini menandai bukti historis yang tidak dapat dipakai sebagai penerimaan untuk token, aset, dan konsumen saat ini. Penandaan menyelesaikan inventaris C00-11; pengukuran ulang dan screenshot baru tetap harus memenuhi gate masing-masing.
+
+| Bukti historis | Mengapa tidak lagi menjadi bukti penerimaan | Pengukuran ulang yang diwajibkan |
+| --- | --- | --- |
+| Snapshot palette, literal warna, dan klaim tema pada `docs/BLUEPRINT_UI.md` bagian “Audit warna awal” dan “Snapshot audit theme terbaru” | Angka berasal dari generasi stylesheet aplikasi lama; stylesheet produk kini dimiliki `packages/ui`. Audit 27 pasangan token opaque per tema yang berjalan hanya membuktikan pasangan token itu, bukan komposisi transparan atau artwork. | Ulangi audit pasangan token setelah spesifikasi visual v1 dibekukan; tinjau kontras alpha, gradient, ilustrasi, fokus, dan status pada render halaman/state aktual. Bukti tersedia di C05-15, C14-06, C16-08 dan matriks review. |
+| Catatan live Portal/Command Center dan ukuran responsif di `docs/UI_REVIEW_MATRIX.md` | Sebagian besar hanya spot check di Chrome pada satu sesi; PNG tidak disimpan dan tidak mencakup semua route, state, tema, bahasa atau viewport. | Buat screenshot deterministik setiap permukaan yang diwajibkan dengan font/data/waktu tetap; bandingkan seluruh route, tema, bahasa, viewport dan state sesuai C00-08, C12-16, C13-20, C16-07 dan C17-01. |
+| Review Orbit/logo dan icon sheet package yang ada di `docs/UI_REVIEW_MATRIX.md` | Orbit masih kandidat provisional; sheet ikon adalah render offline dan belum mencakup forced colors. Hak penggunaan, trademark, pilihan konsep dan minimum size belum disetujui. | Setelah keputusan C01/C02, render master terpilih pada lockup dan surface produk, ukuran kecil, grayscale, latar ramai, light/dark dan forced colors; rekam reviewer serta provenance sesuai C02-03/C02-09/C02-13/C02-15/C03-16. |
+
+Status batas: catatan lama tetap sebagai riwayat, bukan baseline visual baru. Item yang diwajibkan pada kolom pengukuran ulang tetap terbuka hingga bukti render tersimpan dan direview.
+
 ## 3. Keputusan arsitektur target
 
 ### 3.1 Kepemilikan dan batas dependensi
@@ -240,7 +252,7 @@ Owner: maintainer UI + product/design. Dependensi: tidak ada. Gate: inventaris d
 - [ ] **UI-C00-08** — Buat baseline screenshot untuk seluruh permukaan wajib.
 - [ ] **UI-C00-09** — Catat owner aktual desain, frontend, aset, copy, aksesibilitas dan review.
 - [x] **UI-C00-10** — Tulis keputusan sentralisasi, pengecualian vendor dan aturan cutover sebagai ADR. `docs/adr/ADR-0004-ui-package-centralization.md` menetapkan `packages/ui` sebagai pemilik tunggal presentasi, batas domain/runtime yang tetap di app, adapter vendor opt-in dan namespaced, contract stylesheet, alur migrasi dan penghapusan duplicate, serta enforcement dan kondisi revisit. Statusnya Accepted untuk implementasi repo; penerimaan visual dan logo final tetap gate review terpisah.
-- [ ] **UI-C00-11** — Tandai bukti kontras/visual lama yang perlu diukur ulang.
+- [x] **UI-C00-11** — Tandai bukti kontras/visual lama yang perlu diukur ulang. Register pada bagian 2 menghubungkan catatan palette generasi lama, spot check browser tanpa screenshot, dan review brand/icon provisional ke gate pengukuran ulang yang benar. Tanda ini hanya menginventarisasi bukti lama; penerimaan visual baru tetap terbuka pada C00-08, C01–C03, C05, C12–C17.
 - [ ] **UI-C00-12** — Sepakati daftar perubahan visual sengaja versus perubahan yang harus mempertahankan baseline.
 
 ### C01 — Art direction dan hirarki visual
