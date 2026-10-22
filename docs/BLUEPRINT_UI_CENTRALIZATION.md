@@ -456,7 +456,7 @@ Owner: Portal maintainer. Dependensi: C02–C10. Gate: semua route dan state Por
 - [x] **UI-C12-11** — Migrasikan 404 serta loading pada seluruh route.
 - [x] **UI-C12-12** — Tambahkan/adaptasikan error boundary dengan recovery yang didukung app.
 - [ ] **UI-C12-13** — Hilangkan metadata sistem berulang yang saling menutupi di homepage; data tetap milik Portal.
-- [ ] **UI-C12-14** — Rapikan string ID/EN, termasuk entity HTML dalam string JavaScript yang tampil literal.
+- [x] **UI-C12-14** — Rapikan string ID/EN, termasuk entity HTML dalam string JavaScript yang tampil literal.
 - [ ] **UI-C12-15** — Hapus global styles dan manga overrides lama setelah semua consumer pindah.
 - [ ] **UI-C12-16** — Tutup matriks desktop/mobile/theme/language/navigation seluruh route.
 
@@ -702,6 +702,7 @@ Status penerimaan + tanggal:
 | UI-C10-12 | Catalog UI package sekarang memuat fixture pola operasional dengan judul/identifier panjang, tabel, filter, pagination, list-detail, disclosure, event list, timeline, readiness, review form, decision summary, partial resource, dan failure recovery. | `pnpm --filter @empire/ui typecheck` lulus pada commit `369a32b`; fixture bersifat lokal dan tidak memanggil API. |
 | UI-C12-11 | Portal root, `/systems`, dan `/roadmap` memakai `RouteLoading` berbasis shared `MangaLoadingState`; not-found memakai `Container`, `buttonClassName`, dan `IconText` dari package. | Source audit terverifikasi pada `apps/portal/app/loading.tsx`, route loading files, dan `app/not-found.tsx`. |
 | UI-C12-12 | Portal memiliki App Router error boundary yang memakai shared `ErrorState` dan `Button`, dengan recovery melalui callback `reset()` milik Next.js. | `pnpm --filter @empire/portal typecheck` lulus setelah penambahan `apps/portal/app/error.tsx`. |
+| UI-C12-14 | Audit Portal menemukan entity HTML hanya pada JSX text yang React decode saat render; tidak ada `&amp;`, `&quot;`, atau numeric entity di string JavaScript yang dikirim ke UI. ID/EN copy tetap dipilih melalui `PortalLanguage` dan helper `text`. | `rg` audit pada `apps/portal/**/*.tsx` dan `lib/i18n.ts`; Portal typecheck lulus. |
 | UI-C10-01 | `DataTable<Row>` menyediakan typed columns/cell renderer, semantic caption, `scope="col"`, numeric alignment (`start`/`center`/`end`), stable `rowKey`, and table-level empty row. Wrapper memberi horizontal overflow tanpa mengubah table semantics. | `pnpm --filter @empire/ui typecheck` lulus. Consumer migration, caption copy, and narrow-table behavior review masih terbuka pada UI-C10-02/UI-C15-04. |
 | UI-C10-02 | `DataTable` memberi wrapper overflow horizontal yang focusable (`tabIndex=0`) dengan `role=region` dan configurable `responsiveLabel`; markup tetap table semantic, sehingga narrow viewport memiliki scroll berlabel tanpa memalsukan card layout. | `pnpm --filter @empire/ui typecheck` lulus setelah responsive label ditambahkan. Consumer label localization dan browser narrow-table review masih terbuka pada UI-C15-04. |
 | UI-C10-03 | `Pagination` controlled menerima `page`, `totalPages`, dan `onPageChange`, clamps invalid values, disables previous/next pada boundary, dan mengumumkan current/total melalui `aria-live`. | `pnpm --filter @empire/ui typecheck` lulus setelah pattern baru. Consumer total/availability mapping dan keyboard/browser review masih terbuka pada UI-C15-04. |
