@@ -202,4 +202,4 @@ Run pnpm --filter @empire/ui catalog from the monorepo root and open http://127.
 
 ## Long-term direction
 
-Read the [UI Blueprint and checklist](../../docs/BLUEPRINT_UI.md) for the baseline audit, token and component contracts, user journeys, phased backlog, and evidence needed to close a task. Use its stable `UI-Uxx-xx` IDs when implementing or reviewing UI changes. The blueprint owns the roadmap; this README describes the package currently available.
+Use the [long-term UI blueprint](../../docs/BLUEPRINT_UI.md) for product goals, user journeys, and its `UI-Uxx-xx` roadmap. For current ownership, migration, and acceptance of Portal/Command Center presentation, use the [active UI centralization blueprint](../../docs/BLUEPRINT_UI_CENTRALIZATION.md) and its `UI-Cxx-yy` checklist. Baseline observations and theme/contrast evidence in the long-term document are historical; verify them against the active blueprint and current review matrix before treating them as acceptance evidence. This README describes the package currently available.
