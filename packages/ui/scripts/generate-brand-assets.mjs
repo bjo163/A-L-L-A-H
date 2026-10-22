@@ -18,10 +18,13 @@ const component = `import type { SVGProps } from "react";\n\n/** Generated from 
 const brandColor = "#f1b84b";
 const standaloneMarkup = markup.replaceAll("currentColor", brandColor).replace(/\s+/g, " ").trim();
 const svg = (size, label = "Empire of the Light") => `<svg xmlns="http://www.w3.org/2000/svg" viewBox="${viewBox}" width="${size}" height="${size}" role="img" aria-label="${label}"><title>${label}</title>${standaloneMarkup}</svg>\n`;
+const faviconSvg = svg(32);
+const assetModule = `/** Generated from assets/source/brand/orbit.svg. Do not edit by hand. */\nexport const empireFaviconSvg = ${JSON.stringify(faviconSvg)};\n`;
 const generated = [
   ["src/brand/OrbitMark.generated.tsx", component],
+  ["src/brand/BrandAssets.generated.ts", assetModule],
   ["assets/generated/brand/empire-mark.svg", svg(72)],
-  ["assets/generated/icons/favicon.svg", svg(32)],
+  ["assets/generated/icons/favicon.svg", faviconSvg],
   ["assets/generated/icons/app-icon-48.svg", svg(48)],
   ["assets/generated/icons/app-icon-192.svg", svg(192)],
   ["assets/generated/icons/app-icon-512.svg", svg(512)],
@@ -38,6 +41,7 @@ manifest.vectors.brandMaster = {
   concept: "orbit",
   source: masterPath,
   componentOutput: "src/brand/OrbitMark.generated.tsx",
+  assetModuleOutput: "src/brand/BrandAssets.generated.ts",
   assetOutputs: records.filter(({ path }) => path.startsWith(`${manifest.generatedAssetDirectory}/`)).map(({ path }) => path),
 };
 manifest.generatedAssetPolicy = `Brand concepts are authored as inline SVG components; ${masterPath} is the single editable Orbit geometry source for the generated LogoMark React component and mark/favicon/app-icon SVGs. Outputs are deterministic and regenerated with pnpm --filter @empire/ui assets:generate. Final identity approval is tracked in UI-C02.`;

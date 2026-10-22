@@ -8,7 +8,8 @@
     "./ui.css": "./src/ui.css",
     "./portal.css": "./src/portal.css",
     "./command-center.css": "./src/command-center.css",
-    "./adapters/maplibre.css": "./src/adapters/maplibre.css"
+    "./adapters/maplibre.css": "./src/adapters/maplibre.css",
+    "./brand-assets": "./src/brand/BrandAssets.generated.ts"
   },
   "scripts": {
     "build": "tsc --noEmit",

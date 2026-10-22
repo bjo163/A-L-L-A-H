@@ -14,6 +14,7 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     title: { default: "A-L-L-A-H — Portal Empire of the Light", template: "%s | A-L-L-A-H" },
     description,
+    icons: { icon: "/brand/icon.svg" },
     openGraph: { title: "A-L-L-A-H • Empire of the Light", description, type: "website" },
     robots: { index: true, follow: true }
   };

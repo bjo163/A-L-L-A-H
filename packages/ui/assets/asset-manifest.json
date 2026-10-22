@@ -86,6 +86,7 @@
       "concept": "orbit",
       "source": "assets/source/brand/orbit.svg",
       "componentOutput": "src/brand/OrbitMark.generated.tsx",
+      "assetModuleOutput": "src/brand/BrandAssets.generated.ts",
       "assetOutputs": [
         "assets/generated/brand/empire-mark.svg",
         "assets/generated/icons/favicon.svg",
@@ -120,6 +121,10 @@
     {
       "path": "src/brand/OrbitMark.generated.tsx",
       "sha256": "6bad85531621c6c9c93dbdc80be698e56eda8c7e27f24e7dd1d15863b28c56d5"
+    },
+    {
+      "path": "src/brand/BrandAssets.generated.ts",
+      "sha256": "61f647b3711c54fdbf0c8b614b136a61e4887772d086337359b814e22cea05ba"
     },
     {
       "path": "assets/generated/brand/empire-mark.svg",
