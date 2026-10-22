@@ -29,15 +29,8 @@ function applyTheme(theme: "dark" | "light", storageKey: string, persist: boolea
 export function ThemeControl({
   label, lightLabel, darkLabel, lightIcon, darkIcon, storageKey = "eol-theme", defaultTheme = "dark", className, onThemeChange,
 }: ThemeControlProps) {
-  const [theme, setTheme] = useState<"dark" | "light">(() => {
-    if (typeof window === "undefined") return defaultTheme;
-    try {
-      const saved = window.localStorage.getItem(storageKey);
-      return saved === "light" || saved === "dark" ? saved : defaultTheme;
-    } catch {
-      return defaultTheme;
-    }
-  });
+  // Keep the first client render identical to SSR; the effect below applies storage after hydration.
+  const [theme, setTheme] = useState<"dark" | "light">(defaultTheme);
 
   useEffect(() => {
     let next: "dark" | "light" = defaultTheme;
