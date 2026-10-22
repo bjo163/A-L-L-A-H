@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-import { useEffect, useState, useTransition } from "react";
+import { useEffect, useRef, useState, useTransition } from "react";
 import { Icon, Switch } from "@empire/ui";
 import type { PortalLanguage } from "../lib/i18n";
 
@@ -24,6 +24,8 @@ export function PrimaryNavigation({ language }: { language: PortalLanguage }) {
   const router = useRouter();
   const [hash, setHash] = useState("");
   const [open, setOpen] = useState(false);
+  const navToggleRef = useRef<HTMLButtonElement>(null);
+  const wasOpen = useRef(false);
   const [pending, startTransition] = useTransition();
   const [languagePending, setLanguagePending] = useState(false);
   const [theme, setTheme] = useState<"dark" | "light">("dark");
@@ -39,6 +41,11 @@ export function PrimaryNavigation({ language }: { language: PortalLanguage }) {
   useEffect(() => {
     setOpen(false);
   }, [pathname]);
+
+  useEffect(() => {
+    if (wasOpen.current && !open) navToggleRef.current?.focus();
+    wasOpen.current = open;
+  }, [open]);
 
   useEffect(() => {
     setLanguagePending(false);
@@ -67,7 +74,7 @@ export function PrimaryNavigation({ language }: { language: PortalLanguage }) {
 
   return (
     <nav className={`portal-nav${open ? " is-open" : ""}`} aria-label={copy.navigation}>
-      <button className="nav-toggle" type="button" aria-expanded={open} aria-controls="primary-navigation-links" aria-label={open ? copy.close : copy.open} onClick={() => setOpen((value) => !value)}>
+      <button ref={navToggleRef} className="nav-toggle" type="button" aria-expanded={open} aria-controls="primary-navigation-links" aria-label={open ? copy.close : copy.open} onClick={() => setOpen((value) => !value)}>
         <span className="nav-toggle-icon" aria-hidden="true"><i/><i/><i/></span>
         <span>{open ? copy.close : copy.open}</span>
       </button>
