@@ -104,6 +104,19 @@ body { margin: 0; min-width: 0; }
 .brand-concept__screen--dialog > strong { font-size: .85rem; }
 .brand-concept__screen--dialog > span:not(.catalog-eyebrow) { color: var(--eol-color-text-muted); font-size: .62rem; line-height: 1.5; }
 .brand-concept__screen--dialog > div:last-child { display: flex; justify-content: flex-end; gap: 6px; }
+.brand-concept__scorecard { display: grid; gap: 9px; margin-top: 14px; padding: 12px; border: 1px solid var(--eol-color-border); background: var(--eol-color-background); }
+.brand-concept__scorecard h4 { margin: 0; font-size: .9rem; }
+.brand-scorecard__instructions,.brand-scorecard__caution { margin: 0; color: var(--eol-color-text-muted); font-size: .75rem; line-height: 1.45; }
+.brand-scorecard__caution { color: var(--eol-status-warning-foreground); }
+.brand-scorecard__criteria { display: grid; gap: 4px; min-width: 0; margin: 0; padding: 0; border: 0; }
+.brand-scorecard__legend { margin-bottom: 3px; color: var(--eol-color-text); font-size: .75rem; font-weight: 700; }
+.brand-scorecard__criterion { display: grid; grid-template-columns: minmax(0, 1fr) 74px; align-items: center; gap: 8px; margin: 0; padding-block: 7px; border-bottom: 1px solid var(--eol-color-border); }
+.brand-scorecard__criterion-copy { display: grid; min-width: 0; gap: 2px; }
+.brand-scorecard__criterion-copy > span { display: flex; justify-content: space-between; gap: 6px; font-size: .75rem; }
+.brand-scorecard__criterion-copy > span small { color: var(--eol-color-accent); font: .75rem var(--eol-font-mono); }
+.brand-scorecard__criterion-copy > small { color: var(--eol-color-text-muted); font-size: .75rem; font-weight: 400; line-height: 1.35; }
+.brand-scorecard__criterion .eol-control { min-height: var(--eol-control-size-md); padding-inline: 7px; font-size: .8rem; }
+.brand-scorecard__result { margin: 0; padding: 8px; border-left: 3px solid var(--eol-color-accent); background: var(--eol-color-surface-raised); font-size: .8rem; font-weight: 700; }
 .manga-showcase { display: grid; grid-template-columns: 1.3fr .9fr; gap: 16px; margin: 28px 0 16px; }
 .manga-panel { position: relative; isolation: isolate; min-height: 280px; overflow: hidden; border: 3px solid var(--eol-color-text); background-color: var(--eol-color-surface); box-shadow: 5px 5px 0 var(--eol-color-text); }
 .manga-panel--hero { transform: rotate(-.6deg); }

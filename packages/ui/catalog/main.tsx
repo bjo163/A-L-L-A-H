@@ -148,7 +148,7 @@ function Catalog() {
         </div>
         <BrandVariantPreviews />
         <BrandOpticalSizePreviews />
-        <BrandConcepts />
+        <BrandConcepts language={language} />
       </section>
 
       <section className="catalog-section" aria-labelledby="icon-gallery-heading">
