@@ -14,6 +14,10 @@ const requiredStylesheetEntries = new Map([
     "@empire/ui/command-center.css",
   ])],
 ]);
+const catalogEntry = readFileSync(join(root, "packages/ui/catalog/main.tsx"), "utf8");
+if ((catalogEntry.match(/\.\.\/src\/(?:portal|command-center)\.css/g) ?? []).length !== 2) {
+  throw new Error("UI catalog must load both product profiles explicitly for cross-product fixtures");
+}
 const files = [];
 const packageStyles = [];
 function walk(path) {
