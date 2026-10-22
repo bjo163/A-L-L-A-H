@@ -109,6 +109,10 @@ The entry stylesheet loads tokens from src/tokens.css. Raw palette values use th
 
 ### Contrast baseline
 
+### Accessibility target
+
+The shared target is **WCAG 2.2 Level AA**. Review scope covers 1.3.1/1.3.2 (semantic structure and meaningful sequence), 1.4.3/1.4.11 (text and non-text contrast), 1.4.10/1.4.12 (reflow and text spacing), 2.1.1/2.1.2 (keyboard and no trap), 2.4.3/2.4.6/2.4.7/2.4.11 (focus order, headings, visible focus, and focus not obscured), 2.5.5 (target size), 3.3.1/3.3.2 (error identification and labels), and 4.1.2/4.1.3 (name/role/value and status messages). Browser and assistive-technology review remains required for final sign-off; typechecks and source audits do not replace rendered verification.
+
 Static WCAG relative-luminance calculations for the opaque semantic tokens give these dark-theme ratios: text/background 16.91:1, muted/background 7.79:1, text/surface 15.56:1, muted/surface 7.17:1, accent/background 14.42:1, and every status foreground on its matching surface at least 8.91:1. In light theme: text/background 14.64:1, muted/background 5.48:1, text/surface 15.95:1, muted/surface 5.97:1, accent/background 4.61:1, and every status foreground on its matching surface at least 6.11:1. These text pairs exceed 4.5:1. The strong border on a light surface is 3.55:1 (above the 3:1 non-text target); the subtle group divider is not intended to identify a control boundary. This token-level baseline does not cover translucent overlays, artwork, browser rendering, focus indicators per route, or all text/background combinations. See the UI Blueprint for remaining contrast and visual review work.
 ### Theme and density support
 
