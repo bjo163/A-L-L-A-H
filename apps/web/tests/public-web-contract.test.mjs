@@ -1,0 +1,45 @@
+import {test} from "node:test";import assert from "node:assert/strict";import {readFile} from "node:fs/promises";
+test("public web explains A-L-L-A-H, labels planned capabilities, and links its routes",async()=>{
+ const home=await readFile(new URL("../app/page.tsx",import.meta.url),"utf8");
+ const system=await readFile(new URL("../app/systems/page.tsx",import.meta.url),"utf8");
+ const road=await readFile(new URL("../app/roadmap/page.tsx",import.meta.url),"utf8");
+ const systemsData=await readFile(new URL("../lib/web-systems.ts",import.meta.url),"utf8");
+ assert.match(home,/RANCANGAN & RISET/);
+ assert.match(home,/HELIOGRID/);
+ assert.match(systemsData,/Q-REALM/);
+ assert.match(home,/MATERIAL FORGE/);
+ assert.match(home,/Agent Reality System Yard & Orchestration/);
+ assert.match(systemsData,/Model AI hanyalah salah satu kemampuan dasar/);
+ assert.match(systemsData,/No invented quantum advantage/i);
+ assert.match(home,/href="\/systems#arsy"/);
+ assert.match(system,/MONOREPO/);
+ assert.match(road,/BELUM TERPASANG/);
+ assert.match(home,/href="\/systems"/);
+ assert.match(home,/href="\/roadmap"/);
+ assert.doesNotMatch(home,/98\.7%|BELIEF-TRUTH ALIGNMENT/);
+});
+test("world traditions do not claim theological authority or fully ingested texts",async()=>{
+ const src=await readFile(new URL("../lib/web-systems.ts",import.meta.url),"utf8");
+ const explorer=await readFile(new URL("../components/Explorer.tsx",import.meta.url),"utf8");
+ assert.match(src,/Daoist and Shinto/);
+ assert.match(explorer,/not a live physical device/);
+ assert.match(src,/No invented quantum advantage|no invented quantum advantage/i);
+});
+test("web language, shared navigation, reusable page chrome and loading states are wired",async()=>{
+ const nav=await readFile(new URL("../components/PrimaryNavigation.tsx",import.meta.url),"utf8");
+ const layout=await readFile(new URL("../app/layout.tsx",import.meta.url),"utf8");
+ const chrome=await readFile(new URL("../components/PageChrome.tsx",import.meta.url),"utf8");
+ const loading=await readFile(new URL("../components/RouteLoading.tsx",import.meta.url),"utf8");
+ const explorer=await readFile(new URL("../components/Explorer.tsx",import.meta.url),"utf8");
+ assert.match(nav,/eol-language=\$\{nextLanguage\}/);
+ assert.match(nav,/href: "\/#ekosistem"/);
+ assert.match(nav,/href: "\/systems"/);
+ assert.match(nav,/href: "\/roadmap"/);
+ assert.match(layout,/lang=\{language\}/);
+ assert.match(chrome,/PageIntro/);
+ assert.match(chrome,/PageCrosslinks/);
+ assert.match(loading,/<MangaLoadingState/);
+ const sharedLoading=await readFile(new URL("../../../packages/ui/src/patterns/MangaLoadingState.tsx",import.meta.url),"utf8");
+ assert.match(sharedLoading,/role="status"/);
+ assert.match(explorer,/getWebSystems\(language\)/);
+});

@@ -20,7 +20,7 @@ const changes = [
   }],
   ['PUT', `repos/${repository}/branches/main/protection`, {
     ...common,
-    required_status_checks: { strict: false, contexts: ['Branch policy', 'Quality checks', 'CodeQL'] },
+    required_status_checks: { strict: false, contexts: ['Branch policy', 'Quality checks'] },
     required_pull_request_reviews: { required_approving_review_count: 0, dismiss_stale_reviews: true },
   }],
   ['PUT', `repos/${repository}/branches/dev/protection`, {

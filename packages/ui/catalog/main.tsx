@@ -129,7 +129,7 @@ function Catalog() {
           <p className="catalog-preview-frame-label" aria-live="polite">{viewport} × 900 px · {theme} · {density} · {language.toUpperCase()}</p>
           <iframe key={previewUrl} className="catalog-preview-frame" title={`Responsive package preview at ${viewport} pixels`} src={previewUrl} style={{ width: `${viewport}px` }} />
         </div>
-        <p className="catalog-caption">Command Center shell: <a href="/workspace-preview.html" target="_blank" rel="noreferrer">open the responsive workspace fixture</a>.</p>
+        <p className="catalog-caption">100CENTER shell: <a href="/workspace-preview.html" target="_blank" rel="noreferrer">open the responsive workspace fixture</a>.</p>
       </section>
 
       <section className="catalog-section" aria-labelledby="brand-concepts-heading">
@@ -575,14 +575,14 @@ function Catalog() {
 
       <section className="catalog-section" aria-labelledby="page-fixtures-heading">
         <div className="catalog-section-heading">
-          <div><p className="catalog-eyebrow">REAL PAGE COMPOSITIONS</p><h2 id="page-fixtures-heading">Portal page and Command Center categories</h2></div>
+          <div><p className="catalog-eyebrow">REAL PAGE COMPOSITIONS</p><h2 id="page-fixtures-heading">Portal page and 100CENTER categories</h2></div>
           <p>Full static compositions exercise shared UI patterns in each product context. Every record and action is fabricated; no service is contacted.</p>
         </div>
         <Panel className="catalog-card catalog-page-fixture-wrap">
           <div className="catalog-section-heading"><div><p className="catalog-eyebrow">PORTAL · HOME</p><h3>Public homepage fixture</h3></div><p>Shared shell, page intro, domains, process, and closing actions.</p></div>
           <PortalHomeFixture />
         </Panel>
-        <div className="catalog-operations-fixtures" aria-label="Command Center view fixtures">
+        <div className="catalog-operations-fixtures" aria-label="100CENTER view fixtures">
           <OperationalCategoryFixtures />
         </div>
       </section>

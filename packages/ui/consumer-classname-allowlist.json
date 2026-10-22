@@ -2,7 +2,7 @@
   "policy": "App-specific class hooks passed to @empire/ui components are listed here with an owner and reason, and are styled only by packages/ui/src. They may compose product layout or named presentation patterns; apps may not define their CSS. Runtime classes must be listed explicitly.",
   "entries": [
     {
-      "consumer": "apps/command-center/src/YoutubeSentinelView.tsx",
+      "consumer": "apps/web/src/YoutubeSentinelView.tsx",
       "component": "MotionRegion",
       "prop": "className",
       "classes": [
@@ -12,17 +12,17 @@
       "reason": "Applies the package-owned Sentinel scanning presentation and viewport-aware animation lifecycle to the active status banner."
     },
     {
-      "consumer": "apps/portal/app/not-found.tsx",
+      "consumer": "apps/web/app/not-found.tsx",
       "component": "Container",
       "prop": "className",
       "classes": [
         "not-found"
       ],
       "owner": "portal",
-      "reason": "Carries the Container composition for apps/portal/app/not-found.tsx into the portal stylesheet owned by packages/ui."
+      "reason": "Carries the Container composition for apps/web/app/not-found.tsx into the public-site stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/portal/app/page.tsx",
+      "consumer": "apps/web/app/page.tsx",
       "component": "MangaEffect",
       "prop": "className",
       "classes": [
@@ -32,170 +32,170 @@
         "arsy-identity"
       ],
       "owner": "portal",
-      "reason": "Carries the MangaEffect composition for apps/portal/app/page.tsx into the portal stylesheet owned by packages/ui."
+      "reason": "Carries the MangaEffect composition for apps/web/app/page.tsx into the public-site stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/portal/app/page.tsx",
+      "consumer": "apps/web/app/page.tsx",
       "component": "SectionHeading",
       "prop": "eyebrowClassName",
       "classes": [
         "eyebrow"
       ],
       "owner": "portal",
-      "reason": "Carries the eyebrow composition for apps/portal/app/page.tsx into the portal stylesheet owned by packages/ui."
+      "reason": "Carries the eyebrow composition for apps/web/app/page.tsx into the public-site stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/portal/app/page.tsx",
+      "consumer": "apps/web/app/page.tsx",
       "component": "SectionHeading",
       "prop": "asideClassName",
       "classes": [
         "head-aside"
       ],
       "owner": "portal",
-      "reason": "Carries the aside composition for apps/portal/app/page.tsx into the portal stylesheet owned by packages/ui."
+      "reason": "Carries the aside composition for apps/web/app/page.tsx into the public-site stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/portal/app/roadmap/page.tsx",
+      "consumer": "apps/web/app/roadmap/page.tsx",
       "component": "Container",
       "prop": "className",
       "classes": [
         "inner-page"
       ],
       "owner": "portal",
-      "reason": "Carries the Container composition for apps/portal/app/roadmap/page.tsx into the portal stylesheet owned by packages/ui."
+      "reason": "Carries the Container composition for apps/web/app/roadmap/page.tsx into the public-site stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/portal/app/roadmap/page.tsx",
+      "consumer": "apps/web/app/roadmap/page.tsx",
       "component": "SectionHeading",
       "prop": "className",
       "classes": [
         "roadmap-section-heading"
       ],
       "owner": "portal",
-      "reason": "Carries the SectionHeading composition for apps/portal/app/roadmap/page.tsx into the portal stylesheet owned by packages/ui."
+      "reason": "Carries the SectionHeading composition for apps/web/app/roadmap/page.tsx into the public-site stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/portal/app/roadmap/page.tsx",
+      "consumer": "apps/web/app/roadmap/page.tsx",
       "component": "SectionHeading",
       "prop": "eyebrowClassName",
       "classes": [
         "eyebrow"
       ],
       "owner": "portal",
-      "reason": "Carries the eyebrow composition for apps/portal/app/roadmap/page.tsx into the portal stylesheet owned by packages/ui."
+      "reason": "Carries the eyebrow composition for apps/web/app/roadmap/page.tsx into the public-site stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/portal/app/systems/page.tsx",
+      "consumer": "apps/web/app/systems/page.tsx",
       "component": "Container",
       "prop": "className",
       "classes": [
         "inner-page"
       ],
       "owner": "portal",
-      "reason": "Carries the Container composition for apps/portal/app/systems/page.tsx into the portal stylesheet owned by packages/ui."
+      "reason": "Carries the Container composition for apps/web/app/systems/page.tsx into the public-site stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/portal/components/Explorer.tsx",
+      "consumer": "apps/web/components/Explorer.tsx",
       "component": "ResponsiveTabs",
       "prop": "containerClassName",
       "classes": [
         "explorer"
       ],
       "owner": "portal",
-      "reason": "Carries the container composition for apps/portal/components/Explorer.tsx into the portal stylesheet owned by packages/ui."
+      "reason": "Carries the container composition for apps/web/components/Explorer.tsx into the public-site stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/portal/components/Explorer.tsx",
+      "consumer": "apps/web/components/Explorer.tsx",
       "component": "ResponsiveTabs",
       "prop": "className",
       "classes": [
         "explorer-tabs"
       ],
       "owner": "portal",
-      "reason": "Carries the ResponsiveTabs composition for apps/portal/components/Explorer.tsx into the portal stylesheet owned by packages/ui."
+      "reason": "Carries the ResponsiveTabs composition for apps/web/components/Explorer.tsx into the public-site stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/portal/components/Explorer.tsx",
+      "consumer": "apps/web/components/Explorer.tsx",
       "component": "ResponsiveTabs",
       "prop": "listClassName",
       "classes": [
         "explorer-menu"
       ],
       "owner": "portal",
-      "reason": "Carries the list composition for apps/portal/components/Explorer.tsx into the portal stylesheet owned by packages/ui."
+      "reason": "Carries the list composition for apps/web/components/Explorer.tsx into the public-site stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/portal/components/Explorer.tsx",
+      "consumer": "apps/web/components/Explorer.tsx",
       "component": "ResponsiveTabs",
       "prop": "tabClassName",
       "classes": [
         "explorer-tab"
       ],
       "owner": "portal",
-      "reason": "Carries the tab control composition for apps/portal/components/Explorer.tsx into the portal stylesheet owned by packages/ui."
+      "reason": "Carries the tab control composition for apps/web/components/Explorer.tsx into the public-site stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/portal/components/Explorer.tsx",
+      "consumer": "apps/web/components/Explorer.tsx",
       "component": "ResponsiveTabs",
       "prop": "selectedTabClassName",
       "classes": [
         "is-active"
       ],
       "owner": "portal",
-      "reason": "Carries the selected-state composition for apps/portal/components/Explorer.tsx into the portal stylesheet owned by packages/ui."
+      "reason": "Carries the selected-state composition for apps/web/components/Explorer.tsx into the public-site stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/portal/components/Explorer.tsx",
+      "consumer": "apps/web/components/Explorer.tsx",
       "component": "ResponsiveTabs",
       "prop": "panelClassName",
       "classes": [
         "explorer-tab-panel"
       ],
       "owner": "portal",
-      "reason": "Carries the panel composition for apps/portal/components/Explorer.tsx into the portal stylesheet owned by packages/ui."
+      "reason": "Carries the panel composition for apps/web/components/Explorer.tsx into the public-site stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/portal/components/PortalPageChrome.tsx",
+      "consumer": "apps/web/components/PageChrome.tsx",
       "component": "MangaPageIntro",
       "prop": "className",
       "classes": [
         "page-hero"
       ],
       "owner": "portal",
-      "reason": "Carries the MangaPageIntro composition for apps/portal/components/PortalPageChrome.tsx into the portal stylesheet owned by packages/ui."
+      "reason": "Carries the MangaPageIntro composition for apps/web/components/PageChrome.tsx into the public-site stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/portal/components/PortalPageChrome.tsx",
+      "consumer": "apps/web/components/PageChrome.tsx",
       "component": "MangaPageIntro",
       "prop": "eyebrowClassName",
       "classes": [
         "eyebrow"
       ],
       "owner": "portal",
-      "reason": "Carries the eyebrow composition for apps/portal/components/PortalPageChrome.tsx into the portal stylesheet owned by packages/ui."
+      "reason": "Carries the eyebrow composition for apps/web/components/PageChrome.tsx into the public-site stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/portal/components/PortalPageChrome.tsx",
+      "consumer": "apps/web/components/PageChrome.tsx",
       "component": "MangaPageIntro",
       "prop": "actionsClassName",
       "classes": [
         "page-hero-links"
       ],
       "owner": "portal",
-      "reason": "Carries the actions composition for apps/portal/components/PortalPageChrome.tsx into the portal stylesheet owned by packages/ui."
+      "reason": "Carries the actions composition for apps/web/components/PageChrome.tsx into the public-site stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/command-center/src/App.tsx",
+      "consumer": "apps/web/src/App.tsx",
       "component": "Checkbox",
       "prop": "className",
       "classes": [
         "remember-me"
       ],
       "owner": "command-center",
-      "reason": "Carries the Checkbox composition for apps/command-center/src/App.tsx into the command-center stylesheet owned by packages/ui."
+      "reason": "Carries the Checkbox composition for apps/web/src/App.tsx into the command-center stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/command-center/src/App.tsx",
+      "consumer": "apps/web/src/App.tsx",
       "component": "NavItem",
       "prop": "className",
       "classes": [
@@ -203,50 +203,50 @@
         "is-active"
       ],
       "owner": "command-center",
-      "reason": "Carries the NavItem composition for apps/command-center/src/App.tsx into the command-center stylesheet owned by packages/ui."
+      "reason": "Carries the NavItem composition for apps/web/src/App.tsx into the command-center stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/command-center/src/App.tsx",
+      "consumer": "apps/web/src/App.tsx",
       "component": "MangaEffect",
       "prop": "className",
       "classes": [
         "logout-button"
       ],
       "owner": "command-center",
-      "reason": "Carries the MangaEffect composition for apps/command-center/src/App.tsx into the command-center stylesheet owned by packages/ui."
+      "reason": "Carries the MangaEffect composition for apps/web/src/App.tsx into the command-center stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/command-center/src/App.tsx",
+      "consumer": "apps/web/src/App.tsx",
       "component": "Breadcrumbs",
       "prop": "className",
       "classes": [
         "breadcrumb"
       ],
       "owner": "command-center",
-      "reason": "Carries the Breadcrumbs composition for apps/command-center/src/App.tsx into the command-center stylesheet owned by packages/ui."
+      "reason": "Carries the Breadcrumbs composition for apps/web/src/App.tsx into the command-center stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/command-center/src/App.tsx",
+      "consumer": "apps/web/src/App.tsx",
       "component": "SearchField",
       "prop": "className",
       "classes": [
         "global-search"
       ],
       "owner": "command-center",
-      "reason": "Carries the SearchField composition for apps/command-center/src/App.tsx into the command-center stylesheet owned by packages/ui."
+      "reason": "Carries the SearchField composition for apps/web/src/App.tsx into the command-center stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/command-center/src/App.tsx",
+      "consumer": "apps/web/src/App.tsx",
       "component": "MangaPageIntro",
       "prop": "className",
       "classes": [
         "page-heading"
       ],
       "owner": "command-center",
-      "reason": "Carries the MangaPageIntro composition for apps/command-center/src/App.tsx into the command-center stylesheet owned by packages/ui."
+      "reason": "Carries the MangaPageIntro composition for apps/web/src/App.tsx into the command-center stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/command-center/src/App.tsx",
+      "consumer": "apps/web/src/App.tsx",
       "component": "Notice",
       "prop": "className",
       "classes": [
@@ -254,20 +254,20 @@
         "notice-panel"
       ],
       "owner": "command-center",
-      "reason": "Carries the Notice composition for apps/command-center/src/App.tsx into the command-center stylesheet owned by packages/ui."
+      "reason": "Carries the Notice composition for apps/web/src/App.tsx into the command-center stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/command-center/src/AuditView.tsx",
+      "consumer": "apps/web/src/AuditView.tsx",
       "component": "Pagination",
       "prop": "className",
       "classes": [
         "audit-controls"
       ],
       "owner": "command-center",
-      "reason": "Carries the Pagination composition for apps/command-center/src/AuditView.tsx into the command-center stylesheet owned by packages/ui."
+      "reason": "Carries the Pagination composition for apps/web/src/AuditView.tsx into the command-center stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/command-center/src/AuditView.tsx",
+      "consumer": "apps/web/src/AuditView.tsx",
       "component": "EventList",
       "prop": "className",
       "classes": [
@@ -275,10 +275,10 @@
         "event-list-large"
       ],
       "owner": "command-center",
-      "reason": "Carries the EventList composition for apps/command-center/src/AuditView.tsx into the command-center stylesheet owned by packages/ui."
+      "reason": "Carries the EventList composition for apps/web/src/AuditView.tsx into the command-center stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/command-center/src/CabView.tsx",
+      "consumer": "apps/web/src/CabView.tsx",
       "component": "MangaEffect",
       "prop": "className",
       "classes": [
@@ -286,137 +286,137 @@
         "rfc-selected"
       ],
       "owner": "command-center",
-      "reason": "Carries the MangaEffect composition for apps/command-center/src/CabView.tsx into the command-center stylesheet owned by packages/ui."
+      "reason": "Carries the MangaEffect composition for apps/web/src/CabView.tsx into the command-center stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/command-center/src/CabView.tsx",
+      "consumer": "apps/web/src/CabView.tsx",
       "component": "ReviewActions",
       "prop": "className",
       "classes": [
         "action-row"
       ],
       "owner": "command-center",
-      "reason": "Carries the ReviewActions composition for apps/command-center/src/CabView.tsx into the command-center stylesheet owned by packages/ui."
+      "reason": "Carries the ReviewActions composition for apps/web/src/CabView.tsx into the command-center stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/command-center/src/ContinuumView.tsx",
+      "consumer": "apps/web/src/ContinuumView.tsx",
       "component": "Panel",
       "prop": "className",
       "classes": [
         "agent-card"
       ],
       "owner": "command-center",
-      "reason": "Carries the Panel composition for apps/command-center/src/ContinuumView.tsx into the command-center stylesheet owned by packages/ui."
+      "reason": "Carries the Panel composition for apps/web/src/ContinuumView.tsx into the command-center stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/command-center/src/ContinuumView.tsx",
+      "consumer": "apps/web/src/ContinuumView.tsx",
       "component": "Notice",
       "prop": "className",
       "classes": [
         "notice-panel"
       ],
       "owner": "command-center",
-      "reason": "Carries the Notice composition for apps/command-center/src/ContinuumView.tsx into the command-center stylesheet owned by packages/ui."
+      "reason": "Carries the Notice composition for apps/web/src/ContinuumView.tsx into the command-center stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/command-center/src/KnowledgeView.tsx",
+      "consumer": "apps/web/src/KnowledgeView.tsx",
       "component": "Disclosure",
       "prop": "className",
       "classes": [
         "knowledge-card"
       ],
       "owner": "command-center",
-      "reason": "Carries the Disclosure composition for apps/command-center/src/KnowledgeView.tsx into the command-center stylesheet owned by packages/ui."
+      "reason": "Carries the Disclosure composition for apps/web/src/KnowledgeView.tsx into the command-center stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/command-center/src/OverviewView.tsx",
+      "consumer": "apps/web/src/OverviewView.tsx",
       "component": "MangaEffect",
       "prop": "className",
       "classes": [
         "workspace-card"
       ],
       "owner": "command-center",
-      "reason": "Carries the MangaEffect composition for apps/command-center/src/OverviewView.tsx into the command-center stylesheet owned by packages/ui."
+      "reason": "Carries the MangaEffect composition for apps/web/src/OverviewView.tsx into the command-center stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/command-center/src/OverviewView.tsx",
+      "consumer": "apps/web/src/OverviewView.tsx",
       "component": "EventList",
       "prop": "className",
       "classes": [
         "event-list"
       ],
       "owner": "command-center",
-      "reason": "Carries the EventList composition for apps/command-center/src/OverviewView.tsx into the command-center stylesheet owned by packages/ui."
+      "reason": "Carries the EventList composition for apps/web/src/OverviewView.tsx into the command-center stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/command-center/src/ResearchCard.tsx",
+      "consumer": "apps/web/src/ResearchCard.tsx",
       "component": "Panel",
       "prop": "className",
       "classes": [
         "research-card"
       ],
       "owner": "command-center",
-      "reason": "Carries the Panel composition for apps/command-center/src/ResearchCard.tsx into the command-center stylesheet owned by packages/ui."
+      "reason": "Carries the Panel composition for apps/web/src/ResearchCard.tsx into the command-center stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/command-center/src/WorldGlobeMap.tsx",
+      "consumer": "apps/web/src/WorldGlobeMap.tsx",
       "component": "MapFrame",
       "prop": "className",
       "classes": [
         "world-map-container"
       ],
       "owner": "command-center",
-      "reason": "Carries the MapFrame composition for apps/command-center/src/WorldGlobeMap.tsx into the command-center stylesheet owned by packages/ui."
+      "reason": "Carries the MapFrame composition for apps/web/src/WorldGlobeMap.tsx into the command-center stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/command-center/src/WorldMonitorView.tsx",
+      "consumer": "apps/web/src/WorldMonitorView.tsx",
       "component": "Tabs",
       "prop": "listClassName",
       "classes": [
         "world-subtab-bar"
       ],
       "owner": "command-center",
-      "reason": "Carries the list composition for apps/command-center/src/WorldMonitorView.tsx into the command-center stylesheet owned by packages/ui."
+      "reason": "Carries the list composition for apps/web/src/WorldMonitorView.tsx into the command-center stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/command-center/src/WorldMonitorView.tsx",
+      "consumer": "apps/web/src/WorldMonitorView.tsx",
       "component": "Tabs",
       "prop": "tabClassName",
       "classes": [
         "world-subtab-btn"
       ],
       "owner": "command-center",
-      "reason": "Carries the tab control composition for apps/command-center/src/WorldMonitorView.tsx into the command-center stylesheet owned by packages/ui."
+      "reason": "Carries the tab control composition for apps/web/src/WorldMonitorView.tsx into the command-center stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/command-center/src/WorldMonitorView.tsx",
+      "consumer": "apps/web/src/WorldMonitorView.tsx",
       "component": "Tabs",
       "prop": "selectedTabClassName",
       "classes": [
         "world-subtab-btn--active"
       ],
       "owner": "command-center",
-      "reason": "Carries the selected-state composition for apps/command-center/src/WorldMonitorView.tsx into the command-center stylesheet owned by packages/ui."
+      "reason": "Carries the selected-state composition for apps/web/src/WorldMonitorView.tsx into the command-center stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/command-center/src/YoutubeSentinelView.tsx",
+      "consumer": "apps/web/src/YoutubeSentinelView.tsx",
       "component": "MetricGrid",
       "prop": "className",
       "classes": [
         "sentinel-summary"
       ],
       "owner": "command-center",
-      "reason": "Carries the MetricGrid composition for apps/command-center/src/YoutubeSentinelView.tsx into the command-center stylesheet owned by packages/ui."
+      "reason": "Carries the MetricGrid composition for apps/web/src/YoutubeSentinelView.tsx into the command-center stylesheet owned by packages/ui."
     },
     {
-      "consumer": "apps/command-center/src/YoutubeSentinelView.tsx",
+      "consumer": "apps/web/src/YoutubeSentinelView.tsx",
       "component": "DataTable",
       "prop": "className",
       "classes": [
         "sentinel-table"
       ],
       "owner": "command-center",
-      "reason": "Carries the DataTable composition for apps/command-center/src/YoutubeSentinelView.tsx into the command-center stylesheet owned by packages/ui."
+      "reason": "Carries the DataTable composition for apps/web/src/YoutubeSentinelView.tsx into the command-center stylesheet owned by packages/ui."
     }
   ]
 }

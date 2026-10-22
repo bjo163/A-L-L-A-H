@@ -1,7 +1,7 @@
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join, relative } from "node:path";
 
-const roots = ["packages/ui/src", "apps/portal", "apps/command-center"];
+const roots = ["packages/ui/src", "apps/web"];
 const ignored = new Set(["node_modules", ".next", "dist", ".turbo"]);
 const stylesheets = [];
 const sourceFiles = [];

@@ -4,11 +4,10 @@ import { join, relative } from "node:path";
 import ts from "typescript";
 
 const root = process.cwd();
-const appRoots = ["apps/portal", "apps/command-center"];
+const appRoots = ["apps/web"];
 const forbidden = [/packages\/ui\/src/, /@empire\/ui\/src/];
 const requiredStylesheetEntries = new Map([
-  ["apps/portal", new Set(["@empire/ui/ui.css"])],
-  ["apps/command-center", new Set(["@empire/ui/ui.css"])],
+  ["apps/web", new Set(["@empire/ui/ui.css"])],
 ]);
 const catalogEntry = readFileSync(join(root, "packages/ui/catalog/main.tsx"), "utf8");
 if ((catalogEntry.match(/\.\.\/src\/ui\.css/g) ?? []).length !== 1) {
@@ -60,7 +59,7 @@ for (const specifier of requiredProductStyles) {
 }
 const sharedProductOrder = requiredProductStyles.map((specifier) => sharedImportPositions.get(specifier) ?? -1);
 if (sharedProductOrder.some((position) => position < 0) || sharedProductOrder.some((position, index) => index > 0 && position < sharedProductOrder[index - 1])) {
-  sharedImportErrors.push("packages/ui/src/ui.css must preserve product cascade order: portal globals → Portal profile → Command Center profile");
+  sharedImportErrors.push("packages/ui/src/ui.css must preserve product cascade order: public-site globals → public-site profile → 100CENTER profile");
 }
 for (const file of files) {
   const source = readFileSync(file, "utf8");

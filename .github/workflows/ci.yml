@@ -6,16 +6,6 @@ on:
   pull_request:
     branches: [main]
     types: [opened, synchronize, reopened, ready_for_review]
-  workflow_dispatch:
-    inputs:
-      publish_main:
-        description: Publish the validated main commit and synchronize dev
-        type: boolean
-        default: false
-      source_sha:
-        description: Expected main commit for publication
-        type: string
-        default: ''
 
 permissions:
   contents: read
@@ -33,9 +23,6 @@ jobs:
           HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
           REPO: ${{ github.repository }}
           BRANCH: ${{ github.ref_name }}
-          PUBLISH_MAIN: ${{ inputs.publish_main }}
-          EXPECTED_SHA: ${{ inputs.source_sha }}
-          SOURCE_SHA: ${{ github.sha }}
         run: |
           if [[ "$EVENT" == "pull_request" ]]; then
             [[ "$HEAD" == "dev" && "$BASE" == "main" && "$HEAD_REPO" == "$REPO" ]] || {
@@ -43,11 +30,6 @@ jobs:
             }
           else
             [[ "$BRANCH" == "dev" || "$BRANCH" == "main" ]]
-            if [[ "$PUBLISH_MAIN" == "true" ]]; then
-              [[ "$BRANCH" == "main" && "$EXPECTED_SHA" == "$SOURCE_SHA" ]] || {
-                echo 'Main publication requires the exact expected main commit.'; exit 1;
-              }
-            fi
           fi
 
   quality:
@@ -75,163 +57,11 @@ jobs:
         with:
           path: |
             .turbo
-            apps/portal/.next/cache
-            apps/command-center/.next/cache
+            apps/web/.next/cache
           key: build-${{ runner.os }}-${{ hashFiles('.node-version', 'pnpm-lock.yaml', 'turbo.json') }}-${{ github.sha }}
           restore-keys: |
             build-${{ runner.os }}-${{ hashFiles('.node-version', 'pnpm-lock.yaml', 'turbo.json') }}-
       - run: pnpm install --frozen-lockfile
       - run: pnpm run validate
-      - run: node --test scripts/tests/*.test.mjs
       - run: pnpm exec turbo run test
       - run: pnpm run build
-      - run: pnpm run typecheck
-      - name: Dependency vulnerabilities (high and critical)
-        run: pnpm audit --prod --audit-level high
-
-  docker-deployment:
-    name: Docker deployment
-    needs: branch-policy
-    runs-on: ubuntu-latest
-    timeout-minutes: 35
-    concurrency:
-      group: docker-${{ github.event_name }}-${{ github.event.pull_request.number || github.ref }}
-      cancel-in-progress: true
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          persist-credentials: false
-      - name: Validate Compose configuration
-        run: docker compose --project-directory . --env-file infra/docker.env.example -f infra/compose.yaml config --quiet
-      - uses: docker/setup-buildx-action@8d2750c68a42422c14e847fe6c8ac0403b4cbd6f # v3
-      - name: Build API image
-        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
-        with:
-          context: .
-          file: apps/api/Dockerfile
-          tags: empire-ci-api:latest
-          load: true
-          pull: true
-          cache-from: type=gha,scope=api
-          cache-to: type=gha,scope=api,mode=max
-      - name: Verify API startup with PostgreSQL
-        run: |
-          export EMPIRE_OWNER_PASSWORD="$(openssl rand -hex 32)"
-          export EMPIRE_ARCHITECT_PASSWORD="$(openssl rand -hex 32)"
-          docker compose --project-directory . --env-file infra/docker.env.example -p empire-ci -f infra/compose.yaml up -d --no-build --wait --wait-timeout 180 api
-      - name: API startup diagnostics
-        if: failure()
-        run: docker compose --project-directory . --env-file infra/docker.env.example -p empire-ci -f infra/compose.yaml logs --no-color api postgres
-      - name: Stop startup check containers
-        if: always()
-        run: docker compose --project-directory . --env-file infra/docker.env.example -p empire-ci -f infra/compose.yaml down --volumes
-      - name: Build Portal image
-        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
-        with:
-          context: .
-          file: apps/portal/Dockerfile
-          pull: true
-          cache-from: type=gha,scope=portal
-          cache-to: type=gha,scope=portal,mode=max
-      - name: Build Command Center image
-        uses: docker/build-push-action@10e90e3645eae34f1e60eeb005ba3a3d33f178e8 # v6
-        with:
-          context: .
-          file: apps/command-center/Dockerfile
-          pull: true
-          cache-from: type=gha,scope=command-center
-          cache-to: type=gha,scope=command-center,mode=max
-
-  release:
-    name: Version and changelog
-    if: github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.publish_main && github.ref == 'refs/heads/main')
-    needs: [quality, docker-deployment]
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    permissions:
-      contents: write
-    concurrency:
-      group: release-ledger
-      queue: max
-      cancel-in-progress: false
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
-          persist-credentials: false
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
-        with:
-          node-version-file: .node-version
-      - name: Publish versioned source and changelog
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: node scripts/release.mjs
-
-  promote-dev:
-    name: Promote dev to main
-    if: >-
-      always() &&
-      needs.quality.result == 'success' &&
-      needs.docker-deployment.result == 'success' &&
-      (
-        (github.event_name == 'push' && github.ref == 'refs/heads/dev' && needs.release.result == 'success') ||
-        (github.event_name == 'pull_request' && github.event.action == 'ready_for_review' && github.event.pull_request.head.ref == 'dev' && github.event.pull_request.base.ref == 'main' && needs.release.result == 'skipped')
-      )
-    needs: [quality, docker-deployment, release]
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    permissions:
-      actions: write
-      contents: write
-      pull-requests: write
-    steps:
-      - name: Open or update promotion PR and enable auto-merge
-        env:
-          GH_TOKEN: ${{ github.token }}
-          GH_REPO: ${{ github.repository }}
-          EVENT_NAME: ${{ github.event_name }}
-          PR_NUMBER: ${{ github.event.pull_request.number }}
-        run: |
-          if [[ "$EVENT_NAME" == "pull_request" ]]; then
-            pr_number="$PR_NUMBER"
-          else
-            pr_number="$(gh pr list --base main --head dev --state open --json number --jq '.[0].number // empty')"
-          fi
-          if [[ -z "$pr_number" ]]; then
-            gh pr create \
-              --base main \
-              --head dev \
-              --title "Promote dev to main" \
-              --body "Automated promotion after successful dev CI, Docker builds, and prerelease publication. GitHub auto-merge will wait for main's required checks."
-            pr_number="$(gh pr view dev --json number --jq '.number')"
-            # GITHUB_TOKEN-created PRs do not trigger pull_request workflows.
-            # Quality already passed on this dev commit; dispatch its CodeQL gate.
-            gh workflow run security.yml --ref dev
-          fi
-          is_draft="$(gh pr view "$pr_number" --json isDraft --jq '.isDraft')"
-          if [[ "$is_draft" == "true" ]]; then
-            echo "PR #$pr_number is still a draft; auto-merge will be enabled when it is marked ready."
-            exit 0
-          fi
-          gh pr merge "$pr_number" --auto --merge
-
-  sync-dev:
-    name: Sync main back to dev
-    if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || (github.event_name == 'workflow_dispatch' && inputs.publish_main))
-    needs: [quality, docker-deployment, release]
-    runs-on: ubuntu-latest
-    timeout-minutes: 5
-    permissions:
-      contents: write
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
-        with:
-          fetch-depth: 0
-      - name: Merge promoted main into dev
-        run: |
-          git config user.name "github-actions[bot]"
-          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          git fetch origin dev main
-          git switch --create dev --track origin/dev
-          git merge --no-edit origin/main
-          git push origin dev

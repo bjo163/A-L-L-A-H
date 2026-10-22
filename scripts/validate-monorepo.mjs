@@ -22,7 +22,7 @@ for(const module of enabled)assert.deepEqual(module.models,expectedModels[module
 const work=read("package.json");
 assert.ok(work.scripts.validate.includes("validate-monorepo.mjs"));
 assert.equal(work.private,true);
-for(const pkg of ["apps/api","apps/command-center","apps/portal","packages/module-kit"]){
+for(const pkg of ["apps/api","apps/web","packages/module-kit"]){
  const item=read(pkg+"/package.json");
  assert.equal(item.private,true);
 }

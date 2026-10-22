@@ -1,23 +1,17 @@
 name: empire-of-the-light
 
-x-frontend: &frontend
-  restart: unless-stopped
-  depends_on:
-    api:
-      condition: service_healthy
-
 services:
   postgres:
     image: postgres:18-alpine
     restart: unless-stopped
     environment:
-      POSTGRES_USER: empire
-      POSTGRES_DB: empire
-      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      POSTGRES_USER: ${POSTGRES_USER:-empire}
+      POSTGRES_DB: ${POSTGRES_DB:-empire}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
     volumes:
       - postgres_data:/var/lib/postgresql
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U empire -d empire"]
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER:-empire} -d ${POSTGRES_DB:-empire}"]
       interval: 10s
       timeout: 5s
       retries: 5
@@ -28,15 +22,14 @@ services:
       dockerfile: apps/api/Dockerfile
     restart: unless-stopped
     environment:
-      DATABASE_URL: postgres://empire:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@postgres:5432/empire
+      DATABASE_URL: postgres://${POSTGRES_USER:-empire}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-empire}
       FILE_STORAGE_DIR: /workspace/var/private-files
-      FILE_STORAGE_SIGNING_SECRET: ${FILE_STORAGE_SIGNING_SECRET:?Set FILE_STORAGE_SIGNING_SECRET in .env}
-      CORS_ORIGINS: ${PUBLIC_ORIGIN:?Set PUBLIC_ORIGIN in .env}
-      PUBLIC_API_ORIGIN: ${PUBLIC_API_ORIGIN:-http://localhost:4000}
+      FILE_STORAGE_SIGNING_SECRET: ${FILE_STORAGE_SIGNING_SECRET}
+      CORS_ORIGINS: ${CORS_ORIGINS:-http://localhost:3300}
       EMPIRE_OWNER_PASSWORD: ${EMPIRE_OWNER_PASSWORD:-}
       EMPIRE_ARCHITECT_PASSWORD: ${EMPIRE_ARCHITECT_PASSWORD:-}
     ports:
-      - "${BIND_ADDRESS:-127.0.0.1}:${API_PORT:-4000}:4000"
+      - "${API_PORT:-4000}:4000"
     volumes:
       - private_files:/workspace/var/private-files
     depends_on:
@@ -49,32 +42,22 @@ services:
       retries: 5
       start_period: 30s
 
-  portal:
-    <<: *frontend
+  web:
+    restart: unless-stopped
+    depends_on:
+      api:
+        condition: service_healthy
     build:
       context: .
-      dockerfile: apps/portal/Dockerfile
+      dockerfile: apps/web/Dockerfile
       args:
-        NEXT_PUBLIC_API_ORIGIN: ${PUBLIC_API_ORIGIN:-http://localhost:4000}
+        NEXT_PUBLIC_API_ORIGIN: /api
+    environment:
+      API_ORIGIN: ${INTERNAL_API_ORIGIN:-http://api:4000}
     ports:
-      - "${BIND_ADDRESS:-127.0.0.1}:${PORTAL_PORT:-3300}:3300"
+      - "${WEB_PORT:-3300}:3300"
     healthcheck:
       test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3300/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
-      interval: 15s
-      timeout: 5s
-      retries: 3
-
-  command-center:
-    <<: *frontend
-    build:
-      context: .
-      dockerfile: apps/command-center/Dockerfile
-      args:
-        NEXT_PUBLIC_API_ORIGIN: ${PUBLIC_API_ORIGIN:-http://localhost:4000}
-    ports:
-      - "${BIND_ADDRESS:-127.0.0.1}:${COMMAND_CENTER_PORT:-3400}:3400"
-    healthcheck:
-      test: ["CMD", "node", "-e", "fetch('http://127.0.0.1:3400/').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"]
       interval: 15s
       timeout: 5s
       retries: 3
@@ -82,5 +65,6 @@ services:
 volumes:
   postgres_data:
   private_files:
+
 
 

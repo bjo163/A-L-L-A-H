@@ -13,7 +13,7 @@ function WorkspacePreview() {
     menuLabel="Open workspace navigation"
     closeLabel="Close workspace navigation"
     navigation={<aside className="sidebar">
-      <a className="brand" href="#workspace-preview-main"><BrandLockup name="A-L-L-A-H" descriptor="COMMAND CENTER" /></a>
+      <a className="brand" href="#workspace-preview-main"><BrandLockup name="A-L-L-A-H" descriptor="100CENTER" /></a>
       <div className="operator-card"><span className="avatar">A</span><span className="operator-meta"><strong>Example operator</strong><small>Administrator · fixture</small></span></div>
       <p className="nav-caption">OPERATIONS</p>
       <nav className="view-switcher" aria-label="Workspace fixture pages">
@@ -21,7 +21,7 @@ function WorkspacePreview() {
       </nav>
       <div className="sidebar-bottom"><div className="connection-card"><span className="online-dot" data-state="ok" aria-hidden="true"/><span><strong>Fixture cluster</strong><small>Static local preview</small></span><Badge tone="success">Ready</Badge></div><Button variant="secondary" size="sm"><Icon name="logOut" size={16}/>Sign out fixture</Button></div>
     </aside>}
-    header={<header className="topbar"><Breadcrumbs className="breadcrumb" label="Workspace location" items={[{ label: "COMMAND CENTER" }, { label: active, current: true }]} /><Button variant="secondary" size="sm"><Icon name="refresh" size={14}/>Sync fixture</Button></header>}
+    header={<header className="topbar"><Breadcrumbs className="breadcrumb" label="Workspace location" items={[{ label: "100CENTER" }, { label: active, current: true }]} /><Button variant="secondary" size="sm"><Icon name="refresh" size={14}/>Sync fixture</Button></header>}
   >
     <MangaPageIntro className="page-heading" eyebrow="WORKSPACE SHELL FIXTURE" title={active} description="Navigation, skip link, responsive shell, header and main landmark are shared by the package." meta={<><StatusIndicator tone="success">API connected</StatusIndicator><StatusIndicator tone="neutral">Local snapshot</StatusIndicator></>} />
     <SectionHeading layout="compact" title={`${active} overview`} aside={<Badge tone="info">Static fixture</Badge>} />

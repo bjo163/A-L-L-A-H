@@ -20,7 +20,7 @@
     "module:test": "node --test packages/module-kit/test/*.test.mjs",
     "dna:generate": "node scripts/generate-batteries-dna.mjs",
     "dna:validate": "node scripts/validate-batteries-dna.mjs",
-    "dev": "turbo run dev --parallel",
+    "dev": "turbo run dev --filter=@empire/api --filter=@empire/web",
     "build": "turbo run build",
     "typecheck": "turbo run typecheck",
     "test": "node scripts/validate.mjs && node scripts/validate-monorepo.mjs && node scripts/validate-batteries-dna.mjs && node --test packages/module-kit/test/*.test.mjs",

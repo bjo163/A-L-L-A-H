@@ -70,7 +70,7 @@ importers:
         specifier: ^5.9.3
         version: 5.9.3
 
-  apps/command-center:
+  apps/web:
     dependencies:
       '@empire/api-contract':
         specifier: workspace:*
@@ -90,34 +90,6 @@ importers:
       maplibre-gl:
         specifier: ^6.15.0
         version: 6.15.0
-      next:
-        specifier: ^16.0.0
-        version: 16.4.2(@babel/core@7.29.7)(@types/node@24.19.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)
-      react:
-        specifier: ^19.2.0
-        version: 19.3.1
-      react-dom:
-        specifier: ^19.2.0
-        version: 19.3.1(react@19.3.1)
-    devDependencies:
-      '@types/node':
-        specifier: ^24.0.0
-        version: 24.19.2
-      '@types/react':
-        specifier: ^19.2.0
-        version: 19.3.0
-      '@types/react-dom':
-        specifier: ^19.2.0
-        version: 19.3.0(@types/react@19.3.0)
-      typescript:
-        specifier: ^5.9.3
-        version: 5.9.3
-
-  apps/portal:
-    dependencies:
-      '@empire/ui':
-        specifier: workspace:*
-        version: link:../../packages/ui
       next:
         specifier: ^16.0.0
         version: 16.4.2(@babel/core@7.29.7)(@types/node@24.19.2)(react-dom@19.3.1(react@19.3.1))(react@19.3.1)

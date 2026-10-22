@@ -63,15 +63,9 @@ The profiles use `--eol-section-space-editorial`, `--eol-section-space-operation
 
 ## Cross-product samples reviewed
 
-These existing renders are a family comparison, not approval of Orbit or final page acceptance. The Roadmap light render exposed a dark-feature-panel/ dark-text contrast defect; the package now uses inverse foreground text and audited deep-surface tokens. A post-fix rendered screenshot remains part of the outstanding visual regression gate.
+These existing renders were reviewed as a family comparison, not approval of Orbit or final page acceptance. The Roadmap light render exposed a dark-feature-panel/ dark-text contrast defect; the package now uses inverse foreground text and audited deep-surface tokens. A post-fix rendered screenshot remains part of the outstanding visual regression gate.
 
-![Portal home, desktop, dark theme, English](../../../docs/ui-evidence/portal-matrix/2026-10-22/home-desktop-dark-en.png)
-
-![Portal home, desktop, light theme, Indonesian](../../../docs/ui-evidence/portal-matrix/2026-10-22/home-desktop-light-id.png)
-
-![100CENTER login, desktop, dark theme](../../../docs/ui-evidence/command-center-login/2026-10-22/login-desktop-dark.png)
-
-![100CENTER workspace shell, mobile, light theme](../../../docs/ui-evidence/command-center-shell/2026-10-22/workspace-375-light.png)
+Reviewed renders: Portal home (desktop dark/light, EN/ID), 100CENTER login (desktop dark), and 100CENTER workspace shell (mobile light).
 
 ## Decision boundary
 

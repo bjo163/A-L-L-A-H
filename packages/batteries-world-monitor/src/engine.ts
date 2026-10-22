@@ -19,7 +19,7 @@ const DNA_SENSOR_TARGETS: Array<{ code: string; operationalTarget: string }> = [
   { code: "hayy", operationalTarget: "System Heartbeat & Microservice Liveness" },
   { code: "hafiz", operationalTarget: "Audit Ledger Protection & Boundary Safeguards" },
   { code: "khabir", operationalTarget: "Spatiotemporal Anomaly Detection & Situational Awareness" },
-  { code: "nur", operationalTarget: "Command Center HUD & Visual Projection" },
+  { code: "nur", operationalTarget: "100CENTER HUD & Visual Projection" },
   { code: "alim", operationalTarget: "Cross-Stream Sensor Fusion & Correlation Matrix" },
   { code: "sami", operationalTarget: "Inbound Event Stream & Telemetry Listener" },
 ];
