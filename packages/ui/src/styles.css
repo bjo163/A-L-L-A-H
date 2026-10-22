@@ -277,6 +277,10 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
 
 .eol-button:focus-visible { outline: var(--eol-focus-width) solid var(--eol-color-focus); outline-offset: var(--eol-focus-offset); }
 .eol-button:disabled { cursor: not-allowed; opacity: var(--eol-opacity-disabled); }
+.eol-button--sm { min-height: var(--eol-control-size-sm); padding: var(--eol-space-2) var(--eol-space-3); font-size: var(--eol-font-size-xs); }
+.eol-button--lg { min-height: var(--eol-control-size-lg); padding: var(--eol-space-3) var(--eol-space-6); }
+.eol-button__spinner { width: .85em; height: .85em; flex: none; border: 2px solid currentColor; border-right-color: transparent; border-radius: 50%; animation: eol-spin .7s linear infinite; }
+@keyframes eol-spin { to { transform: rotate(360deg); } }
 .eol-button--primary { color: var(--eol-color-text-inverse); background: var(--eol-color-accent); }
 .eol-button--primary:hover:not(:disabled) { background: var(--eol-color-accent-strong); transform: translateY(-2px) rotate(-1deg); box-shadow: 0 5px 0 color-mix(in srgb, var(--eol-color-accent) 24%, transparent); }
 .eol-button--secondary { color: var(--eol-color-text); background: var(--eol-color-surface-action); border-color: var(--eol-color-border-strong); }

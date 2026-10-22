@@ -9,7 +9,7 @@ export type { DirectionalIconName, IconName } from "./primitives/Icon";
 export { IconButton } from "./primitives/IconButton";
 export type { IconButtonProps } from "./primitives/IconButton";
 export { Button, buttonClassName } from "./primitives/Button";
-export type { ButtonProps, ButtonVariant } from "./primitives/Button";
+export type { ButtonProps, ButtonSize, ButtonVariant } from "./primitives/Button";
 export { ConfirmDialog } from "./primitives/ConfirmDialog";
 export type { ConfirmDialogProps, ConfirmDialogTone } from "./primitives/ConfirmDialog";
 export { EmptyState } from "./primitives/EmptyState";
