@@ -28,6 +28,7 @@ Inventory date: 2026-10-22. Scope: active Portal and Command Center presentation
 5. Named geometric hero decoration is hidden or nested under the hero's named image; SFX and the optional empty/error state SVGs are explicitly hidden. C04-06 still needs a rendered accessibility review to confirm there is no unique content conveyed only by an ornament.
 6. C04-02 removed two redundant catalog-only overlays (duplicate screentone and duplicate ray field) and an ineffective Portal hero `speedLines` prop whose background image was overwritten by the product background shorthand. Portal rays remain product-specific; telemetry/loading rays remain shared. This is a source-level ownership/cascade finding and still needs rendered comparison in the full visual matrix.
 7. C04-09 removed perpetual ring glow and an ineffective `MangaEffect.spin` pseudo-element animation. Remaining infinite animation is attached to active loading/progress or live map/Sentinel state; viewport pausing and actual offscreen behavior still need runtime review.
+8. Reduced-motion CSS removes reveal/SFX/loading ornament, skeleton shimmer/spin, and hover movement; Portal hero copy/diagram labels, state titles/actions, and loading text remain in the DOM. Map markers also suppress decorative pulse/entrance explicitly. Preference simulation remains a browser acceptance gate even though the static fallback is present in source.
 
 ## Evidence
 
