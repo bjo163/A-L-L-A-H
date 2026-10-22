@@ -23,7 +23,7 @@ export function MangaPageIntro({
   return (
     <PageIntro
       {...props}
-      className={classNames("eol-manga-page-intro", "eol-manga-panel", "eol-manga-reveal", className)}
+      className={classNames("eol-manga-page-intro", sfx && "eol-manga-page-intro--with-sfx", "eol-manga-panel", "eol-manga-reveal", className)}
       decoration={sharedDecoration}
     />
   );
