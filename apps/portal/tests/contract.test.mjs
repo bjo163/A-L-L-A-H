@@ -3,12 +3,14 @@ test("portal explains A-L-L-A-H, labels planned capabilities, and links its rout
  const home=await readFile(new URL("../app/page.tsx",import.meta.url),"utf8");
  const system=await readFile(new URL("../app/systems/page.tsx",import.meta.url),"utf8");
  const road=await readFile(new URL("../app/roadmap/page.tsx",import.meta.url),"utf8");
- assert.match(home,/RANCANGAN &amp; RISET/);
+ const systemsData=await readFile(new URL("../lib/portal-systems.ts",import.meta.url),"utf8");
+ assert.match(home,/RANCANGAN & RISET/);
  assert.match(home,/HELIOGRID/);
- assert.match(home,/Q-REALM/);
+ assert.match(systemsData,/Q-REALM/);
  assert.match(home,/MATERIAL FORGE/);
- assert.match(home,/Agent Reality System Yard &amp; Orchestration/);
- assert.match(home,/Model AI hanyalah salah satu kemampuan dasar/);
+ assert.match(home,/Agent Reality System Yard & Orchestration/);
+ assert.match(systemsData,/Model AI hanyalah salah satu kemampuan dasar/);
+ assert.match(systemsData,/No invented quantum advantage/i);
  assert.match(home,/href="\/systems#arsy"/);
  assert.match(system,/MONOREPO/);
  assert.match(road,/BELUM TERPASANG/);
@@ -17,9 +19,10 @@ test("portal explains A-L-L-A-H, labels planned capabilities, and links its rout
  assert.doesNotMatch(home,/98\.7%|BELIEF-TRUTH ALIGNMENT/);
 });
 test("world traditions do not claim theological authority or fully ingested texts",async()=>{
- const src=await readFile(new URL("../components/Explorer.tsx",import.meta.url),"utf8");
+ const src=await readFile(new URL("../lib/portal-systems.ts",import.meta.url),"utf8");
+ const explorer=await readFile(new URL("../components/Explorer.tsx",import.meta.url),"utf8");
  assert.match(src,/Daoist and Shinto/);
- assert.match(src,/not a live physical device/);
+ assert.match(explorer,/not a live physical device/);
  assert.match(src,/No invented quantum advantage|no invented quantum advantage/i);
 });
 test("portal language, shared navigation, reusable page chrome and loading states are wired",async()=>{
@@ -38,5 +41,5 @@ test("portal language, shared navigation, reusable page chrome and loading state
  assert.match(loading,/<MangaLoadingState/);
  const sharedLoading=await readFile(new URL("../../../packages/ui/src/patterns/MangaLoadingState.tsx",import.meta.url),"utf8");
  assert.match(sharedLoading,/role="status"/);
- assert.match(explorer,/itemsFor\(language\)/);
+ assert.match(explorer,/getPortalSystems\(language\)/);
 });
