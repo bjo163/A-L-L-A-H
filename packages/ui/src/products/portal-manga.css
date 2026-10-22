@@ -3,7 +3,7 @@ html[data-theme="light"] body {
   background-color: var(--eol-color-background) !important;
   background-image: radial-gradient(color-mix(in srgb, var(--eol-manga-ink) 12%, transparent) .8px, transparent .8px) !important;
 }
-.site-header { background: color-mix(in srgb, var(--eol-color-background) 96%, transparent) !important; border-color: var(--eol-manga-ink) !important; }
+.eol-public-shell__header { background: color-mix(in srgb, var(--eol-color-background) 96%, transparent) !important; border-color: var(--eol-manga-ink) !important; }
 .header-cta { border: 2px solid var(--eol-manga-ink) !important; border-radius: var(--eol-radius-none) !important; background: var(--eol-manga-secondary) !important; color: var(--eol-manga-ink) !important; box-shadow: 3px 3px 0 var(--eol-manga-ink) !important; font-weight: 800; }
 .header-cta:hover { background: var(--eol-manga-highlight) !important; }
 .nav-links > a { color: var(--eol-color-text-muted) !important; }
@@ -115,10 +115,10 @@ html[data-theme="light"] body {
 .atlas-item:nth-child(odd) { background: linear-gradient(110deg, var(--eol-manga-highlight) 0 16%, var(--eol-manga-paper) 16%) !important; }
 .timeline-index { border: 2px solid var(--eol-manga-ink); border-radius: var(--eol-radius-none) !important; color: var(--eol-manga-ink) !important; box-shadow: 2px 2px 0 var(--eol-manga-ink); }
 
-.site-footer { background: var(--eol-manga-ink) !important; border-top: 3px solid var(--eol-manga-highlight) !important; }
-.site-footer, .site-footer a, .site-footer b, .site-footer p, .footer-right { color: var(--eol-manga-stage-foreground) !important; }
+.eol-public-shell__footer { background: var(--eol-manga-ink) !important; border-top: 3px solid var(--eol-manga-highlight) !important; }
+.eol-public-shell__footer, .eol-public-shell__footer a, .eol-public-shell__footer b, .eol-public-shell__footer p, .eol-public-shell__footer-navigation { color: var(--eol-manga-stage-foreground) !important; }
 html[data-theme="dark"] body { background-color: var(--eol-color-background) !important; background-image: radial-gradient(color-mix(in srgb, var(--eol-color-text) 9%, transparent) .8px, transparent .8px) !important; }
-html[data-theme="dark"] .site-header { background: color-mix(in srgb, var(--eol-color-background) 94%, transparent) !important; }
+html[data-theme="dark"] .eol-public-shell__header { background: color-mix(in srgb, var(--eol-color-background) 94%, transparent) !important; }
 html[data-theme="dark"] .identity-row > div, html[data-theme="dark"] .frontier-content, html[data-theme="dark"] .frontier-top { background: color-mix(in srgb, var(--eol-color-surface) 96%, transparent) !important; }
 html[data-theme="dark"] .frontier-content > p:not(.panel-label) { color: var(--eol-color-text-muted) !important; }
 html[data-theme="dark"] .section-alt { background-color: var(--eol-color-background) !important; }
