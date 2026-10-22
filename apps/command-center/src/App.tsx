@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { API_PATHS, ApiError, createApiClient } from "@empire/api-contract";
 import type { AuthEntity, CabRfc, CabSummary, LoginResponse, ResearchRun } from "@empire/api-contract";
@@ -27,7 +27,7 @@ const initialRun: CreateRun = { title: "", question: "", scope: "self" };
 const can = (entity: AuthEntity | null, permission: string) => Boolean(entity?.sovereign || entity?.permissions.includes("*") || entity?.permissions.includes(permission));
 const pageItems: Array<{ key: Page; label: string; title: string; workspaceTitle: string; description: string }> = [
   { key: "overview", label: "Overview", title: "Command overview", workspaceTitle: "Overview", description: "A live view of system health, governance queues, and operator activity." },
-  { key: "world", label: "World monitor", title: "World telemetry & monitoring", workspaceTitle: "World monitor", description: "Live planetary situation, regional node health, and Batteries DNA sensor fusion." },
+  { key: "world", label: "World monitor", title: "System & regional monitoring", workspaceTitle: "World monitor", description: "API and database health, with unavailable state shown for sources that are not connected." },
   { key: "continuum", label: "Continuum", title: "Continuum control", workspaceTitle: "Continuum", description: "Inspect the agent registry and record a controlled invocation." },
   { key: "directory", label: "Directory", title: "Entity directory", workspaceTitle: "Entity directory", description: "Browse provisioned operators and service agents with server-provided roles." },
   { key: "knowledge", label: "Knowledge", title: "Knowledge index", workspaceTitle: "Knowledge index", description: "Search the 99 Asma mappings with their editorial state and source notes." },
@@ -46,7 +46,10 @@ export function App() {
   const [snapshot, setSnapshot] = useState(initialSnapshot);
   const [worldSnapshot, setWorldSnapshot] = useState<WorldMonitoringSnapshot | null>(null);
   const [worldLoading, setWorldLoading] = useState(false);
+  const [worldError, setWorldError] = useState("");
   const [worldNextRefreshIn, setWorldNextRefreshIn] = useState(30);
+  const worldRequestRef = useRef(0);
+  const worldInFlightRef = useRef(false);
   const [tab, setTab] = useState<Page>("overview");
   const [summary, setSummary] = useState<CabSummary | null>(null);
   const [rfcs, setRfcs] = useState<CabRfc[]>([]);
@@ -71,6 +74,30 @@ export function App() {
   const [success, setSuccess] = useState("");
   const client = useMemo(() => ({ request: <T,>(path: string, options: { method?: "GET"|"POST"|"PATCH"; body?: unknown } = {}) => api.request<T>(path, { ...options, token: token || null }) }), [token]);
 
+  async function refreshWorld() {
+    if (worldInFlightRef.current) return;
+    worldInFlightRef.current = true;
+    const requestId = ++worldRequestRef.current;
+    setWorldLoading(true);
+    setWorldNextRefreshIn(30);
+    try {
+      const nextSnapshot = await api.request<WorldMonitoringSnapshot>(API_PATHS.worldMonitor);
+      if (worldRequestRef.current === requestId) {
+        setWorldSnapshot(nextSnapshot);
+        setWorldError("");
+      }
+    } catch (cause) {
+      if (worldRequestRef.current === requestId) {
+        setWorldError(cause instanceof Error ? cause.message : "World Monitor could not be refreshed.");
+      }
+    } finally {
+      if (worldRequestRef.current === requestId) {
+        worldInFlightRef.current = false;
+        setWorldLoading(false);
+      }
+    }
+  }
+
   function clearSession() {
     sessionStorage.removeItem("empire.session"); sessionStorage.removeItem("empire.entity");
     setToken(""); setCookieSession(false); setEntity(null); setSummary(null); setRfcs([]); setSelected(null); setRuns([]);
@@ -88,12 +115,6 @@ export function App() {
       ]);
       const signal = (value: unknown): Signal => value === "ok" ? "ok" : value === "degraded" ? "degraded" : "unavailable";
       setSnapshot({ health: signal(health.status), readiness: signal(readiness.status), modules: modules.items ?? [], capabilities: capabilities.capabilities ?? [], checkedAt: new Date().toISOString() });
-      // Fetch world monitor from real backend endpoint
-      setWorldLoading(true);
-      api.request<WorldMonitoringSnapshot>(API_PATHS.worldMonitor)
-        .then(setWorldSnapshot)
-        .catch(() => { /* keep previous snapshot on error */ })
-        .finally(() => setWorldLoading(false));
       if (token || cookieSession) {
         const session = await client.request<{ entity: AuthEntity }>(API_PATHS.session);
         setEntity(session.entity);
@@ -159,20 +180,17 @@ export function App() {
 
   // World monitor: fetch immediately on mount, then auto-refresh every 30s with countdown
   useEffect(() => {
-    function fetchWorld() {
-      setWorldLoading(true);
-      setWorldNextRefreshIn(30);
-      api.request<WorldMonitoringSnapshot>(API_PATHS.worldMonitor)
-        .then(setWorldSnapshot)
-        .catch(() => {})
-        .finally(() => setWorldLoading(false));
-    }
-    fetchWorld();
-    const autoTimer = window.setInterval(fetchWorld, 30000);
+    void refreshWorld();
+    const autoTimer = window.setInterval(() => void refreshWorld(), 30000);
     const countdownTimer = window.setInterval(() => {
       setWorldNextRefreshIn((s) => (s <= 1 ? 30 : s - 1));
     }, 1000);
-    return () => { window.clearInterval(autoTimer); window.clearInterval(countdownTimer); };
+    return () => {
+      window.clearInterval(autoTimer);
+      window.clearInterval(countdownTimer);
+      worldRequestRef.current += 1;
+      worldInFlightRef.current = false;
+    };
   }, []);
 
   useEffect(() => {
@@ -297,7 +315,7 @@ export function App() {
         <section className="workspace-section"><div className="section-head"><div><span className="eyebrow">WORKSPACES</span><h2>Go to operations</h2></div><span className="muted">{entity.role} access</span></div><div className="workspace-grid">{pageItems.filter(({key})=>key!=="overview"&&pageAllowed(key)).map(({key,workspaceTitle,description})=><MangaEffect as="button" type="button" key={key} interactive className="workspace-card" onClick={()=>setTab(key)}><span className="workspace-icon"><Icon name={pageIcons[key]} size={18}/></span><strong>{workspaceTitle}</strong><small>{description}</small><span className="workspace-arrow">Open workspace ↗</span></MangaEffect>)}</div></section>
         <section className="activity-preview"><div className="section-head"><div><span className="eyebrow">RECENT ACTIVITY</span><h2>Latest events</h2></div><button className="text-button" onClick={()=>setTab("audit")}>Open ledger ↗</button></div>{chronicles.slice(0,5).length?<div className="event-list">{chronicles.slice(0,5).map(event=><EventRow key={event.id} event={event}/>)}</div>:<EmptyState title="No recent events" description="Audit events will appear here as operators use the system."/>}</section>
       </>}
-      {tab==="world"&&(worldLoading&&!worldSnapshot?<LoadingState label="Memuat World Monitor…"/>:worldSnapshot?<WorldMonitorView snapshot={worldSnapshot} search={search} nextRefreshIn={worldNextRefreshIn} onRefresh={()=>{setWorldLoading(true);setWorldNextRefreshIn(30);api.request<WorldMonitoringSnapshot>(API_PATHS.worldMonitor).then(setWorldSnapshot).catch(()=>{}).finally(()=>setWorldLoading(false));}}/>:<LoadingState label="Connecting to World Monitor…"/>)}
+      {tab==="world"&&(worldLoading&&!worldSnapshot?<LoadingState label="Memuat World Monitor…"/>:worldSnapshot?<WorldMonitorView snapshot={worldSnapshot} search={search} nextRefreshIn={worldNextRefreshIn} refreshError={worldError} onRefresh={()=>void refreshWorld()}/>:worldError?<ErrorState title="World Monitor is unavailable" description={worldError} action={<Button variant="secondary" onClick={()=>void refreshWorld()}>Retry</Button>}/>:<LoadingState label="Connecting to World Monitor…"/>)}
       {tab==="continuum"&&<><section className="metrics"><Metric label="REGISTERED AGENTS" value={agents.length}/><Metric label="ACTIVE AGENTS" value={agents.filter(agent=>agent.status==="active").length}/><Metric label="ASMA MAPPINGS" value={lexicon.length}/></section><section><div className="section-head"><div><span className="eyebrow">SERAPH REGISTRY</span><h2>Agent fleet</h2></div><Badge tone="info">Invocation is audit logged</Badge></div><div className="agent-grid">{visibleAgents.map(agent=><Panel manga as="article" key={agent.id} className="agent-card"><div className="agent-head"><span className="agent-symbol">✳</span><Badge tone={agent.status==="active"?"success":"warning"}>{agent.status}</Badge></div><h3>{agent.term}</h3><p className="agent-code">{agent.code} · {agent.tier}</p><p>{agent.role??"Continuum agent"}</p>{can(entity,"continuum:invoke")&&<form className="invoke-form" onSubmit={event=>{event.preventDefault();void perform(()=>client.request(`${API_PATHS.continuumAgents}/${encodeURIComponent(agent.code)}/invoke`,{method:"POST",body:{directive}}),`${agent.term} invocation recorded.`);}}><TextField aria-label={`Directive for ${agent.term}`} value={directive} onChange={event=>setDirective(event.target.value)} maxLength={500}/><Button disabled={busy||!directive.trim()} type="submit">Invoke agent ↗</Button></form>}</Panel>)}</div>{visibleAgents.length===0&&<EmptyState title="No agents match" description="Try a different search term."/>}</section><Notice role="note" className="notice-panel"><span aria-hidden="true">ⓘ</span><p>Agent invocation records an instruction in the local audit ledger. It does not execute external tools or claim a completed task.</p></Notice></>}
       {tab==="directory"&&<><section className="metrics"><Metric label="TOTAL ENTITIES" value={directory.length}/><Metric label="OPERATORS" value={directory.filter(user=>!user.celestial).length}/><Metric label="SERVICE AGENTS" value={directory.filter(user=>user.celestial).length}/></section><section><div className="section-head"><div><span className="eyebrow">IDENTITY · RBAC</span><h2>Provisioned entities</h2></div><span className="muted">Directory is read only</span></div>{visibleUsers.length?<div className="table-wrap"><table className="data-table"><thead><tr><th>ENTITY</th><th>ROLE</th><th>TIER</th><th>TYPE</th><th>STATUS</th></tr></thead><tbody>{visibleUsers.map(user=><tr key={user.id}><td><strong>{user.displayName}</strong><small>{user.username}</small></td><td>{user.roles?.map(role=>role.name).join(", ")||"Unassigned"}</td><td>{user.tier}</td><td>{user.celestial?"Service agent":user.sovereign?"Sovereign":"Operator"}</td><td><Badge tone={user.status==="active"?"success":"warning"}>{user.status}</Badge></td></tr>)}</tbody></table></div>:<EmptyState title="No entities found" description="The directory returned no matching entities."/>}</section></>}
       {tab==="knowledge"&&<><Notice role="note" className="notice-panel"><span aria-hidden="true">ⓘ</span><p>Entries are project mappings in editorial review. They are not verified theological definitions. Preserve cited sources and editorial status when using them.</p></Notice><section><div className="section-head"><div><span className="eyebrow">SOURCE INDEX</span><h2>Asma mappings <span className="count-chip">{visibleLexicon.length}</span></h2></div><Badge tone="warning">DRAFT REVIEW</Badge></div><div className="knowledge-grid">{visibleLexicon.map(entry=><MangaEffect as="details" interactive className="knowledge-card" key={entry.id}><summary><span className="knowledge-arabic">{entry.arabic||"◈"}</span><span className="knowledge-title"><strong>{entry.term}</strong><small>{entry.translit} · {entry.code}</small></span><Badge tone="neutral">{entry.editorialStatus}</Badge></summary><div className="knowledge-detail"><p><strong>Project attribute</strong><br/>{entry.attribute}</p><p><strong>Domain</strong><br/>{entry.domain}</p><p>{entry.wisdom}</p><small>Source note: {entry.revelations}</small></div></MangaEffect>)}</div>{visibleLexicon.length===0&&<EmptyState title="No mappings match" description="Try searching by Arabic, transliteration, term, or domain."/>}</section></>}

@@ -7,7 +7,8 @@
     ".": "./src/index.ts",
     "./ui.css": "./src/ui.css",
     "./portal.css": "./src/portal.css",
-    "./command-center.css": "./src/command-center.css"
+    "./command-center.css": "./src/command-center.css",
+    "./adapters/maplibre.css": "./src/adapters/maplibre.css"
   },
   "scripts": {
     "build": "tsc --noEmit",

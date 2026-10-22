@@ -22,6 +22,13 @@
   --eol-color-focus: var(--eol-palette-dark-cyan);
   --eol-color-gold: var(--eol-palette-light-lime);
   --eol-color-danger: var(--eol-palette-dark-danger);
+  --eol-map-status-nominal: var(--eol-palette-map-status-nominal);
+  --eol-map-status-advisory: var(--eol-palette-map-status-advisory);
+  --eol-map-status-alert: var(--eol-palette-map-status-alert);
+  --eol-map-status-critical: var(--eol-palette-map-status-critical);
+  --eol-map-label-color: var(--eol-palette-map-label);
+  --eol-map-label-shadow: var(--eol-palette-map-label-shadow);
+  --eol-map-marker-outline: var(--eol-palette-map-marker-outline);
   --eol-status-neutral-foreground: var(--eol-palette-status-neutral-dark-foreground);
   --eol-status-neutral-surface: var(--eol-palette-status-neutral-dark-surface);
   --eol-status-neutral-border: var(--eol-palette-status-neutral-dark-border);

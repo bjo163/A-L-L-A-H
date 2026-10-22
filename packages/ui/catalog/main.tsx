@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { BrandConcepts } from "../src/brand/BrandConcepts";
-import { Badge, Button, buttonClassName, ConfirmDialog, EmptyState, ErrorState, FieldError, FieldLabel, HelpText, Icon, iconGroups, LoadingState, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, Notice, Panel, SectionHeading, SelectField, Skeleton, StatGrid, Switch, Tabs, TextArea, TextField } from "../src";
+import { Badge, Button, buttonClassName, ConfirmDialog, EmptyState, ErrorState, FieldError, FieldLabel, HelpText, Icon, iconGroups, LoadingState, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, Notice, Panel, RegionSummary, SectionHeading, SelectField, Skeleton, StatGrid, Switch, Tabs, TextArea, TextField } from "../src";
 import "../src/ui.css";
 import "./catalog.css";
 
@@ -249,6 +249,58 @@ function Catalog() {
           ]} />
           <MangaLoadingState className="catalog-manga-loading" eyebrow="ATLAS" label="Loading system map…" sfx="ZIP!" />
         </Panel>
+      </section>
+
+      <section className="catalog-section" aria-labelledby="map-patterns-heading">
+        <div className="catalog-section-heading">
+          <div>
+            <p className="catalog-eyebrow">OPT-IN MAP PRESENTATION</p>
+            <h2 id="map-patterns-heading">Map frame, legend and region summary</h2>
+          </div>
+          <p>Status labels remain visible beside their marker colors. The summary uses neutral props and contains no MapLibre or product data dependency.</p>
+        </div>
+        <div className="catalog-map-patterns">
+          <MapFrame
+            title="Operations map"
+            state="unavailable"
+            description="No live geospatial source is connected. Reference locations and data tables remain available."
+            source="Map source provider"
+            updatedAt="Not available"
+            canvas={<div className="catalog-map-stage" aria-hidden="true" />}
+          >
+            <MapLegend items={[
+              { status: "nominal", label: "Nominal" },
+              { status: "advisory", label: "Advisory" },
+              { status: "alert", label: "Alert" },
+              { status: "critical", label: "Critical" },
+              { status: "unavailable", label: "Unavailable" },
+            ]} />
+          </MapFrame>
+          <div className="catalog-map-state-grid" aria-label="Map frame resource states">
+            {([
+              ["loading", "Loading map source"],
+              ["empty", "No regional points returned"],
+              ["stale", "Showing older map data"],
+              ["error", "Map source request failed"],
+              ["webgl-unavailable", "Interactive map cannot render"],
+            ] as const).map(([state, description]) => (
+              <MapFrame key={state} title={state.replaceAll("-", " ")} state={state} description={description} />
+            ))}
+          </div>
+          <RegionSummary
+            eyebrow="AP-SE · -6.20°, 106.80°"
+            name="Jakarta Operations Hub"
+            status="Nominal"
+            tone="success"
+            metrics={[
+              { label: "Latency", value: "84 ms" },
+              { label: "Uptime", value: "99.9%" },
+              { label: "Nodes", value: 128 },
+              { label: "Sensors", value: 42 },
+              { label: "Heliogrid", value: "12.4 MW" },
+            ]}
+          />
+        </div>
       </section>
 
       <section className="catalog-section" aria-labelledby="tokens-heading">

@@ -1,5 +1,5 @@
-export type RegionStatus = "nominal" | "advisory" | "alert" | "critical";
-export type AlertLevel = "green" | "yellow" | "orange" | "red";
+export type RegionStatus = "nominal" | "advisory" | "alert" | "critical" | "unavailable";
+export type AlertLevel = "green" | "yellow" | "orange" | "red" | "unknown";
 
 export interface WorldRegion {
   id: string;
@@ -8,11 +8,11 @@ export interface WorldRegion {
   lat: number;
   lng: number;
   status: RegionStatus;
-  latencyMs: number;
-  uptimePercentage: number;
-  nodeCount: number;
-  activeSensors: number;
-  heliogridLoadMw: number;
+  latencyMs: number | null;
+  uptimePercentage: number | null;
+  nodeCount: number | null;
+  activeSensors: number | null;
+  heliogridLoadMw: number | null;
 }
 
 export interface DnaSensorMapping {
@@ -22,8 +22,8 @@ export interface DnaSensorMapping {
   transliteration: string;
   capability: string;
   operationalTarget: string;
-  currentStatus: "healthy" | "calibrated" | "degraded";
-  observedEventsCount: number;
+  currentStatus: "healthy" | "calibrated" | "degraded" | "unavailable";
+  observedEventsCount: number | null;
   limitations: readonly string[];
 }
 
@@ -40,11 +40,13 @@ export interface TelemetryFeedItem {
 }
 
 export interface WorldMonitoringSnapshot {
-  status: "operational" | "degraded" | "critical";
+  status: "operational" | "degraded" | "critical" | "unavailable";
   timestamp: string;
   globalAlertLevel: AlertLevel;
-  averageGlobalLatencyMs: number;
+  averageGlobalLatencyMs: number | null;
   totalMonitoredNodes: number;
+  apiUptimeSeconds: number | null;
+  databaseStatus: "available" | "unavailable" | "unknown";
   regions: WorldRegion[];
   dnaSensors: DnaSensorMapping[];
   telemetryFeeds: TelemetryFeedItem[];

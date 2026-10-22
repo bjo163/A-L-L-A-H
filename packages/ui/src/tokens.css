@@ -69,6 +69,14 @@
   --eol-palette-manga-blue: #44cdeb;
   --eol-palette-manga-orange: #ff9a55;
   --eol-palette-manga-pink-hover: #ff7d98;
+  /* MapLibre uses a dark basemap in both app themes, so map status colors stay stable. */
+  --eol-palette-map-status-nominal: #4ade80;
+  --eol-palette-map-status-advisory: #facc15;
+  --eol-palette-map-status-alert: #f97316;
+  --eol-palette-map-status-critical: #ef4444;
+  --eol-palette-map-label: #ffffff;
+  --eol-palette-map-label-shadow: rgb(0 0 0 / 95%);
+  --eol-palette-map-marker-outline: rgb(255 255 255 / 70%);
   --eol-palette-shadow-ink-1: #49371814;
   --eol-palette-shadow-ink-2: #49371824;
   --eol-palette-shadow-ink-3: #49371838;

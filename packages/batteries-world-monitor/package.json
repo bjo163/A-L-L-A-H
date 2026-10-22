@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "type": "module",
-  "description": "World Monitoring System Engine with Batteries DNA telemetry fusion for Command Center",
+  "description": "World Monitor response types and Batteries DNA catalog mappings; live regional sources are not connected yet",
   "exports": {
     ".": "./src/index.ts"
   },

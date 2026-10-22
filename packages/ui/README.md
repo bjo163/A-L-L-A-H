@@ -6,7 +6,7 @@ Shared React primitives and visual tokens for the public portal and 100CENTER.
 
 The [UI centralization blueprint](../../docs/BLUEPRINT_UI_CENTRALIZATION.md) defines the target ownership of all product presentation, including brand SVGs, icons, illustrations, tokens, themes, component variants, page patterns, and layouts in this package. Portal and Command Center retain routing, product content, data, permissions, and workflows. Its `UI-Cxx-yy` checklist covers migration, acceptance evidence, and removal of duplicate visual implementations.
 
-This is a planned migration. The current implementation and historical guidance below still describe app-local styles and artwork; that guidance is superseded for new presentation work by the centralization blueprint. Existing contrast measurements are historical and must be rechecked against the final token/theme version before acceptance. Proposed APIs and asset paths in the blueprint are not yet exports of this package.
+The centralization blueprint tracks the remaining migration and acceptance work. Existing contrast measurements are historical and must be rechecked against the final token/theme version before acceptance.
 
 ## Current exports
 
@@ -19,6 +19,7 @@ This is a planned migration. The current implementation and historical guidance 
 - `MangaTelemetryHero` for a shared status hero with a manga orbit, speed lines, and SFX lettering.
 - `MangaSfx` for decorative, screen-reader-hidden manga onomatopoeia.
 - `MangaLoadingState` for a shared manga-styled loading panel and motion.
+- `MapFrame`, `MapLegend`, and `RegionSummary` for map source states and shared map information patterns.
 - `Badge` for maturity and status labels.
 - `Icon`, `iconNames`, and `iconGroups` for the original shared 24px SVG stroke family. Icons are decorative by default; `label` is for an SVG that carries meaning without an adjacent accessible name.
 - `Notice` for user-facing information that needs clear emphasis.
@@ -29,7 +30,7 @@ This is a planned migration. The current implementation and historical guidance 
 - `Tabs` for controlled tab lists with roving focus, orientation-aware arrow keys, Home/End, disabled tabs, and linked panels.
 - `ConfirmDialog` for consequential decisions using native modal semantics, a verified Tab/Shift+Tab focus cycle, and Escape behavior.
 - `ui.css` as the official shared stylesheet entry for tokens, component styles, and the shared theme.
-- `portal.css` and `command-center.css` for package-owned product composition; Command Center loads the vendor MapLibre stylesheet between the shared and product entries.
+- `portal.css` and `command-center.css` for package-owned product composition; Command Center loads the vendor MapLibre stylesheet and the opt-in adapter before its product entry.
 - `buttonClassName` for styling Next.js Link or an anchor with the shared action variants.
 
 ## Component contract
@@ -70,7 +71,7 @@ Promote a pattern when a real consumer workflow needs it, its interaction or acc
 
 ### Stylesheet ownership and order
 
-`ui.css` is the common public stylesheet entry; it imports the token/component base then the shared theme. `portal.css` composes that entry before `products/portal-globals.css` and `products/portal-manga.css`. Command Center imports the same `ui.css`, then the MapLibre vendor stylesheet, then the package-owned `command-center.css`. This preserves the pre-migration cascade order. Consumers import these exported paths only; implementation CSS under `src/` is private to the package. Portal and Command Center no longer contain product stylesheet files. Remaining inline styles and application class hooks are still migration work and are not treated as completed by this file move.
+`ui.css` is the common public stylesheet entry; it imports tokens, semantic theme, component styles, and shared map patterns. `portal.css` composes that entry before `products/portal-globals.css` and `products/portal-manga.css`. Command Center imports the same `ui.css`, then the MapLibre vendor stylesheet, `adapters/maplibre.css`, and the package-owned `command-center.css`. MapLibre styling is opt-in and CSS-only; the runtime remains an application dependency. `MapFrame` exposes ready, loading, empty, stale, error, unavailable, and WebGL-unavailable states. Consumers import exported paths only; implementation CSS under `src/` is private to the package.
 
 The primitives have no internal state or browser effects, except `ConfirmDialog`, which synchronizes a controlled `open` prop with the native dialog lifecycle. In Next.js App Router, `Tabs` and `Switch` need a Client Component owner because they require callbacks; `Button`, form controls, and layout primitives can render from a Server Component when no client event handler is passed. A `Button` click handler or controlled form event belongs to a Client Component. `ConfirmDialog` declares its own client boundary, but its callbacks must still be created by a client owner because functions cannot cross the Server-to-Client Component boundary. Static primitives and `buttonClassName` can be used in server-rendered UI. Form controls preserve native HTML validation and do not replace server-side validation. CSS is imported once by each consuming app. The package targets React 19, matching the applications; the portal uses Next.js transpilation and Vite consumes the workspace TypeScript source.
 
@@ -95,7 +96,7 @@ The catalog uses static, fabricated examples and local-only interactions. It mak
 
 `tokens.css` owns the shared base palette and component/layout tokens. `themes.css` maps palette values to semantic roles for dark and light themes. The shared `ui.css` import order is palette tokens → semantic themes → component styles and fonts. It owns `color-scheme` so product sheets cannot silently override native controls' theme. Product illustrations still have local color literals inside the package and remain part of the palette audit.
 
-Portal imports `@empire/ui/portal.css`, which composes the shared entry and Portal presentation. Command Center imports `@empire/ui/ui.css`, its opt-in MapLibre vendor stylesheet, then `@empire/ui/command-center.css` so vendor and product cascade order stays explicit without importing shared styles twice. All authored product presentation CSS now lives under `packages/ui/src/products/`; apps keep routing, product data, authentication, API access, permissions, and domain workflows. The former `manga-theme.css` implementation was absorbed into `themes.css`; it has no remaining consumer or package subpath.
+Portal imports `@empire/ui/portal.css`, which composes the shared entry and Portal presentation. Command Center imports `@empire/ui/ui.css`, the MapLibre vendor stylesheet, the opt-in `@empire/ui/adapters/maplibre.css` skin, then `@empire/ui/command-center.css`. The adapter owns `.maplibregl-ctrl-*` and `.wm-popup` presentation selectors and must follow the vendor stylesheet. It contains CSS only; MapLibre runtime stays an application dependency and is not loaded by Portal or the default UI entry. All authored product presentation CSS now lives under `packages/ui/src/products/`; apps keep routing, product data, authentication, API access, permissions, and domain workflows. The former `manga-theme.css` implementation was absorbed into `themes.css`; it has no remaining consumer or package subpath.
 
 Portal and Command Center can have distinct editorial and operational compositions, but their authored visual rules and shared primitives are owned by the same package. Product-specific styles are package entries, not app-local copies.
 
@@ -104,7 +105,7 @@ Portal and Command Center can have distinct editorial and operational compositio
 | Consumer | Shared primitives currently used | Example |
 | --- | --- | --- |
 | Public portal | Badge, Icon, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, Panel, SectionHeading, StatGrid, Switch, Tabs, button class helper | Theme and external-link symbols use package vectors; page introductions, loading art, orbit rings, panel effects, and manga SFX lettering use shared components; the explorer selects system metadata with keyboard-accessible tab panels. |
-| 100CENTER | Badge, Button, ConfirmDialog, EmptyState, ErrorState, FieldLabel, Icon, LoadingState, MangaEffect, MangaPageIntro, MangaTelemetryHero, Notice, Panel, SelectField, TextArea, TextField | Overview, access-filtered navigation, workspace cards, search, sync, and World Monitor use package vectors and shared hero composition. Module, RFC, and Research Run lists retain distinct resource states. |
+| 100CENTER | Badge, Button, ConfirmDialog, EmptyState, ErrorState, FieldLabel, Icon, LoadingState, MangaEffect, MangaPageIntro, MangaTelemetryHero, MapLegend, Notice, Panel, RegionSummary, SelectField, TextArea, TextField | Overview, access-filtered navigation, workspace cards, search, sync, and World Monitor use package vectors and shared hero composition. MapLibre styling is an opt-in CSS adapter; map legend, region marker skin, and selected-region summary use package-owned patterns. Module, RFC, and Research Run lists retain distinct resource states. |
 | UI catalog | Every exported primitive | Standalone visual and interaction examples; actions are fixtures and do not call product APIs. |
 
 ## Local component catalog
