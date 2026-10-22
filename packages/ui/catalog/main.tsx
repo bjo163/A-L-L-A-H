@@ -260,6 +260,7 @@ function Catalog() {
             description="Use a consistent heading, summary, and action area across related pages."
             sfx="BAM!"
           />
+          <MangaTelemetryHero eyebrow="SYSTEM TELEMETRY" title="Fixture shell status" pulse="Operational" sfx="PING!" description="A static telemetry composition for visual review; it does not call an API." metadata={<span>Fixture · 2026-10-22</span>} />
           <MetricGrid profile="editorial" items={[
             { value: "07", label: "Architecture layers" },
             { value: "06", label: "Technology domains" },

@@ -512,7 +512,7 @@ Owner: UI maintainer. Dependensi: berjalan bersama C02–C14. Gate: package dapa
 - [x] **UI-C15-02** — Buat galeri logo/lockup/favicons dan aturan brand.
 - [x] **UI-C15-03** — Buat icon gallery dengan nama, usage dan ukuran optik.
 - [ ] **UI-C15-04** — Beri setiap public export contoh, state dan consumer reference.
-- [ ] **UI-C15-05** — Tambahkan fixture TelemetryHero, shell, table, ListDetail dan map presentation.
+- [x] **UI-C15-05** — Tambahkan fixture TelemetryHero, shell, table, ListDetail dan map presentation.
 - [ ] **UI-C15-06** — Tambahkan fixture halaman Portal dan semua kategori view operasi.
 - [ ] **UI-C15-07** — Tambahkan kontrol theme/density/language/viewport untuk reproduksi review.
 - [ ] **UI-C15-08** — Dokumentasikan composition recipe dan contoh anti-pattern override lokal.
@@ -719,6 +719,7 @@ Status penerimaan + tanggal:
 | UI-C15-03 | Catalog icon gallery merender seluruh registered icon groups pada 16/20/24/32px, muted/accent usage, accessible pairing, serta RTL directional example. | Source audit `packages/ui/catalog/main.tsx` dan `src/primitives/Icon.tsx`. |
 | UI-C15-10 | Catalog fixtures memakai copy dan object lokal statis; tidak ada API request, credential, tenant record, atau production data path. | README catalog contract dan source audit terverifikasi. |
 | UI-C15-11 | README memuat export map, component contract, navigation adapters, stylesheet order, token layers, theme/font delivery, consumer map, and asset guidance. | Source audit `packages/ui/README.md`. |
+| UI-C15-05 | Catalog composition and data sections exercise `MangaTelemetryHero`, catalog shell/container, `DataTable`, `ListDetail`, and `MapFrame`/`MapLegend`/`RegionSummary` fixtures using static local data. | `pnpm --filter @empire/ui typecheck` lulus pada fixture slice; map runtime remains mocked and no server is required. |
 | UI-C13-13 | Research list memakai shared `Panel`, `Badge`, `LoadingState`, `ErrorState`, `EmptyState`, `FieldLabel`, `TextField`, `TextArea`, `SelectField`, `Button`, `Notice`, dan `ConfirmDialog`; create, evidence, completion, approval/rejection, workflow status, dan permission guards tetap berada di app. | Source audit pada `ResearchCard` dan `App.tsx`; `pnpm --filter @empire/command-center typecheck` lulus. |
 | UI-C13-08 | Continuum agent cards memakai shared `Panel`, `Badge`, `Icon`, `MetricGrid`, dan `EmptyState`; invocation form memakai shared `FieldLabel`, `TextField`, dan `Button` dengan permission guard app-owned. | Source audit pada view Continuum dan `pnpm --filter @empire/command-center typecheck` lulus. |
 | UI-C10-01 | `DataTable<Row>` menyediakan typed columns/cell renderer, semantic caption, `scope="col"`, numeric alignment (`start`/`center`/`end`), stable `rowKey`, and table-level empty row. Wrapper memberi horizontal overflow tanpa mengubah table semantics. | `pnpm --filter @empire/ui typecheck` lulus. Consumer migration, caption copy, and narrow-table behavior review masih terbuka pada UI-C10-02/UI-C15-04. |
