@@ -9,7 +9,7 @@ import type {
   YoutubeViolationCategory,
   YoutubeWorkflowStatus,
 } from "@empire/batteries-world-monitor";
-import { Badge, Button, DataTable, type DataTableColumn, EmptyState, Icon, MetricGrid, Panel, StatusIndicator } from "@empire/ui";
+import { Badge, Button, DataTable, type DataTableColumn, EmptyState, MetricGrid, Panel, StatusIndicator, DocumentIcon, DownloadIcon, CopyIcon } from "@empire/ui";
 
 const api = createApiClient(import.meta.env.VITE_API_ORIGIN || "http://127.0.0.1:4000");
 
@@ -587,13 +587,13 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
           </div>
           <div className="button-row">
             <Button variant="secondary" onClick={handleOpenSnippet}>
-              <Icon name="document" size={14} /> Skrip Playwright / Crawler
+              <DocumentIcon size={14} /> Skrip Playwright / Crawler
             </Button>
             <Button variant="secondary" onClick={() => exportLedger("markdown")}>
-              <Icon name="download" size={14} /> Ekspor Markdown
+              <DownloadIcon size={14} /> Ekspor Markdown
             </Button>
             <Button variant="secondary" onClick={() => exportLedger("json")}>
-              <Icon name="copy" size={14} /> Unduh JSON
+              <CopyIcon size={14} /> Unduh JSON
             </Button>
           </div>
         </div>
