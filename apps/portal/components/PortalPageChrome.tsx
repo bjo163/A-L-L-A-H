@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { ReactNode } from "react";
-import { IconText, MangaEffect, MangaPageIntro } from "@empire/ui";
+import { IconText, MangaEffect, MangaPageIntro, PageCrosslinks } from "@empire/ui";
 import type { IconName } from "@empire/ui";
 
 export type PageLink = { href: string; label: string; external?: boolean; icon?: IconName; iconPosition?: "start" | "end" };
@@ -33,7 +33,9 @@ export function PortalPageIntro({
 }
 
 export function PortalPageCrosslinks({ links, label = "Tautan terkait" }: { links: PageLink[]; label?: string }) {
-  return <nav className="atlas-crosslinks" aria-label={label}>
-    {links.map((link) => <Link key={link.href} href={link.href}><PageLinkLabel link={link} /></Link>)}
-  </nav>;
+  return <PageCrosslinks
+    label={label}
+    items={links.map((link) => ({ id: link.href, href: link.href, content: <PageLinkLabel link={link} /> }))}
+    renderLink={({ id, href, children }) => <Link key={id} href={href}>{children}</Link>}
+  />;
 }
