@@ -78,6 +78,8 @@ export { CodeBlock, Divider, KeyValueList } from "./patterns/ContentPatterns";
 export type { CodeBlockProps, DividerProps, KeyValueItem, KeyValueListProps } from "./patterns/ContentPatterns";
 export { ActionGroup } from "./patterns/ActionGroup";
 export type { ActionGroupProps } from "./patterns/ActionGroup";
+export { Card } from "./patterns/Card";
+export type { CardProps } from "./patterns/Card";
 export { Grid, Inline, Stack } from "./patterns/Layout";
 export type { GridProps, InlineProps, LayoutSpace, StackProps } from "./patterns/Layout";
 export { StatusIndicator } from "./patterns/StatusIndicator";
