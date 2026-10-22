@@ -10,6 +10,7 @@
 - `DonutChart` for reusable, accessible distribution charts with semantic status tones.
 - `IllustrationFrame` and standard ratio presets for consistently sized and clipped product artwork.
 - Optional `illustrated` presentation on `EmptyState` and `ErrorState`; each uses package-owned decorative SVG while keeping the message and recovery action primary.
+- Illustration frames are pointer-transparent and their inner art subtree is inert, preventing artwork from becoming a focus stop or intercepting neighboring interactions.
 
 ### Changed
 

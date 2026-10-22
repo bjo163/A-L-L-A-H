@@ -5,6 +5,7 @@
   place-items: center;
   width: 100%;
   min-width: 0;
+  pointer-events: none;
   aspect-ratio: 16 / 10;
   overflow: hidden;
   border: var(--eol-border-width) solid var(--eol-color-border);
@@ -19,7 +20,8 @@
 .eol-illustration-frame[data-ratio="portrait"] { aspect-ratio: 4 / 5; }
 .eol-illustration-frame[data-ratio="panoramic"] { aspect-ratio: 21 / 9; }
 
-.eol-illustration-frame > :is(img, svg, video, canvas) {
+.eol-illustration-frame__content { display: contents; }
+.eol-illustration-frame__content > :is(img, svg, video, canvas) {
   display: block;
   width: 100%;
   height: 100%;
@@ -28,5 +30,5 @@
 
 .eol-illustration-frame[data-fit="cover"] { --eol-illustration-object-fit: cover; }
 .eol-illustration-frame[data-fit="contain"] { --eol-illustration-object-fit: contain; }
-.eol-illustration-frame > picture { display: grid; width: 100%; height: 100%; }
-.eol-illustration-frame > picture > img { display: block; width: 100%; height: 100%; object-fit: var(--eol-illustration-object-fit, contain); }
+.eol-illustration-frame__content > picture { display: grid; width: 100%; height: 100%; }
+.eol-illustration-frame__content > picture > img { display: block; width: 100%; height: 100%; object-fit: var(--eol-illustration-object-fit, contain); }

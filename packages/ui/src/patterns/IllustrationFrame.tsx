@@ -39,7 +39,7 @@ export function IllustrationFrame({
       data-ratio={ratio}
       role={decorative ? undefined : "img"}
     >
-      {children}
+      <span className="eol-illustration-frame__content" inert>{children}</span>
     </div>
   );
 }
