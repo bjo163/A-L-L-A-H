@@ -8,12 +8,12 @@ declare module "@empire/batteries-dna" {
     attribute: string;
     domain: string;
     wisdom: string;
-    name: string;
+    slug: string;
     id: string;
     lexiconCode: string;
     capability: string;
     recordType: string;
-    relation: string;
+    relation: "inspiredBy" | null;
     scope: string;
     limitations: readonly string[];
     status: string;
@@ -23,6 +23,6 @@ declare module "@empire/batteries-dna" {
 
   export function listBatteriesDna(): readonly BatteriesDnaCatalogItem[];
   export function getBatteriesDna(key: string): BatteriesDnaCatalogItem | undefined;
-  export const batteriesDnaCatalog: { packages: readonly BatteriesDnaCatalogItem[] };
+  export const batteriesDnaCatalog: { records: readonly BatteriesDnaCatalogItem[] };
   export default batteriesDnaCatalog;
 }

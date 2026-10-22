@@ -259,10 +259,21 @@ export interface YoutubeMonitoredItem {
   operatorNotes?: string;
   scannedAt: string;
   lastActionAt?: string;
-  sourceType: "live_search" | "browser_automation" | "feed_crawl" | "verified_seed" | "innertube_client";
+  sourceType: "live_search" | "browser_automation" | "feed_crawl" | "verified_seed" | "innertube_client" | "demo_synthetic";
   isNew?: boolean;
   transcriptAnalyzed?: boolean;
   transcriptSnippet?: string;
+
+  /** Relasi ke model Partner (mitra dakwah / organisasi / tokoh / target pantau) */
+  partnerId?: string | null;
+  partnerInfo?: {
+    id: string;
+    name: string;
+    type?: string;
+    companyName?: string | null;
+    isMitra?: boolean;
+    notes?: string | null;
+  } | null;
 }
 
 export type YoutubeCrawlerEngine = "innertube" | "playwright" | "auto";
@@ -288,7 +299,7 @@ export interface YoutubeScanResult {
   existingItemsCount?: number;
   items: YoutubeMonitoredItem[];
   summary: YoutubeScanSummary;
-  crawlerMode: "youtubei_innertube" | "playwright_headless_browser" | "http_live_fetch" | "fallback_synthetic";
+  crawlerMode: "youtubei_innertube" | "playwright_headless_browser" | "http_live_fetch" | "no_results";
   diagnosticMessage?: string;
 }
 

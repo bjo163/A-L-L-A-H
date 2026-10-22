@@ -30,7 +30,7 @@ export class YoutubeSentinelItemModel extends BatteriesModel {
     riskLevel:          { type: "string",    required: true,  index: true },
     category:           { type: "string",    required: true,  index: true },
     sourceType:         { type: "string",    required: true,  defaultTo: "browser_automation" },
-    confidence:         { type: "float",     required: true,  defaultTo: 0.9 },
+    confidence:         { type: "float",       required: true,  defaultTo: 0.9 },
     isRefutation:       { type: "boolean",   required: true,  defaultTo: false },
 
     /** JSON array of YoutubeMatchedRule objects */
@@ -58,6 +58,9 @@ export class YoutubeSentinelItemModel extends BatteriesModel {
     workflowStatus:     { type: "string",    required: true,  defaultTo: "PENDING_REVIEW", index: true },
     operatorNotes:      { type: "text",      nullable: true },
     lastActionAt:       { type: "timestamp", nullable: true },
+
+    /** Hubungan ke partner (mitra dakwah / organisasi / target pantau) */
+    partnerId:          { type: "uuid",      nullable: true,  index: true, references: { table: "partners", column: "id", onDelete: "SET NULL" } },
 
     // ── Crawler provenance ────────────────────────────────────────
     crawlerMode:        { type: "string",    nullable: true },
@@ -108,6 +111,7 @@ export class YoutubeSentinelItemModel extends BatteriesModel {
   workflowStatus!: string;
   operatorNotes?: string | null;
   lastActionAt?: string | null;
+  partnerId?: string | null;
 
   crawlerMode?: string | null;
   scannedAt!: string;

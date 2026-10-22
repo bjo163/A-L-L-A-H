@@ -17,13 +17,17 @@ Node >=22.12, pnpm 11.24, and local PostgreSQL are required for API operations.
 
 ## Database
 
-The API uses the Empire Batteries Knex/Objection persistence layer against PostgreSQL. Active modules declare their models; Batteries creates missing tables and safely adds compatible columns at startup under a PostgreSQL advisory lock and transaction. It never automatically drops columns or rewrites existing types. Unsafe drift blocks startup with a specific repair requirement. The separate `packages/db` Drizzle package is a schema prototype and is not used by the API runtime.
+The API uses the Empire Batteries Knex/Objection persistence layer against PostgreSQL. Active modules declare their models; Batteries creates missing tables and safely adds compatible columns at startup under a PostgreSQL advisory lock and transaction. It never automatically drops columns or rewrites existing types. Unsafe drift blocks startup with a specific repair requirement. Batteries is the sole persistence and schema-sync authority in this repository.
 
 ## Security
 
 The API listens on loopback by default. Privileged accounts require separate `EMPIRE_OWNER_PASSWORD` and `EMPIRE_ARCHITECT_PASSWORD` values when first provisioned. There is no shared default account password. Login issues a short-lived revocable bearer session; only the token hash is stored. The Command Center keeps its session in tab-scoped browser storage.
 
 Keep database URLs and bootstrap passwords in private environment configuration. Do not place credentials in frontend `VITE_`/`NEXT_PUBLIC_` variables or commit them. The portal has no direct database access.
+
+## YouTube Sentinel demo corpus
+
+The in-memory repository starts empty. Fictional Sentinel examples are available only when `YOUTUBE_SENTINEL_DEMO_MODE=true` is set in the API's private environment. The Command Center marks these records as synthetic demo data; never use them as real findings or evidence. Leave the setting disabled in production.
 
 ## Scope and readiness
 

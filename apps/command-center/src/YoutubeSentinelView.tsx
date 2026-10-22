@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { API_PATHS, createApiClient } from "@empire/api-contract";
+import { API_PATHS, createApiClient, type ApiRequestOptions } from "@empire/api-contract";
 import type {
   SentinelDirection,
   SentinelTradition,
@@ -9,13 +9,15 @@ import type {
   YoutubeViolationCategory,
   YoutubeWorkflowStatus,
 } from "@empire/batteries-world-monitor";
-import { Badge, Button, DataTable, type DataTableColumn, EmptyState, MetricGrid, Panel, StatusIndicator, DocumentIcon, DownloadIcon, CopyIcon, IconText, SparkIcon, WarningIcon, AuditIcon, ModulesIcon, CheckIcon, GlobeIcon, ActivityIcon, AgentIcon, ArrowUpRightIcon, ClockIcon, HistoryIcon, KnowledgeIcon, PlusIcon, SettingsIcon, SourceIcon, CloseIcon } from "@empire/ui";
+import { Badge, Button, DataTable, type DataTableColumn, DonutChart, EmptyState, MetricGrid, Panel, StatusIndicator, RefreshIcon, ActivityIcon, GlobeIcon, ApprovalIcon, DocumentIcon, DownloadIcon, CopyIcon, IconText, SparkIcon, WarningIcon, AuditIcon, ModulesIcon, CheckIcon, ClockIcon, HistoryIcon, SettingsIcon, PlusIcon, SourceIcon, KnowledgeIcon, ArrowUpRightIcon, AgentIcon, CloseIcon } from "@empire/ui";
 import { MotionRegion } from "@empire/ui/client";
 
-const api = createApiClient(import.meta.env.VITE_API_ORIGIN || "http://127.0.0.1:4000");
+const api = createApiClient(process.env.NEXT_PUBLIC_API_ORIGIN || "http://localhost:4000");
 
 interface YoutubeSentinelViewProps {
   searchQuery?: string;
+  token: string | null;
+  permissions: { read: boolean; scan: boolean; review: boolean; schedule: boolean };
 }
 
 const AUTO_SCAN_QUERIES = [
@@ -26,7 +28,8 @@ const AUTO_SCAN_QUERIES = [
   "cek khodam gratis",
 ];
 
-export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewProps) {
+export function YoutubeSentinelView({ searchQuery = "", token, permissions }: YoutubeSentinelViewProps) {
+  const request = <T,>(path: string, options: ApiRequestOptions = {}) => api.request<T>(path, { ...options, token });
   const [items, setItems] = useState<YoutubeMonitoredItem[]>([]);
   const [summary, setSummary] = useState<YoutubeScanSummary | null>(null);
   const [loading, setLoading] = useState(true);
@@ -46,16 +49,120 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
   const [viewMode, setViewMode] = useState<"table" | "grid">("table");
   const [toast, setToast] = useState<string | null>(null);
   const [activeModal, setActiveModal] = useState<{
-    type: "report" | "counter_dakwah" | "wisdom" | "snippet";
+    type: "report" | "counter_dakwah" | "wisdom" | "snippet" | "partner";
     item?: YoutubeMonitoredItem;
     snippetCode?: string;
   } | null>(null);
+  const [partnerFormData, setPartnerFormData] = useState<{
+    name: string;
+    companyName: string;
+    type: "contact" | "invoice" | "delivery" | "other";
+    isMitra: boolean;
+    notes: string;
+  }>({
+    name: "",
+    companyName: "",
+    type: "contact",
+    isMitra: true,
+    notes: "",
+  });
+  const [linkingPartner, setLinkingPartner] = useState(false);
+  const [showCharts, setShowCharts] = useState(true);
+  const [schedulerStatus, setSchedulerStatus] = useState<{
+    enabled: boolean;
+    intervalHours: number;
+    isSweepInProgress: boolean;
+    lastSweepCompletedAt: string | null;
+    nextScheduledSweepAt: string | null;
+  } | null>(null);
+  const [schedulerTriggering, setSchedulerTriggering] = useState(false);
+
+  // Fetch background scheduler status
+  async function fetchSchedulerStatus() {
+    if (!permissions.read) return;
+    try {
+      const res = await request<{
+        ok: boolean;
+        scheduler: {
+          enabled: boolean;
+          intervalHours: number;
+          isSweepInProgress: boolean;
+          lastSweepCompletedAt: string | null;
+          nextScheduledSweepAt: string | null;
+        };
+      }>(API_PATHS.worldMonitorYoutubeSchedule);
+      if (res.ok) {
+        setSchedulerStatus(res.scheduler);
+      }
+    } catch {
+      // Non-fatal
+    }
+  }
+
+  // Trigger manual background sweep via scheduler
+  async function triggerSchedulerSweep() {
+    if (!permissions.schedule) return;
+    setSchedulerTriggering(true);
+    notify("Memulai pemindaian berkala di background...");
+    try {
+      const res = await request<{
+        ok: boolean;
+        message?: string;
+        scheduler?: {
+          enabled: boolean;
+          intervalHours: number;
+          isSweepInProgress: boolean;
+          lastSweepCompletedAt: string | null;
+          nextScheduledSweepAt: string | null;
+        };
+      }>(API_PATHS.worldMonitorYoutubeSchedule, {
+        method: "POST",
+        body: { action: "trigger" },
+      });
+      if (res.ok) {
+        notify(res.message || "Pemindaian background selesai!");
+        void fetchCatalogAndAutoScan();
+        void fetchSchedulerStatus();
+      }
+    } catch (err) {
+      notify(`Gagal memicu scheduler: ${err instanceof Error ? err.message : "Error"}`);
+    } finally {
+      setSchedulerTriggering(false);
+    }
+  }
+
+  // Update scheduler interval hours
+  async function updateSchedulerInterval(hours: number) {
+    if (!permissions.schedule) return;
+    try {
+      const res = await request<{
+        ok: boolean;
+        message?: string;
+        scheduler?: {
+          enabled: boolean;
+          intervalHours: number;
+          isSweepInProgress: boolean;
+          lastSweepCompletedAt: string | null;
+          nextScheduledSweepAt: string | null;
+        };
+      }>(API_PATHS.worldMonitorYoutubeSchedule, {
+        method: "POST",
+        body: { action: "update_interval", intervalHours: hours },
+      });
+      if (res.ok) {
+        setSchedulerStatus(res.scheduler ?? null);
+        notify(res.message || `Interval pemindaian diubah ke ${hours} jam.`);
+      }
+    } catch {
+      notify("Gagal memperbarui interval scheduler.");
+    }
+  }
 
   // Load initial catalog, then auto-scan if empty
   async function fetchCatalogAndAutoScan() {
     setLoading(true);
     try {
-      const res = await api.request<{
+      const res = await request<{
         ok: boolean;
         items: YoutubeMonitoredItem[];
         summary: YoutubeScanSummary;
@@ -64,7 +171,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
         setItems(res.items);
         setSummary(res.summary);
         // Auto-scan if catalog is empty (first run / fresh server restart)
-        if (res.items.length === 0) {
+        if (res.items.length === 0 && permissions.scan) {
           setLoading(false);
           await runAutoScan();
           return;
@@ -81,6 +188,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
 
   // Run a multi-query automatic scan through default anti-syirik keywords
   async function runAutoScan() {
+    if (!permissions.scan) return;
     setScanning(true);
     let totalScanned = 0;
     let crawlerModeUsed = "";
@@ -88,7 +196,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
       const q = AUTO_SCAN_QUERIES[i];
       setScanProgress(`Memindai kata kunci ${i + 1}/${AUTO_SCAN_QUERIES.length}: "${q}"…`);
       try {
-        const res = await api.request<{
+        const res = await request<{
           ok: boolean;
           scannedCount: number;
           crawlerMode?: string;
@@ -120,7 +228,9 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
   }
 
   useEffect(() => {
+    if (!permissions.read) return;
     void fetchCatalogAndAutoScan();
+    void fetchSchedulerStatus();
   }, []);
 
   // Show temporary toast message
@@ -131,17 +241,18 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
 
   // Trigger manual search/crawl scan for a specific query
   async function handleScan(targetQuery?: string) {
+    if (!permissions.scan) return;
     const q = (targetQuery ?? queryInput).trim();
     if (!q) return;
 
     setScanning(true);
     setScanProgress(`Memindai: "${q}"…`);
     try {
-      const res = await api.request<{
+      const res = await request<{
         ok: boolean;
         scannedCount: number;
         newItemsCount: number;
-        crawlerMode?: "youtubei_innertube" | "playwright_headless_browser" | "http_live_fetch" | "fallback_synthetic";
+        crawlerMode?: "youtubei_innertube" | "playwright_headless_browser" | "http_live_fetch" | "no_results";
         diagnosticMessage?: string;
         items: YoutubeMonitoredItem[];
         summary: YoutubeScanSummary;
@@ -161,15 +272,15 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
       if (res.ok) {
         setItems(res.items);
         setSummary(res.summary);
-        const mode = res.crawlerMode === "youtubei_innertube"
-          ? "YouTube.js (InnerTube Native Client)"
-          : res.crawlerMode === "playwright_headless_browser"
-            ? "Playwright Headless Browser (Chromium)"
-            : res.crawlerMode === "http_live_fetch"
-              ? "Live HTTP Network Fetch"
-              : res.crawlerMode === "fallback_synthetic"
-                ? "Fallback Sintetik (Jaringan Dibatasi)"
-                : "Heuristic";
+      const mode = res.crawlerMode === "youtubei_innertube"
+        ? "YouTube.js (InnerTube Native Client)"
+        : res.crawlerMode === "playwright_headless_browser"
+          ? "Playwright Headless Browser (Chromium)"
+          : res.crawlerMode === "http_live_fetch"
+            ? "Live HTTP Network Fetch"
+            : res.crawlerMode === "no_results"
+              ? "Tidak ada hasil live"
+              : "Heuristic";
         notify(`Pemindaian selesai via ${mode}: ${res.scannedCount} video dievaluasi.${res.diagnosticMessage ? " Info: " + res.diagnosticMessage : ""}`);
       }
     } catch (err) {
@@ -186,8 +297,9 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
     action: YoutubeWorkflowStatus,
     notes?: string,
   ) {
+    if (!permissions.review) return;
     try {
-      const res = await api.request<{
+      const res = await request<{
         ok: boolean;
         item: YoutubeMonitoredItem;
         summary: YoutubeScanSummary;
@@ -210,7 +322,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
   // Fetch automation crawler snippet
   async function handleOpenSnippet() {
     try {
-      const res = await api.request<{ ok: boolean; script: string }>(
+      const res = await request<{ ok: boolean; script: string }>(
         `${API_PATHS.worldMonitorYoutubeSnippet}?query=${encodeURIComponent(queryInput)}`,
       );
       if (res.ok) {
@@ -410,12 +522,42 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
       },
       {
         key: "channel",
-        header: "Channel",
+        header: "Channel & Entitas Partner",
         cell: (item: YoutubeMonitoredItem) => (
           <div>
-            <span className="sentinel-channel-name">{item.channelTitle}</span>
-            <div className="sentinel-view-count">
-              {item.viewCountText}
+            <div className="sentinel-channel-partner-row">
+              <span className="sentinel-channel-name">{item.channelTitle}</span>
+              {item.partnerInfo ? (
+                <span
+                  className={`sentinel-partner-badge ${item.partnerInfo.isMitra ? "sentinel-partner-badge--mitra" : "sentinel-partner-badge--target"}`}
+                  title={`Terhubung ke Partner: ${item.partnerInfo.name} (${item.partnerInfo.notes || ""})`}
+                >
+                  {item.partnerInfo.isMitra ? "Mitra: " : "Target: "}
+                  {item.partnerInfo.name}
+                </span>
+              ) : null}
+            </div>
+            <div className="sentinel-channel-partner-actions">
+              {item.viewCountText && <span>{item.viewCountText}</span>}
+              <button
+                type="button"
+                className="text-button sentinel-partner-link"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setPartnerFormData({
+                    name: item.channelTitle,
+                    companyName: item.channelTitle,
+                    type: "contact",
+                    isMitra: item.direction === "POSITIVE",
+                    notes: item.direction === "POSITIVE"
+                      ? `Mitra Dakwah / Komunitas Hikmah (${item.tradition}) dari YouTube Sentinel.`
+                      : `Target Pemantauan Dugaan Kesesatan / Pelanggaran Tauhid dari YouTube Sentinel.`,
+                  });
+                  setActiveModal({ type: "partner", item });
+                }}
+              >
+                {item.partnerInfo ? <IconText icon={<SettingsIcon />}>Kelola Partner</IconText> : <IconText icon={<PlusIcon />}>Simpan ke Partner</IconText>}
+              </button>
             </div>
           </div>
         ),
@@ -472,6 +614,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
           <select
             className="sentinel-select sentinel-select--compact"
             value={item.workflowStatus}
+            disabled={!permissions.review}
             onChange={(e) => void handleAction(item.id, e.target.value as YoutubeWorkflowStatus)}
           >
             {item.direction === "POSITIVE" ? (
@@ -558,6 +701,11 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
 
   return (
     <div className="youtube-sentinel-container">
+      {items.some((item) => item.sourceType === "demo_synthetic") && (
+        <div role="note" className="eol-notice eol-notice--warning sentinel-space-after-4">
+          Data contoh sintetis aktif untuk mode demo. Data ini bukan hasil pantauan YouTube dan tidak boleh diperlakukan sebagai bukti.
+        </div>
+      )}
       {toast && (
         <div role="status" className="eol-notice eol-notice--info sentinel-space-after-4">
           {toast}
@@ -579,6 +727,160 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
         ]}
       />
 
+      {/* ── Scheduler Surveillance Bar (Auto-Scan Scheduler) ────────────────── */}
+      <div className="sentinel-scheduler-card">
+        <div className="sentinel-scheduler-info">
+          <span className="sentinel-scheduler-badge">
+            <span className="online-dot" data-state={schedulerStatus?.isSweepInProgress ? "checking" : "ok"} />
+            {schedulerStatus?.isSweepInProgress ? "PEMINDAIAN BERJALAN..." : "AUTOSCAN AKTIF"}
+          </span>
+          <span>
+            Frekuensi: <strong>Setiap {schedulerStatus?.intervalHours ?? 12} Jam</strong>
+          </span>
+          {schedulerStatus?.lastSweepCompletedAt && (
+            <span>
+              Terakhir: <strong>{new Date(schedulerStatus.lastSweepCompletedAt).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}</strong>
+            </span>
+          )}
+          {schedulerStatus?.nextScheduledSweepAt && (
+            <span>
+              Jadwal Berikutnya: <strong>{new Date(schedulerStatus.nextScheduledSweepAt).toLocaleTimeString("id-ID", { hour: "2-digit", minute: "2-digit" })}</strong>
+            </span>
+          )}
+        </div>
+        <div className="sentinel-scheduler-actions">
+          {permissions.schedule && <select
+            className="sentinel-select sentinel-select--scheduler"
+            value={schedulerStatus?.intervalHours ?? 12}
+            onChange={(e) => void updateSchedulerInterval(Number(e.target.value))}
+          >
+            <option value={1}>Ubah: 1 Jam</option>
+            <option value={3}>Ubah: 3 Jam</option>
+            <option value={6}>Ubah: 6 Jam</option>
+            <option value={12}>Ubah: 12 Jam</option>
+            <option value={24}>Ubah: 24 Jam</option>
+          </select>}
+          {permissions.schedule && <Button
+            variant="secondary"
+            size="sm"
+            disabled={schedulerTriggering || schedulerStatus?.isSweepInProgress}
+            onClick={() => void triggerSchedulerSweep()}
+          >
+            <RefreshIcon size={12} />
+            {schedulerTriggering || schedulerStatus?.isSweepInProgress ? "Menjalankan..." : "Jalankan Auto-Sweep Sekarang"}
+          </Button>}
+          <Button
+            variant="secondary"
+            size="sm"
+            onClick={() => setShowCharts((prev) => !prev)}
+          >
+            <ActivityIcon size={12} />
+            {showCharts ? "Sembunyikan Grafik" : "Tampilkan Grafik"}
+          </Button>
+        </div>
+      </div>
+
+      {/* ── Visual Analytics (Tradition & Category Charts) ────────────────── */}
+      {showCharts && (
+        <div className="sentinel-chart-grid sentinel-chart-grid--spaced">
+          {/* Chart 1: Breakdown Per Tradisi & Polarisasi */}
+          <div className="sentinel-chart-card">
+            <div className="sentinel-chart-title">
+              <h4>
+                <GlobeIcon size={14} /> Distribusi Tradisi &amp; Polarisasi Konten
+              </h4>
+              <span className="sentinel-view-count">
+                Total: {items.length} Video
+              </span>
+            </div>
+            <div className="sentinel-bars-container">
+              {[
+        { label: "ISLAM", count: items.filter((i) => i.tradition === "ISLAM").length, tone: "success" },
+        { label: "KRISTEN", count: items.filter((i) => i.tradition === "KRISTEN").length, tone: "info" },
+        { label: "KATOLIK", count: items.filter((i) => i.tradition === "KATOLIK").length, tone: "sky" },
+        { label: "HINDU", count: items.filter((i) => i.tradition === "HINDU").length, tone: "warning" },
+        { label: "BUDDHA", count: items.filter((i) => i.tradition === "BUDDHA").length, tone: "yellow" },
+        { label: "KHONGHUCU", count: items.filter((i) => i.tradition === "KHONGHUCU").length, tone: "rose" },
+        { label: "UNIVERSAL", count: items.filter((i) => i.tradition === "UNIVERSAL").length, tone: "purple" },
+              ].map((trad) => {
+                const max = Math.max(1, ...items.map(() => items.length));
+                const pct = items.length > 0 ? Math.round((trad.count / items.length) * 100) : 0;
+                return (
+                  <div key={trad.label} className="sentinel-bar-row">
+                    <span className="sentinel-bar-label">{trad.label}</span>
+                    <div className="sentinel-bar-track">
+                      <div
+                        className={`sentinel-bar-fill sentinel-bar-fill--${trad.tone}`}
+                        role="meter"
+                        aria-label={`${trad.label}: ${pct}%`}
+                        aria-valuemin={0}
+                        aria-valuemax={100}
+                        aria-valuenow={pct}
+                        data-percent={Math.max(4, pct)}
+                      >
+                        {pct > 5 ? `${pct}%` : ""}
+                      </div>
+                    </div>
+                    <span className="sentinel-bar-val">{trad.count}</span>
+                  </div>
+                );
+              })}
+            </div>
+          </div>
+
+          {/* Chart 2: Komposisi Polarisasi & Level Risiko */}
+          <div className="sentinel-chart-card">
+            <div className="sentinel-chart-title">
+              <h4>
+                <ApprovalIcon size={14} /> Komposisi Arah &amp; Risiko
+              </h4>
+            </div>
+          <div className="sentinel-donut-wrapper">
+              <DonutChart
+                label="Komposisi arah konten"
+                centerLabel="KONTEN"
+                segments={[
+                  { id: "negative", label: "Kesesatan", value: items.filter((i) => i.direction === "NEGATIVE").length, tone: "danger" },
+                  { id: "positive", label: "Kebajikan", value: items.filter((i) => i.direction === "POSITIVE").length, tone: "success" },
+                  { id: "neutral", label: "Netral", value: items.filter((i) => i.direction === "NEUTRAL").length, tone: "info" },
+                ]}
+              />
+
+              <div className="sentinel-donut-legend">
+                <div
+                  className="sentinel-legend-item"
+                  onClick={() => setSelectedDirection("NEGATIVE")}
+                  title="Klik untuk filter arah Negatif"
+                >
+                    <span className="sentinel-legend-color sentinel-legend-color--danger" />
+                  <span><IconText icon={<WarningIcon />}>Kesesatan:</IconText> <strong>{items.filter((i) => i.direction === "NEGATIVE").length}</strong></span>
+                </div>
+                <div
+                  className="sentinel-legend-item"
+                  onClick={() => setSelectedDirection("POSITIVE")}
+                  title="Klik untuk filter arah Positif"
+                >
+                    <span className="sentinel-legend-color sentinel-legend-color--success" />
+                  <span><IconText icon={<SparkIcon />}>Kebajikan:</IconText> <strong>{items.filter((i) => i.direction === "POSITIVE").length}</strong></span>
+                </div>
+                <div
+                  className="sentinel-legend-item"
+                  onClick={() => setSelectedDirection("NEUTRAL")}
+                  title="Klik untuk filter arah Netral"
+                >
+                    <span className="sentinel-legend-color sentinel-legend-color--info" />
+                  <span><IconText icon={<CheckIcon />}>Netral:</IconText> <strong>{items.filter((i) => i.direction === "NEUTRAL").length}</strong></span>
+                </div>
+          <div className="sentinel-chart-hint">
+                  Klik salah satu legenda untuk menyaring tabel langsung.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      )}
+
+
       {/* ── Scanner Control Panel ────────────────────────────────────────────── */}
       <section className="sentinel-scanner-panel">
         <div className="sentinel-scanner-head">
@@ -599,7 +901,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
           </div>
         </div>
 
-        <div className="sentinel-search-bar">
+        {permissions.scan && <div className="sentinel-search-bar">
           <input
             type="text"
             className="sentinel-search-input"
@@ -611,9 +913,9 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
           <Button variant="primary" onClick={() => void handleScan()} disabled={scanning}>
             {scanning ? "Sedang Memindai..." : <IconText icon={<SparkIcon />}>Jalankan Pemindaian Otomatis</IconText>}
           </Button>
-        </div>
+        </div>}
 
-        <div className="sentinel-browser-status-bar">
+        {permissions.scan && <div className="sentinel-browser-status-bar">
           <div className="sentinel-engine-controls">
             <span className="muted sentinel-filter-label">Engine Penelusuran:</span>
             <div className="sentinel-engine-buttons">
@@ -645,7 +947,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
             {selectedEngine === "playwright" && "Membuka browser Chromium headless nyata di latar belakang dan merender halaman pencarian YouTube."}
             {selectedEngine === "auto" && "Memprioritaskan YouTube.js InnerTube yang cepat, lalu fallback otomatis ke browser Playwright jika diperlukan."}
           </small>
-        </div>
+        </div>}
 
         {scanning && (
           <MotionRegion className="sentinel-scanning-banner">
@@ -873,24 +1175,26 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
           description="Ubah kata kunci pencarian atau sesuaikan filter kategori dan risiko."
         />
       ) : viewMode === "table" ? (
-        <DataTable<YoutubeMonitoredItem>
-          caption={
-            <span>
-              <IconText icon={<DocumentIcon size={16} />}><strong>Temuan YouTube Sentinel</strong> — {visibleItems.length} video terpantau di database</IconText>
-            </span>
-          }
-          className="sentinel-table"
-          columns={tableColumns}
-          rows={visibleItems}
-          rowKey={(item) => item.id}
-          responsiveLabel="Daftar Temuan YouTube Sentinel"
-          empty={
-            <EmptyState
-              title="Tidak ada konten yang cocok"
-              description="Ubah kata kunci pencarian atau sesuaikan filter kategori dan risiko."
-            />
-          }
-        />
+        <div className="sentinel-table-wrapper">
+          <DataTable<YoutubeMonitoredItem>
+            caption={
+              <span>
+                <IconText icon={<DocumentIcon size={16} />}><strong>Temuan YouTube Sentinel</strong> — {visibleItems.length} video terpantau di database</IconText>
+              </span>
+            }
+            className="sentinel-table"
+            columns={tableColumns}
+            rows={visibleItems}
+            rowKey={(item) => item.id}
+            responsiveLabel="Daftar Temuan YouTube Sentinel"
+            empty={
+              <EmptyState
+                title="Tidak ada konten yang cocok"
+                description="Ubah kata kunci pencarian atau sesuaikan filter kategori dan risiko."
+              />
+            }
+          />
+        </div>
       ) : (
         <div className="sentinel-grid">
           {visibleItems.map((item) => (
@@ -1154,28 +1458,58 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
             {activeModal.item.wisdomGuidance && (
               <div className="sentinel-wisdom-box sentinel-space-after-4">
                 {activeModal.item.wisdomGuidance.originalText && (
-                  <div className="sentinel-arabic sentinel-arabic--positive">
+                  <div className="sentinel-arabic sentinel-arabic--large sentinel-arabic--positive sentinel-wisdom-original">
                     {activeModal.item.wisdomGuidance.originalText}
                   </div>
                 )}
-                <div className="sentinel-dalil-ref sentinel-dalil-ref--positive">
+                <div className="sentinel-dalil-ref sentinel-dalil-ref--positive sentinel-wisdom-reference">
                   <IconText icon={<KnowledgeIcon />}>{activeModal.item.wisdomGuidance.scriptureRef}</IconText>
                 </div>
                 <div className="sentinel-wisdom-quote">
                   &ldquo;{activeModal.item.wisdomGuidance.translation}&rdquo;
                 </div>
-                <p className="sentinel-modal-principle">
-                  <strong>Nilai Inti:</strong> {activeModal.item.wisdomGuidance.coreValue}
-                </p>
-                <p className="sentinel-modal-detail">
-                  <strong>Saran Operator:</strong> {activeModal.item.wisdomGuidance.recommendedAction}
-                </p>
+
+                <div className="sentinel-wisdom-detailed-grid">
+                  <div className="sentinel-wisdom-card">
+                    <h5><IconText icon={<SparkIcon />}>Nilai Luhur &amp; Intisari</IconText></h5>
+                    <p className="sentinel-wisdom-core-value">
+                      {activeModal.item.wisdomGuidance.coreValue}
+                    </p>
+                    <p className="sentinel-modal-detail">
+                      Topik: <strong>{activeModal.item.wisdomGuidance.topic}</strong>
+                    </p>
+                  </div>
+                  <div className="sentinel-wisdom-card">
+                    <h5><IconText icon={<KnowledgeIcon />}>Panduan &amp; Arahan Operator</IconText></h5>
+                    <p className="sentinel-wisdom-recommended-action">
+                      {activeModal.item.wisdomGuidance.recommendedAction}
+                    </p>
+                  </div>
+                </div>
+
+                {activeModal.item.wisdomBrief && (
+                  <div className="sentinel-wisdom-brief">
+                    <div className="sentinel-wisdom-brief-title">
+                  <IconText icon={<SparkIcon />}>Wawasan Kebijaksanaan (Wisdom Brief):</IconText>
+                    </div>
+                    <p className="sentinel-wisdom-brief-summary">
+                      {activeModal.item.wisdomBrief.summary}
+                    </p>
+                    {activeModal.item.wisdomBrief.keyInsights && activeModal.item.wisdomBrief.keyInsights.length > 0 && (
+                      <ul className="sentinel-wisdom-insights">
+                        {activeModal.item.wisdomBrief.keyInsights.map((insight, idx) => (
+                          <li key={idx}>{insight}</li>
+                        ))}
+                      </ul>
+                    )}
+                  </div>
+                )}
               </div>
             )}
 
             {activeModal.item.amplifyPacket && (
               <div className="sentinel-space-after-4">
-                <strong className="sentinel-modal-label">Draf Teks Amplifikasi &amp; Berbagi:</strong>
+                <strong className="sentinel-modal-label">Draf Teks Amplifikasi &amp; Berbagi Media Sosial:</strong>
                 <textarea
                   readOnly
                   className="sentinel-search-input sentinel-modal-textarea--amplify"
@@ -1256,6 +1590,126 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                 }}
               >
                 <IconText icon={<CopyIcon />}>Salin Skrip Otomasi</IconText>
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Modal: Hubungkan / Catat Sebagai Partner (Mitra / Target Pantau) ── */}
+      {activeModal?.type === "partner" && activeModal.item && (
+        <div className="sentinel-modal-overlay" onClick={() => setActiveModal(null)}>
+          <div className="sentinel-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="sentinel-modal-head">
+              <div>
+                <span className="eyebrow">INTEGRASI ENTITAS PARTNER &amp; KANAL</span>
+                <h3>Catat Entitas Partner untuk Channel &ldquo;{activeModal.item.channelTitle}&rdquo;</h3>
+              </div>
+              <Button variant="secondary" onClick={() => setActiveModal(null)}>
+                <IconText icon={<CloseIcon />}>Tutup</IconText>
+              </Button>
+            </div>
+
+            <p className="sentinel-partner-intro">
+              Hubungkan channel ini ke dalam <strong>Direktori Partner / Komunitas</strong> untuk tracking berkelanjutan, pemetaan afiliasi dakwah, atau investigasi terpusat.
+            </p>
+
+            <div className="sentinel-partner-form-grid">
+              <div className="sentinel-partner-field">
+                <label>Nama Entitas / Tokoh / Pemilik Channel:</label>
+                <input
+                  type="text"
+                  value={partnerFormData.name}
+                  onChange={(e) => setPartnerFormData({ ...partnerFormData, name: e.target.value })}
+                  placeholder="Contoh: Yayasan Dakwah Sunnah / Padepokan Gaib X"
+                />
+              </div>
+
+              <div className="sentinel-partner-field">
+                <label>Organisasi / Perusahaan / Lembaga (Opsional):</label>
+                <input
+                  type="text"
+                  value={partnerFormData.companyName}
+                  onChange={(e) => setPartnerFormData({ ...partnerFormData, companyName: e.target.value })}
+                  placeholder="Contoh: Majelis Taklim / Lembaga Spiritual"
+                />
+              </div>
+
+              <div className="sentinel-partner-classification-grid">
+                <div className="sentinel-partner-field">
+                  <label>Tipe Partner:</label>
+                  <select
+                    value={partnerFormData.type}
+                    onChange={(e) => setPartnerFormData({ ...partnerFormData, type: e.target.value as any })}
+                  >
+                    <option value="contact">Kontak Individu / Tokoh</option>
+                    <option value="other">Komunitas / Padepokan / Lembaga</option>
+                    <option value="invoice">Afiliasi Finansial</option>
+                  </select>
+                </div>
+
+                <div className="sentinel-partner-field">
+                  <label>Klasifikasi Entitas:</label>
+                  <select
+                    value={partnerFormData.isMitra ? "mitra" : "target"}
+                    onChange={(e) => setPartnerFormData({ ...partnerFormData, isMitra: e.target.value === "mitra" })}
+                  >
+                    <option value="mitra">Mitra Dakwah / Rekanan Kebaikan</option>
+                    <option value="target">Target Investigasi / Pantauan Syirik</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="sentinel-partner-field">
+                <label>Catatan Investigasi / Keterangan Afiliasi:</label>
+                <textarea
+                  rows={3}
+                  value={partnerFormData.notes}
+                  onChange={(e) => setPartnerFormData({ ...partnerFormData, notes: e.target.value })}
+                  placeholder="Catatan latar belakang, kontak WA, rekening, atau materi dakwah..."
+                />
+              </div>
+            </div>
+
+            <div className="button-row sentinel-actions-end">
+              <Button variant="secondary" onClick={() => setActiveModal(null)}>
+                Batal
+              </Button>
+              <Button
+                variant="primary"
+                disabled={linkingPartner || !partnerFormData.name.trim()}
+                onClick={async () => {
+                  setLinkingPartner(true);
+                  try {
+                    const res = await request<{ ok: boolean; message?: string }>(
+                      API_PATHS.worldMonitorYoutubePartner,
+                      {
+                        method: "POST",
+                        body: {
+                          videoId: activeModal.item!.videoId,
+                          createPartner: {
+                            name: partnerFormData.name.trim(),
+                            companyName: partnerFormData.companyName.trim() || undefined,
+                            type: partnerFormData.type,
+                            isMitra: partnerFormData.isMitra,
+                            notes: partnerFormData.notes.trim() || undefined,
+                          },
+                        },
+                      },
+                    );
+                    if (res.ok) {
+                      notify(res.message || "Berhasil menautkan channel ke data Partner!");
+                      setActiveModal(null);
+                      void fetchCatalogAndAutoScan();
+                    }
+                  } catch (err) {
+                    notify(`Gagal menautkan Partner: ${err instanceof Error ? err.message : "Error"}`);
+                  } finally {
+                    setLinkingPartner(false);
+                  }
+                }}
+              >
+                {linkingPartner ? "Menyimpan Partner..." : <IconText icon={<PlusIcon />}>Simpan &amp; Tautkan ke Channel</IconText>}
               </Button>
             </div>
           </div>

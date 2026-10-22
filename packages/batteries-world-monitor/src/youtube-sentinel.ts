@@ -153,20 +153,20 @@ const HEURISTIC_RULES: HeuristicRuleDefinition[] = [
 
 // Commercial / Practitioner Modifiers (Boosts severity)
 const TRANSACTIONAL_MODIFIERS = [
-  { label: "Permintaan Mahar / Tarif Gaib", regex: /\b(mahar\s+seikhlasnya|mahar\s+tingkat|biaya\s+mahar|transfer\s+mahar|mahar\s+kesepakatan)\b/i, boost: 20 },
-  { label: "Layanan Jarak Jauh / Hubungi WA", regex: /\b(hubungi\s+wa|wa\s+08|wa\.me\/\d+|jarak\s+jauh\s+ampuh|konsultasi\s+wa|dm\s+instagram|admin\s+pendaftaran\s+wa)\b/i, boost: 20 },
-  { label: "Jaminan Pasti Berhasil / Garansi Gaib", regex: /\b(dijamin\s+ampuh|garansi\s+uang\s+kembali|pasti\s+cair|100%\s+berhasil|langsung\s+terbukti|terbukti\s+nyata)\b/i, boost: 15 },
-  { label: "Klaim Tanpa Resiko / Tanpa Tumbal Palsu", regex: /\b(tanpa\s+tumbal|aman\s+tanpa\s+efek\s+samping|pesugihan\s+halal|pesugihan\s+putih\s+islami)\b/i, boost: 15 },
+  { label: "Permintaan Mahar / Tarif Gaib", regex: /\b(mahar\s+seikhlasnya|mahar\s+tingkat|biaya\s+mahar|transfer\s+mahar|mahar\s+kesepakatan|kirim\s+uang\s+gaib|dana\s+hibah\s+gaib|uang\s+balik|bank\s+gaib)\b/i, boost: 20 },
+  { label: "Layanan Jarak Jauh / Hubungi Kontak / WhatsApp", regex: /\b(hubungi\s+wa|wa\s+08|wa\.me\/\d+|\+?62\s?8\d{2,4}[\s-]?\d{3,4}[\s-]?\d{3,5}|jarak\s+jauh\s+ampuh|konsultasi\s+wa|dm\s+instagram|admin\s+pendaftaran\s+wa|chat\s+whatsapp|wa\s+mbah|wa\s+ki|kontak\s+padepokan)\b/i, boost: 25 },
+  { label: "Jaminan Pasti Berhasil / Garansi Gaib", regex: /\b(dijamin\s+ampuh|garansi\s+uang\s+kembali|pasti\s+cair|100%\s+berhasil|langsung\s+terbukti|terbukti\s+nyata|langsung\s+reaksi|reaksi\s+seketika|paten|hajat\s+terkabul\s+sekejap)\b/i, boost: 15 },
+  { label: "Klaim Tanpa Resiko / Tanpa Tumbal Palsu", regex: /\b(tanpa\s+tumbal|aman\s+tanpa\s+efek\s+samping|pesugihan\s+halal|pesugihan\s+putih\s+islami|khodam\s+putih\s+tanpa\s+pantangan|mustika\s+tanpa\s+pantangan)\b/i, boost: 15 },
 ];
 
 // Anti False-Positive: Refutation, Educational & Syar'i Counter Markers
 const DAKWAH_REFUTATION_MARKERS = [
-  { label: "Bantahan Bahaya Syirik", regex: /\b(bahaya\s+syirik|hukum\s+syirik|dosa\s+syirik|syirik\s+akbar|syirik\s+asghar|pembatal\s+keislaman)\b/i },
-  { label: "Membongkar Trik Penipuan Dukun", regex: /\b(membongkar\s+trik|bongkar\s+trik|penipuan\s+dukun|trik\s+santet|bongkar\s+rahasia\s+dukun|pesugihan\s+palsu|pesulap\s+merah|bongkar\s+kedok)\b/i },
-  { label: "Ruqyah Syar'iyyah & Penawar Sihir", regex: /\b(ruqyah\s+syar'iyyah|ruqyah\s+mandiri|ayat\s+penawar\s+sihir|cara\s+menghilangkan\s+santet\s+secara\s+islami|terapi\s+al-quran)\b/i },
-  { label: "Kajian Ustadz / Sunnah / MUI", regex: /\b(ustadz|kajian\s+sunnah|fatwa\s+mui|buya\s+yahya|ustadz\s+khalid|ustadz\s+adi\s+hidayat|syafiq\s+riza|firanda|ceramah\s+tauhid|kajian\s+islam|tanya\s+jawab\s+islam)\b/i },
-  { label: "Peringatan Waspada Penipuan", regex: /\b(awas\s+tertipu|jangan\s+percaya\s+dukun|larangan\s+memakai\s+jimat|taubat\s+dari\s+sihir|hukum\s+mendatangi\s+tukang\s+ramal)\b/i },
-  { label: "Klarifikasi / Berita Kriminal Perdukunan", regex: /\b(polisi\s+tangkap\s+dukun|dukun\s+ditangkap|korban\s+penipuan\s+dukun|kasus\s+dukun\s+cabul|modus\s+dukun)\b/i },
+  { label: "Bantahan Bahaya Syirik", regex: /\b(bahaya\s+syirik|hukum\s+syirik|dosa\s+syirik|syirik\s+akbar|syirik\s+asghar|pembatal\s+keislaman|pemurnian\s+tauhid|merusak\s+akidah)\b/i },
+  { label: "Membongkar Trik Penipuan Dukun", regex: /\b(membongkar\s+trik|bongkar\s+trik|penipuan\s+dukun|trik\s+santet|bongkar\s+rahasia\s+dukun|pesugihan\s+palsu|pesulap\s+merah|bongkar\s+kedok|modus\s+penipuan\s+penggandaan|waspada\s+modus|korban\s+penipuan\s+gaib)\b/i },
+  { label: "Ruqyah Syar'iyyah & Penawar Sihir", regex: /\b(ruqyah\s+syar'iyyah|ruqyah\s+mandiri|ayat\s+penawar\s+sihir|cara\s+menghilangkan\s+santet\s+secara\s+islami|terapi\s+al-quran|bacaan\s+ruqyah|mengusir\s+jin\s+secara\s+syar'i)\b/i },
+  { label: "Kajian Ustadz / Sunnah / Tokoh Resmi", regex: /\b(ustadz|kajian\s+sunnah|fatwa\s+mui|buya\s+yahya|ustadz\s+khalid|ustadz\s+adi\s+hidayat|syafiq\s+riza|firanda|ceramah\s+tauhid|kajian\s+islam|tanya\s+jawab\s+islam|penceramah\s+resmi|dakwah\s+islamiyah)\b/i },
+  { label: "Peringatan Waspada Penipuan", regex: /\b(awas\s+tertipu|jangan\s+percaya\s+dukun|larangan\s+memakai\s+jimat|taubat\s+dari\s+sihir|hukum\s+mendatangi\s+tukang\s+ramal|jauhi\s+khurafat)\b/i },
+  { label: "Klarifikasi / Berita Kriminal Perdukunan", regex: /\b(polisi\s+tangkap\s+dukun|dukun\s+ditangkap|korban\s+penipuan\s+dukun|kasus\s+dukun\s+cabul|modus\s+dukun|reskrim|sidang\s+kasus\s+pesugihan|vonis\s+dukun|polres|polda)\b/i },
 ];
 
 // Quran & Sunnah Theological Dalil Matrix
@@ -695,13 +695,13 @@ export function buildMonitoredItem(raw: {
     wisdomBrief,
     workflowStatus: defaultWorkflowStatus,
     scannedAt: new Date().toISOString(),
-    sourceType: raw.sourceType ?? "verified_seed",
+    sourceType: raw.sourceType ?? "demo_synthetic",
     transcriptAnalyzed: Boolean(raw.transcript && raw.transcript.length > 0),
     transcriptSnippet: raw.transcript ? raw.transcript.slice(0, 300) : undefined,
   };
 }
 
-// Curated Real-World Seed Corpus for Demonstration and Offline Reliability
+// Fictional examples are only available when an operator explicitly enables demo mode.
 const SEED_YOUTUBE_RECORDS = [
   {
     videoId: "pesugihan_01",
@@ -861,10 +861,11 @@ class YoutubeSentinelRepository {
   }
 
   private seed() {
+    if (typeof process === "undefined" || process.env?.YOUTUBE_SENTINEL_DEMO_MODE !== "true") return;
     for (const record of SEED_YOUTUBE_RECORDS) {
       const item = buildMonitoredItem({
         ...record,
-        sourceType: "verified_seed",
+        sourceType: "demo_synthetic",
       });
       this.items.set(item.id, item);
     }
@@ -1206,14 +1207,20 @@ export async function crawlYoutubeWithPlaywright(
  * 2. "playwright" - Full headless Chromium browser automation
  * Automatically falls back gracefully if network restricts any specific mode.
  */
-export async function scanYoutube(params: YoutubeScanQuery): Promise<YoutubeScanResult> {
+export async function scanYoutube(
+  params: YoutubeScanQuery,
+  adapters: { crawlInnertube: typeof crawlYoutubeWithInnertube; crawlPlaywright: typeof crawlYoutubeWithPlaywright } = {
+    crawlInnertube: crawlYoutubeWithInnertube,
+    crawlPlaywright: crawlYoutubeWithPlaywright,
+  },
+): Promise<YoutubeScanResult> {
   const query = params.query.trim();
   const limit = params.limit ?? 12;
   const sortBy: YoutubeSortBy = params.sortBy ?? "upload_date";
   const scannedBatch: YoutubeMonitoredItem[] = [];
   let brandNewCount = 0;
   let existingCount = 0;
-  let crawlerMode: YoutubeScanResult["crawlerMode"] = "fallback_synthetic";
+  let crawlerMode: YoutubeScanResult["crawlerMode"] = "no_results";
   let diagnosticMessage = "";
 
   const engine = params.engine ?? (params.useBrowserAutomation ? "playwright" : "auto");
@@ -1221,7 +1228,7 @@ export async function scanYoutube(params: YoutubeScanQuery): Promise<YoutubeScan
   // Mode A: High-speed InnerTube (YouTube.js) — tested when engine is "innertube" or "auto"
   if (engine === "innertube" || engine === "auto") {
     try {
-      const crawled = await crawlYoutubeWithInnertube(query, limit, sortBy);
+      const crawled = await adapters.crawlInnertube(query, limit, sortBy);
       if (crawled.length > 0) {
         crawlerMode = "youtubei_innertube";
         for (const data of crawled) {
@@ -1251,7 +1258,7 @@ export async function scanYoutube(params: YoutubeScanQuery): Promise<YoutubeScan
   // Mode B: Playwright Headless Browser — when engine is "playwright" or as fallback for "auto"
   if (scannedBatch.length === 0 && (engine === "playwright" || engine === "auto" || params.useBrowserAutomation)) {
     try {
-      const crawled = await crawlYoutubeWithPlaywright(query, limit, sortBy);
+      const crawled = await adapters.crawlPlaywright(query, limit, sortBy);
       if (crawled.length > 0) {
         crawlerMode = "playwright_headless_browser";
         for (const data of crawled) {
@@ -1314,27 +1321,12 @@ export async function scanYoutube(params: YoutubeScanQuery): Promise<YoutubeScan
     }
   }
 
-  // 3. Fallback: If no browser/network items, generate deterministic synthetic entry
+  // A scan without crawler results is empty, never invented evidence.
   if (scannedBatch.length === 0) {
-    crawlerMode = "fallback_synthetic";
-    const syntheticId = `syn-${Date.now().toString(36)}-${Math.floor(1000 + Math.random() * 9000)}`;
-    const syntheticTitle = query.length > 5
-      ? `${query.toUpperCase()} - PENGASIHAN & PESUGIHAN TERBUKTI SAKTI`
-      : `PENERAWANGAN GAIB DAN PESUGIHAN SAKTI 2026`;
-
-    const generated = buildMonitoredItem({
-      videoId: syntheticId,
-      title: syntheticTitle,
-      channelTitle: "Kanal Misteri & Klenik Online",
-      description: `Hasil penelusuran kata kunci "${query}". Ditemukan potensi pelanggaran akidah Tauhid pada konten ini.`,
-      viewCountText: "25K views",
-      sourceType: "browser_automation",
-    });
-
-    const isBrandNew = youtubeSentinelRepo.upsertItem(generated);
-    if (isBrandNew) brandNewCount++;
-    else existingCount++;
-    scannedBatch.push(generated);
+    crawlerMode = "no_results";
+    diagnosticMessage = [diagnosticMessage, "Tidak ada hasil YouTube yang berhasil diambil; tidak ada temuan sintetis yang dibuat."]
+      .filter(Boolean)
+      .join("; ");
   }
 
   youtubeSentinelRepo.setLastScanTimestamp(new Date().toISOString());

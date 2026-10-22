@@ -4,9 +4,11 @@ Tanggal: 23 Oktober 2026. Cakupan: fondasi platform, tenant/work, CRM dan operas
 
 Tujuan: membangun platform yang datanya dapat dipercaya, aksesnya jelas, tindakannya dapat diaudit, serta alur operasionalnya lengkap. Dokumen ini menggabungkan review repo dan brainstorm menjadi backlog pelaksanaan; penyusunan rencana ini belum memperbaiki implementasi.
 
+**Status sekarang:** [x] S0.1–S0.3 baseline dan gate lokal; [x] S1.1 rate limit YouTube; [x] S2.1 alert World Monitor; [x] S3.1 fondasi Docker/Next.js. Pekerjaan belum dipromosikan: 433 path lokal bercampur, Docker runtime belum tersedia, dan push `dev` menerbitkan release. Rincian bukti serta blocker ada pada bagian 18.
+
 ## Cara memakai checklist
 
-- Semua kotak dimulai kosong. Sebagian fitur sudah tersedia; kotak kosong berarti pekerjaan atau bukti penerimaannya masih perlu diselesaikan.
+- Kotak mencerminkan bukti yang tersedia pada snapshot terakhir. Kotak kosong berarti pekerjaan atau bukti penerimaannya masih perlu diselesaikan.
 - `[FIX]`: ada indikasi masalah konkret dari pembacaan kode. Konfirmasi skenario sebelum mengubah implementasi.
 - `[AUDIT]`: periksa perilaku atau kumpulkan bukti; hasilnya dapat berupa "sudah benar".
 - `[BUILD]`: pengembangan atau penyempurnaan yang diusulkan.
@@ -50,16 +52,16 @@ Titik awal kode: [route monitoring](../apps/api/src/routes/world-monitor.ts), [r
 
 ## 00. Baseline dan kendali pekerjaan
 
-- [ ] 00.01 [AUDIT] Catat commit acuan, branch aktif, dan daftar perubahan lokal sebelum pelaksanaan.
-- [ ] 00.02 [AUDIT] Pisahkan daftar pekerjaan yang sudah berlangsung dari temuan review ini.
-- [ ] 00.03 [AUDIT] Konfirmasi ulang F01–F09 terhadap kode saat akan dikerjakan.
+- [x] 00.01 [AUDIT] Catat commit acuan, branch aktif, dan daftar perubahan lokal sebelum pelaksanaan.
+- [x] 00.02 [AUDIT] Pisahkan daftar pekerjaan yang sudah berlangsung dari temuan review ini.
+- [x] 00.03 [AUDIT] Konfirmasi ulang F01–F09 terhadap kode saat akan dikerjakan.
 - [ ] 00.04 [BUILD] Buat daftar endpoint beserta metode, tujuan, tipe data, dan pemilik modulnya.
 - [ ] 00.05 [BUILD] Buat daftar fitur berstatus tersedia, perlu bukti, sedang dibangun, dan usulan.
 - [ ] 00.06 [DECIDE] Tetapkan penanggung jawab dan reviewer tiap paket.
 - [ ] 00.07 [BUILD] Catat dependensi data dan risiko rollback untuk tiap perubahan schema.
-- [ ] 00.08 [AUDIT] Pastikan versi Node mengikuti `.node-version` dan pnpm mengikuti `packageManager`.
-- [ ] 00.09 [AUDIT] Pastikan source, schema, manifest modul, dan lockfile sesuai satu sama lain.
-- [ ] 00.10 [AUDIT] Pastikan `.env`, kredensial, database lokal, dan hasil build tidak masuk perubahan rilis.
+- [x] 00.08 [AUDIT] Pastikan versi Node mengikuti `.node-version` dan pnpm mengikuti `packageManager`.
+- [x] 00.09 [AUDIT] Pastikan source, schema, manifest modul, dan lockfile sesuai satu sama lain.
+- [x] 00.10 [AUDIT] Pastikan `.env`, kredensial, database lokal, dan hasil build tidak masuk perubahan rilis.
 - [ ] 00.G [AUDIT] Gate: setiap temuan punya skenario, lokasi, dampak, dan unit kerja yang dapat ditinjau.
 
 ## 01. Akses API dan privasi — dikerjakan paling awal
@@ -78,17 +80,17 @@ Prasyarat pemetaan akses dan field: keputusan 03.01–03.02. Guard untuk menutup
 - [ ] 01.10 [AUDIT] Periksa respons scan, action, fallback, error, dan ekspor terhadap kebocoran field.
 - [x] 01.11 [FIX] Selaraskan daftar rute publik dan OpenAPI berdasarkan metode + path.
 - [x] 01.12 [AUDIT] Pastikan deklarasi `security` OpenAPI tidak digunakan sebagai pengganti guard runtime.
-- [ ] 01.13 [BUILD] Terapkan rate limit dan batas konkurensi untuk aksi scan yang berbiaya tinggi.
-- [ ] 01.14 [AUDIT] Buktikan request tanpa sesi ditolak dan sesi tanpa izin mendapat penolakan yang tepat.
+- [x] 01.13 [BUILD] Terapkan rate limit dan batas konkurensi untuk aksi scan yang berbiaya tinggi.
+- [x] 01.14 [AUDIT] Buktikan request tanpa sesi ditolak dan sesi tanpa izin mendapat penolakan yang tepat.
 - [ ] 01.15 [AUDIT] Buktikan sesi kedaluwarsa/dicabut tidak dapat mengubah status atau scheduler.
 - [ ] 01.G [AUDIT] Gate: tidak ada mutasi Sentinel anonim; kontrak publik lulus pemeriksaan field sensitif.
 
-Bukti parsial paket 01: `pnpm --filter @empire/api test` (12/12 lulus), `pnpm --filter @empire/api typecheck`, dan `pnpm --filter @empire/command-center typecheck` lulus. Tes runtime request tanpa sesi/tanpa izin, audit semua bentuk respons, dan rate limit masih terbuka; gate 01.G belum terpenuhi.
+Bukti parsial paket 01: `pnpm --filter @empire/api test` (17/17 lulus), `pnpm --filter @empire/api typecheck`, dan `pnpm --filter @empire/api build` lulus. `apps/api/tests/sentinel-auth-guards.test.mjs` memverifikasi request anonim (401), token invalid (401), sesi aktif tanpa izin (403), dan izin yang cocok (lolos). `apps/api/tests/youtube-scan-gate.test.mjs` menguji kuota rolling, identitas, pembersihan key kedaluwarsa, konkurensi operator/global, dan wiring route 429/503 setelah otorisasi. Rate limit: 5 scan/operator/10 menit; maksimal 3 scan global bersamaan dan 1/operator. Limiter masih process-local, sehingga shared store wajib sebelum API multi-replica. Audit semua bentuk respons, sesi dicabut/kedaluwarsa, dan gate 01.G masih terbuka.
 
 ## 02. Keaslian data, provenance, dan hasil sintetis
 
-- [ ] 02.01 [FIX] Ganti kegagalan crawler dengan hasil kosong/failed yang menjelaskan penyebabnya.
-- [ ] 02.02 [BUILD] Pindahkan contoh sintetis ke mode demo/latihan yang eksplisit.
+- [x] 02.01 [FIX] Ganti kegagalan crawler dengan hasil kosong/failed yang menjelaskan penyebabnya.
+- [x] 02.02 [BUILD] Pindahkan contoh sintetis ke mode demo/latihan yang eksplisit.
 - [ ] 02.03 [BUILD] Tambahkan penanda asal data yang dipertahankan dari crawler sampai UI dan ekspor.
 - [ ] 02.04 [BUILD] Pisahkan keadaan live, partial, failed, stale, dan synthetic.
 - [ ] 02.05 [AUDIT] Inventaris record lama dengan `fallback_synthetic` atau pola ID sintetis.
@@ -100,6 +102,8 @@ Bukti parsial paket 01: `pnpm --filter @empire/api test` (12/12 lulus), `pnpm --
 - [ ] 02.11 [AUDIT] Buktikan kegagalan semua engine tidak menghasilkan video atau bukti rekaan.
 - [ ] 02.12 [AUDIT] Buktikan ekspor dan tampilan tidak menghilangkan penanda demo/partial.
 - [ ] 02.G [AUDIT] Gate: setiap temuan operasional punya asal yang bisa ditelusuri; data demo terisolasi.
+
+Bukti paket 02 awal: `pnpm --filter @empire/batteries-world-monitor test` (9/9 lulus) membuktikan repository default kosong, crawler kosong memberi `no_results` tanpa menambah record, serta corpus demo hanya aktif dengan `YOUTUBE_SENTINEL_DEMO_MODE=true` dan semua item berlabel `demo_synthetic`. API dan Command Center typecheck lulus. Audit/karantina record sintetis historis dan pemisahan data demo dari hitungan operasional masih terbuka.
 
 ## 03. Tenant, role, partner, dan kepemilikan catatan
 
@@ -153,9 +157,9 @@ Bukti parsial paket 01: `pnpm --filter @empire/api test` (12/12 lulus), `pnpm --
 
 ## 06. World Monitor: kebenaran status dan kualitas observasi
 
-- [ ] 06.01 [FIX] Pisahkan kesehatan API/database dari tingkat bahaya kejadian yang sedang dipantau.
-- [ ] 06.02 [FIX] Turunkan tingkat alert global dari alert valid dan freshness, dengan aturan agregasi tertulis.
-- [ ] 06.03 [AUDIT] Buktikan alert kritis tidak disertai indikator keseluruhan hijau yang menyesatkan.
+- [x] 06.01 [FIX] Pisahkan kesehatan API/database dari tingkat bahaya kejadian yang sedang dipantau.
+- [x] 06.02 [FIX] Turunkan tingkat alert global dari alert valid dan freshness, dengan aturan agregasi tertulis.
+- [x] 06.03 [AUDIT] Buktikan alert kritis tidak disertai indikator keseluruhan hijau yang menyesatkan.
 - [ ] 06.04 [BUILD] Validasi parser per sumber: tipe angka, satuan, lokasi, waktu, dan rentang yang masuk akal.
 - [ ] 06.05 [AUDIT] Buat fixture NOAA berbentuk objek dan array, termasuk respons fallback/header tabel.
 - [ ] 06.06 [AUDIT] Buktikan waktu pengamatan hilang tidak otomatis menjadi observasi baru yang tampak fresh.
@@ -330,7 +334,26 @@ Bukti parsial paket 01: `pnpm --filter @empire/api test` (12/12 lulus), `pnpm --
 
 Rujukan proses: [AUTOMATION](AUTOMATION.md), [release gates](OPERATIONS_RELEASE_GATES.md), [World Monitor checklist](WORLD_MONITOR_DEPLOYMENT_CHECKLIST.md). Tidak ada jadwal deployment atau otomatisasi yang dibuat oleh dokumen ini.
 
-## 15. Ide liar — eksperimen kecil yang dapat dihentikan
+## 15. Docker deploy infra — Compose tanpa reverse proxy
+
+Target awal: deployment mandiri dengan Docker Compose, tanpa reverse proxy. Portal dan Command Center diakses pada port masing-masing; API hanya dipublikasikan ke alamat bind yang dipilih operator. Command Center dibangun dan dijalankan dengan Next.js agar stack frontend konsisten. Deployment produksi/provider dan migrasi otomatis belum termasuk.
+
+- [x] 15.01 [AUDIT] Cocokkan Dockerfile dan Compose dengan workspace, lockfile, versi Node, dan output build yang benar.
+- [ ] 15.02 [BUILD] Buat image API production yang memuat runtime yang diperlukan, berjalan non-root, menerima SIGTERM, dan menyertakan healthcheck.
+- [ ] 15.03 [BUILD] Buat image Portal Next.js production dengan output standalone dan healthcheck.
+- [x] 15.04 [BUILD] Migrasikan Command Center ke Next.js dengan route/page setara dan pertahankan API contract.
+- [ ] 15.05 [BUILD] Buat image Command Center Next.js production; tentukan konfigurasi API origin yang benar untuk browser di luar host.
+- [ ] 15.06 [BUILD] Satukan Postgres, API, Portal, dan Command Center dalam Compose; tanpa reverse proxy.
+- [ ] 15.07 [AUDIT] Pastikan port dapat di-bind ke loopback secara default dan hanya layanan yang diperlukan dipublikasikan.
+- [ ] 15.08 [BUILD] Sediakan contoh env tanpa rahasia; validasi password DB dan signing secret wajib sebelum start.
+- [ ] 15.09 [AUDIT] Buktikan health/dependency order, volume database dan file, serta restart tidak menghapus data.
+- [ ] 15.10 [BUILD] Dokumentasikan start/stop, update image, backup/restore DB+file, log, dan rollback.
+- [ ] 15.11 [AUDIT] Buktikan `docker compose config`, build seluruh image, healthcheck, login, akses API dari kedua UI, dan persistensi setelah restart.
+- [ ] 15.G [AUDIT] Gate: instalasi bersih dapat dijalankan operator dari dokumentasi, tidak memerlukan reverse proxy, data bertahan, dan prosedur backup/restore diuji.
+
+Risiko deployment: browser harus dapat menjangkau API origin; nilai `localhost` hanya benar saat browser berjalan pada host Docker. Compose belum membuktikan TLS, DNS publik, backup terjadwal, rotasi rahasia, atau deployment high availability. Rate limit in-memory juga memerlukan shared store jika API direplikasi.
+
+## 16. Ide liar — eksperimen kecil yang dapat dihentikan
 
 Pilih maksimal dua ide. Untuk setiap ide: catat hipotesis, pemilik, batas waktu/biaya, data yang boleh digunakan, metrik keberhasilan, dan keputusan lanjut/hentikan. Gunakan data publik berizin atau dataset uji. Fitur berikut adalah usulan, belum diimplementasikan.
 
@@ -424,7 +447,7 @@ Pilih maksimal dua ide. Untuk setiap ide: catat hipotesis, pemilik, batas waktu/
 - [ ] X15.2 [SPIKE] Tampilkan dampak perubahan harga terhadap draft tanpa mengubah dokumen yang sudah diterbitkan.
 - [ ] X15.3 [AUDIT] Ukur kesalahan perhitungan yang tertangkap; simulasi tidak menciptakan invoice/payment operasional.
 
-## 16. Sepuluh pekerjaan pertama
+## 17. Sepuluh pekerjaan pertama
 
 Urutan ini adalah pintu masuk pelaksanaan; detail dan bukti tetap dicatat pada ID asal agar tidak ada dua sumber status.
 
@@ -438,6 +461,60 @@ Urutan ini adalah pintu masuk pelaksanaan; detail dan bukti tetap dicatat pada I
 8. 06.01–06.07: benahi indikator alert World Monitor dan validasi parser/freshness.
 9. 07.01–07.08: batasi scan serta catat hasil run dengan benar.
 10. 10.10–10.15: lindungi pembayaran dari retry/duplikasi sambil mempertahankan row lock.
+
+## 18. Milestone pelaksanaan dan status snapshot
+
+Milestone berikut mengelompokkan ID yang sudah ada; satu checklist asal tetap menjadi sumber status. Urutkan berdasarkan dependensi dan blokir rilis saat gate paket terkait belum terbukti. Status di bawah adalah snapshot working tree `dev`, bukan klaim bahwa seluruh perubahan lokal sudah committed atau dipromosikan.
+
+| Milestone | Checklist asal | Dependensi | Bukti selesai | Status snapshot |
+| --- | --- | --- | --- | --- |
+| M0 — Baseline dan CI bersih | 00.01–00.10, 00.G, 14.06–14.10 | Tidak ada | Commit/branch/perubahan lokal tercatat; semua gate automation pada commit yang sama lulus di CI | 00.01–.03 dan .08–.10 sudah diaudit pada `dev`/`4582801`; CI lokal lengkap lulus, CI perubahan terbaru belum berjalan di GitHub |
+| M1 — Akses dan rate limit Sentinel | 01.01–01.15, 01.G | M0; 03.01–03.02 untuk keputusan scope detail | Tes anonim/izin/expired session, audit respons publik, uji 429/Retry-After dan batas concurrency; catat scope satu replica vs shared store | 01.03–01.14 dicentang pada working tree; 01.15, audit respons penuh, dan gate masih terbuka |
+| M2 — Provenance dan World Monitor | 02.01–02.12, 06.01–06.18, 06.G, 07.01–07.18, 07.G | M0–M1; data/schema preflight sebelum migrasi | Fixture sumber/freshness, demo terisolasi, run parsial/gagal tercatat, scheduler bounded dan tanpa duplikasi | 02.01/.02 dan 06.01–.03 terbukti dengan test lokal; validasi parser, sejarah, scheduler penuh, dan gate masih terbuka |
+| M3 — Docker Compose dan frontend konsisten | 15.01–15.11, 15.G; 12.01–12.14, 12.G | M0; M1 untuk API aman; preflight DB 05.01–05.04 dan restore 13.09 sebelum perubahan data | Build empat service, Compose config valid, Command Center Next.js, health/auth/API smoke, volume survive restart, restore+rollback terdokumentasi | Audit 15.01 dan migrasi 15.04 terbukti lokal; build framework terkait lulus. Docker runtime/config/volume/restore dan CI untuk paket Docker masih perlu dijalankan |
+| M4 — Tenant, transaksi, dan alur operasional | 03.01–03.14, 03.G; 04.01–04.13, 04.G; 09.01–09.16, 09.G; 10.01–10.19, 10.G | M1; keputusan scope; 05.01–05.04; 13.09 | Tes lintas tenant negatif, audit atomik, upload/retry, rekonsiliasi invoice/payment, database lama dan baru | Belum terbukti oleh dokumen ini; semua gate terbuka |
+| M5 — Registry, recovery, dan promosi | 05.01–05.11, 05.G; 11.01–11.13, 11.G; 13.01–13.12, 13.G; 14.01–14.17, 14.G | M0–M4 sesuai perubahan | Migrasi dry-run/rollback, restore DB+file, runbook, seluruh gate relevan, PR dev→main merge commit, sinkronisasi main ke dev | Belum terbukti oleh dokumen ini; eksperimen M6 tetap opsional |
+| M6 — Eksperimen pilihan | Maksimal dua X01–X15 | Gate fondasi yang dipakai oleh eksperimen; biaya/waktu/pemilik/dataset ditetapkan | Hipotesis dan metrik sebelum spike; review hasil dan keputusan lanjut/hentikan | Belum dipilih; tidak memblokir fondasi |
+
+### Milestone kecil yang bisa ditutup bertahap
+
+Kerjakan satu baris per perubahan yang dapat direview. Jangan menandai gate induk selesai hanya karena beberapa sublangkah sudah lulus.
+
+| Urutan | Checklist kecil | Hasil minimum | Status |
+| --- | --- | --- | --- |
+| S0.1 | 00.01–00.03 | Baseline commit/branch/worktree dan daftar pekerjaan lokal versus temuan review | Selesai; `dev`, `4582801`, 424 path berubah |
+| S0.2 | 00.08–00.10 | Versi runtime, validasi source/schema/lockfile, dan audit secret/artifact | Selesai; Node 24.22.1, pnpm 11.24.0; frozen lockfile + validate lulus; `.env` ignored dan tidak dilacak |
+| S0.3 | 14.06–14.10 | Jalankan seluruh gate lokal pada snapshot kerja | Selesai lokal: install terkunci, validate, module/release tests, turbo tests, build, typecheck, audit dependency; belum merupakan hasil CI GitHub |
+| S1.1 | 01.13–01.14 | Rate limit rolling-window dan batas concurrency per operator/global; pastikan auth dahulu dan respons 429/503 membawa Retry-After | Implementasi + tes lokal lulus; state process-local, shared store diperlukan sebelum multi-replica |
+| S1.2 | 01.10, 01.15, 01.G | Audit seluruh payload publik serta sesi revoked/expired dan izin detail | Belum mulai; blocker sebelum menyatakan akses Sentinel selesai |
+| S2.1 | 06.01–06.03 | Status kejadian kritis tetap merah meskipun database sehat; kesehatan DB tetap field terpisah | Implementasi + tes regresi lokal lulus (API 18/18) |
+| S2.2 | 06.04–06.07 | Fixture parser, NaN/tanggal/payload invalid, waktu observasi hilang dan freshness | Belum mulai |
+| S3.1 | 15.01, 15.04 | Audit struktur Docker dan migrasi Command Center ke Next.js | Lulus lokal; UI/Portal/API build dan typecheck terkait lulus |
+| S3.2 | 15.02–15.08 | Image tiga aplikasi, Compose services, loopback port, secret/env validation | Implementasi ada; belum bisa divalidasi karena Docker Engine tidak tersedia |
+| S3.3 | 15.09–15.G | Health/auth smoke, volume persistence/restart, backup+restore runtime | Belum dibuktikan; wajib dijalankan di host yang memiliki Docker sebelum mengklaim deployment siap |
+| S4.1 | 11.04–11.07 | Dry-run migrasi DNA, allowlist target, proteksi edit lokal, determinisme | Belum mulai; tahan stage/push perubahan penghapusan paket DNA sampai gate ini lulus |
+| S4.2 | 03.01–03.08 | Putuskan tenant scope/role; tes isolasi tenant; detail partner 404 konsisten | Belum mulai |
+| S4.3 | 04.01–04.G | Mutasi bisnis dan audit/outbox atomik serta retry aman | Belum mulai |
+| S4.4 | 10.01–10.G | Quote→order→invoice→payment; presisi/idempotensi/concurrency | Belum mulai; jangan promosikan sebagai fitur keuangan tervalidasi |
+| S5.1 | 13.09, 13.G | Latihan restore database dan berkas privat, hasil konsisten | Runbook ada; runtime restore belum diuji |
+| S5.2 | 14.01–14.G | Validasi pada commit terpilih, PR dev→main, merge commit dan sinkronisasi | Menunggu paket perubahan yang sudah dipisah dan gate CI terkait |
+| S6.1 | Pilih paling banyak dua X01–X15 | Hipotesis, dataset, batas biaya/waktu, metrik dan keputusan lanjut/hentikan | Opsional, belum dipilih |
+
+### Status terverifikasi pada snapshot dokumen
+
+- 01.03–01.14 dicentang pada working tree dengan tes auth dan rate limit; 01.15 pencabutan/kedaluwarsa, audit seluruh respons, dan gate 01.G masih terbuka. CI #305 lulus; run #303/#304 gagal karena mismatch test historis dan typo JSX, bukan karena rate limit.
+- 02.01–02.02 dicentang sebelumnya dengan bukti test package World Monitor; provenance menyeluruh, audit record historis, dan gate 02.G masih terbuka.
+- 06.01–06.03 memisahkan indikator database dari bahaya observasi dan menurunkan alert global berdasarkan alert: unknown tetap unknown, critical menjadi red, advisory/degradasi menjadi yellow, selainnya green. Regresi gempa kritis saat database sehat lulus di `pnpm --filter @empire/api test` (18/18); parser/freshness/history dan gate 06.G tetap terbuka.
+- 15.01 audit workspace/Node/lockfile dan 15.04 migrasi Command Center Next.js sudah dicentang. Build/typecheck/test Command Center, build Portal, dan build/typecheck/test API lulus di working tree. Docker Engine tidak tersedia, sehingga image build, `docker compose config/up`, health/auth smoke dalam container, persistensi volume, serta restore runtime belum terbukti; checkbox image/runtime dan gate 15.G tetap kosong.
+- Jangan menandai milestone selesai hanya karena CI hijau: bukti operasional seperti restore, akses lintas host, dan persistensi perlu dicatat sendiri.
+
+### Catatan baseline dan promosi
+
+- Snapshot audit: branch `dev`, commit `4582801`; terdapat 424 path berubah pada working tree saat baseline dicatat. Perubahan lokal mencakup beberapa pekerjaan lama dan bukan satu paket grandplan yang sudah direview.
+- Runtime repository: Node `24.22.1` (`.node-version`) dan pnpm `11.24.0` (`packageManager`). Install terkunci, `pnpm validate`, `pnpm module:test`, tes release, tes workspace, build, typecheck, audit dependency produksi, serta `git diff --check` lulus lokal.
+- `.env` ditemukan sebagai file lokal tetapi di-ignore (`.env` dan `.env.*`); `var/`, dependency, dan hasil build juga di-ignore. Tidak ada file tersebut tampil sebagai perubahan Git. File database lokal tidak dibaca atau disentuh.
+- Temuan CI: run historis #305 pada commit acuan lulus; #303/#304 gagal karena mismatch test historis dan typo JSX. Tidak ada bukti kegagalan CI akibat rate limit: fitur rate limit justru belum ada pada saatnya. Job CI Docker baru di working tree belum dibuktikan GitHub.
+- Push setiap commit ke `dev` otomatis menerbitkan GitHub Release berdasarkan [AUTOMATION](AUTOMATION.md). Karena 424 path bercampur, penghapusan DNA belum melewati dry-run/guard, dan beberapa file menyatukan beberapa fitur, jangan stage luas atau push sampai paket koheren dipisah, direview, dan gate yang relevan lulus.
 
 ## Catatan bukti per unit kerja
 

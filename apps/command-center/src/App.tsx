@@ -16,16 +16,20 @@ import { AuditView, type AuditEvent } from "./AuditView";
 import { ResearchView, type ResearchDraft } from "./ResearchView";
 import { CabView, type CabActionRequest, type CabDraft } from "./CabView";
 import { OverviewView } from "./OverviewView";
+import { CollaborationView } from "./CollaborationView";
+import { EnterpriseView } from "./EnterpriseView";
+import type { ApiRequestOptions } from "@empire/api-contract";
 
 type Signal = "checking" | "ok" | "degraded" | "unavailable";
 type Module = { id: string; title: string; version: string; state: string; enabled: boolean };
 type Snapshot = { health: Signal; readiness: Signal; modules: Module[]; capabilities: string[]; checkedAt?: string };
-type Page = "overview" | "world" | "continuum" | "directory" | "knowledge" | "audit" | "cab" | "research";
-const pageIcons: Record<Page, IconComponent> = { overview: HomeIcon, world: GlobeIcon, continuum: AgentIcon, directory: UsersIcon, knowledge: KnowledgeIcon, audit: AuditIcon, cab: ApprovalIcon, research: EvidenceIcon };
+type Page = "overview" | "world" | "continuum" | "directory" | "knowledge" | "audit" | "cab" | "research" | "collaboration" | "business";
+const pageIcons: Record<Page, IconComponent> = { overview: HomeIcon, world: GlobeIcon, continuum: AgentIcon, directory: UsersIcon, knowledge: KnowledgeIcon, audit: AuditIcon, cab: ApprovalIcon, research: EvidenceIcon, collaboration: HistoryIcon, business: UsersIcon };
 type Chronicle = { id: string; action: string; entity: string; entityId?: string | null; payload?: Record<string, unknown> | null; createdAt: string; user?: { username?: string; displayName?: string } | null };
 type ConfirmationRequest = ResearchConfirmationRequest;
 
-const api = createApiClient(import.meta.env.VITE_API_ORIGIN || "http://127.0.0.1:4000");
+const API_ORIGIN = process.env.NEXT_PUBLIC_API_ORIGIN || "http://localhost:4000";
+const api = createApiClient(API_ORIGIN);
 const initialSnapshot: Snapshot = { health: "checking", readiness: "checking", modules: [], capabilities: [] };
 const initialRfc: CabDraft = { title: "", tier: "standard", riskLevel: "moderate", summary: "", justification: "", executionPlan: "", rollbackPlan: "", targetService: "", scheduledWindowStart: "", scheduledWindowEnd: "" };
 const initialRun: ResearchDraft = { title: "", question: "", scope: "self" };
@@ -39,11 +43,15 @@ const pageItems: Array<{ key: Page; label: string; title: string; workspaceTitle
   { key: "audit", label: "Audit ledger", title: "Audit ledger", workspaceTitle: "Audit ledger", description: "Review recent actions recorded by the API, with searchable event history." },
   { key: "cab", label: "Governance · CAB", title: "Change advisory board", workspaceTitle: "Governance board", description: "Review change proposals, policy checks, approvals, execution, and rollback." },
   { key: "research", label: "Research", title: "Research operations", workspaceTitle: "Research operations", description: "Manage approval, evidence, workflow, and completion for research runs." },
+  { key: "collaboration", label: "Collaboration", title: "Tenant collaboration", workspaceTitle: "Collaboration", description: "Discuss records, organize them with labels, review tenant activity, and manage documents and notifications." },
+  { key: "business", label: "Business", title: "Business operations", workspaceTitle: "Business", description: "Manage CRM opportunities, product and service catalog, sales quotes, operational invoices, and scheduled activities." },
 ];
 
 export function App() {
   const [token, setToken] = useState(() => sessionStorage.getItem("empire.session") ?? "");
   const [cookieSession, setCookieSession] = useState(false);
+  const [tenants, setTenants] = useState<LoginResponse["tenants"]>(() => { try { return JSON.parse(sessionStorage.getItem("empire.tenants") ?? "[]") as LoginResponse["tenants"]; } catch { return []; } });
+  const [selectedTenantId, setSelectedTenantId] = useState(() => sessionStorage.getItem("empire.tenant") ?? "");
   const [restoringSession, setRestoringSession] = useState(() => !sessionStorage.getItem("empire.session"));
   const [entity, setEntity] = useState<AuthEntity | null>(() => {
     try { return JSON.parse(sessionStorage.getItem("empire.entity") ?? "null") as AuthEntity | null; } catch { return null; }
@@ -78,7 +86,10 @@ export function App() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [worldNotificationPermission, setWorldNotificationPermission] = useState<NotificationPermission | "unsupported">(typeof Notification === "undefined" ? "unsupported" : Notification.permission);
-  const client = useMemo(() => ({ request: <T,>(path: string, options: { method?: "GET"|"POST"|"PATCH"; body?: unknown } = {}) => api.request<T>(path, { ...options, token: token || null }) }), [token]);
+  const client = useMemo(() => ({
+    request: <T,>(path: string, options: ApiRequestOptions = {}) => api.request<T>(path, { ...options, token: token || null, tenantId: selectedTenantId || null }),
+    upload: <T,>(path: string, file: Blob) => api.upload<T>(path, file, { token: token || null, tenantId: selectedTenantId || null }),
+  }), [token, selectedTenantId]);
 
   async function refreshWorld() {
     if (worldInFlightRef.current) return;
@@ -112,7 +123,9 @@ export function App() {
 
   function clearSession() {
     sessionStorage.removeItem("empire.session"); sessionStorage.removeItem("empire.entity");
+    sessionStorage.removeItem("empire.tenant"); sessionStorage.removeItem("empire.tenants");
     setToken(""); setCookieSession(false); setEntity(null); setSummary(null); setRfcs([]); setSelected(null); setRuns([]);
+    setSelectedTenantId(""); setTenants([]);
     setContinuum(null); setAgents([]); setLexicon([]); setChronicles([]); setDirectory([]);
   }
 
@@ -128,8 +141,12 @@ export function App() {
       const signal = (value: unknown): Signal => value === "ok" ? "ok" : value === "degraded" ? "degraded" : "unavailable";
       setSnapshot({ health: signal(health.status), readiness: signal(readiness.status), modules: modules.items ?? [], capabilities: capabilities.capabilities ?? [], checkedAt: new Date().toISOString() });
       if (token || cookieSession) {
-        const session = await client.request<{ entity: AuthEntity }>(API_PATHS.session);
+        const session = await client.request<{ entity: AuthEntity; tenants: LoginResponse["tenants"] }>(API_PATHS.session);
         setEntity(session.entity);
+        setTenants(session.tenants ?? []);
+        if (token) sessionStorage.setItem("empire.tenants", JSON.stringify(session.tenants ?? []));
+        if (session.tenants?.length === 1 && selectedTenantId !== session.tenants[0]!.id) { setSelectedTenantId(session.tenants[0]!.id); sessionStorage.setItem("empire.tenant", session.tenants[0]!.id); }
+        if (selectedTenantId && !session.tenants?.some((item) => item.id === selectedTenantId)) { setSelectedTenantId(""); sessionStorage.removeItem("empire.tenant"); }
         if (token) sessionStorage.setItem("empire.entity", JSON.stringify(session.entity));
         if (!can(session.entity, "cab:read")) { setSummary(null); setRfcs([]); setSelected(null); }
         if (!can(session.entity, "research:read")) setRuns([]);
@@ -167,14 +184,19 @@ export function App() {
     } finally { setLoading(false); }
   }
 
-  useEffect(() => { void refresh(); }, [token, cookieSession, auditPage]);
+  useEffect(() => { void refresh(); }, [token, cookieSession, auditPage, selectedTenantId]);
   useEffect(() => {
     if (token) { setRestoringSession(false); return; }
     let active = true;
-    api.request<{ entity: AuthEntity }>(API_PATHS.session)
+    api.request<{ entity: AuthEntity; tenants: LoginResponse["tenants"] }>(API_PATHS.session)
       .then((session) => {
         if (!active) return;
         setEntity(session.entity);
+        setTenants(session.tenants ?? []);
+        sessionStorage.setItem("empire.tenants", JSON.stringify(session.tenants ?? []));
+        const savedTenant = sessionStorage.getItem("empire.tenant");
+        if (savedTenant && session.tenants?.some((item) => item.id === savedTenant)) setSelectedTenantId(savedTenant);
+        else if (session.tenants?.length === 1) { setSelectedTenantId(session.tenants[0]!.id); sessionStorage.setItem("empire.tenant", session.tenants[0]!.id); }
         setCookieSession(true);
       })
       .catch((cause) => {
@@ -259,6 +281,10 @@ export function App() {
         sessionStorage.setItem("empire.session", result.token!); sessionStorage.setItem("empire.entity", JSON.stringify(result.entity));
       }
       setToken(rememberMe ? "" : result.token!); setCookieSession(rememberMe); setEntity(result.entity); setLogin({ username: "", password: "" }); setRememberMe(false);
+      setTenants(result.tenants ?? []); sessionStorage.setItem("empire.tenants", JSON.stringify(result.tenants ?? []));
+      const savedTenant = sessionStorage.getItem("empire.tenant");
+      const nextTenant = savedTenant && result.tenants.some((item) => item.id === savedTenant) ? savedTenant : result.tenants.length === 1 ? result.tenants[0]!.id : "";
+      setSelectedTenantId(nextTenant); if (nextTenant) sessionStorage.setItem("empire.tenant", nextTenant);
     } catch (cause) { setError(cause instanceof Error ? cause.message : "Login gagal."); }
     finally { setBusy(false); }
   }
@@ -300,12 +326,14 @@ export function App() {
     || (key === "directory" && can(entity, "users:manage"))
     || ((key === "knowledge" || key === "audit") && can(entity, "continuum:read"))
     || (key === "cab" && canCab)
-    || (key === "research" && canResearch);
+    || (key === "research" && canResearch)
+    || (key === "collaboration" && can(entity, "work:read"));
+    const allowedPage = (key: Page) => pageAllowed(key) || (key === "business" && can(entity, "work:read"));
   const activePage = pageItems.find(({ key }) => key === tab)!;
   return <WorkspaceShell navigation={<aside className="sidebar"><a className="brand" href="#overview" onClick={e=>{e.preventDefault();setTab("overview");}}><BrandLockup name="100CENTER" descriptor="OPERATOR WORKSPACE" /></a>
     <div className="operator-card"><span className="avatar">{entity.displayName.slice(0,1).toUpperCase()}</span><span className="operator-meta"><strong>{entity.displayName}</strong><small>{entity.role} · {entity.username}</small></span><span className="online-dot" title="Sesi aktif"/></div>
-    <p className="nav-caption">OPERATIONS</p><div className="view-switcher" role="navigation" aria-label="Command Center sections">{pageItems.filter(({key})=>pageAllowed(key)).map(({key,label})=>{const PageIcon=pageIcons[key];return <NavItem key={key} className={`nav-item ${tab===key?"is-active":""}`} current={tab===key} icon={<PageIcon className="nav-icon" size={18}/>} badge={key==="cab"&&summary?.active?summary.active:key==="research"?runs.filter(run=>run.status==="pending_approval").length||undefined:undefined} onClick={()=>setTab(key)}>{label}</NavItem>})}</div>
-    <div className="sidebar-bottom"><div className="connection-card"><span className="online-dot" data-state={snapshot.readiness} aria-hidden="true"/><span><strong>Local cluster</strong><small>PostgreSQL · API :4000</small></span><Badge tone={snapshot.readiness==="ok"?"success":snapshot.readiness==="unavailable"?"danger":"warning"}>{snapshot.readiness}</Badge></div><MangaEffect as="button" action type="button" className="logout-button" onClick={()=>void perform(async()=>{await client.request(API_PATHS.logout,{method:"POST"});clearSession();},"Sesi ditutup.")}><LogOutIcon size={16}/><span>Keluar dari sesi</span></MangaEffect><small className="build-label">A-L-L-A-H COMMAND CENTER · ARSY</small></div></aside>} header={<header className="topbar"><Breadcrumbs className="breadcrumb" label="Current location" items={[{label:"COMMAND CENTER"},{label:activePage.title,current:true}]}/><div className="top-actions"><SearchField className="global-search" id="global-search" value={search} onChange={event=>setSearch(event.target.value)} placeholder="Search this view…" aria-label="Search current view" shortcutHint="/" onClear={()=>setSearch("")}/><span className="last-check">{snapshot.checkedAt?`Updated ${new Date(snapshot.checkedAt).toLocaleTimeString()}`:"Connecting…"}</span><Button variant="secondary" disabled={loading} onClick={()=>void refresh()}>{loading ? "Syncing…" : (<span><RefreshIcon size={14}/>Sync</span>)}</Button><a className="api-link" href={`${import.meta.env.VITE_API_ORIGIN||"http://127.0.0.1:4000"}${API_PATHS.openapi}`} target="_blank" rel="noreferrer" aria-label="Open API contract"><DocumentIcon size={16}/></a></div></header>}>
+      <p className="nav-caption">OPERATIONS</p><div className="view-switcher" role="navigation" aria-label="Command Center sections">{pageItems.filter(({key})=>allowedPage(key)).map(({key,label})=>{const PageIcon=pageIcons[key];return <NavItem key={key} className={`nav-item ${tab===key?"is-active":""}`} current={tab===key} icon={<PageIcon className="nav-icon" size={18}/>} badge={key==="cab"&&summary?.active?summary.active:key==="research"?runs.filter(run=>run.status==="pending_approval").length||undefined:undefined} onClick={()=>setTab(key)}>{label}</NavItem>})}</div>
+    <div className="sidebar-bottom"><div className="connection-card"><span className="online-dot" data-state={snapshot.readiness} aria-hidden="true"/><span><strong>Local cluster</strong><small>PostgreSQL · API :4000</small></span><Badge tone={snapshot.readiness==="ok"?"success":snapshot.readiness==="unavailable"?"danger":"warning"}>{snapshot.readiness}</Badge></div><MangaEffect as="button" action type="button" className="logout-button" onClick={()=>void perform(async()=>{await client.request(API_PATHS.logout,{method:"POST"});clearSession();},"Sesi ditutup.")}><LogOutIcon size={16}/><span>Keluar dari sesi</span></MangaEffect><small className="build-label">A-L-L-A-H COMMAND CENTER · ARSY</small></div></aside>} header={<header className="topbar"><Breadcrumbs className="breadcrumb" label="Current location" items={[{label:"COMMAND CENTER"},{label:activePage.title,current:true}]}/><div className="top-actions">{tenants.length>1&&<label className="tenant-picker"><span className="eol-visually-hidden">Tenant aktif</span><select aria-label="Tenant aktif" value={selectedTenantId} onChange={event=>{setSelectedTenantId(event.target.value);if(event.target.value)sessionStorage.setItem("empire.tenant",event.target.value);else sessionStorage.removeItem("empire.tenant");}}><option value="">Pilih tenant…</option>{tenants.map(item=><option value={item.id} key={item.id}>{item.displayName}</option>)}</select></label>}<SearchField className="global-search" id="global-search" value={search} onChange={event=>setSearch(event.target.value)} placeholder="Search this view…" aria-label="Search current view" shortcutHint="/" onClear={()=>setSearch("")}/><span className="last-check">{snapshot.checkedAt?`Updated ${new Date(snapshot.checkedAt).toLocaleTimeString()}`:"Connecting…"}</span><Button variant="secondary" disabled={loading} onClick={()=>void refresh()}>{loading ? "Syncing…" : (<span><RefreshIcon size={14}/>Sync</span>)}</Button><a className="api-link" href={`${API_ORIGIN}${API_PATHS.openapi}`} target="_blank" rel="noreferrer" aria-label="Open API contract"><DocumentIcon size={16}/></a></div></header>}>
       <MangaPageIntro className="page-heading" eyebrow="A-L-L-A-H · OPERATIONAL COMMAND" title={<span id="active-view-heading">{activePage.title}</span>} description={activePage.description} meta={<div className="health-cluster"><span><i data-state={snapshot.health}/><span>API {snapshot.health}</span></span><span><i data-state={snapshot.readiness}/><span>DATABASE {snapshot.readiness}</span></span></div>} />
       {error&&<Notice tone="danger" className="notice">{error}</Notice>}{success&&<Notice tone="success" className="notice">{success}</Notice>}
       <div id="active-view" role="region" aria-labelledby="active-view-heading">
@@ -318,17 +346,17 @@ export function App() {
         summary={summary}
         researchRunCount={runs.length}
         modules={visibleModules}
-        workspaces={pageItems.filter(({key})=>key!=="overview"&&pageAllowed(key)).map(({key,workspaceTitle,description})=>({key,title:workspaceTitle,description,icon:pageIcons[key]}))}
+        workspaces={pageItems.filter(({key})=>key!=="overview"&&allowedPage(key)).map(({key,workspaceTitle,description})=>({key,title:workspaceTitle,description,icon:pageIcons[key]}))}
         events={chronicles.slice(0,5).map(event=>({id:event.id,timestamp:new Date(event.createdAt).toLocaleString(),actor:event.user?.displayName??event.user?.username??"System",action:event.action.replaceAll("_"," "),details:event.entityId?`${event.entity} · ${event.entityId}`:event.entity}))}
         loading={loading}
         error={error}
         searching={Boolean(search)}
         operatorRole={entity.role}
-        openApiUrl={`${import.meta.env.VITE_API_ORIGIN||"http://127.0.0.1:4000"}${API_PATHS.openapi}`}
+        openApiUrl={`${API_ORIGIN}${API_PATHS.openapi}`}
         onRefresh={()=>void refresh()}
         onNavigate={key=>setTab(key as Page)}
       />}
-      {tab==="world"&&(worldLoading&&!worldSnapshot?<LoadingState label="Memuat World Monitor…"/>:worldSnapshot?<WorldMonitorView snapshot={worldSnapshot} search={search} nextRefreshIn={worldNextRefreshIn} refreshError={worldError} onRefresh={()=>void refreshWorld()} notificationPermission={worldNotificationPermission} onEnableNotifications={()=>void enableWorldMonitorNotifications()}/>:worldError?<ErrorState title="World Monitor is unavailable" description={worldError} action={<Button variant="secondary" onClick={()=>void refreshWorld()}>Retry</Button>}/>:<LoadingState label="Connecting to World Monitor…"/>)}
+      {tab==="world"&&(worldLoading&&!worldSnapshot?<LoadingState label="Memuat World Monitor…"/>:worldSnapshot?<WorldMonitorView snapshot={worldSnapshot} search={search} sentinelToken={token} sentinelPermissions={{read:can(entity,"sentinel:read"),scan:can(entity,"sentinel:scan"),review:can(entity,"sentinel:review"),schedule:can(entity,"sentinel:schedule")}} nextRefreshIn={worldNextRefreshIn} refreshError={worldError} onRefresh={()=>void refreshWorld()} notificationPermission={worldNotificationPermission} onEnableNotifications={()=>void enableWorldMonitorNotifications()}/>:worldError?<ErrorState title="World Monitor is unavailable" description={worldError} action={<Button variant="secondary" onClick={()=>void refreshWorld()}>Retry</Button>}/>:<LoadingState label="Connecting to World Monitor…"/>)}
       {tab==="continuum"&&<ContinuumView
         agentCount={agents.length}
         activeAgentCount={agents.filter(agent=>agent.status==="active").length}
@@ -365,6 +393,8 @@ export function App() {
         onConfirmAction={request=>confirmRfcAction(request.title,request.description,request.confirmLabel,request.tone,request.endpoint,request.body,request.successMessage)}
       />}
       {tab==="research"&&<ResearchView draft={createRun} runs={visibleRuns} busy={busy} loading={loading} error={error} searching={Boolean(search)} canWrite={can(entity,"research:write")} canApprove={can(entity,"research:approve")} client={client} refreshKey={snapshot.checkedAt} onDraftChange={setCreateRun} onCreate={createResearch} onRefresh={()=>void refresh()} onAction={perform} onConfirmAction={requestConfirmation}/>}
+      {tab==="collaboration"&&<CollaborationView client={client} apiOrigin={API_ORIGIN} onUpload={(path,file)=>api.upload(path,file,{token:token||null,tenantId:selectedTenantId||null})}/>}
+        {tab==="business"&&<EnterpriseView client={client} canWrite={can(entity,"work:write")}/>}
       </div>
       <ConfirmDialog
         open={Boolean(confirmation)}

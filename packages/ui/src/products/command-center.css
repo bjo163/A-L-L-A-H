@@ -1265,3 +1265,12 @@
 .eol-workspace-shell .sentinel-amplify-tag { padding: 2px 6px; border-radius: 3px; background: var(--eol-status-info-surface); color: var(--eol-status-info-foreground); font-size: var(--eol-font-size-2xs); }
 .eol-workspace-shell .sentinel-modal-actions { margin-block-start: 14px; }
 @media (max-width: 600px) { .eol-workspace-shell .sentinel-partner-classification-grid { grid-template-columns: 1fr; } }
+.eol-workspace-shell .enterprise-view { display: grid; gap: 1rem; }
+.eol-workspace-shell .section-tabs { display: flex; flex-wrap: wrap; gap: .5rem; }
+.eol-workspace-shell .enterprise-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(18rem, .8fr); gap: 1rem; align-items: start; }
+.eol-workspace-shell .enterprise-list { display: grid; gap: .55rem; }
+.eol-workspace-shell .enterprise-row { display: flex; flex-wrap: wrap; justify-content: space-between; gap: .5rem; padding: .8rem; border: 1px solid var(--eol-color-border); border-radius: .7rem; }
+.eol-workspace-shell .enterprise-row span, .eol-workspace-shell .enterprise-note span { color: var(--eol-color-text-muted); font-size: .9rem; }
+.eol-workspace-shell .enterprise-form { display: grid; gap: .8rem; }
+.eol-workspace-shell .enterprise-note { display: flex; flex-wrap: wrap; align-items: center; gap: .65rem; padding: .85rem; }
+@media (max-width: 900px) { .eol-workspace-shell .enterprise-grid { grid-template-columns: 1fr; } }

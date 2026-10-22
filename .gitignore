@@ -4,6 +4,7 @@ node_modules/
 dist/
 .artifacts/
 coverage/
+/var/private-files/
 .env
 .env.*
 !.env.example

@@ -51,7 +51,7 @@ HUMAN REVIEW → CONTROLLED ACTION → MONITOR → AUDIT / REPAIR
 No consciousness proof, soul detector, prophecy certification, divine ranking, infinite-energy device, teleportation, or faster-than-light signaling is assumed.
 
 ### 5. Keep v4 engineering stack
-**Monorepo:** pnpm + Turbo. **Admin:** Vite + React/TypeScript. **Public:** Next.js. **Backend:** Fastify as the canonical local Empire API; any public integration or production cutover still follows the external Gen2 ownership ADR. **Database:** local PostgreSQL via Empire Batteries Knex/Objection with transactional, additive model synchronization at API boot; `packages/db` Drizzle definitions are a prototype, not the runtime. **Module kit:** first-party allowlisted manifests, DAG dependencies, activation and audit. **Existing seven base modules:** kernel/research/scripture/journey/mission/governance/ziil remain, not replaced.
+**Monorepo:** pnpm + Turbo. **Admin:** Vite + React/TypeScript. **Public:** Next.js. **Backend:** Fastify as the canonical local Empire API; any public integration or production cutover still follows the external Gen2 ownership ADR. **Database:** local PostgreSQL via Empire Batteries Knex/Objection, the sole persistence layer, with transactional additive model synchronization at API boot. **Module kit:** first-party allowlisted manifests, DAG dependencies, activation and audit. **Existing seven base modules:** kernel/research/scripture/journey/mission/governance/ziil remain, not replaced.
 V5 adds **research capability packs**, not seven new public APIs: heliogrid, protonics, photonics, quantum, materials, energy-twin, multisource-comparative, hypercompute. No pack auto-enabled.
 
 ### 6. Epistemic contracts

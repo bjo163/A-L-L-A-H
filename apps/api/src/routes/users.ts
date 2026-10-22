@@ -1,5 +1,5 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
-import { UserModel, DictionaryModel } from "@empire/batteries-base";
+import { UserModel, LegacyDictionaryCompatibilityService } from "@empire/batteries-base";
 import type { FilterValue } from "@empire/batteries";
 import { requirePermission, requireSession } from "./auth.js";
 
@@ -65,10 +65,10 @@ export async function userRoutes(app: FastifyInstance) {
     };
   });
 
-  // GET /dictionary - Sacred & Funky Universal Dictionary
+  // Legacy role-vocabulary lookup; canonical concepts belong to the UNILEX registry.
   app.get("/dictionary", async (request: FastifyRequest) => {
     const query = (request.query || {}) as Record<string, FilterValue | undefined>;
-    const entries = await DictionaryModel.query().filter(query);
+    const entries = await LegacyDictionaryCompatibilityService.list(query);
 
     return {
       system: "Empire of the Light Universal Dictionary",

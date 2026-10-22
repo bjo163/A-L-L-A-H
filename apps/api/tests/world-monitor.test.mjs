@@ -9,7 +9,7 @@ const compiledRoute = ts.transpileModule(
   { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } },
 ).outputText;
 
-function createRoute(checkDatabaseHealth, baseSnapshot) {
+function createRoute(checkDatabaseHealth, baseSnapshot, observations = []) {
   const load = new Function(
     "exports",
     "checkDatabaseHealth",
@@ -19,7 +19,12 @@ function createRoute(checkDatabaseHealth, baseSnapshot) {
     "generateBrowserAutomationSnippet",
     "refreshWorldMonitorSources",
     "WorldMonitorSourceRunModel",
+    "WorldMonitorObservationModel",
     "getActiveWorldMonitorSources",
+    "requireSession",
+    "requirePermission",
+    "requireTenant",
+    "createYoutubeScanGate",
     `${compiledRoute}; return worldMonitorRoutes;`,
   );
   return load(
@@ -31,7 +36,12 @@ function createRoute(checkDatabaseHealth, baseSnapshot) {
     () => "",
     async () => {},
     { query: () => ({ orderBy: () => ({ limit: async () => [] }) }) },
+    { query: () => ({ where: ({ category }) => ({ orderBy: () => ({ limit: async () => observations.filter((item) => item.category === category) }) }) }) },
     () => [],
+    async () => {},
+    () => async () => {},
+    async () => {},
+    () => ({ acquire: () => ({ allowed: true, remaining: 4, retryAfterMs: 0, release() {} }) }),
   );
 }
 
@@ -50,10 +60,10 @@ function createSnapshot() {
   };
 }
 
-async function invoke(checkDatabaseHealth) {
+async function invoke(checkDatabaseHealth, observations = []) {
   let options;
   let handler;
-  await createRoute(checkDatabaseHealth, createSnapshot())({
+  await createRoute(checkDatabaseHealth, createSnapshot(), observations)({
     get(path, routeOptions, routeHandler) {
       if (path === "/v1/world-monitor") {
         options = routeOptions;
@@ -88,6 +98,27 @@ test("an unhealthy database degrades status; a failed health check stays unknown
   assert.equal(failed.result.status, "unavailable");
   assert.equal(failed.result.databaseStatus, "unknown");
   assert.equal(failed.result.globalAlertLevel, "unknown");
+});
+
+test("a critical observation sets red global alert even when the database is healthy", async () => {
+  const now = new Date().toISOString();
+  const { result } = await invoke(async () => ({ ok: true }), [{
+    id: "quake-critical",
+    externalId: "quake-critical",
+    source: "test-seismic-feed",
+    category: "earthquake",
+    sourceTier: "primary",
+    observedAt: now,
+    fetchedAt: now,
+    freshnessSeconds: 0,
+    confidence: 1,
+    status: "available",
+    normalized: { mag: 8.1 },
+  }]);
+
+  assert.equal(result.databaseStatus, "available");
+  assert.equal(result.alerts.some((alert) => alert.level === "critical"), true);
+  assert.equal(result.globalAlertLevel, "red");
 });
 
 test("region, sensor, and activity values are not presented as live data without sources", async () => {

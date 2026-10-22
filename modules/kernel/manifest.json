@@ -11,16 +11,22 @@
     "module-registry"
   ],
   "permissions": [
-    "module:read"
+    "module:read",
+    "sentinel:read",
+    "sentinel:scan",
+    "sentinel:review",
+    "sentinel:schedule"
   ],
   "models": [
     "roles",
     "permissions",
     "users",
+    "partners",
     "user_roles",
     "role_permissions",
     "audit_logs",
     "dictionaries",
+    "legacy_dictionary_imports",
     "lexicons",
     "auth_sessions",
     "tenants",

@@ -3,6 +3,8 @@ import { createHash, randomBytes } from "node:crypto";
 import {
   AuditLogModel,
   AuthSessionModel,
+  TenantMembershipModel,
+  TenantModel,
   UserModel,
   AuthService,
 } from "@empire/batteries-base";
@@ -31,10 +33,22 @@ function setRememberCookie(reply: FastifyReply, token: string, remember: boolean
   reply.header("set-cookie", cookie.join("; "));
 }
 
+async function activeTenants(userId: string) {
+  const memberships = await TenantMembershipModel.query().where({ user_id: userId, status: "active" }).select("tenant_id", "role");
+  if (!memberships.length) return [];
+  const tenants = await TenantModel.query().whereIn("id", memberships.map((membership) => membership.tenantId)).select("id", "slug", "display_name");
+  const byId = new Map(tenants.map((tenant) => [tenant.id, tenant]));
+  return memberships.flatMap((membership) => {
+    const tenant = byId.get(membership.tenantId);
+    return tenant ? [{ id: tenant.id, slug: tenant.slug, displayName: tenant.displayName, membershipRole: membership.role }] : [];
+  });
+}
+
 declare module "fastify" {
   interface FastifyRequest {
     authUser: UserModel | null;
     authSession: AuthSessionModel | null;
+    tenantId: string | null;
   }
 }
 
@@ -168,6 +182,7 @@ export async function authRoutes(app: FastifyInstance) {
     return {
       status: "authenticated",
       ...(rememberMe ? {} : { token }),
+      tenants: await activeTenants(user.id),
       entity: {
         id: user.id,
         username: user.username,
@@ -203,6 +218,7 @@ export async function authRoutes(app: FastifyInstance) {
     const role = user.roles?.[0];
     return {
       status: "authenticated",
+      tenants: await activeTenants(user.id),
       entity: {
         id: user.id,
         username: user.username,

@@ -1,7 +1,7 @@
 import type { FastifyInstance, FastifyRequest } from "fastify";
 import {
   UserModel,
-  DictionaryModel,
+  LegacyDictionaryCompatibilityService,
   AuditLogModel,
   LexiconModel,
 } from "@empire/batteries-base";
@@ -141,7 +141,7 @@ export async function continuumRoutes(app: FastifyInstance) {
       return { status: "absent", message: `Seraph '${code}' not found.` };
     }
 
-    const dict = await DictionaryModel.query().where({ code: agent.roles?.[0]?.slug }).first();
+    const dict = await LegacyDictionaryCompatibilityService.findByCode(agent.roles?.[0]?.slug ?? "");
 
     return {
       status: "active",

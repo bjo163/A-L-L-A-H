@@ -17,6 +17,9 @@ export const env = {
     process.env.CORS_ORIGIN ??
     "http://localhost:3000,http://localhost:3300,http://localhost:5173,http://127.0.0.1:5173",
   DATABASE_URL: process.env.DATABASE_URL ?? "",
+  FILE_STORAGE_DIR: process.env.FILE_STORAGE_DIR ?? fileURLToPath(new URL("../../../var/private-files/", import.meta.url)),
+  FILE_STORAGE_SIGNING_SECRET: process.env.FILE_STORAGE_SIGNING_SECRET ?? (process.env.NODE_ENV === "production" ? "" : "local-development-only-change-this-secret"),
+  PUBLIC_API_ORIGIN: process.env.PUBLIC_API_ORIGIN ?? "",
 } as const;
 
 export type Env = typeof env;

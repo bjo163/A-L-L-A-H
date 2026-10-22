@@ -8,6 +8,8 @@ const YoutubeSentinelView = lazy(async () => ({ default: (await import("./Youtub
 interface WorldMonitorViewProps {
   snapshot: WorldMonitoringSnapshot;
   search: string;
+  sentinelToken: string | null;
+  sentinelPermissions: { read: boolean; scan: boolean; review: boolean; schedule: boolean };
   onRefresh: () => void;
   refreshError?: string;
   /** Countdown in seconds until next auto-refresh. undefined = auto-refresh not running */
@@ -18,7 +20,7 @@ interface WorldMonitorViewProps {
 
 type WorldSubTab = "systems" | "youtube";
 
-export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, refreshError, notificationPermission, onEnableNotifications }: WorldMonitorViewProps) {
+export function WorldMonitorView({ snapshot, search, sentinelToken, sentinelPermissions, onRefresh, nextRefreshIn, refreshError, notificationPermission, onEnableNotifications }: WorldMonitorViewProps) {
   const [subTab, setSubTab] = useState<WorldSubTab>("systems");
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
   const [selectedRegionId, setSelectedRegionId] = useState<string | undefined>(undefined);
@@ -212,7 +214,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
         }))} empty={<EmptyState title="No verified telemetry events" description="No live event source is connected. Audit records are not exposed through this public endpoint." />} />
       </section>
         </> },
-        { value: "youtube", label: <><ActivityIcon size={14} /> YouTube Sentinel <span className="world-subtab-badge">TAUHID</span></>, content: <Suspense fallback={<LoadingState label="Loading YouTube Sentinel…" />}><YoutubeSentinelView searchQuery={search} /></Suspense> },
+        { value: "youtube", label: <><ActivityIcon size={14} /> YouTube Sentinel <span className="world-subtab-badge">TAUHID</span></>, disabled: !sentinelPermissions.read, content: sentinelPermissions.read ? <Suspense fallback={<LoadingState label="Loading YouTube Sentinel…" />}><YoutubeSentinelView searchQuery={search} token={sentinelToken} permissions={sentinelPermissions} /></Suspense> : <p role="note" className="eol-notice">Izin sentinel:read diperlukan untuk melihat YouTube Sentinel.</p> },
       ]}
     />
   );

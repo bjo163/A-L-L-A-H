@@ -7,13 +7,13 @@ export interface BatteriesDnaCatalogItem {
   attribute: string;
   domain: string;
   wisdom: string;
-  name: string;
+  slug: string;
   id: string;
   lexiconCode: string;
   capability: string | null;
   recordType: "bounded_project_mapping" | "reference_only";
-  relation: "inspiredBy";
-  scope: string | null;
+  relation: "inspiredBy" | null;
+  scope: string;
   limitations: readonly string[];
   status: string;
   authorityGranted: boolean;
@@ -23,7 +23,7 @@ export interface BatteriesDnaCatalogItem {
 export declare const batteriesDnaCatalog: {
   schemaVersion: string;
   registryId: string;
-  packages: readonly BatteriesDnaCatalogItem[];
+  records: readonly BatteriesDnaCatalogItem[];
 };
 
 export declare function listBatteriesDna(): readonly BatteriesDnaCatalogItem[];

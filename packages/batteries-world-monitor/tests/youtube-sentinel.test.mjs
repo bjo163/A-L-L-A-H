@@ -6,6 +6,9 @@ import ts from "typescript";
 // Read and transpile types and youtube-sentinel dynamically for pure node test execution
 const sentinelSource = await readFile(new URL("../src/youtube-sentinel.ts", import.meta.url), "utf8");
 
+const priorDemoSetting = process.env.YOUTUBE_SENTINEL_DEMO_MODE;
+delete process.env.YOUTUBE_SENTINEL_DEMO_MODE;
+
 // Strip TS type-only import from types.js
 const cleanSource = sentinelSource.replace(/import type .* from "\.\/types\.js";\r?\n/, "");
 const transpiled = ts.transpileModule(cleanSource, {
@@ -14,6 +17,7 @@ const transpiled = ts.transpileModule(cleanSource, {
 
 const dataUri = `data:text/javascript;base64,${Buffer.from(transpiled).toString("base64")}`;
 const sentinel = await import(dataUri);
+if (priorDemoSetting !== undefined) process.env.YOUTUBE_SENTINEL_DEMO_MODE = priorDemoSetting;
 
 test("evaluateVideoText correctly identifies critical pesugihan and commercial transactions", () => {
   const result = sentinel.evaluateVideoText({
@@ -57,6 +61,7 @@ test("buildMonitoredItem attaches theological Tauhid guidance and YouTube report
     title: "SANTET TELUH JARAK JAUH BIKIN TARGET TUNDUK DALAM 1 HARI",
     channelTitle: "Pusaka Hitam",
     description: "Layanan santet ampuh.",
+    sourceType: "demo_synthetic",
   });
 
   assert.equal(item.category, "SIHIR_PELET");
@@ -67,14 +72,18 @@ test("buildMonitoredItem attaches theological Tauhid guidance and YouTube report
   assert.ok(item.counterDakwahBrief.suggestedCommentResponse.length > 20);
 });
 
-test("youtubeSentinelRepo manages status updates and provides global scan summaries", () => {
+test("in-memory Sentinel repository starts empty and manages actual records", () => {
   const initialSummary = sentinel.youtubeSentinelRepo.getSummary();
-  assert.ok(initialSummary.totalMonitored >= 10);
-  assert.ok(initialSummary.criticalSyirikCount >= 1);
+  assert.equal(initialSummary.totalMonitored, 0);
 
-  const items = sentinel.youtubeSentinelRepo.getItems({ category: "PESUGIHAN_TUMBAL" });
-  assert.ok(items.length >= 1);
-  const target = items[0];
+  const target = sentinel.buildMonitoredItem({
+    videoId: "test_pesugihan_repository",
+    title: "PESUGIHAN UANG GAIB TANPA TUMBAL",
+    channelTitle: "Example fixture",
+    sourceType: "demo_synthetic",
+  });
+  sentinel.youtubeSentinelRepo.upsertItem(target);
+  assert.equal(sentinel.youtubeSentinelRepo.getSummary().totalMonitored, 1);
 
   const updated = sentinel.youtubeSentinelRepo.updateWorkflowStatus(
     target.id,
@@ -85,6 +94,35 @@ test("youtubeSentinelRepo manages status updates and provides global scan summar
   assert.ok(updated);
   assert.equal(updated.workflowStatus, "COUNTER_DAKWAH_QUEUED");
   assert.equal(updated.operatorNotes, "Disposisi ke Tim Media Dakwah untuk rilis video bantahan dalil Tauhid");
+});
+
+test("failed crawler results do not create synthetic Sentinel evidence", async () => {
+  const priorCount = sentinel.youtubeSentinelRepo.getSummary().totalMonitored;
+  const result = await sentinel.scanYoutube(
+    { query: "offline test query", engine: "playwright" },
+    { crawlInnertube: async () => [], crawlPlaywright: async () => [] },
+  );
+
+  assert.equal(result.scannedCount, 0);
+  assert.equal(result.newItemsCount, 0);
+  assert.equal(result.crawlerMode, "no_results");
+  assert.match(result.diagnosticMessage, /tidak ada temuan sintetis/i);
+  assert.equal(sentinel.youtubeSentinelRepo.getSummary().totalMonitored, priorCount);
+  assert.ok(result.items.every((item) => !item.videoId.startsWith("syn-")));
+});
+
+test("fictional sample corpus is opt-in and marked synthetic", async () => {
+  const prior = process.env.YOUTUBE_SENTINEL_DEMO_MODE;
+  process.env.YOUTUBE_SENTINEL_DEMO_MODE = "true";
+  try {
+    const demoSentinel = await import(`${dataUri}#demo-mode`);
+    const demoItems = demoSentinel.youtubeSentinelRepo.getItems();
+    assert.ok(demoItems.length > 0);
+    assert.ok(demoItems.every((item) => item.sourceType === "demo_synthetic"));
+  } finally {
+    if (prior === undefined) delete process.env.YOUTUBE_SENTINEL_DEMO_MODE;
+    else process.env.YOUTUBE_SENTINEL_DEMO_MODE = prior;
+  }
 });
 
 test("generateBrowserAutomationSnippet produces valid crawler code string", () => {

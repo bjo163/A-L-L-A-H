@@ -65,6 +65,7 @@ export function rowToItem(row: YoutubeSentinelItemModel): YoutubeMonitoredItem {
     scannedAt: row.scannedAt ?? row.createdAt,
     lastActionAt: row.lastActionAt ?? undefined,
     sourceType: (row.sourceType ?? "browser_automation") as YoutubeMonitoredItem["sourceType"],
+    partnerId: row.partnerId ?? null,
   };
 }
 

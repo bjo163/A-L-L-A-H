@@ -54,11 +54,13 @@ export async function executeScheduledYoutubeSweep(
       totalNew += scanResult.newItemsCount;
 
       const isDbUp = await dbAvailable();
-      if (isDbUp && scanResult.items.length > 0) {
-        try {
-          await persistItemsToDB(scanResult.items, scanResult.crawlerMode ?? "auto");
-        } catch (dbErr) {
-          console.warn(`[YouTube Sentinel Scheduler] DB persist warning for query "${query}":`, dbErr);
+      if (isDbUp) {
+        if (scanResult.scannedCount > 0 && scanResult.items.length > 0) {
+          try {
+            await persistItemsToDB(scanResult.items, scanResult.crawlerMode ?? "auto");
+          } catch (dbErr) {
+            console.warn(`[YouTube Sentinel Scheduler] DB persist warning for query "${query}":`, dbErr);
+          }
         }
 
         try {
@@ -92,6 +94,85 @@ export async function executeScheduledYoutubeSweep(
   return { totalScanned, totalNew, durationMs, queriesRun };
 }
 
+let activeIntervalMs = TWELVE_HOURS_MS;
+let lastSweepStartedAt: string | null = null;
+let lastSweepCompletedAt: string | null = null;
+let lastSweepResult: ScheduledRunResult | null = null;
+let isSweepInProgress = false;
+let nextScheduledSweepAt: string | null = null;
+let activeRecurringTimer: NodeJS.Timeout | null = null;
+let activeInitialTimer: NodeJS.Timeout | null = null;
+
+export function getYoutubeSentinelSchedulerStatus() {
+  return {
+    enabled: true,
+    intervalMs: activeIntervalMs,
+    intervalHours: activeIntervalMs / 3_600_000,
+    isSweepInProgress,
+    lastSweepStartedAt,
+    lastSweepCompletedAt,
+    lastSweepResult,
+    nextScheduledSweepAt,
+    defaultQueries: YOUTUBE_SENTINEL_DEFAULT_SCHEDULED_QUERIES,
+  };
+}
+
+export async function triggerManualYoutubeSweep(queries?: string[], limitPerQuery?: number) {
+  if (isSweepInProgress) {
+    return {
+      ok: false,
+      message: "Pemindaian terjadwal sedang berlangsung, silakan tunggu.",
+      status: getYoutubeSentinelSchedulerStatus(),
+    };
+  }
+  isSweepInProgress = true;
+  lastSweepStartedAt = new Date().toISOString();
+  try {
+    const result = await executeScheduledYoutubeSweep(queries, limitPerQuery);
+    lastSweepResult = result;
+    lastSweepCompletedAt = new Date().toISOString();
+    nextScheduledSweepAt = new Date(Date.now() + activeIntervalMs).toISOString();
+    return {
+      ok: true,
+      message: `Pemindaian terjadwal selesai: ${result.totalScanned} video dievaluasi (${result.totalNew} baru).`,
+      result,
+      status: getYoutubeSentinelSchedulerStatus(),
+    };
+  } finally {
+    isSweepInProgress = false;
+  }
+}
+
+export function updateYoutubeSentinelSchedulerInterval(newIntervalHours: number) {
+  const ms = Math.max(1, newIntervalHours) * 3_600_000;
+  activeIntervalMs = ms;
+  nextScheduledSweepAt = new Date(Date.now() + activeIntervalMs).toISOString();
+  if (activeRecurringTimer) {
+    clearInterval(activeRecurringTimer);
+    activeRecurringTimer = setInterval(() => {
+      void runSweep();
+    }, activeIntervalMs);
+    activeRecurringTimer.unref?.();
+  }
+  return getYoutubeSentinelSchedulerStatus();
+}
+
+const runSweep = async () => {
+  if (isSweepInProgress) return;
+  isSweepInProgress = true;
+  lastSweepStartedAt = new Date().toISOString();
+  try {
+    const result = await executeScheduledYoutubeSweep();
+    lastSweepResult = result;
+    lastSweepCompletedAt = new Date().toISOString();
+    nextScheduledSweepAt = new Date(Date.now() + activeIntervalMs).toISOString();
+  } catch (err) {
+    console.error("[YouTube Sentinel Scheduler] Sweep error:", err);
+  } finally {
+    isSweepInProgress = false;
+  }
+};
+
 /**
  * Starts the background timer running every 12 hours (or configured interval).
  * Returns a cancel function for clean shutdown.
@@ -101,41 +182,28 @@ export function startYoutubeSentinelScheduler(
   runInitialDelayMs = 15_000,
 ): () => void {
   const parsed = Number(intervalMsConfigured);
-  // Minimum 10 seconds for testing/dev override, default 12 hours
-  const intervalMs = Number.isFinite(parsed) && parsed >= 10_000 ? parsed : TWELVE_HOURS_MS;
-
-  let running = false;
-  const runSweep = async () => {
-    if (running) return;
-    running = true;
-    try {
-      await executeScheduledYoutubeSweep();
-    } catch (err) {
-      console.error("[YouTube Sentinel Scheduler] Sweep error:", err);
-    } finally {
-      running = false;
-    }
-  };
+  activeIntervalMs = Number.isFinite(parsed) && parsed >= 10_000 ? parsed : TWELVE_HOURS_MS;
+  nextScheduledSweepAt = new Date(Date.now() + runInitialDelayMs).toISOString();
 
   // Schedule first run after initial boot delay so server startup is fast
-  const initialTimer = setTimeout(() => {
+  activeInitialTimer = setTimeout(() => {
     void runSweep();
   }, runInitialDelayMs);
-  initialTimer.unref?.();
+  activeInitialTimer.unref?.();
 
-  // Recurring 12-hour interval
-  const recurringTimer = setInterval(() => {
+  // Recurring interval
+  activeRecurringTimer = setInterval(() => {
     void runSweep();
-  }, intervalMs);
-  recurringTimer.unref?.();
+  }, activeIntervalMs);
+  activeRecurringTimer.unref?.();
 
   console.info(
-    `[YouTube Sentinel Scheduler] Initialized. Recurring every ${(intervalMs / 3_600_000).toFixed(1)} hours.`
+    `[YouTube Sentinel Scheduler] Initialized. Recurring every ${(activeIntervalMs / 3_600_000).toFixed(1)} hours.`
   );
 
   return () => {
-    clearTimeout(initialTimer);
-    clearInterval(recurringTimer);
+    if (activeInitialTimer) clearTimeout(activeInitialTimer);
+    if (activeRecurringTimer) clearInterval(activeRecurringTimer);
     console.info("[YouTube Sentinel Scheduler] Stopped.");
   };
 }

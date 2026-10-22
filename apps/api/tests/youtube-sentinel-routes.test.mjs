@@ -12,11 +12,20 @@ test("YouTube Tauhid Sentinel routes are registered with correct contracts", asy
   assert.match(worldMonitorSource, /\/v1\/world-monitor\/youtube\/action/);
   assert.match(worldMonitorSource, /\/v1\/world-monitor\/youtube\/snippet/);
 
-  // Verify YouTube routes in server.ts publicRoutes
-  assert.match(serverSource, /"\/v1\/world-monitor\/youtube"/);
-  assert.match(serverSource, /"\/v1\/world-monitor\/youtube\/scan"/);
-  assert.match(serverSource, /"\/v1\/world-monitor\/youtube\/action"/);
+  // Only the read-only snippet is public. Data, scanning, review, and scheduling
+  // endpoints must stay behind their runtime session and permission guards.
+  const publicRoutes = serverSource.match(/const publicRoutes = new Set\(\[([\s\S]*?)\]\);/)?.[1] ?? "";
+  for (const route of [
+    "/v1/world-monitor/youtube",
+    "/v1/world-monitor/youtube/scan",
+    "/v1/world-monitor/youtube/action",
+    "/v1/world-monitor/youtube/schedule",
+  ]) assert.doesNotMatch(publicRoutes, new RegExp(`"${route.replaceAll("/", "\\/")}"`));
   assert.match(serverSource, /"\/v1\/world-monitor\/youtube\/snippet"/);
+  assert.match(worldMonitorSource, /preHandler: \[requireSession, requirePermission\("sentinel:read"\)\]/);
+  assert.match(worldMonitorSource, /preHandler: \[requireSession, requirePermission\("sentinel:scan"\)\]/);
+  assert.match(worldMonitorSource, /preHandler: \[requireSession, requirePermission\("sentinel:review"\)\]/);
+  assert.match(worldMonitorSource, /preHandler: \[requireSession, requirePermission\("sentinel:schedule"\)\]/);
 
   // Verify non-AI and Tauhid taxonomy presence
   assert.match(worldMonitorSource, /youtubeSentinelRepo/);

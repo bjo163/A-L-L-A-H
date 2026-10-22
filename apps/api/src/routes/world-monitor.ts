@@ -3,10 +3,15 @@ import { generateBrowserAutomationSnippet, getWorldMonitoringSnapshot, scanYoutu
 import type { SentinelDirection, SentinelTradition, WorldMonitoringSnapshot, YoutubeMonitoredItem, YoutubeWorkflowStatus } from "@empire/batteries-world-monitor";
 import { checkDatabaseHealth } from "../db.js";
 import { getActiveWorldMonitorSources, refreshWorldMonitorSources } from "../world-monitor-ingest.js";
-import { WorldMonitorObservationModel, WorldMonitorSourceRunModel, YoutubeSentinelItemModel, YoutubeSentinelScanModel } from "@empire/batteries-base";
+import { PartnerModel, WorldMonitorObservationModel, WorldMonitorSourceRunModel, YoutubeSentinelItemModel, YoutubeSentinelScanModel, YoutubeSentinelPartnerLinkModel } from "@empire/batteries-base";
 import { dbAvailable, rowToItem, persistItemsToDB } from "../youtube-sentinel-storage.js";
+import { getYoutubeSentinelSchedulerStatus, triggerManualYoutubeSweep, updateYoutubeSentinelSchedulerInterval } from "../youtube-sentinel-scheduler.js";
+import { requirePermission, requireSession } from "./auth.js";
+import { requireTenant } from "./tenant-context.js";
+import { createYoutubeScanGate } from "../youtube-scan-gate.js";
 
 let lastRefreshAt = 0;
+const youtubeScanGate = createYoutubeScanGate();
 
 
 export async function worldMonitorRoutes(app: FastifyInstance) {
@@ -91,19 +96,26 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
         const current = buckets.get(bucket) ?? { count: 0, categories: {} };
         current.count += 1; current.categories[item.category] = (current.categories[item.category] ?? 0) + 1; buckets.set(bucket, current);
       }
+      const uniqueAlerts = [...new Map(alerts.map((alert) => [alert.id, alert])).values()];
+      // Keep source health separate: unknown stays unknown, critical wins, and service/data degradation stays yellow.
+      const globalAlertLevel = databaseStatus === "unknown"
+        ? "unknown"
+        : uniqueAlerts.some((alert) => alert.level === "critical")
+          ? "red"
+          : databaseStatus === "unavailable" || uniqueAlerts.some((alert) => alert.level === "advisory")
+            ? "yellow"
+            : "green";
 
       return {
         ...snapshot,
         status,
         timestamp: new Date().toISOString(),
-        globalAlertLevel: databaseStatus === "available"
-          ? "green"
-          : databaseStatus === "unavailable" ? "yellow" : "unknown",
+        globalAlertLevel,
         apiUptimeSeconds: Number(process.uptime().toFixed(3)),
         databaseStatus,
         sources,
         observations,
-        alerts: [...new Map(alerts.map((alert) => [alert.id, alert])).values()],
+        alerts: uniqueAlerts,
         history: [...buckets.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([bucket, value]) => ({ bucket, ...value })),
       };
     },
@@ -118,7 +130,7 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
       schema: {
         tags: ["System"],
         summary: "List monitored YouTube videos with non-AI heuristic Tauhid evaluation",
-        security: [],
+        security: [{ bearerAuth: [] }],
         querystring: {
           type: "object",
           properties: {
@@ -133,6 +145,7 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
           },
         },
       },
+      preHandler: [requireSession, requirePermission("sentinel:read")],
     },
     async (request) => {
       const query = (request.query ?? {}) as {
@@ -171,6 +184,10 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
           }
           const rows = await q.limit(500);
           items = rows.map(rowToItem);
+
+          // Public telemetry never expands a tenant-local partner association.
+          for (const item of items) item.partnerId = undefined;
+
           // Sync in-memory repo so other operations (workflowStatus update) work
           for (const item of items) youtubeSentinelRepo.upsertItem(item);
         } catch {
@@ -180,6 +197,7 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
         items = youtubeSentinelRepo.getItems({ ...query, hideResolved, onlyNew });
       }
 
+      items = items.map((item) => ({ ...item, partnerId: undefined, partnerInfo: undefined }));
       const summary = youtubeSentinelRepo.getSummary();
 
       return {
@@ -256,7 +274,7 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
       schema: {
         tags: ["System"],
         summary: "Dispatch YouTube automated search / crawler scan",
-        security: [],
+        security: [{ bearerAuth: [] }],
         body: {
           type: "object",
           required: ["query"],
@@ -271,8 +289,28 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
           },
         },
       },
+      preHandler: [requireSession, requirePermission("sentinel:scan")],
     },
-    async (request) => {
+    async (request, reply) => {
+      const lease = youtubeScanGate.acquire(request.authUser?.id ?? "");
+      if (!lease.allowed) {
+        const retryAfterSeconds = Math.max(1, Math.ceil(lease.retryAfterMs / 1000));
+          const temporarilyBusy = lease.reason === "global_concurrency";
+        return reply
+          .header("retry-after", String(retryAfterSeconds))
+          .header("x-ratelimit-limit", "5")
+          .header("x-ratelimit-remaining", String(lease.remaining))
+            .code(temporarilyBusy ? 503 : 429)
+          .send({
+              status: temporarilyBusy ? "scan_busy" : "rate_limited",
+              reason: lease.reason,
+              message: temporarilyBusy
+                ? "Kapasitas scan sedang penuh. Coba kembali setelah jeda yang diberikan."
+                : "Batas scan YouTube tercapai. Coba kembali setelah jeda yang diberikan.",
+            retryAfterSeconds,
+          });
+      }
+
       const body = request.body as {
         query: string;
         limit?: number;
@@ -286,24 +324,35 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
       const startedAt = new Date().toISOString();
       const t0 = Date.now();
 
-      const scanResult = await scanYoutube({
-        query: body.query,
-        limit: body.limit ?? 12,
-        forceLive: body.forceLive ?? false,
-        useBrowserAutomation: body.useBrowserAutomation ?? false,
-        engine: body.engine ?? "auto",
-        sortBy: body.sortBy ?? "upload_date",
-        onlyNew: body.onlyNew ?? false,
-      });
+      let scanResult;
+      try {
+        scanResult = await scanYoutube({
+          query: body.query,
+          limit: body.limit ?? 12,
+          forceLive: body.forceLive ?? false,
+          useBrowserAutomation: body.useBrowserAutomation ?? false,
+          engine: body.engine ?? "auto",
+          sortBy: body.sortBy ?? "upload_date",
+          onlyNew: body.onlyNew ?? false,
+        });
+      } finally {
+        lease.release();
+      }
+
+      reply
+        .header("x-ratelimit-limit", "5")
+        .header("x-ratelimit-remaining", String(lease.remaining));
 
       const durationMs = Date.now() - t0;
 
       // ── Persist to DB (non-blocking, non-fatal) ───────────────────────────
       const isDbUp = await dbAvailable();
-      if (isDbUp && scanResult.items.length > 0) {
-        try {
-          await persistItemsToDB(scanResult.items, scanResult.crawlerMode ?? "auto");
-        } catch { /* DB write errors must not break the API response */ }
+      if (isDbUp) {
+        if (scanResult.scannedCount > 0 && scanResult.items.length > 0) {
+          try {
+            await persistItemsToDB(scanResult.items, scanResult.crawlerMode ?? "auto");
+          } catch { /* DB write errors must not break the API response */ }
+        }
         try {
           await YoutubeSentinelScanModel.query().insert({
             query: body.query,
@@ -341,7 +390,7 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
       schema: {
         tags: ["System"],
         summary: "Execute operator workflow action on monitored YouTube item",
-        security: [],
+        security: [{ bearerAuth: [] }],
         body: {
           type: "object",
           required: ["id", "action"],
@@ -365,6 +414,7 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
           },
         },
       },
+      preHandler: [requireSession, requirePermission("sentinel:review")],
     },
     async (request, reply) => {
       const body = request.body as {
@@ -431,5 +481,164 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
       };
     },
   );
-}
 
+  app.get(
+    "/v1/world-monitor/youtube/schedule",
+    {
+      schema: {
+        tags: ["System"],
+        summary: "Check periodic YouTube Sentinel surveillance scheduler status",
+        security: [{ bearerAuth: [] }],
+      },
+      preHandler: [requireSession, requirePermission("sentinel:read")],
+    },
+    async () => {
+      const status = getYoutubeSentinelSchedulerStatus();
+      return {
+        ok: true,
+        scheduler: status,
+      };
+    },
+  );
+
+  app.post(
+    "/v1/world-monitor/youtube/schedule",
+    {
+      schema: {
+        tags: ["System"],
+        summary: "Configure or trigger surveillance scheduler sweep",
+        security: [{ bearerAuth: [] }],
+        body: {
+          type: "object",
+          properties: {
+            action: { type: "string", enum: ["trigger", "update_interval"] },
+            intervalHours: { type: "number" },
+            queries: { type: "array", items: { type: "string" } },
+            limitPerQuery: { type: "number" },
+          },
+        },
+      },
+      preHandler: [requireSession, requirePermission("sentinel:schedule")],
+    },
+    async (request) => {
+      const body = (request.body ?? {}) as {
+        action?: "trigger" | "update_interval";
+        intervalHours?: number;
+        queries?: string[];
+        limitPerQuery?: number;
+      };
+
+      if (body.action === "update_interval" && typeof body.intervalHours === "number") {
+        const updated = updateYoutubeSentinelSchedulerInterval(body.intervalHours);
+        return {
+          ok: true,
+          message: `Interval pemindaian otomatis diperbarui ke ${body.intervalHours} jam.`,
+          scheduler: updated,
+        };
+      }
+
+      // Default or explicit trigger action
+      const sweep = await triggerManualYoutubeSweep(body.queries, body.limitPerQuery);
+      return sweep;
+    },
+  );
+
+  // ── YouTube Sentinel Partner Association Endpoint ───────────────────────────
+  app.post(
+    "/v1/world-monitor/youtube/partner",
+    {
+      schema: {
+        tags: ["System"],
+        summary: "Link a YouTube channel or video to a Partner (mitra dakwah or target pantau)",
+        security: [{ bearerAuth: [] }],
+        body: {
+          type: "object",
+          required: ["videoId"],
+          properties: {
+            videoId: { type: "string" },
+            partnerId: { type: "string" },
+            createPartner: {
+              type: "object",
+              properties: {
+                name: { type: "string" },
+                companyName: { type: "string" },
+                type: { type: "string", enum: ["contact", "invoice", "delivery", "other"] },
+                isMitra: { type: "boolean" },
+                website: { type: "string" },
+                notes: { type: "string" },
+              },
+            },
+          },
+        },
+      },
+      preHandler: [requireSession, requirePermission("users:manage"), requireTenant],
+    },
+    async (request, reply) => {
+      const body = request.body as {
+        videoId: string;
+        partnerId?: string;
+        createPartner?: {
+          name: string;
+          companyName?: string;
+          type?: "contact" | "invoice" | "delivery" | "other";
+          isMitra?: boolean;
+          website?: string;
+          notes?: string;
+        };
+      };
+
+      const isDbUp = await dbAvailable();
+      if (!isDbUp) {
+        return reply.status(503).send({ ok: false, message: "Database tidak tersedia untuk pencatatan Partner." });
+      }
+
+      try {
+        const itemRow = await YoutubeSentinelItemModel.query().where({ video_id: body.videoId }).first();
+        if (!itemRow) return reply.status(404).send({ ok: false, message: "Video Sentinel tidak ditemukan." });
+        let targetPartnerId = body.partnerId;
+
+        // Create new Partner if requested
+        if (!targetPartnerId && body.createPartner) {
+          const newPartner = await PartnerModel.query().insert({
+            tenantId: request.tenantId!,
+            name: body.createPartner.name,
+            companyName: body.createPartner.companyName ?? null,
+            type: body.createPartner.type ?? "contact",
+            isCompany: Boolean(body.createPartner.companyName),
+            website: body.createPartner.website ?? null,
+            notes: body.createPartner.notes ?? null,
+            metadata: {
+              isMitra: body.createPartner.isMitra ?? true,
+              source: "youtube_sentinel",
+              associatedVideoId: body.videoId,
+            },
+          });
+          targetPartnerId = newPartner.id;
+        }
+
+        if (!targetPartnerId) {
+          return reply.status(400).send({ ok: false, message: "partnerId atau createPartner harus disediakan." });
+        }
+
+        // Store the association per tenant; Sentinel observations remain global.
+        const partner = await PartnerModel.query().where({ id: targetPartnerId, tenant_id: request.tenantId! }).first();
+        if (!partner) return reply.status(404).send({ ok: false, message: "Partner tidak ditemukan di tenant aktif." });
+        const link = await YoutubeSentinelPartnerLinkModel.query().where({ tenant_id: request.tenantId!, item_id: itemRow.id }).first();
+        if (link) await (link.$query() as any).patch({ partnerId: targetPartnerId, createdBy: request.authUser!.id });
+        else await (YoutubeSentinelPartnerLinkModel.query() as any).insert({ tenantId: request.tenantId!, itemId: itemRow.id, partnerId: targetPartnerId, createdBy: request.authUser!.id });
+
+        return {
+          ok: true,
+          message: `Berhasil menautkan kanal ke Partner "${partner?.name ?? targetPartnerId}".`,
+          partnerId: targetPartnerId,
+          partner,
+        };
+      } catch (err) {
+        return reply.status(500).send({
+          ok: false,
+          message: `Gagal menautkan ke Partner: ${(err as Error).message}`,
+        });
+      }
+    },
+  );
+}
