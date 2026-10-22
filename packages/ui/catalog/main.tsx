@@ -1,8 +1,8 @@
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { BrandConcepts } from "../src/brand/BrandConcepts";
-import { ActionGroup, ActionLink, AuthLayout, Badge, BrandLockup, Button, buttonClassName, Card, Checkbox, ConfirmDialog, Container, DataTable, DecisionSummary, Disclosure, EmptyState, EntityCard, ErrorState, EventList, Field, FieldError, FieldLabel, FilterBar, FormSection, Grid, Heading, HelpText, Icon, IconButton, IconText, iconGroups, Inline, LiveRegion, Metadata, NavGroup, NavItem, LoadingState, ListDetail, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MangaTelemetryHero, MetricGrid, Notice, Panel, Pagination, ReadinessList, RegionSummary, ResourceState, ReviewActions, SectionHeading, SelectField, Skeleton, Stack, StatusIndicator, Tabs, TextArea, Text, TextField, ThemeControl, Timeline } from "../src";
-import "../src/ui.css";
+import { ActionGroup, ActionLink, AuthLayout, Badge, BrandLockup, Button, buttonClassName, Card, Checkbox, ConfirmDialog, Container, DataTable, DecisionSummary, Disclosure, EmptyState, EntityCard, ErrorState, EventList, Field, FieldError, FieldLabel, FilterBar, FormSection, Grid, Heading, HelpText, Icon, IconButton, IconText, iconGroups, IdentityCardGroup, Inline, LiveRegion, Metadata, NavGroup, NavItem, LoadingState, ListDetail, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MangaTelemetryHero, MetricGrid, Notice, Panel, Pagination, PortalDomainCard, ReadinessList, RegionSummary, ResourceState, ReviewActions, SectionHeading, SelectField, Skeleton, Stack, StatusIndicator, Tabs, TextArea, Text, TextField, ThemeControl, Timeline } from "../src";
+import "../src/portal.css";
 import "./catalog.css";
 
 function Catalog() {
@@ -459,6 +459,8 @@ function Catalog() {
         <Card className="catalog-card"><Stack gap="2"><Heading as="h3">Typography and layout</Heading><Text>Shared text keeps semantic copy readable while layout primitives preserve spacing ownership.</Text><Metadata>Fixture metadata · no API request</Metadata><Grid minItemWidth="sm"><Inline gap="2"><Badge tone="info">Grid</Badge><Badge tone="success">Inline</Badge></Inline><ActionGroup><ActionLink href="#exports-heading">Action link</ActionLink><IconButton aria-label="Preview icon action"><Icon name="search" size={16}/></IconButton></ActionGroup></Grid></Stack></Card>
         <Card className="catalog-card"><NavGroup label="Navigation fixture"><NavItem current icon={<Icon name="home" size={16}/>}>Current view</NavItem><NavItem disabled icon={<Icon name="lock" size={16}/>}>Unavailable view</NavItem></NavGroup><Field label="Composed field" hint="Native control remains app-controlled" control={<TextField defaultValue="Fixture value" />} /><Checkbox label="Fixture checkbox" defaultChecked /><LiveRegion>Catalog actions are local-only.</LiveRegion></Card>
         <AuthLayout brandName="A-L-L-A-H" brandDescriptor="CATALOG FIXTURE" title="Auth layout preview" description="Static composition only." className="catalog-auth-preview"><Button variant="secondary">Continue</Button></AuthLayout>
+        <IdentityCardGroup items={[{ id: "fixture-hub", featured: true, label: "FIXTURE HUB", title: "A-L-L-A-H", description: "Static identity card sample." }, { id: "fixture-operator", label: "OPERATOR SPACE", title: "100CENTER", description: "A supporting identity card." }]} />
+        <div className="frontier-grid"><PortalDomainCard id="fixture-knowledge" index="05" accent="blue" icon="knowledge" status="METADATA" statusTone="info" descriptor="KNOWLEDGE & SOURCES" title="UNIVERSAL COSMOS" summary="Fabricated catalog summary for the domain-card presentation." action={<a className="card-link" href="#exports-heading">Open fixture details</a>} /></div>
       </section>
 
       <footer className="catalog-footer">

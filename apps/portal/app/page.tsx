@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Badge, buttonClassName, Icon, IconText, IdentityCardGroup, MangaEffect, MetricGrid, Panel, PortalOrbitHero, SectionHeading } from "@empire/ui";
+import { buttonClassName, Icon, IconText, IdentityCardGroup, MangaEffect, MetricGrid, Panel, PortalDomainCard, PortalOrbitHero, SectionHeading } from "@empire/ui";
 import { Explorer } from "../components/Explorer";
 import { getPortalLanguage } from "../lib/i18n";
 
@@ -35,6 +35,8 @@ const flow = [
   { n: "03", title: "100CENTER", text: "Orang yang berwenang meninjau bukti, kesiapan, dan mandat." },
   { n: "04", title: "Aksi", text: "Keputusan dijalankan manusia, dicatat, dan dapat ditinjau kembali." },
 ];
+
+const domainIcons = { arsy: "agent", heliogrid: "activity", qrealm: "spark", forge: "modules", knowledge: "knowledge", ziil: "approval" } as const;
 
 export default async function Home() {
   const language = await getPortalLanguage();
@@ -122,11 +124,19 @@ export default async function Home() {
 
     <section className="section section-alt" id="ekosistem"><div className="eol-container">
       <SectionHeading layout="section" eyebrowClassName="eyebrow" eyebrow={<>02 / {en?"TECHNOLOGY IN ONE ECOSYSTEM":"TEKNOLOGI DALAM SATU EKOSISTEM"}</>} title={en?<>EVERY SYSTEM HAS A <em>ROLE.</em></>:<>SETIAP SISTEM PUNYA <em>PERAN.</em></>} aside={<Link className="text-link" href="/systems"><IconText icon="arrowUpRight">{en?"Open the full system atlas":"Buka atlas sistem lengkap"}</IconText></Link>} />
-      <div className="frontier-grid">{systems.map((s) => <MangaEffect as="article" panel interactive className={`frontier-card theme-${s.color}`} id={s.id} key={s.id}>
-        <div className="frontier-top"><span className="card-index">/ {s.index}</span><Badge className="stage-pill" tone={s.tag === "RISET" || s.tag === "RESEARCH" ? "warning" : s.tag === "FONDASI" || s.tag === "FOUNDATION" ? "success" : "info"}>{s.tag}</Badge></div>
-        <div className="frontier-graphic" aria-hidden="true"><span className="shape-a"/><span className="shape-b"/><span className="shape-c"/></div>
-        <div className="frontier-content"><p className="panel-label">{s.descriptor}</p><h3>{s.name}</h3><p>{s.summary}</p><Link href={`/systems#${s.id}`} className="card-link"><IconText icon="arrowUpRight">{en?`Explore ${s.name}`:`Pelajari peran ${s.name}`}</IconText></Link></div>
-      </MangaEffect>)}</div>
+      <div className="frontier-grid">{systems.map((s) => <PortalDomainCard
+        key={s.id}
+        id={s.id}
+        index={s.index}
+        accent={s.color as "amber" | "violet" | "rose" | "mint" | "blue" | "gold"}
+        icon={domainIcons[s.id as keyof typeof domainIcons]}
+        status={s.tag}
+        statusTone={s.tag === "RISET" || s.tag === "RESEARCH" ? "warning" : s.tag === "FONDASI" || s.tag === "FOUNDATION" ? "success" : "info"}
+        descriptor={s.descriptor}
+        title={s.name}
+        summary={s.summary}
+        action={<Link href={`/systems#${s.id}`} className="card-link"><IconText icon="arrowUpRight">{en ? `Explore ${s.name}` : `Pelajari peran ${s.name}`}</IconText></Link>}
+      />)}</div>
     </div></section>
 
     <section className="section eol-container" id="arsitektur">

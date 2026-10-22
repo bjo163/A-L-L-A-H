@@ -85,6 +85,7 @@ The centralization blueprint tracks the remaining migration and acceptance work.
 - **Theme:** render `ThemeBootstrap` in the document head to apply the stored `eol-theme` before first paint; use `ThemeControl` for the persistent light/dark switch. It falls back to the configured default when storage is unavailable, while the consumer supplies localized labels and icons.
 - **Portal hero:** use `PortalOrbitHero` for the shared editorial hierarchy, orbital illustration, four positioned satellites, and sound-effect treatment. The Portal supplies bilingual copy, destination links, and accessible illustration summary.
 - **Identity band:** use `IdentityCardGroup` for one featured identity plus supporting cards; supply labels, descriptions, and route actions from the product layer.
+- **Portal domain cards:** use `PortalDomainCard` with a typed accent, vector icon, visible maturity badge, and app-provided action. Keep maturity-to-tone mapping and domain content at the consumer boundary.
 - **Operational list:** `FilterBar` → `DataTable`/`EventList`/`ListDetail` → `Pagination` → explicit `EmptyState` or `ErrorState`. Do not rebuild table headers, disclosure, or pagination semantics in product CSS.
 - **Review workflow:** `FormSection` → shared native fields → `ReviewActions` → `ConfirmDialog` for consequential actions. Keep server authorization and workflow transitions in the app.
 - **Map surface:** `MapFrame` → vendor map runtime owned by the app → `MapLegend`/`RegionSummary`; load the MapLibre adapter only in the Command Center product entry.
