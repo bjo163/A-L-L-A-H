@@ -76,6 +76,9 @@ for (const file of files) {
     if (/\.css(?:\?.*)?$/i.test(specifier) && specifier !== "@empire/ui/ui.css") {
       nonCanonicalStylesheetImports.push(`${consumer} imports non-canonical stylesheet ${specifier}; import @empire/ui/ui.css only from the root layout`);
     }
+    if (/^@empire\/ui\/ui\.css$/.test(specifier) && consumer !== `${app}/app/layout.tsx`) {
+      nonCanonicalStylesheetImports.push(`${consumer} must not import @empire/ui/ui.css; import it only from ${app}/app/layout.tsx`);
+    }
     if (!/^@empire\/ui\/ui\.css$/.test(specifier)) continue;
     const imports = stylesheetImports.get(app);
     imports.set(specifier, (imports.get(specifier) ?? 0) + 1);
