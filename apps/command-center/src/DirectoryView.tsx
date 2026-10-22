@@ -30,7 +30,7 @@ export function DirectoryView({ users, visibleUsers }: { users: readonly Directo
       ]} />
     </section>
     <section>
-      <SectionHeading className="section-head" eyebrowClassName="eyebrow" eyebrow="IDENTITY · RBAC" title="Provisioned entities" aside={<span className="muted">Directory is read only</span>} />
+      <SectionHeading layout="compact" eyebrow="IDENTITY · RBAC" title="Provisioned entities" aside={<span className="muted">Directory is read only</span>} />
       <DataTable
         caption="Provisioned entities"
         responsiveLabel="Scrollable entity directory"

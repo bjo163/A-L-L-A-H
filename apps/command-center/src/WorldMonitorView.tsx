@@ -73,7 +73,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
 
       {/* ── Globe Map ─────────────────────────────────────────────────────────── */}
       <section className="world-map-section">
-        <SectionHeading className="section-head" eyebrowClassName="eyebrow" eyebrow="GEOSPATIAL OVERLAY" title="Regional Reference Locations" aside={<div className="button-row world-map-actions">
+        <SectionHeading layout="compact" eyebrow="GEOSPATIAL OVERLAY" title="Regional Reference Locations" aside={<div className="button-row world-map-actions">
             {nextRefreshIn !== undefined && (
               <span className="muted world-map-countdown">
                 <Icon name="refresh" size={12} /> Auto in {nextRefreshIn}s
@@ -113,7 +113,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
 
       {/* ── Global Metrics ───────────────────────────────────────────────────── */}
       <section>
-        <SectionHeading className="section-head" title="Global System Metrics" />
+        <SectionHeading layout="compact" title="Global System Metrics" />
         <MetricGrid columns={4} density="compact" items={[
           { label: "API / database status", value: snapshot.status.toUpperCase(), tone: systemState === "ok" ? "success" : systemState === "unavailable" ? "neutral" : "warning" },
           { label: "Verified regional nodes", value: snapshot.totalMonitoredNodes },
@@ -124,7 +124,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
 
       {/* ── Regional Nodes ───────────────────────────────────────────────────── */}
       <section>
-        <SectionHeading className="section-head" eyebrowClassName="eyebrow" eyebrow="DISTRIBUTED TOPOLOGY" title={<>Regional Reference Locations <span className="count-chip">{visibleRegions.length}</span></>} aside={<span className="muted">Reference locations; live regional data unavailable</span>} />
+        <SectionHeading layout="compact" eyebrow="DISTRIBUTED TOPOLOGY" title={<>Regional Reference Locations <span className="count-chip">{visibleRegions.length}</span></>} aside={<span className="muted">Reference locations; live regional data unavailable</span>} />
         <div className="agent-grid">
           {visibleRegions.map((region) => (
             <RegionSelectCard
@@ -152,7 +152,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
 
       {/* ── DNA Sensor Matrix ────────────────────────────────────────────────── */}
       <section>
-        <SectionHeading className="section-head" eyebrowClassName="eyebrow" eyebrow="CATALOG MAPPINGS" title={<>Batteries DNA Catalog Mappings <span className="count-chip">{visibleSensors.length}</span></>} aside={<Badge tone="info">Source: @empire/batteries-dna</Badge>} />
+        <SectionHeading layout="compact" eyebrow="CATALOG MAPPINGS" title={<>Batteries DNA Catalog Mappings <span className="count-chip">{visibleSensors.length}</span></>} aside={<Badge tone="info">Source: @empire/batteries-dna</Badge>} />
         <div className="knowledge-grid">
           {visibleSensors.map((sensor) => (
             <SensorDisclosure
@@ -184,7 +184,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
 
       {/* ── Live Feed ────────────────────────────────────────────────────────── */}
       <section>
-        <SectionHeading className="section-head" eyebrowClassName="eyebrow" eyebrow="SITUATIONAL INTELLIGENCE" title="Telemetry & Event Feed" aside={snapshot.telemetryFeeds.length > 0 ? (
+        <SectionHeading layout="compact" eyebrow="SITUATIONAL INTELLIGENCE" title="Telemetry & Event Feed" aside={snapshot.telemetryFeeds.length > 0 ? (
             <div className="button-row">
               {["ALL", "physical", "heliogrid", "cyber", "environmental"].map((cat) => (
                 <Button
