@@ -127,6 +127,7 @@ function Catalog() {
           <p className="catalog-preview-frame-label" aria-live="polite">{viewport} × 900 px · {theme} · {density} · {language.toUpperCase()}</p>
           <iframe key={previewUrl} className="catalog-preview-frame" title={`Responsive package preview at ${viewport} pixels`} src={previewUrl} style={{ width: `${viewport}px` }} />
         </div>
+        <p className="catalog-caption">Command Center shell: <a href="/workspace-preview.html" target="_blank" rel="noreferrer">open the responsive workspace fixture</a>.</p>
       </section>
 
       <section className="catalog-section" aria-labelledby="brand-concepts-heading">

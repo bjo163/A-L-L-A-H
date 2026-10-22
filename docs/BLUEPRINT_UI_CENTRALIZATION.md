@@ -395,12 +395,12 @@ Owner: UI maintainer + accessibility reviewer. Dependensi: C05–C07. Gate: stat
 Owner: UI maintainer + app maintainers. Dependensi: C02–C03, C07–C08. Gate: shell konsisten dan seluruh aksi dapat dijangkau.
 
 - [ ] **UI-C09-01** — Bangun BrandHeader dan PublicShell dengan slot navigasi/footer.
-- [ ] **UI-C09-02** — Bangun WorkspaceShell dengan expanded/collapsed/mobile navigation.
+- [x] **UI-C09-02** — Bangun WorkspaceShell dengan expanded/collapsed/mobile navigation. Shell package menyediakan disclosure menu mobile, nav slot permission-filtered, header slot, landmark utama dan CSS breakpoint; fixture shell khusus memakai stylesheet Command Center.
 - [x] **UI-C09-03** — Bangun NavItem/NavGroup dengan current, disabled dan badge count.
-- [ ] **UI-C09-04** — Terima daftar navigasi hasil permission filtering dari app.
+- [x] **UI-C09-04** — Terima daftar navigasi hasil permission filtering dari app. `WorkspaceShell` menerima node navigasi dari consumer; Command Center memasok item setelah `pageAllowed` memeriksa permission.
 - [x] **UI-C09-05** — Bangun Breadcrumbs dan SkipLink dengan landmark target yang sah.
 - [ ] **UI-C09-06** — Tetapkan focus management setelah view berubah dan judul diperbarui.
-- [ ] **UI-C09-07** — Pastikan mobile menu dapat ditutup dan fokus kembali sesuai jenis menunya.
+- [x] **UI-C09-07** — Pastikan mobile menu dapat ditutup dan fokus kembali sesuai jenis menunya. Pilihan nav dan Escape menutup disclosure WorkspaceShell serta mengembalikan fokus ke toggle berlabel.
 - [ ] **UI-C09-08** — Pertahankan logout dan identitas operator dapat dijangkau di mobile.
 - [x] **UI-C09-09** — Buat ThemeControl dan language control presentation dengan state pending yang selesai.
 - [ ] **UI-C09-10** — Tetapkan sticky-header offset dan anchor focus antarhalaman.
@@ -842,3 +842,5 @@ Pembaruan token layout/typography: offset anchor target kini memiliki token umum
 Pembaruan migrasi YouTube Sentinel metrics: ringkasan enam status mengganti enam Panel/manual grid dan literal warna dengan MetricGrid kolom 6, density compact, dan semantic tones; packages/ui kini memiliki satu aturan responsif untuk row tersebut. Selector .metrics/.world-metrics dan aturan mobile yang tidak lagi memiliki consumer dihapus, sementara timeline/status .active serta CSS tabel/scheduler Sentinel dipertahankan. Command Center typecheck dan production build lulus; UI-C13-17 tetap terbuka karena stylesheet lokal Sentinel lainnya belum seluruhnya dimigrasikan. Tanggal: 2026-10-22.
 
 Pembaruan WorkspaceShell: shell Command Center sekarang dirakit melalui WorkspaceShell package, yang memiliki grid root, skip link, slot permission-filtered navigation, slot operational header, dan landmark main fokusable. Consumer hanya memasok navigasi/sidebar, topbar, konten, serta perilaku bisnis. README mencatat adapter contract. UI dan Command Center typecheck/build serta Portal build lulus; mobile collapse/expanded navigation visual acceptance dan catalog fixture belum diterima, jadi UI-C09-02 tetap terbuka. Tanggal: 2026-10-22.
+
+| UI-C09-02, UI-C09-04, UI-C09-07 | WorkspaceShell package owns the workspace landmark skeleton and mobile nav disclosure. Consumer supplies the permission-filtered nav node (Command Center uses pageAllowed), topbar, and content. At ≤760px the toggle exposes aria-expanded/aria-controls; Escape and selecting a link/button close the nav and restore focus to the toggle. A dedicated workspace-preview.html fixture imports the real @empire/ui/command-center.css and lets reviewers resize the page and operate local navigation. | pnpm --filter @empire/ui typecheck, pnpm --filter @empire/ui catalog:build, Command Center typecheck/build, and Portal build pass. Keyboard browser review and small-device visual acceptance remain in UI-C16-06/UI-C16-08/UI-C17-09. Tanggal: 2026-10-22. |
