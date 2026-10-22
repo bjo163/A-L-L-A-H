@@ -72,7 +72,7 @@ export type { MangaPageIntroProps } from "./patterns/MangaPageIntro";
 export { MangaLoadingState } from "./patterns/MangaLoadingState";
 export type { MangaLoadingStateProps } from "./patterns/MangaLoadingState";
 export { MangaOrbit } from "./patterns/MangaOrbit";
-export type { MangaOrbitProps, MangaOrbitVariant } from "./patterns/MangaOrbit";
+export type { MangaOrbitProps } from "./patterns/MangaOrbit";
 export { MangaTelemetryHero } from "./patterns/MangaTelemetryHero";
 export type { MangaTelemetryHeroProps } from "./patterns/MangaTelemetryHero";
 export { PortalOrbitHero } from "./patterns/PortalOrbitHero";

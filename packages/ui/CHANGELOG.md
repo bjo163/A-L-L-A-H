@@ -8,6 +8,10 @@
 - `AuthLayout`, `NavItem`, `NavGroup`, `DataTable`, `EventList`, `Pagination`, `Disclosure`, `ListDetail`, and review pattern exports.
 - Shared vector icon registry, `LogoMark`, `BrandLockup`, theme tokens, map aliases, and catalog fixtures.
 
+### Changed
+
+- Decorative `MangaOrbit` rings are static to avoid perpetual animation of artwork that conveys no changing state; the no-longer-meaningful ring `variant` prop was removed. `MangaEffect.spin` was removed because its pseudo-element had no generated content and never produced a visible effect. Loading and active-state indicators retain their motion. Consumers should remove the obsolete props; neither changed the visible result after this cleanup.
+
 ### Consumer migration notes
 
 - Portal keeps Next.js routing and language/theme persistence in app code; use router-neutral package patterns and `buttonClassName` for links.

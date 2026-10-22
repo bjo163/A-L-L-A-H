@@ -31,8 +31,8 @@ Run `pnpm audit:ui-css` to find repeated identical property declarations within 
 - `Container` for shared reading, content, and workspace widths with responsive gutters.
 - `PageIntro`, `SectionHeading`, and `MetricGrid` for consistent page composition and both editorial and operational metric presentations.
 - `MetricGrid` accepts 2–6 columns and label, value, detail, tone, and freshness; apps own business-state mapping and freshness copy. Five/six-column grids collapse to three, two, then one column at shared breakpoints.
-- `MangaEffect` for reusable manga panel, screentone, speed-line, spin, reveal, and hover treatments.
-- `MangaOrbit` for decorative orbit rings with the shared glow motion.
+- `MangaEffect` for reusable manga panel, screentone, speed-line, reveal, and hover treatments.
+- `MangaOrbit` for static decorative orbit rings.
 - `MangaPageIntro` for page headings with the shared manga frame and optional SFX lettering.
 - `MangaTelemetryHero` for a shared status hero with a manga orbit, speed lines, and SFX lettering.
 - `MangaSfx` for decorative, screen-reader-hidden manga onomatopoeia.
@@ -67,11 +67,11 @@ Run `pnpm audit:ui-css` to find repeated identical property declarations within 
 | Container | `as` semantic element; `reading`, `content`, or `workspace` width | Applies the shared max-width and responsive gutter tokens. Content and workflow remain in the app. |
 | SectionHeading | Required title; optional eyebrow, aside, heading level, `section` or `compact` layout, and semantic class hooks | Shares heading anatomy and responsive stacking. The app supplies localized copy and actions. |
 | MetricGrid | `editorial` or `operational` profile; `comfortable` or `compact` density; 2–6 columns; items with label, value, detail, tone, and freshness | Uses one shared anatomy for Portal summary bands and Command Center operational metrics. The app supplies all domain meaning; the editorial profile keeps the value-first band while the operational profile uses label-first cards. |
-| MangaEffect | `as` semantic element; optional `panel`, `interactive`, `action`, `row`, `speedLines`, `screentone`, `spin`, and `reveal` flags; element attributes | Composes named manga treatments and transitions from the shared stylesheet. Applications supply content and layout-specific classes. `interactive` includes the common panel treatment. |
+| MangaEffect | `as` semantic element; optional `panel`, `interactive`, `action`, `row`, `speedLines`, `screentone`, and `reveal` flags; element attributes | Composes named manga treatments and transitions from the shared stylesheet. Decorative orbit rings are static; motion is reserved for loading, progress, and active feedback. Applications supply content and layout-specific classes. `interactive` includes the common panel treatment. |
 | MangaPageIntro | `PageIntro` content props plus optional `sfx` and `sfxClassName` | Uses the shared angular panel, halftone accent, and reveal treatment; optional SFX lettering stays decorative. Breadcrumbs, copy, and actions remain application content. |
 | MangaTelemetryHero | Required `eyebrow`, `title`, `pulse`, and `sfx`; optional `description`, `metadata`, and `className` | Provides one shared telemetry hero composition, including its orbit, manga panel, reveal motion, and decorative SFX. |
 | MangaSfx | Required `text`; optional `className` | Decorative manga onomatopoeia, hidden from assistive technology. It does not play audio. |
-| MangaOrbit | Span attributes, optional `className`, and `primary`, `secondary`, or `tertiary` variant | Renders a decorative ring with shared glow animation and staggered timing; hidden from assistive technology. |
+| MangaOrbit | Span attributes and optional `className` | Renders a static decorative ring; set geometry and placement in the owning package pattern. Hidden from assistive technology. |
 | MangaLoadingState | Required accessible `label`; optional `eyebrow`, `sfx`, and `className` | Announces a polite loading status and applies the same panel, speed-line, reveal, orbit, and shimmer treatments. |
 | Badge | `neutral`, `info`, `success`, `warning`, `danger`; span attributes | Displays a text label. Color must accompany a meaningful label; long unbroken text wraps instead of widening its container. |
 | Named icon components and `Icon` | Named components accept SVG props such as `size`, `className`, and `label`; generic `Icon` additionally requires a semantic `name` | Inline vector SVG using a 24 × 24 viewBox, `currentColor`, the shared stroke width and round joins. Icons are hidden from assistive technology unless `label` is supplied; icon-only controls still need an accessible name on the control. Use named components in app consumers to keep the registry out of their bundles. |

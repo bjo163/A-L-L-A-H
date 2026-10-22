@@ -34,11 +34,11 @@ export function PortalOrbitHero({
       <div className="hero-buttons">{actions}</div>
       <p className="hero-clarity"><span className="pulse-dot"/> {clarity}</p>
     </div>
-    <MangaEffect panel spin className="hero-visual" role="img" aria-label={visualLabel}>
+    <MangaEffect panel className="hero-visual" role="img" aria-label={visualLabel}>
       <div className="visual-stars" aria-hidden="true"/>
-      <MangaOrbit variant="primary" className="orbit orbit-one"/>
-      <MangaOrbit variant="secondary" className="orbit orbit-two"/>
-      <MangaOrbit variant="tertiary" className="orbit orbit-three"/>
+      <MangaOrbit className="orbit orbit-one"/>
+      <MangaOrbit className="orbit orbit-two"/>
+      <MangaOrbit className="orbit orbit-three"/>
       <div className="orbital-axis" aria-hidden="true"/><div className="core-halo" aria-hidden="true"/>
       <MangaSfx className="hero-sfx" text={soundEffect}/>
       <span className="hero-stamp" aria-hidden="true">{stamp}</span>

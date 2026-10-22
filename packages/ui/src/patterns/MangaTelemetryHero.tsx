@@ -35,8 +35,8 @@ export function MangaTelemetryHero({
       <MangaSfx text={sfx} className="eol-manga-telemetry-hero__sfx" />
       <div className="eol-manga-telemetry-hero__orbit">
         <span>{pulse}</span>
-        <MangaOrbit variant="primary" className="eol-manga-telemetry-hero__ring eol-manga-telemetry-hero__ring--inner" />
-        <MangaOrbit variant="secondary" className="eol-manga-telemetry-hero__ring eol-manga-telemetry-hero__ring--outer" />
+        <MangaOrbit className="eol-manga-telemetry-hero__ring eol-manga-telemetry-hero__ring--inner" />
+        <MangaOrbit className="eol-manga-telemetry-hero__ring eol-manga-telemetry-hero__ring--outer" />
         <i />
         <b />
       </div>
