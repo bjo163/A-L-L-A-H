@@ -20,23 +20,33 @@ if ((catalogEntry.match(/\.\.\/src\/(?:portal|command-center)\.css/g) ?? []).len
 }
 const files = [];
 const packageStyles = [];
+const appVectorAssets = [];
 function walk(path) {
   if (!existsSync(path)) return;
   for (const entry of readdirSync(path)) {
     if (["node_modules", ".next", "dist", ".turbo"].includes(entry)) continue;
     const full = join(path, entry);
     if (statSync(full).isDirectory()) walk(full);
-    else if (/\.(tsx?|jsx?|css|scss)$/.test(entry)) files.push(full);
+    else if (/\.svg$/i.test(entry)) appVectorAssets.push(full);
+    else if (/\.(tsx?|jsx?|css|scss|html)$/.test(entry)) files.push(full);
   }
 }
 for (const app of appRoots) walk(join(root, app));
 const appStyles = files.filter((file) => /\.(css|scss)$/.test(file));
 if (appStyles.length) throw new Error(`Consumer stylesheet found: ${appStyles.map((file) => relative(root, file)).join(", ")}`);
+if (appVectorAssets.length) throw new Error(`Consumer SVG asset master found: ${appVectorAssets.map((file) => relative(root, file)).join(", ")}`);
+const parallelVisualSources = [];
+const inlineSvgPattern = /<\s*svg\b/i;
+const embeddedStylePattern = /<\s*style\b/i;
+const literalColorPattern = /#(?:[\da-f]{3}|[\da-f]{4}|[\da-f]{6}|[\da-f]{8})\b|\b(?:rgb|rgba|hsl|hsla)\s*\(|(?:linear|radial|conic)-gradient\s*\(/i;
 const stylesheetImports = new Map([...requiredStylesheetEntries.keys()].map((app) => [app, new Map()]));
 for (const file of files) {
   const source = readFileSync(file, "utf8");
   if (forbidden.some((pattern) => pattern.test(source))) throw new Error(`Forbidden UI boundary import in ${relative(root, file)}`);
   const consumer = relative(root, file).replaceAll("\\", "/");
+  if (inlineSvgPattern.test(source)) parallelVisualSources.push(`${consumer}: inline SVG source`);
+  if (embeddedStylePattern.test(source)) parallelVisualSources.push(`${consumer}: embedded style block`);
+  if (literalColorPattern.test(source)) parallelVisualSources.push(`${consumer}: literal palette/gradient value`);
   const app = [...requiredStylesheetEntries.keys()].find((candidate) => consumer.startsWith(`${candidate}/`));
   if (!app) continue;
   const sourceFile = ts.createSourceFile(file, source, ts.ScriptTarget.Latest, true, file.endsWith(".tsx") ? ts.ScriptKind.TSX : ts.ScriptKind.TS);
@@ -48,6 +58,7 @@ for (const file of files) {
     imports.set(specifier, (imports.get(specifier) ?? 0) + 1);
   }
 }
+if (parallelVisualSources.length) throw new Error(`Consumer visual source must stay in @empire/ui:\n- ${parallelVisualSources.join("\n- ")}`);
 const stylesheetErrors = [];
 for (const [app, required] of requiredStylesheetEntries) {
   const imports = stylesheetImports.get(app);
