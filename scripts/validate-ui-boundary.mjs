@@ -46,17 +46,19 @@ const requiredProductStyles = [
 ];
 const sharedImportErrors = [];
 const sharedImportCounts = new Map();
+const sharedImportPositions = new Map();
 for (const match of sharedEntrySource.matchAll(/^\s*@import\s+(?:url\()?["']([^"']+)["']\)?\s*;/gm)) {
   const specifier = match[1];
   if (requiredProductStyles.includes(specifier)) {
     sharedImportCounts.set(specifier, (sharedImportCounts.get(specifier) ?? 0) + 1);
+    if (!sharedImportPositions.has(specifier)) sharedImportPositions.set(specifier, match.index);
   }
 }
 for (const specifier of requiredProductStyles) {
   const count = sharedImportCounts.get(specifier) ?? 0;
   if (count !== 1) sharedImportErrors.push(`packages/ui/src/ui.css must import ${specifier} exactly once (found ${count})`);
 }
-const sharedProductOrder = requiredProductStyles.map((specifier) => sharedEntrySource.indexOf(`"${specifier}"`));
+const sharedProductOrder = requiredProductStyles.map((specifier) => sharedImportPositions.get(specifier) ?? -1);
 if (sharedProductOrder.some((position) => position < 0) || sharedProductOrder.some((position, index) => index > 0 && position < sharedProductOrder[index - 1])) {
   sharedImportErrors.push("packages/ui/src/ui.css must preserve product cascade order: portal globals → Portal profile → Command Center profile");
 }
