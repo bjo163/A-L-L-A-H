@@ -142,13 +142,16 @@ function recordDeclarations(file, source, selector, body, bodyOffset, context, s
     if (colon <= 0) continue;
     const property = declaration.slice(0, colon).trim().toLowerCase();
     if (!/^--[\w-]+$|^-?[a-z][\w-]*$/i.test(property)) continue;
+    const value = declaration.slice(colon + 1).trim().replace(/\s+/g, " ");
     const line = lineAt(source, bodyOffset + part.start);
     for (const itemSelector of selectors) {
       const key = `${cssContext}\n${itemSelector}`;
       const byProperty = seen.get(key) ?? new Map();
-      const previous = byProperty.get(property);
-      if (previous) findings.push({ file, line, selector: itemSelector, context: cssContext, property, previousLine: previous.line });
-      else byProperty.set(property, { line });
+      const values = byProperty.get(property) ?? new Map();
+      const previous = values.get(value);
+      if (previous) findings.push({ file, line, selector: itemSelector, context: cssContext, property, value, previousLine: previous.line });
+      else values.set(value, { line });
+      byProperty.set(property, values);
       seen.set(key, byProperty);
     }
   }
@@ -189,7 +192,7 @@ for (const absolutePath of files) {
 if (findings.length) {
   console.error(`Found ${findings.length} repeated CSS declaration(s) in the same selector/context:`);
   for (const finding of findings) {
-    console.error(`- ${finding.file}:${finding.line} ${finding.selector} [${finding.context}] repeats ${finding.property} from line ${finding.previousLine}`);
+    console.error(`- ${finding.file}:${finding.line} ${finding.selector} [${finding.context}] repeats ${finding.property}: ${JSON.stringify(finding.value)} from line ${finding.previousLine}`);
   }
   process.exitCode = 1;
 } else {
