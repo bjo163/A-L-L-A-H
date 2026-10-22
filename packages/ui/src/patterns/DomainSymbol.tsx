@@ -33,7 +33,7 @@ export function DomainSymbol({ name, size = 24, className, ...props }: DomainSym
     stroke="currentColor"
     strokeLinecap="round"
     strokeLinejoin="round"
-    strokeWidth="1.8"
+    strokeWidth="var(--eol-icon-stroke)"
     viewBox="0 0 24 24"
     width={size}
     {...props}

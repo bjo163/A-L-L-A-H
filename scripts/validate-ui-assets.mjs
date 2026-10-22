@@ -34,13 +34,15 @@ const family = manifest.vectors.icons.strokeFamily;
 const expectedIconRoot = {
   viewBox: `viewBox="${family?.viewBox}"`,
   stroke: `stroke="${family?.stroke}"`,
-  strokeWidth: `strokeWidth="${family?.strokeWidth}"`,
+  strokeWidth: 'strokeWidth="var(--eol-icon-stroke)"',
   strokeLinecap: `strokeLinecap="${family?.strokeLinecap}"`,
   strokeLinejoin: `strokeLinejoin="${family?.strokeLinejoin}"`,
 };
 for (const [name, attribute] of Object.entries(expectedIconRoot)) {
   if (!family || !iconSvg.includes(attribute)) errors.push(`icon family ${family?.name ?? "(unnamed)"}: root SVG ${name} differs from the manifest contract`);
 }
+const iconStrokeToken = (await read("src/tokens.css")).match(/--eol-icon-stroke:\s*([\d.]+)\s*;/)?.[1];
+if (!iconStrokeToken || Number(iconStrokeToken) !== family?.strokeWidth) errors.push(`icon family ${family?.name ?? "(unnamed)"}: --eol-icon-stroke must match the asset manifest stroke width`);
 const pathRegistry = iconSource.match(/const paths:[\s\S]*?= \{([\s\S]*?)\n\};\n\ntype IconProps/)?.[1]
   ?? iconSource.match(/((?:function [A-Za-z]+Glyph\(\): ReactNode \{[\s\S]*?\}\n)+)\nconst glyphs:/)?.[1]
   ?? "";

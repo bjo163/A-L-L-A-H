@@ -161,7 +161,7 @@ function IconSvg({ glyph, size = 20, label, directional = false, ...props }: Ico
       stroke="currentColor"
       strokeLinecap="round"
       strokeLinejoin="round"
-      strokeWidth="1.8"
+      strokeWidth="var(--eol-icon-stroke)"
       viewBox="0 0 24 24"
       width={size}
       {...props}

@@ -176,7 +176,7 @@
   --eol-border-width: 1px;
   --eol-border-width-strong: 2px;
   --eol-border-width-notice: 3px;
-  --eol-icon-stroke: 1.75;
+  --eol-icon-stroke: 1.8;
   --eol-elevation-panel: 0 8px 24px var(--eol-palette-shadow-ink-1);
   --eol-elevation-popover: 0 12px 32px var(--eol-palette-shadow-ink-2);
   --eol-elevation-dialog: 0 20px 48px var(--eol-palette-shadow-ink-3);
