@@ -1,6 +1,6 @@
 import type { FormEventHandler } from "react";
 import type { ResearchRun, createApiClient } from "@empire/api-contract";
-import { Button, EmptyState, ErrorState, FieldLabel, LoadingState, SelectField, TextArea, TextField } from "@empire/ui";
+import { Button, EmptyState, ErrorState, FieldLabel, LoadingState, SectionHeading, SelectField, TextArea, TextField } from "@empire/ui";
 import { ResearchCard, type ResearchConfirmationRequest } from "./ResearchCard";
 
 export type ResearchDraft = { title: string; question: string; scope: ResearchRun["scope"] };
@@ -33,7 +33,7 @@ export function ResearchView({ draft, runs, busy, loading, error, searching, can
       <Button type="submit" disabled={busy}>Kirim untuk persetujuan</Button>
     </form></section>}
     <section>
-      <div className="section-head"><h2>Daftar research run</h2><Button variant="secondary" disabled={loading} onClick={onRefresh}>Muat ulang</Button></div>
+      <SectionHeading layout="compact" title="Daftar research run" aside={<Button variant="secondary" disabled={loading} onClick={onRefresh}>Muat ulang</Button>} />
       {runs.length > 0 ? <div className="research-list">{runs.map((run) => <ResearchCard key={run.id} run={run} canApprove={canApprove} canWrite={canWrite} client={client} busy={busy} onAction={onAction} onConfirmAction={onConfirmAction} refreshKey={refreshKey} />)}</div>
         : loading ? <LoadingState label="Memuat daftar riset…" />
           : error ? <ErrorState role="region" title="Daftar riset tidak tersedia" description="Muat ulang daftar untuk mencoba kembali." action={<Button variant="secondary" onClick={onRefresh}>Coba lagi</Button>} />

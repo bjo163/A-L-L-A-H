@@ -1,4 +1,4 @@
-import { Badge, Disclosure, EmptyState, Icon } from "@empire/ui";
+import { Badge, Disclosure, EmptyState, Icon, SectionHeading } from "@empire/ui";
 
 export type KnowledgeEntry = {
   id: string;
@@ -20,7 +20,7 @@ type KnowledgeViewProps = {
 export function KnowledgeView({ entries }: KnowledgeViewProps) {
   return <>
     <section>
-      <div className="section-head"><div><span className="eyebrow">SOURCE INDEX</span><h2>Asma mappings <span className="count-chip">{entries.length}</span></h2></div><Badge tone="warning">DRAFT REVIEW</Badge></div>
+      <SectionHeading layout="compact" eyebrow="SOURCE INDEX" title={<>Asma mappings <span className="count-chip">{entries.length}</span></>} aside={<Badge tone="warning">DRAFT REVIEW</Badge>} />
       <div className="knowledge-grid">
         {entries.map((entry) => <Disclosure className="knowledge-card" key={entry.id} summary={<>
           <span className="knowledge-symbol" lang={entry.arabic ? "ar" : undefined} dir={entry.arabic ? "rtl" : undefined}>{entry.arabic || <Icon name="knowledge" size={20} />}</span>

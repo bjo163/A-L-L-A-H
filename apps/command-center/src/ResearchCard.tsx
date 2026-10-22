@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import type { FormEvent } from "react";
 import { API_PATHS, createApiClient } from "@empire/api-contract";
 import type { ResearchRun } from "@empire/api-contract";
-import { Badge, Button, FieldLabel, Notice, Panel, SelectField, TextArea, TextField } from "@empire/ui";
+import { Badge, Button, FieldLabel, Notice, Panel, SectionHeading, SelectField, TextArea, TextField } from "@empire/ui";
 import type { ConfirmDialogTone } from "@empire/ui";
 
 export type ResearchConfirmationRequest = {
@@ -61,7 +61,7 @@ export function ResearchCard({ run, client, busy, canApprove, canWrite, onAction
 
   return (
     <Panel manga as="article" className="research-card">
-      <div className="section-head"><div><h3>{run.title}</h3><small>{run.scope} · {run.id}</small></div><Badge tone={run.status === "completed" ? "success" : run.status === "rejected" ? "danger" : "warning"}>{run.status}</Badge></div>
+      <SectionHeading layout="compact" level={3} title={run.title} aside={<><small>{run.scope} · {run.id}</small><Badge tone={run.status === "completed" ? "success" : run.status === "rejected" ? "danger" : "warning"}>{run.status}</Badge></>} />
       <p>{run.question}</p>
       {detail?.resultSummary && <p><strong>Hasil:</strong> {detail.resultSummary}</p>}
       {detail?.approvals?.map((approval, index) => <p key={index} className="muted">Approval: {approval.decision}{approval.comments ? ` — ${approval.comments}` : ""}</p>)}

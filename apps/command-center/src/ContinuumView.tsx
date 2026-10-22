@@ -1,4 +1,4 @@
-import { Badge, Button, EmptyState, Icon, MetricGrid, Notice, Panel, TextField } from "@empire/ui";
+import { Badge, Button, EmptyState, Icon, MetricGrid, Notice, Panel, SectionHeading, TextField } from "@empire/ui";
 
 export type ContinuumAgent = {
   id: string;
@@ -33,7 +33,7 @@ export function ContinuumView({ agentCount, activeAgentCount, lexiconCount, agen
       ]} />
     </section>
     <section>
-      <div className="section-head"><div><span className="eyebrow">SERAPH REGISTRY</span><h2>Agent fleet</h2></div><Badge tone="info">Invocation is audit logged</Badge></div>
+      <SectionHeading layout="compact" eyebrow="SERAPH REGISTRY" title="Agent fleet" aside={<Badge tone="info">Invocation is audit logged</Badge>} />
       <div className="agent-grid">
         {agents.map((agent) => <Panel manga as="article" key={agent.id} className="agent-card">
           <div className="agent-head"><span className="agent-symbol"><Icon name="agent" size={18} /></span><Badge tone={agent.status === "active" ? "success" : "warning"}>{agent.status}</Badge></div>
