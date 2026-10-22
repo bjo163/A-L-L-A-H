@@ -174,7 +174,6 @@ function Catalog() {
       <section className="manga-showcase" aria-label="Manga visual effects preview">
         <MangaEffect as="article" panel screentone className="manga-panel manga-panel--hero">
           <span className="manga-panel__index">01 / THE BIG PICTURE</span>
-          <span className="manga-panel__screentone" aria-hidden="true" />
           <span className="manga-panel__burst" aria-hidden="true" />
           <p className="manga-panel__copy">A universe of ideas,<br /><strong>drawn together.</strong></p>
           <MangaSfx text="BAM!" className="manga-panel__sfx" />
@@ -182,7 +181,6 @@ function Catalog() {
         </MangaEffect>
         <MangaEffect as="article" panel speedLines className="manga-panel manga-panel--motion">
           <span className="manga-panel__index">02 / KEEP IT MOVING</span>
-          <span className="manga-panel__motion-lines" aria-hidden="true" />
           <MangaOrbit className="catalog-manga-orbit" />
           <div className="manga-speech">Clear tools.<br /><b>Big energy.</b><i aria-hidden="true" /></div>
           <MangaSfx text="WHOOSH" className="manga-panel__sfx manga-panel__sfx--small" />
