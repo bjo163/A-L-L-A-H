@@ -7,11 +7,12 @@ import { notifyNewWorldMonitorAlerts } from "./world-monitor-notifications";
 import { AuthLayout, Badge, Breadcrumbs, BrandLockup, Button, Checkbox, ConfirmDialog, DecisionSummary, EmptyState, ErrorState, EventList, FieldLabel, Icon, LoadingState, MangaEffect, MangaPageIntro, MangaTelemetryHero, MetricGrid, NavItem, Notice, Pagination, Panel, ReviewActions, FormSection, SearchField, SelectField, SkipLink, StatusIndicator, TextArea, TextField } from "@empire/ui";
 import type { ConfirmDialogTone, IconName } from "@empire/ui";
 import { WorldMonitorView } from "./WorldMonitorView";
-import { ResearchCard, type ResearchConfirmationRequest } from "./ResearchCard";
+import type { ResearchConfirmationRequest } from "./ResearchCard";
 import { DirectoryView, type DirectoryUser } from "./DirectoryView";
 import { ContinuumView, type ContinuumAgent } from "./ContinuumView";
 import { KnowledgeView, type KnowledgeEntry } from "./KnowledgeView";
 import { AuditView, type AuditEvent } from "./AuditView";
+import { ResearchView, type ResearchDraft } from "./ResearchView";
 
 type Signal = "checking" | "ok" | "degraded" | "unavailable";
 type Module = { id: string; title: string; version: string; state: string; enabled: boolean };
@@ -20,13 +21,12 @@ type Page = "overview" | "world" | "continuum" | "directory" | "knowledge" | "au
 const pageIcons: Record<Page, IconName> = { overview: "home", world: "globe", continuum: "agent", directory: "users", knowledge: "knowledge", audit: "audit", cab: "approval", research: "evidence" };
 type Chronicle = { id: string; action: string; entity: string; entityId?: string | null; payload?: Record<string, unknown> | null; createdAt: string; user?: { username?: string; displayName?: string } | null };
 type CreateRfc = { title: string; tier: CabRfc["tier"]; riskLevel: CabRfc["riskLevel"]; summary: string; justification: string; executionPlan: string; rollbackPlan: string; targetService: string; scheduledWindowStart: string; scheduledWindowEnd: string };
-type CreateRun = { title: string; question: string; scope: ResearchRun["scope"] };
 type ConfirmationRequest = ResearchConfirmationRequest;
 
 const api = createApiClient(import.meta.env.VITE_API_ORIGIN || "http://127.0.0.1:4000");
 const initialSnapshot: Snapshot = { health: "checking", readiness: "checking", modules: [], capabilities: [] };
 const initialRfc: CreateRfc = { title: "", tier: "standard", riskLevel: "moderate", summary: "", justification: "", executionPlan: "", rollbackPlan: "", targetService: "", scheduledWindowStart: "", scheduledWindowEnd: "" };
-const initialRun: CreateRun = { title: "", question: "", scope: "self" };
+const initialRun: ResearchDraft = { title: "", question: "", scope: "self" };
 const can = (entity: AuthEntity | null, permission: string) => Boolean(entity?.sovereign || entity?.permissions.includes("*") || entity?.permissions.includes(permission));
 const pageItems: Array<{ key: Page; label: string; title: string; workspaceTitle: string; description: string }> = [
   { key: "overview", label: "Overview", title: "Command overview", workspaceTitle: "Overview", description: "A live view of system health, governance queues, and operator activity." },
@@ -67,7 +67,7 @@ export function App() {
   const [auditPage, setAuditPage] = useState(1);
   const [directive, setDirective] = useState("Review current system status and report findings.");
   const [createRfc, setCreateRfc] = useState(initialRfc);
-  const [createRun, setCreateRun] = useState(initialRun);
+  const [createRun, setCreateRun] = useState<ResearchDraft>(initialRun);
   const [login, setLogin] = useState({ username: "", password: "" });
   const [rememberMe, setRememberMe] = useState(false);
   const [busy, setBusy] = useState(false);
@@ -363,10 +363,7 @@ export function App() {
             </ReviewActions>
           </>:<p className="muted">Pilih RFC untuk meninjau rincian dan tindakan yang diizinkan.</p>}</div></section>
       </>}
-      {tab==="research"&&<>
-        {can(entity,"research:write")&&<section><h2>Ajukan riset</h2><form className="form-grid form-card" onSubmit={createResearch}><FieldLabel>Judul<TextField required minLength={3} value={createRun.title} onChange={e=>setCreateRun({...createRun,title:e.target.value})}/></FieldLabel><FieldLabel>Pertanyaan riset<TextArea required minLength={10} value={createRun.question} onChange={e=>setCreateRun({...createRun,question:e.target.value})}/></FieldLabel><FieldLabel>Cakupan<SelectField value={createRun.scope} onChange={e=>setCreateRun({...createRun,scope:e.target.value as ResearchRun["scope"]})}><option value="self">Self</option><option value="community">Community</option><option value="global">Global</option></SelectField></FieldLabel><Button type="submit" disabled={busy}>Kirim untuk persetujuan</Button></form></section>}
-        <section><div className="section-head"><h2>Daftar research run</h2><Button variant="secondary" disabled={loading} onClick={()=>void refresh()}>Muat ulang</Button></div>{visibleRuns.length?<div className="research-list">{visibleRuns.map(run=><ResearchCard key={run.id} run={run} canApprove={can(entity,"research:approve")} canWrite={can(entity,"research:write")} client={client} busy={busy} onAction={perform} onConfirmAction={requestConfirmation} refreshKey={snapshot.checkedAt}/>)}</div>:loading?<LoadingState label="Memuat daftar riset…"/>:error?<ErrorState role="region" title="Daftar riset tidak tersedia" description="Muat ulang daftar untuk mencoba kembali." action={<Button variant="secondary" onClick={()=>void refresh()}>Coba lagi</Button>}/>:<EmptyState title={search?"No research runs match":"Belum ada riset"} description={search?"Try a different search term.":"Belum ada research run pada tenant ini."}/>}</section>
-      </>}
+      {tab==="research"&&<ResearchView draft={createRun} runs={visibleRuns} busy={busy} loading={loading} error={error} searching={Boolean(search)} canWrite={can(entity,"research:write")} canApprove={can(entity,"research:approve")} client={client} refreshKey={snapshot.checkedAt} onDraftChange={setCreateRun} onCreate={createResearch} onRefresh={()=>void refresh()} onAction={perform} onConfirmAction={requestConfirmation}/>}
       </div>
       <ConfirmDialog
         open={Boolean(confirmation)}
