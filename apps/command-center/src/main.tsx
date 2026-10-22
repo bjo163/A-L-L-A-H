@@ -1,12 +1,14 @@
 
 import React from "react";
 import {createRoot} from "react-dom/client";
+import { bootstrapTheme } from "@empire/ui";
 import { empireFaviconSvg } from "@empire/ui/brand-assets";
 import {App} from "./App";
 import "@empire/ui/ui.css";
 import "maplibre-gl/dist/maplibre-gl.css";
 import "@empire/ui/adapters/maplibre.css";
 import "@empire/ui/command-center.css";
+bootstrapTheme();
 const faviconLink = document.querySelector<HTMLLinkElement>('link[rel="icon"]') ?? document.createElement("link");
 faviconLink.rel = "icon";
 faviconLink.type = "image/svg+xml";

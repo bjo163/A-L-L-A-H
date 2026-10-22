@@ -138,7 +138,7 @@ export { WorkspaceShell } from "./patterns/WorkspaceShell";
 export type { WorkspaceShellProps } from "./patterns/WorkspaceShell";
 export { ResponsiveNavigation } from "./patterns/ResponsiveNavigation";
 export type { ResponsiveNavigationProps } from "./patterns/ResponsiveNavigation";
-export { ThemeBootstrap } from "./patterns/ThemeBootstrap";
+export { ThemeBootstrap, bootstrapTheme } from "./patterns/ThemeBootstrap";
 export type { ThemeBootstrapProps } from "./patterns/ThemeBootstrap";
 export { ThemeControl } from "./patterns/ThemeControl";
 export type { ThemeControlProps } from "./patterns/ThemeControl";

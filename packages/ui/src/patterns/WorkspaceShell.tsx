@@ -2,14 +2,16 @@
 
 import { useRef, useState, type MouseEvent, type ReactNode, type KeyboardEvent } from "react";
 import { Button } from "../primitives/Button";
-import { CloseIcon, MenuIcon } from "../primitives/Icon";
+import { CloseIcon, MenuIcon, MoonIcon, SunIcon } from "../primitives/Icon";
 import { classNames } from "../primitives/classNames";
 import { SkipLink } from "./Navigation";
+import { ThemeControl } from "./ThemeControl";
 import { focusNavigationHeading } from "./navigationFocus";
 
 export type WorkspaceShellProps = {
   navigation: ReactNode;
   header: ReactNode;
+  appearanceControl?: ReactNode;
   children: ReactNode;
   skipLabel?: ReactNode;
   menuLabel?: string;
@@ -20,8 +22,9 @@ export type WorkspaceShellProps = {
 
 /** Structural shell for authenticated workspaces; navigation, permissions, and workflows remain app supplied. */
 export function WorkspaceShell({
-  navigation, header, children, skipLabel = "Skip to main content", menuLabel = "Open navigation", closeLabel = "Close navigation", mainId = "main-content", className,
+  navigation, header, appearanceControl, children, skipLabel = "Skip to main content", menuLabel = "Open navigation", closeLabel = "Close navigation", mainId = "main-content", className,
 }: WorkspaceShellProps) {
+  const themeControl = appearanceControl ?? <ThemeControl label="Appearance theme" lightLabel="Light" darkLabel="Dark" lightIcon={<SunIcon size={15} />} darkIcon={<MoonIcon size={15} />} />;
   const [navigationOpen, setNavigationOpen] = useState(false);
   const toggleRef = useRef<HTMLButtonElement>(null);
   const mainRef = useRef<HTMLElement>(null);
@@ -64,7 +67,10 @@ export function WorkspaceShell({
       {navigation}
     </div>
     <main id={mainId} ref={mainRef} tabIndex={-1}>
-      {header}
+      <div className="eol-workspace-shell__header-frame">
+        {header}
+        <div className="eol-workspace-shell__appearance">{themeControl}</div>
+      </div>
       {children}
     </main>
   </div>;
