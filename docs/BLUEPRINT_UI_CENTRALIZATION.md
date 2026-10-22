@@ -508,17 +508,17 @@ Owner: accessibility reviewer + app maintainers. Dependensi: setiap slice C07–
 
 Owner: UI maintainer. Dependensi: berjalan bersama C02–C14. Gate: package dapat dipahami tanpa membaca source aplikasi.
 
-- [ ] **UI-C15-01** — Buat halaman foundations, tokens, theme dan density.
-- [ ] **UI-C15-02** — Buat galeri logo/lockup/favicons dan aturan brand.
-- [ ] **UI-C15-03** — Buat icon gallery dengan nama, usage dan ukuran optik.
+- [x] **UI-C15-01** — Buat halaman foundations, tokens, theme dan density.
+- [x] **UI-C15-02** — Buat galeri logo/lockup/favicons dan aturan brand.
+- [x] **UI-C15-03** — Buat icon gallery dengan nama, usage dan ukuran optik.
 - [ ] **UI-C15-04** — Beri setiap public export contoh, state dan consumer reference.
 - [ ] **UI-C15-05** — Tambahkan fixture TelemetryHero, shell, table, ListDetail dan map presentation.
 - [ ] **UI-C15-06** — Tambahkan fixture halaman Portal dan semua kategori view operasi.
 - [ ] **UI-C15-07** — Tambahkan kontrol theme/density/language/viewport untuk reproduksi review.
 - [ ] **UI-C15-08** — Dokumentasikan composition recipe dan contoh anti-pattern override lokal.
 - [ ] **UI-C15-09** — Dokumentasikan status stable/experimental/deprecated setiap API.
-- [ ] **UI-C15-10** — Simpan seluruh fixture sebagai data fiktif tanpa credential atau data tenant.
-- [ ] **UI-C15-11** — Perbarui README package, consumer map dan petunjuk asset generation.
+- [x] **UI-C15-10** — Simpan seluruh fixture sebagai data fiktif tanpa credential atau data tenant.
+- [x] **UI-C15-11** — Perbarui README package, consumer map dan petunjuk asset generation.
 - [ ] **UI-C15-12** — Hubungkan perubahan API dengan changelog, migration note dan bukti visual.
 
 ### C16 — Pemeriksaan otomatis dan performa
@@ -714,6 +714,11 @@ Status penerimaan + tanggal:
 | UI-C13-11 | Audit view memakai shared `EventList` untuk actor/action/timestamp dan details disclosure, serta controlled `Pagination` dengan availability berbasis page size API; payload JSON tetap ditampilkan sebagai detail yang dapat dibuka. | `pnpm --filter @empire/ui typecheck` dan `pnpm --filter @empire/command-center typecheck` lulus setelah migrasi. |
 | UI-C13-15 | Portal menetapkan `html lang` dari cookie `PortalLanguage` (`id`/`en`) dan seluruh route/loading memakai bahasa yang sama. Command Center entry document secara eksplisit menetapkan `lang="en"`, sesuai copy utama workspace; tidak ada runtime language switch yang mengklaim bahasa lain. | Source audit pada `apps/portal/app/layout.tsx`, `apps/portal/lib/i18n.ts`, dan `apps/command-center/index.html`; Portal dan Command Center typecheck lulus sebelumnya. |
 | UI-C13-14 | Research evidence form memvalidasi provenance sebagai JSON object sebelum request, menampilkan shared `Notice` saat invalid, dan mempertahankan seluruh controlled field state agar pengguna dapat memperbaiki isi tanpa kehilangan data. | `pnpm --filter @empire/command-center typecheck` lulus setelah validasi dipulihkan pada `ResearchCard`. |
+| UI-C15-01 | Catalog menampilkan semantic token swatches, theme preview dark/light, typography and component foundations; density contract explicitly documents compact behavior. | Source audit `packages/ui/catalog/main.tsx` dan `packages/ui/README.md`; typecheck UI sebelumnya lulus. |
+| UI-C15-02 | Catalog menampilkan tiga vector brand concepts dan regular/compact `BrandLockup`, sementara README mendokumentasikan provisional mark, accessible-name contract, dan remaining brand review. | Source audit `packages/ui/catalog/main.tsx`, `src/brand/BrandConcepts.tsx`, dan README. |
+| UI-C15-03 | Catalog icon gallery merender seluruh registered icon groups pada 16/20/24/32px, muted/accent usage, accessible pairing, serta RTL directional example. | Source audit `packages/ui/catalog/main.tsx` dan `src/primitives/Icon.tsx`. |
+| UI-C15-10 | Catalog fixtures memakai copy dan object lokal statis; tidak ada API request, credential, tenant record, atau production data path. | README catalog contract dan source audit terverifikasi. |
+| UI-C15-11 | README memuat export map, component contract, navigation adapters, stylesheet order, token layers, theme/font delivery, consumer map, and asset guidance. | Source audit `packages/ui/README.md`. |
 | UI-C13-13 | Research list memakai shared `Panel`, `Badge`, `LoadingState`, `ErrorState`, `EmptyState`, `FieldLabel`, `TextField`, `TextArea`, `SelectField`, `Button`, `Notice`, dan `ConfirmDialog`; create, evidence, completion, approval/rejection, workflow status, dan permission guards tetap berada di app. | Source audit pada `ResearchCard` dan `App.tsx`; `pnpm --filter @empire/command-center typecheck` lulus. |
 | UI-C13-08 | Continuum agent cards memakai shared `Panel`, `Badge`, `Icon`, `MetricGrid`, dan `EmptyState`; invocation form memakai shared `FieldLabel`, `TextField`, dan `Button` dengan permission guard app-owned. | Source audit pada view Continuum dan `pnpm --filter @empire/command-center typecheck` lulus. |
 | UI-C10-01 | `DataTable<Row>` menyediakan typed columns/cell renderer, semantic caption, `scope="col"`, numeric alignment (`start`/`center`/`end`), stable `rowKey`, and table-level empty row. Wrapper memberi horizontal overflow tanpa mengubah table semantics. | `pnpm --filter @empire/ui typecheck` lulus. Consumer migration, caption copy, and narrow-table behavior review masih terbuka pada UI-C10-02/UI-C15-04. |
