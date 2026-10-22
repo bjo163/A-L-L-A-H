@@ -7,7 +7,7 @@ WORKDIR /workspace
 FROM base AS build
 COPY . .
 RUN pnpm install --frozen-lockfile
-ARG NEXT_PUBLIC_API_ORIGIN=http://localhost:4000
+ARG NEXT_PUBLIC_API_ORIGIN=/api
 ENV NEXT_PUBLIC_API_ORIGIN=$NEXT_PUBLIC_API_ORIGIN
 RUN pnpm --filter @empire/command-center... build
 

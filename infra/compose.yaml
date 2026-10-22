@@ -31,7 +31,7 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER:-empire}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-empire}
       FILE_STORAGE_DIR: /workspace/var/private-files
       FILE_STORAGE_SIGNING_SECRET: ${FILE_STORAGE_SIGNING_SECRET}
-      CORS_ORIGINS: ${PUBLIC_ORIGIN:-http://localhost:3300,http://localhost:3400}
+      CORS_ORIGINS: ${CORS_ORIGINS:-${PUBLIC_ORIGIN:-http://localhost:3300,http://localhost:3400}}
       PUBLIC_API_ORIGIN: ${PUBLIC_API_ORIGIN:-http://localhost:4000}
       EMPIRE_OWNER_PASSWORD: ${EMPIRE_OWNER_PASSWORD:-}
       EMPIRE_ARCHITECT_PASSWORD: ${EMPIRE_ARCHITECT_PASSWORD:-}
@@ -70,7 +70,9 @@ services:
       context: .
       dockerfile: apps/command-center/Dockerfile
       args:
-        NEXT_PUBLIC_API_ORIGIN: ${PUBLIC_API_ORIGIN:-http://localhost:4000}
+        NEXT_PUBLIC_API_ORIGIN: /api
+    environment:
+      API_ORIGIN: ${INTERNAL_API_ORIGIN:-http://api:4000}
     ports:
       - "${COMMAND_CENTER_PORT:-3400}:3400"
     healthcheck:

@@ -12,7 +12,7 @@ import type {
 import { Badge, Button, DataTable, type DataTableColumn, DonutChart, EmptyState, MetricGrid, Panel, StatusIndicator, RefreshIcon, ActivityIcon, GlobeIcon, ApprovalIcon, DocumentIcon, DownloadIcon, CopyIcon, IconText, SparkIcon, WarningIcon, AuditIcon, ModulesIcon, CheckIcon, ClockIcon, HistoryIcon, SettingsIcon, PlusIcon, SourceIcon, KnowledgeIcon, ArrowUpRightIcon, AgentIcon, CloseIcon } from "@empire/ui";
 import { MotionRegion } from "@empire/ui/client";
 
-const api = createApiClient(process.env.NEXT_PUBLIC_API_ORIGIN || "http://localhost:4000");
+const api = createApiClient(process.env.NEXT_PUBLIC_API_ORIGIN || "/api");
 
 interface YoutubeSentinelViewProps {
   searchQuery?: string;

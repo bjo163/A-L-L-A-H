@@ -8,7 +8,9 @@ This is a self-hosted Compose baseline with four services: PostgreSQL, the API, 
 - A host that can reach the package registry and public monitoring sources during image build and API operation.
 - A trusted host or private network. Do not expose these plain HTTP ports directly to the public internet; provide TLS and network access control outside this stack before public use.
 
-From the repository root, copy `infra/docker.env.example` to `.env`. Set `POSTGRES_PASSWORD` to a long URL-safe random value (for example, generate 32 random bytes and encode them as hex), and set `FILE_STORAGE_SIGNING_SECRET` to at least 32 random bytes. Keep `.env` out of Git. For access from another device, change `BIND_ADDRESS` to the intended host interface, set `PUBLIC_API_ORIGIN` to an API URL reachable by that device, and list the exact UI origins in `PUBLIC_ORIGIN`.
+From the repository root, copy `infra/docker.env.example` to `.env`. Set `POSTGRES_PASSWORD` to a long URL-safe random value (for example, generate 32 random bytes and encode them as hex), and set `FILE_STORAGE_SIGNING_SECRET` to at least 32 random bytes. Keep `.env` out of Git. For access from another device, change `BIND_ADDRESS` to the intended host interface, set `PUBLIC_API_ORIGIN` to an API URL reachable by that device for Portal, set `INTERNAL_API_ORIGIN` to the API address reachable from the Command Center container, and list the exact UI origins in `CORS_ORIGINS`.
+
+For production, set `CORS_ORIGINS` to include the full browser origin, including scheme and hostname. For example, Command Center at `https://cc.moonwitness.biz.id` requires that exact value. The Command Center uses a same-origin `/api` path and its Next.js server forwards requests to `INTERNAL_API_ORIGIN`; this keeps the API host out of browser requests. Configure TLS and the public domain routing at the deployment proxy, and rebuild the Command Center after changing its API path or internal API host.
 
 Start the stack:
 
@@ -23,11 +25,11 @@ docker compose --project-directory . --env-file .env -f infra/compose.yaml up -d
 docker compose --project-directory . --env-file .env -f infra/compose.yaml ps
 ```
 
-Default host URLs are `http://localhost:3300` (Portal), `http://localhost:3400` (Command Center), and `http://localhost:4000` (API). PostgreSQL has no published host port. The API is bound to `0.0.0.0` inside its container and published on loopback by default. The frontend's API URL is embedded at build time, so rebuild the Command Center after changing `PUBLIC_API_ORIGIN`:
+Default host URLs are `http://localhost:3300` (Portal), `http://localhost:3400` (Command Center), and `http://localhost:4000` (API). PostgreSQL has no published host port. The API is bound to `0.0.0.0` inside its container and published on loopback by default. Portal's API URL is embedded at build time, so rebuild Portal after changing `PUBLIC_API_ORIGIN`. Command Center uses `/api` on its own origin and forwards requests from its server to `INTERNAL_API_ORIGIN`:
 
 ```sh
-docker compose --project-directory . --env-file .env -f infra/compose.yaml build --no-cache command-center
-docker compose --project-directory . --env-file .env -f infra/compose.yaml up -d command-center
+docker compose --project-directory . --env-file .env -f infra/compose.yaml build --no-cache portal
+docker compose --project-directory . --env-file .env -f infra/compose.yaml up -d portal
 ```
 
 The API runs its existing enabled-module schema synchronization during startup. Review database preflight and backup requirements in [AUTOMATION.md](AUTOMATION.md) before using this stack with existing or valuable data. Compose does not automatically apply the legacy dictionary migration.

@@ -27,7 +27,7 @@ const pageIcons: Record<Page, IconComponent> = { overview: HomeIcon, world: Glob
 type Chronicle = { id: string; action: string; entity: string; entityId?: string | null; payload?: Record<string, unknown> | null; createdAt: string; user?: { username?: string; displayName?: string } | null };
 type ConfirmationRequest = ResearchConfirmationRequest;
 
-const API_ORIGIN = process.env.NEXT_PUBLIC_API_ORIGIN || "http://localhost:4000";
+const API_ORIGIN = process.env.NEXT_PUBLIC_API_ORIGIN || "/api";
 const api = createApiClient(API_ORIGIN);
 const initialSnapshot: Snapshot = { health: "checking", readiness: "checking", modules: [], capabilities: [] };
 const initialRfc: CabDraft = { title: "", tier: "standard", riskLevel: "moderate", summary: "", justification: "", executionPlan: "", rollbackPlan: "", targetService: "", scheduledWindowStart: "", scheduledWindowEnd: "" };
