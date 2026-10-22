@@ -29,7 +29,7 @@ export function Field({ label, control, hint, error, id, required = false, class
       <label className="eol-field-label" htmlFor={controlId}>{label}{required && <span aria-hidden="true"> *</span>}</label>
       {labelledControl}
       {hint && <p className="eol-help-text" id={hintId}>{hint}</p>}
-      {error && <p className="eol-field-error" id={errorId} role="alert">{error}</p>}
+      {error && <p className="eol-field-error" id={errorId}>{error}</p>}
     </div>
   );
 }
