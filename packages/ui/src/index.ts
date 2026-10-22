@@ -34,6 +34,8 @@ export { Panel } from "./primitives/Panel";
 export type { PanelProps } from "./primitives/Panel";
 export { SelectField } from "./primitives/SelectField";
 export type { SelectFieldProps } from "./primitives/SelectField";
+export { SearchField } from "./primitives/SearchField";
+export type { SearchFieldProps } from "./primitives/SearchField";
 export { Switch } from "./primitives/Switch";
 export type { SwitchProps } from "./primitives/Switch";
 export { TextArea } from "./primitives/TextArea";
