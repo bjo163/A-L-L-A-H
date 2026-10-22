@@ -38,6 +38,7 @@ for (const [name, attribute] of Object.entries(expectedIconRoot)) {
 const pathRegistry = iconSource.match(/const paths:[\s\S]*?= \{([\s\S]*?)\n\};\n\ntype IconProps/)?.[1] ?? "";
 if (!pathRegistry) errors.push("icon path registry could not be inspected for per-icon stroke overrides");
 else if (/\b(?:stroke|strokeWidth|strokeLinecap|strokeLinejoin)\s*[:=]/.test(pathRegistry)) errors.push(`icon family ${family?.name ?? "(unnamed)"}: individual paths override the shared stroke family`);
+if (/\b(?:id|href|xlinkHref|mask|filter)\s*=|<(?:defs|symbol|linearGradient|radialGradient|mask|filter|pattern)\b|url\s*\(/i.test(pathRegistry)) errors.push("icon path registry must remain definition-free so repeated icons cannot collide through IDs, masks, filters, or paint references");
 if (family?.perIconOverrides !== false) errors.push("icon stroke family must explicitly prohibit per-icon stroke overrides");
 if (!family?.name || !manifest.vectors.icons.provenance || !manifest.vectors.icons.licenseStatus) errors.push("icon family requires a name, provenance, and explicit license status");
 const iconLicense = await read("licenses/ICONS.md");
