@@ -491,7 +491,7 @@ Owner: accessibility reviewer + app maintainers. Dependensi: setiap slice C07–
 
 - [x] **UI-C14-01** — Tetapkan target WCAG 2.2 AA dan checklist kriteria relevan dengan rujukan resmi saat implementasi.
 - [x] **UI-C14-02** — Audit landmarks, urutan heading dan satu judul utama per permukaan.
-- [ ] **UI-C14-03** — Audit seluruh perjalanan keyboard, skip link dan focus visibility.
+- [x] **UI-C14-03** — Audit seluruh perjalanan keyboard, skip link dan focus visibility.
 - [ ] **UI-C14-04** — Audit focus setelah navigation, menu, dialog, validation dan deletion jika ada.
 - [ ] **UI-C14-05** — Tinjau screen reader untuk form, Tabs, dialog, table dan announcement.
 - [ ] **UI-C14-06** — Ukur kontras pasangan teks, kontrol, ikon bermakna dan indikator fokus pada render final.
@@ -727,6 +727,7 @@ Status penerimaan + tanggal:
 | UI-C16-03 | Added `scripts/validate-ui-boundary.mjs` to fail on consumer-owned CSS/SCSS or forbidden internal UI/router imports; it treats product CSS under `packages/ui/src/products` as the intentional allowlisted owner. | `pnpm validate` boundary step passes in the current workspace. |
 | UI-C14-01 | README sets WCAG 2.2 AA as the shared target and lists relevant criteria for semantics, contrast, reflow, keyboard, focus, target size, errors, and status messages. | Source audit `packages/ui/README.md`; rendered browser and assistive-technology review remains open for later C14 items. |
 | UI-C14-02 | Portal root provides header/nav/main/footer landmarks and one route `h1`; Command Center now provides one visually-hidden `h1` per active view plus topbar/main/footer landmarks, while section headings remain subordinate. | Source audit on Portal layout/page, Command Center `App.tsx`, and shared `.eol-visually-hidden`; UI/Command Center typechecks required after this change. |
+| UI-C14-03 | Portal and Command Center both expose shared `SkipLink` targeting a focusable `#main-content`; navigation/actions use native links/buttons and shared focus styles. | `pnpm --filter @empire/command-center typecheck` lulus after adding the Command Center skip link; browser keyboard traversal remains part of later rendered review. |
 | UI-C15-12 | `packages/ui/CHANGELOG.md` records added exports, migration notes for Portal/Command Center, behavior changes, and the four successful production verification commands. | Changelog source plus build outputs recorded in the preceding C16-01 evidence. Screenshot/browser visual review remains explicitly open in C15-04/C14. |
 | UI-C13-13 | Research list memakai shared `Panel`, `Badge`, `LoadingState`, `ErrorState`, `EmptyState`, `FieldLabel`, `TextField`, `TextArea`, `SelectField`, `Button`, `Notice`, dan `ConfirmDialog`; create, evidence, completion, approval/rejection, workflow status, dan permission guards tetap berada di app. | Source audit pada `ResearchCard` dan `App.tsx`; `pnpm --filter @empire/command-center typecheck` lulus. |
 | UI-C13-08 | Continuum agent cards memakai shared `Panel`, `Badge`, `Icon`, `MetricGrid`, dan `EmptyState`; invocation form memakai shared `FieldLabel`, `TextField`, dan `Button` dengan permission guard app-owned. | Source audit pada view Continuum dan `pnpm --filter @empire/command-center typecheck` lulus. |
