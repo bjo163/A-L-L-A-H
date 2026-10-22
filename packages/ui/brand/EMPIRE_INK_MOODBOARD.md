@@ -75,4 +75,4 @@ These existing renders are a family comparison, not approval of Orbit or final p
 
 ## Decision boundary
 
-The palette and profile rules above document the implemented working direction. They do not select a final logo concept, approve a trademark, or close source ownership/legal review. Keep weighted candidate scoring, reviewer approval, and final spec freeze open at UI-C02-03, UI-C02-15, UI-C01-11, and UI-C01-12. Keep rendered route/state coverage open at UI-C16 and UI-C17 until screenshots are regenerated and accepted after the latest fixes.
+The palette and profile rules above document the implemented working direction. They do not select a final logo concept, approve a trademark, or close source ownership/legal review. The draft rule for intentional versus preserved visual changes is in `VISUAL_CHANGE_POLICY.md`; it still needs product/design agreement at UI-C00-12. Keep weighted candidate scoring, reviewer approval, and final spec freeze open at UI-C02-03, UI-C02-15, UI-C01-11, and UI-C01-12. Keep rendered route/state coverage open at UI-C16 and UI-C17 until screenshots are regenerated and accepted after the latest fixes.

@@ -253,7 +253,7 @@ Owner: maintainer UI + product/design. Dependensi: tidak ada. Gate: inventaris d
 - [ ] **UI-C00-09** — Catat owner aktual desain, frontend, aset, copy, aksesibilitas dan review.
 - [x] **UI-C00-10** — Tulis keputusan sentralisasi, pengecualian vendor dan aturan cutover sebagai ADR. `docs/adr/ADR-0004-ui-package-centralization.md` menetapkan `packages/ui` sebagai pemilik tunggal presentasi, batas domain/runtime yang tetap di app, adapter vendor opt-in dan namespaced, contract stylesheet, alur migrasi dan penghapusan duplicate, serta enforcement dan kondisi revisit. Statusnya Accepted untuk implementasi repo; penerimaan visual dan logo final tetap gate review terpisah.
 - [x] **UI-C00-11** — Tandai bukti kontras/visual lama yang perlu diukur ulang. Register pada bagian 2 menghubungkan catatan palette generasi lama, spot check browser tanpa screenshot, dan review brand/icon provisional ke gate pengukuran ulang yang benar. Tanda ini hanya menginventarisasi bukti lama; penerimaan visual baru tetap terbuka pada C00-08, C01–C03, C05, C12–C17.
-- [ ] **UI-C00-12** — Sepakati daftar perubahan visual sengaja versus perubahan yang harus mempertahankan baseline.
+- [ ] **UI-C00-12** — Sepakati daftar perubahan visual sengaja versus perubahan yang harus mempertahankan baseline. Proposal klasifikasi per area, contoh aktual migrasi, serta format keputusan reviewer tersedia di `packages/ui/brand/VISUAL_CHANGE_POLICY.md`; tetap terbuka sampai reviewer produk/design mengisi dan menyetujui record keputusan.
 
 ### C01 — Art direction dan hirarki visual
 
