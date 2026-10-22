@@ -3,7 +3,8 @@ import type { FormEvent } from "react";
 import { API_PATHS, ApiError, createApiClient } from "@empire/api-contract";
 import type { AuthEntity, CabRfc, CabSummary, LoginResponse, ResearchRun } from "@empire/api-contract";
 import type { WorldMonitoringSnapshot } from "@empire/batteries-world-monitor";
-import { Badge, BrandLockup, Button, ConfirmDialog, EmptyState, ErrorState, FieldLabel, Icon, LoadingState, MangaEffect, MangaPageIntro, MangaTelemetryHero, MetricGrid, Notice, Panel, SelectField, StatusIndicator, TextArea, TextField } from "@empire/ui";
+import { notifyNewWorldMonitorAlerts } from "./world-monitor-notifications";
+import { AuthLayout, Badge, BrandLockup, Button, ConfirmDialog, EmptyState, ErrorState, FieldLabel, Icon, LoadingState, MangaEffect, MangaPageIntro, MangaTelemetryHero, MetricGrid, Notice, Panel, SelectField, StatusIndicator, TextArea, TextField } from "@empire/ui";
 import type { ConfirmDialogTone, IconName } from "@empire/ui";
 import { WorldMonitorView } from "./WorldMonitorView";
 
@@ -72,6 +73,7 @@ export function App() {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
+  const [worldNotificationPermission, setWorldNotificationPermission] = useState<NotificationPermission | "unsupported">(typeof Notification === "undefined" ? "unsupported" : Notification.permission);
   const client = useMemo(() => ({ request: <T,>(path: string, options: { method?: "GET"|"POST"|"PATCH"; body?: unknown } = {}) => api.request<T>(path, { ...options, token: token || null }) }), [token]);
 
   async function refreshWorld() {
@@ -83,6 +85,7 @@ export function App() {
     try {
       const nextSnapshot = await api.request<WorldMonitoringSnapshot>(API_PATHS.worldMonitor);
       if (worldRequestRef.current === requestId) {
+        if (worldSnapshot && typeof Notification !== "undefined") notifyNewWorldMonitorAlerts(worldSnapshot.alerts, nextSnapshot.alerts, Notification.permission, (title, body) => { new Notification(title, { body }); });
         setWorldSnapshot(nextSnapshot);
         setWorldError("");
       }
@@ -96,6 +99,11 @@ export function App() {
         setWorldLoading(false);
       }
     }
+  }
+
+  async function enableWorldMonitorNotifications() {
+    if (typeof Notification === "undefined") { setWorldNotificationPermission("unsupported"); return; }
+    setWorldNotificationPermission(await Notification.requestPermission());
   }
 
   function clearSession() {
@@ -267,12 +275,12 @@ export function App() {
     await perform(async () => { await client.request(API_PATHS.researchRuns, { method: "POST", body: createRun }); setCreateRun(initialRun); }, "Research run dikirim untuk persetujuan.");
   }
 
-  if (!entity && restoringSession) return <div className="login-shell"><Panel manga as="section" className="login-card eol-manga-reveal"><BrandLockup size="compact" name="100CENTER" descriptor="EMPIRE OF THE LIGHT · OPERATOR" /><h1>Memulihkan sesi</h1><p>Memeriksa sesi operator yang tersimpan.</p></Panel></div>;
-  if (!entity) return <div className="login-shell"><Panel manga as="section" className="login-card eol-manga-reveal"><BrandLockup size="compact" name="100CENTER" descriptor="EMPIRE OF THE LIGHT · OPERATOR" /><h1>Masuk Command Center</h1><p>Gunakan akun operator lokal yang telah diprovisikan oleh administrator.</p>
+  if (!entity && restoringSession) return <AuthLayout brandName="100CENTER" brandDescriptor="EMPIRE OF THE LIGHT · OPERATOR" title="Memulihkan sesi" description="Memeriksa sesi operator yang tersimpan." />;
+  if (!entity) return <AuthLayout brandName="100CENTER" brandDescriptor="EMPIRE OF THE LIGHT · OPERATOR" title="Masuk Command Center" description="Gunakan akun operator lokal yang telah diprovisikan oleh administrator.">
     {error && <Notice tone="danger">{error}</Notice>}
     <form className="form-grid" onSubmit={signIn}><FieldLabel>Username<TextField autoComplete="username" value={login.username} onChange={e=>setLogin({...login,username:e.target.value})} required/></FieldLabel><FieldLabel>Password<TextField type="password" autoComplete="current-password" value={login.password} onChange={e=>setLogin({...login,password:e.target.value})} required/></FieldLabel><label className="remember-me"><input type="checkbox" checked={rememberMe} onChange={event=>setRememberMe(event.target.checked)}/><span>Ingat saya di perangkat ini selama 30 hari</span></label><Button type="submit" disabled={busy}>{busy?"Memeriksa…":"Masuk"}</Button></form>
     <div className="login-health"><span>API {snapshot.health}</span><span>Database {snapshot.readiness}</span><Button variant="secondary" disabled={loading} onClick={()=>void refresh()}>Refresh</Button></div>
-  </Panel></div>;
+  </AuthLayout>;
 
   const canCab = can(entity, "cab:read");
   const canResearch = can(entity, "research:read");
@@ -315,7 +323,7 @@ export function App() {
         <section className="workspace-section"><div className="section-head"><div><span className="eyebrow">WORKSPACES</span><h2>Go to operations</h2></div><span className="muted">{entity.role} access</span></div><div className="workspace-grid">{pageItems.filter(({key})=>key!=="overview"&&pageAllowed(key)).map(({key,workspaceTitle,description})=><MangaEffect as="button" type="button" key={key} interactive className="workspace-card" onClick={()=>setTab(key)}><span className="workspace-icon"><Icon name={pageIcons[key]} size={18}/></span><strong>{workspaceTitle}</strong><small>{description}</small><span className="workspace-arrow">Open workspace <Icon name="arrowUpRight" size={12}/></span></MangaEffect>)}</div></section>
         <section className="activity-preview"><div className="section-head"><div><span className="eyebrow">RECENT ACTIVITY</span><h2>Latest events</h2></div><button className="text-button" onClick={()=>setTab("audit")}>Open ledger <Icon name="arrowUpRight" size={12}/></button></div>{chronicles.slice(0,5).length?<div className="event-list">{chronicles.slice(0,5).map(event=><EventRow key={event.id} event={event}/>)}</div>:<EmptyState title="No recent events" description="Audit events will appear here as operators use the system."/>}</section>
       </>}
-      {tab==="world"&&(worldLoading&&!worldSnapshot?<LoadingState label="Memuat World Monitor…"/>:worldSnapshot?<WorldMonitorView snapshot={worldSnapshot} search={search} nextRefreshIn={worldNextRefreshIn} refreshError={worldError} onRefresh={()=>void refreshWorld()}/>:worldError?<ErrorState title="World Monitor is unavailable" description={worldError} action={<Button variant="secondary" onClick={()=>void refreshWorld()}>Retry</Button>}/>:<LoadingState label="Connecting to World Monitor…"/>)}
+      {tab==="world"&&(worldLoading&&!worldSnapshot?<LoadingState label="Memuat World Monitor…"/>:worldSnapshot?<WorldMonitorView snapshot={worldSnapshot} search={search} nextRefreshIn={worldNextRefreshIn} refreshError={worldError} onRefresh={()=>void refreshWorld()} notificationPermission={worldNotificationPermission} onEnableNotifications={()=>void enableWorldMonitorNotifications()}/>:worldError?<ErrorState title="World Monitor is unavailable" description={worldError} action={<Button variant="secondary" onClick={()=>void refreshWorld()}>Retry</Button>}/>:<LoadingState label="Connecting to World Monitor…"/>)}
       {tab==="continuum"&&<><section><MetricGrid density="compact" items={[{label:"Registered agents",value:agents.length},{label:"Active agents",value:agents.filter(agent=>agent.status==="active").length,tone:"success"},{label:"Asma mappings",value:lexicon.length}]}/></section><section><div className="section-head"><div><span className="eyebrow">SERAPH REGISTRY</span><h2>Agent fleet</h2></div><Badge tone="info">Invocation is audit logged</Badge></div><div className="agent-grid">{visibleAgents.map(agent=><Panel manga as="article" key={agent.id} className="agent-card"><div className="agent-head"><span className="agent-symbol"><Icon name="agent" size={18}/></span><Badge tone={agent.status==="active"?"success":"warning"}>{agent.status}</Badge></div><h3>{agent.term}</h3><p className="agent-code">{agent.code} · {agent.tier}</p><p>{agent.role??"Continuum agent"}</p>{can(entity,"continuum:invoke")&&<form className="invoke-form" onSubmit={event=>{event.preventDefault();void perform(()=>client.request(`${API_PATHS.continuumAgents}/${encodeURIComponent(agent.code)}/invoke`,{method:"POST",body:{directive}}),`${agent.term} invocation recorded.`);}}><TextField aria-label={`Directive for ${agent.term}`} value={directive} onChange={event=>setDirective(event.target.value)} maxLength={500}/><Button disabled={busy||!directive.trim()} type="submit">Invoke agent <Icon name="arrowUpRight" size={12}/></Button></form>}</Panel>)}</div>{visibleAgents.length===0&&<EmptyState title="No agents match" description="Try a different search term."/>}</section><Notice role="note" className="notice-panel"><Icon name="info" size={16}/><p>Agent invocation records an instruction in the local audit ledger. It does not execute external tools or claim a completed task.</p></Notice></>}
       {tab==="directory"&&<><section><MetricGrid density="compact" items={[{label:"Total entities",value:directory.length},{label:"Operators",value:directory.filter(user=>!user.celestial).length},{label:"Service agents",value:directory.filter(user=>user.celestial).length}]}/></section><section><div className="section-head"><div><span className="eyebrow">IDENTITY · RBAC</span><h2>Provisioned entities</h2></div><span className="muted">Directory is read only</span></div>{visibleUsers.length?<div className="table-wrap"><table className="data-table"><thead><tr><th>ENTITY</th><th>ROLE</th><th>TIER</th><th>TYPE</th><th>STATUS</th></tr></thead><tbody>{visibleUsers.map(user=><tr key={user.id}><td><strong>{user.displayName}</strong><small>{user.username}</small></td><td>{user.roles?.map(role=>role.name).join(", ")||"Unassigned"}</td><td>{user.tier}</td><td>{user.celestial?"Service agent":user.sovereign?"Sovereign":"Operator"}</td><td><Badge tone={user.status==="active"?"success":"warning"}>{user.status}</Badge></td></tr>)}</tbody></table></div>:<EmptyState title="No entities found" description="The directory returned no matching entities."/>}</section></>}
       {tab==="knowledge"&&<><Notice role="note" className="notice-panel"><Icon name="info" size={16}/><p>Entries are project mappings in editorial review. They are not verified theological definitions. Preserve cited sources and editorial status when using them.</p></Notice><section><div className="section-head"><div><span className="eyebrow">SOURCE INDEX</span><h2>Asma mappings <span className="count-chip">{visibleLexicon.length}</span></h2></div><Badge tone="warning">DRAFT REVIEW</Badge></div><div className="knowledge-grid">{visibleLexicon.map(entry=><MangaEffect as="details" interactive className="knowledge-card" key={entry.id}><summary><span className="knowledge-symbol">{entry.arabic||<Icon name="knowledge" size={20}/>}</span><span className="knowledge-title"><strong>{entry.term}</strong><small>{entry.translit} · {entry.code}</small></span><Badge tone="neutral">{entry.editorialStatus}</Badge></summary><div className="knowledge-detail"><p><strong>Project attribute</strong><br/>{entry.attribute}</p><p><strong>Domain</strong><br/>{entry.domain}</p><p>{entry.wisdom}</p><small>Source note: {entry.revelations}</small></div></MangaEffect>)}</div>{visibleLexicon.length===0&&<EmptyState title="No mappings match" description="Try searching by Arabic, transliteration, term, or domain."/>}</section></>}

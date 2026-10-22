@@ -102,6 +102,8 @@ export { Timeline } from "./patterns/Timeline";
 export type { TimelineItem, TimelineProps } from "./patterns/Timeline";
 export { DecisionSummary, FormSection, ReviewActions } from "./patterns/ReviewPatterns";
 export type { DecisionSummaryProps, FormSectionProps, ReviewActionsProps } from "./patterns/ReviewPatterns";
+export { AuthLayout } from "./patterns/AuthLayout";
+export type { AuthLayoutProps } from "./patterns/AuthLayout";
 export { Grid, Inline, Stack } from "./patterns/Layout";
 export type { GridProps, InlineProps, LayoutSpace, StackProps } from "./patterns/Layout";
 export { StatusIndicator } from "./patterns/StatusIndicator";
