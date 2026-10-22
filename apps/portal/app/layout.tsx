@@ -26,7 +26,7 @@ export default async function RootLayout({children}:{children:ReactNode}) {
     <PublicShell
       skipLabel={text(language,"Lewati ke konten utama","Skip to main content")}
       footerLabel={text(language,"Navigasi footer","Footer navigation")}
-      brand={<Link className="brand" href="/" aria-label={text(language,"Beranda A-L-L-A-H","A-L-L-A-H home")}><BrandLockup name="A-L-L-A-H" descriptor="EMPIRE OF THE LIGHT" /></Link>}
+      brand={<Link className="brand" href="/" aria-label={text(language,"Beranda A-L-L-A-H","A-L-L-A-H home")}><BrandLockup name="A-L-L-A-H" descriptor={text(language,"PORTAL PUBLIK","PUBLIC PORTAL")} /></Link>}
       navigation={<PrimaryNavigation language={language} />}
       action={<Link className="header-cta" href="/systems"><IconText icon={<ArrowUpRightIcon />}>{text(language,"Jelajahi sistem","Explore systems")}</IconText></Link>}
       footerBrand={<BrandLockup size="compact" tone="subtle" name="A-L-L-A-H · EMPIRE OF THE LIGHT" descriptor={text(language,"Belajar dengan terang. Bertindak dengan bukti.","Learn with clarity. Act with evidence.")} />}
