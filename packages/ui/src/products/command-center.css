@@ -748,19 +748,16 @@ footer { margin: 40px 0 16px; color: var(--eol-color-text-muted); font-size: 8px
   color: #fff;
 }
 
-.sentinel-table-container {
-  width: 100%;
-  overflow-x: auto;
+.sentinel-table {
+  font-size: 12px;
+}
+.eol-data-table-wrap:has(.sentinel-table) {
   margin-top: 16px;
   border: 2px solid var(--eol-manga-ink, #222);
   background: var(--eol-color-surface, #141414);
   box-shadow: 4px 4px 0 var(--eol-manga-ink, #000);
-}
-.sentinel-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 12px;
-  text-align: left;
+  border-radius: var(--eol-radius-sm, 4px);
+  padding: 12px;
 }
 .sentinel-table th {
   background: var(--eol-color-surface-raised, #202020);
