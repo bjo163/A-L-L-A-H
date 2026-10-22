@@ -121,6 +121,8 @@
   --eol-layout-container-gutter-narrow: 1.0625rem;
   --eol-layout-grid-gap: var(--eol-space-4);
   --eol-layout-grid-min: 16rem;
+  --eol-layout-anchor-offset: 1.875rem;
+  --eol-layout-anchor-offset-large: 6.875rem;
   --eol-section-space-editorial: clamp(4rem, 8vw, 7rem);
   --eol-section-space-operational: var(--eol-space-8);
   --eol-section-gap-editorial: var(--eol-space-6);
