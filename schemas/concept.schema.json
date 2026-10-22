@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://empireofthelight.example/schemas/concept.schema.json",
+  "title": "Localized Source-Aware Concept",
+  "type": "object", "additionalProperties": false,
+  "required": ["id", "lane", "preferredLabel", "definition", "status"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[USTP][0-9]{3,}$" },
+    "lane": { "enum": ["UNIVERSAL", "SCRIPTURE", "TEXT_SOURCE", "PROJECT"] },
+    "preferredLabel": { "$ref": "common.schema.json#/$defs/localizedText", "description": "English (en) is canonical; localizations are keyed by BCP 47 tags." },
+    "definition": { "$ref": "common.schema.json#/$defs/localizedText" },
+    "sourceLanguage": { "$ref": "common.schema.json#/$defs/locale" },
+    "sourceForm": { "type": "string" },
+    "transliteration": { "type": "string" },
+    "alternateLabels": { "type": "object", "patternProperties": { "^[a-z]{2,3}(?:-[A-Za-z0-9]{2,8})*$": { "type": "array", "items": { "type": "string" }, "uniqueItems": true } }, "additionalProperties": false },
+    "sourceReferences": { "type": "array", "items": { "$ref": "common.schema.json#/$defs/sourceReference" } },
+    "relations": { "type": "array", "items": { "type": "object", "additionalProperties": false, "required": ["type", "targetId"], "properties": { "type": { "enum": ["relatedTo", "inspiredBy", "distinctFrom", "exactMatch", "closeMatch", "narrowerThan", "broaderThan"] }, "targetId": { "type": "string", "pattern": "^[USTP][0-9]{3,}$" }, "confidence": { "type": "number", "minimum": 0, "maximum": 1 }, "reviewer": { "type": "string" }, "reviewedAt": { "$ref": "common.schema.json#/$defs/dateTime" } } } },
+    "status": { "enum": ["DRAFT_REVIEW", "SOURCE_CHECK", "LINGUISTIC_REVIEW", "APPROVED", "DEPRECATED"] },
+    "review": { "type": "object", "additionalProperties": false, "properties": { "reviewer": { "type": "string" }, "reviewedAt": { "$ref": "common.schema.json#/$defs/dateTime" }, "decision": { "enum": ["approve", "revise", "reject"] }, "notes": { "type": "string" }, "sourceVersion": { "type": "string" } } }
+  }
+}

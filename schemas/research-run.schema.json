@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://empireofthelight.example/schemas/research-run.schema.json",
+  "title": "Research Run",
+  "type": "object", "additionalProperties": false,
+  "required": ["id", "tenantId", "requestedBy", "title", "question", "scope", "status", "createdAt"],
+  "properties": {
+    "id": { "$ref": "common.schema.json#/$defs/uuid" },
+    "tenantId": { "$ref": "common.schema.json#/$defs/uuid" },
+    "requestedBy": { "$ref": "common.schema.json#/$defs/uuid" },
+    "title": { "type": "string", "minLength": 3, "maxLength": 200 },
+    "question": { "type": "string", "minLength": 10, "maxLength": 10000 },
+    "scope": { "enum": ["self", "community", "global"] },
+    "status": { "enum": ["pending_approval", "queued", "running", "completed", "rejected", "failed", "cancelled"] },
+    "resultSummary": { "type": ["string", "null"], "maxLength": 5000 },
+    "createdAt": { "$ref": "common.schema.json#/$defs/dateTime" },
+    "approvedAt": { "type": ["string", "null"], "format": "date-time" },
+    "completedAt": { "type": ["string", "null"], "format": "date-time" },
+    "evidence": { "type": "array", "items": { "$ref": "evidence.schema.json" } },
+    "approvals": { "type": "array", "items": { "$ref": "approval.schema.json" } },
+    "uncertainty": { "$ref": "common.schema.json#/$defs/uncertainty" }
+  }
+}

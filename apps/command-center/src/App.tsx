@@ -1,0 +1,359 @@
+import { useEffect, useMemo, useState } from "react";
+import type { FormEvent } from "react";
+import { API_PATHS, ApiError, createApiClient } from "@empire/api-contract";
+import type { AuthEntity, CabRfc, CabSummary, LoginResponse, ResearchRun } from "@empire/api-contract";
+import type { WorldMonitoringSnapshot } from "@empire/batteries-world-monitor";
+import { Badge, Button, ConfirmDialog, EmptyState, ErrorState, FieldLabel, LoadingState, MangaEffect, MangaPageIntro, MangaTelemetryHero, Notice, Panel, SelectField, TextArea, TextField } from "@empire/ui";
+import type { ConfirmDialogTone } from "@empire/ui";
+import { WorldMonitorView } from "./WorldMonitorView";
+
+type Signal = "checking" | "ok" | "degraded" | "unavailable";
+type Module = { id: string; title: string; version: string; state: string; enabled: boolean };
+type Snapshot = { health: Signal; readiness: Signal; modules: Module[]; capabilities: string[]; checkedAt?: string };
+type Page = "overview" | "world" | "continuum" | "directory" | "knowledge" | "audit" | "cab" | "research";
+type Agent = { id: string; code: string; term: string; role?: string; slug?: string; tier: string; status: string; metadata?: Record<string, unknown> | null };
+type LexiconEntry = { id: string; code: string; arabic?: string; translit: string; term: string; attribute: string; domain: string; wisdom: string; revelations: string; editorialStatus: string };
+type Chronicle = { id: string; action: string; entity: string; entityId?: string | null; payload?: Record<string, unknown> | null; createdAt: string; user?: { username?: string; displayName?: string } | null };
+type DirectoryUser = { id: string; username: string; displayName: string; email?: string; tier: string; status: string; sovereign: boolean; celestial: boolean; roles?: Array<{ name: string; slug: string }> };
+type CreateRfc = { title: string; tier: CabRfc["tier"]; riskLevel: CabRfc["riskLevel"]; summary: string; justification: string; executionPlan: string; rollbackPlan: string; targetService: string; scheduledWindowStart: string; scheduledWindowEnd: string };
+type CreateRun = { title: string; question: string; scope: ResearchRun["scope"] };
+type ConfirmationRequest = { title: string; description: string; confirmLabel: string; tone?: ConfirmDialogTone; successMessage: string; action: () => Promise<unknown> };
+
+const api = createApiClient(import.meta.env.VITE_API_ORIGIN || "http://127.0.0.1:4000");
+const initialSnapshot: Snapshot = { health: "checking", readiness: "checking", modules: [], capabilities: [] };
+const initialRfc: CreateRfc = { title: "", tier: "standard", riskLevel: "moderate", summary: "", justification: "", executionPlan: "", rollbackPlan: "", targetService: "", scheduledWindowStart: "", scheduledWindowEnd: "" };
+const initialRun: CreateRun = { title: "", question: "", scope: "self" };
+const can = (entity: AuthEntity | null, permission: string) => Boolean(entity?.sovereign || entity?.permissions.includes("*") || entity?.permissions.includes(permission));
+
+export function App() {
+  const [token, setToken] = useState(() => sessionStorage.getItem("empire.session") ?? "");
+  const [cookieSession, setCookieSession] = useState(false);
+  const [restoringSession, setRestoringSession] = useState(() => !sessionStorage.getItem("empire.session"));
+  const [entity, setEntity] = useState<AuthEntity | null>(() => {
+    try { return JSON.parse(sessionStorage.getItem("empire.entity") ?? "null") as AuthEntity | null; } catch { return null; }
+  });
+  const [snapshot, setSnapshot] = useState(initialSnapshot);
+  const [worldSnapshot, setWorldSnapshot] = useState<WorldMonitoringSnapshot | null>(null);
+  const [worldLoading, setWorldLoading] = useState(false);
+  const [worldNextRefreshIn, setWorldNextRefreshIn] = useState(30);
+  const [tab, setTab] = useState<Page>("overview");
+  const [summary, setSummary] = useState<CabSummary | null>(null);
+  const [rfcs, setRfcs] = useState<CabRfc[]>([]);
+  const [selected, setSelected] = useState<CabRfc | null>(null);
+  const [runs, setRuns] = useState<ResearchRun[]>([]);
+  const [continuum, setContinuum] = useState<Record<string, unknown> | null>(null);
+  const [agents, setAgents] = useState<Agent[]>([]);
+  const [lexicon, setLexicon] = useState<LexiconEntry[]>([]);
+  const [chronicles, setChronicles] = useState<Chronicle[]>([]);
+  const [directory, setDirectory] = useState<DirectoryUser[]>([]);
+  const [search, setSearch] = useState("");
+  const [auditPage, setAuditPage] = useState(1);
+  const [directive, setDirective] = useState("Review current system status and report findings.");
+  const [createRfc, setCreateRfc] = useState(initialRfc);
+  const [createRun, setCreateRun] = useState(initialRun);
+  const [login, setLogin] = useState({ username: "", password: "" });
+  const [rememberMe, setRememberMe] = useState(false);
+  const [busy, setBusy] = useState(false);
+  const [confirmation, setConfirmation] = useState<ConfirmationRequest | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState("");
+  const [success, setSuccess] = useState("");
+  const client = useMemo(() => ({ request: <T,>(path: string, options: { method?: "GET"|"POST"|"PATCH"; body?: unknown } = {}) => api.request<T>(path, { ...options, token: token || null }) }), [token]);
+
+  function clearSession() {
+    sessionStorage.removeItem("empire.session"); sessionStorage.removeItem("empire.entity");
+    setToken(""); setCookieSession(false); setEntity(null); setSummary(null); setRfcs([]); setSelected(null); setRuns([]);
+    setContinuum(null); setAgents([]); setLexicon([]); setChronicles([]); setDirectory([]);
+  }
+
+  async function refresh() {
+    setLoading(true); setError(""); setSuccess("");
+    try {
+      const [health, readiness, modules, capabilities] = await Promise.all([
+        api.request<Record<string, unknown>>(API_PATHS.health),
+        api.request<Record<string, unknown>>(API_PATHS.readiness),
+        api.request<{ items: Module[] }>(API_PATHS.modules),
+        api.request<{ capabilities: string[] }>(API_PATHS.capabilities),
+      ]);
+      const signal = (value: unknown): Signal => value === "ok" ? "ok" : value === "degraded" ? "degraded" : "unavailable";
+      setSnapshot({ health: signal(health.status), readiness: signal(readiness.status), modules: modules.items ?? [], capabilities: capabilities.capabilities ?? [], checkedAt: new Date().toISOString() });
+      // Fetch world monitor from real backend endpoint
+      setWorldLoading(true);
+      api.request<WorldMonitoringSnapshot>(API_PATHS.worldMonitor)
+        .then(setWorldSnapshot)
+        .catch(() => { /* keep previous snapshot on error */ })
+        .finally(() => setWorldLoading(false));
+      if (token || cookieSession) {
+        const session = await client.request<{ entity: AuthEntity }>(API_PATHS.session);
+        setEntity(session.entity);
+        if (token) sessionStorage.setItem("empire.entity", JSON.stringify(session.entity));
+        if (!can(session.entity, "cab:read")) { setSummary(null); setRfcs([]); setSelected(null); }
+        if (!can(session.entity, "research:read")) setRuns([]);
+        if (!can(session.entity, "continuum:read")) { setContinuum(null); setAgents([]); setLexicon([]); setChronicles([]); }
+        if (!can(session.entity, "users:manage")) setDirectory([]);
+        if (can(session.entity, "cab:read")) {
+          const [cabSummary, cabList] = await Promise.all([client.request<CabSummary>(API_PATHS.cabSummary), client.request<{ items: CabRfc[] }>(API_PATHS.cabRfcs)]);
+          setSummary(cabSummary); setRfcs(cabList.items ?? []);
+          if (selected) setSelected(await client.request<CabRfc>(`${API_PATHS.cabRfcs}/${selected.id}`));
+        }
+        if (can(session.entity, "research:read")) {
+          const research = await client.request<{ data?: ResearchRun[]; items?: ResearchRun[] }>(API_PATHS.researchRuns);
+          setRuns(research.items ?? research.data ?? []);
+        }
+        if (can(session.entity, "continuum:read")) {
+          const results = await Promise.allSettled([
+            client.request<Record<string, unknown>>(API_PATHS.continuum),
+            client.request<{ agents: Agent[] }>(API_PATHS.continuumAgents),
+            client.request<{ lexicons: LexiconEntry[] }>(API_PATHS.continuumAsma),
+            client.request<{ data: Chronicle[]; meta: { page: number; total: number; totalPages: number } }>(`${API_PATHS.continuumChronicles}?page=${auditPage}&limit=25`),
+          ]);
+          if (results[0].status === "fulfilled") setContinuum(results[0].value);
+          if (results[1].status === "fulfilled") setAgents(results[1].value.agents ?? []);
+          if (results[2].status === "fulfilled") setLexicon(results[2].value.lexicons ?? []);
+          if (results[3].status === "fulfilled") setChronicles(results[3].value.data ?? []);
+        }
+        if (can(session.entity, "users:manage")) {
+          const users = await client.request<{ data: DirectoryUser[] }>(`${API_PATHS.users}?page=1&limit=100`);
+          setDirectory(users.data ?? []);
+        }
+      }
+    } catch (cause) {
+      if (cause instanceof ApiError && cause.status === 401 && (token || cookieSession)) clearSession();
+      setError(cause instanceof Error ? cause.message : "Gagal membaca status API.");
+    } finally { setLoading(false); }
+  }
+
+  useEffect(() => { void refresh(); }, [token, cookieSession, auditPage]);
+  useEffect(() => {
+    if (token) { setRestoringSession(false); return; }
+    let active = true;
+    api.request<{ entity: AuthEntity }>(API_PATHS.session)
+      .then((session) => {
+        if (!active) return;
+        setEntity(session.entity);
+        setCookieSession(true);
+      })
+      .catch((cause) => {
+        if (active && !(cause instanceof ApiError && cause.status === 401))
+          setError(cause instanceof Error ? cause.message : "Sesi tersimpan tidak bisa diperiksa.");
+      })
+      .finally(() => { if (active) setRestoringSession(false); });
+    return () => { active = false; };
+  }, []);
+  useEffect(() => {
+    if (!token && !cookieSession) return;
+    const timer = window.setInterval(() => void refresh(), 30000);
+    return () => window.clearInterval(timer);
+  }, [token, cookieSession, auditPage]);
+
+  // World monitor: fetch immediately on mount, then auto-refresh every 30s with countdown
+  useEffect(() => {
+    function fetchWorld() {
+      setWorldLoading(true);
+      setWorldNextRefreshIn(30);
+      api.request<WorldMonitoringSnapshot>(API_PATHS.worldMonitor)
+        .then(setWorldSnapshot)
+        .catch(() => {})
+        .finally(() => setWorldLoading(false));
+    }
+    fetchWorld();
+    const autoTimer = window.setInterval(fetchWorld, 30000);
+    const countdownTimer = window.setInterval(() => {
+      setWorldNextRefreshIn((s) => (s <= 1 ? 30 : s - 1));
+    }, 1000);
+    return () => { window.clearInterval(autoTimer); window.clearInterval(countdownTimer); };
+  }, []);
+
+  useEffect(() => {
+    function onKeyDown(event: KeyboardEvent) {
+      if (event.key === "/" && !(event.target instanceof HTMLInputElement) && !(event.target instanceof HTMLTextAreaElement)) {
+        event.preventDefault(); document.getElementById("global-search")?.focus();
+      }
+      if (event.key === "Escape") setSearch("");
+    }
+    window.addEventListener("keydown", onKeyDown);
+    return () => window.removeEventListener("keydown", onKeyDown);
+  }, []);
+
+  async function perform(action: () => Promise<unknown>, successMessage: string, onSuccess?: () => void) {
+    setBusy(true); setError(""); setSuccess("");
+    try { await action(); await refresh(); onSuccess?.(); setSuccess(successMessage); }
+    catch (cause) { setError(cause instanceof Error ? cause.message : "Aksi gagal."); }
+    finally { setBusy(false); }
+  }
+
+  function confirmRfcAction(title: string, detail: string, confirmLabel: string, tone: ConfirmDialogTone, endpoint: string, body: unknown, successMessage: string) {
+    if (!selected) return;
+    setError(""); setSuccess("");
+    const rfc = selected;
+    setConfirmation({
+      title,
+      description: `${rfc.code} · ${rfc.title}\n${detail}\nRencana rollback: ${rfc.rollbackPlan}`,
+      confirmLabel,
+      tone,
+      successMessage,
+      action: () => client.request(`${API_PATHS.cabRfcs}/${rfc.id}${endpoint}`, { method: "POST", body }),
+    });
+  }
+
+  function requestConfirmation(request: ConfirmationRequest) {
+    setError(""); setSuccess("");
+    setConfirmation(request);
+  }
+
+  function confirmPendingAction() {
+    if (!confirmation) return;
+    const pending = confirmation;
+    void perform(pending.action, pending.successMessage, () => setConfirmation(null));
+  }
+
+  async function signIn(event: FormEvent) {
+    event.preventDefault(); setBusy(true); setError(""); setSuccess("");
+    try {
+      const result = await api.request<LoginResponse>(API_PATHS.login, { method: "POST", body: { ...login, rememberMe } });
+      if (!rememberMe && !result.token) throw new Error("API tidak mengembalikan token sesi.");
+      if (rememberMe) {
+        sessionStorage.removeItem("empire.session"); sessionStorage.removeItem("empire.entity");
+      } else {
+        sessionStorage.setItem("empire.session", result.token!); sessionStorage.setItem("empire.entity", JSON.stringify(result.entity));
+      }
+      setToken(rememberMe ? "" : result.token!); setCookieSession(rememberMe); setEntity(result.entity); setLogin({ username: "", password: "" }); setRememberMe(false);
+    } catch (cause) { setError(cause instanceof Error ? cause.message : "Login gagal."); }
+    finally { setBusy(false); }
+  }
+
+  async function openRfc(id: string) {
+    try { setSelected(await client.request<CabRfc>(`${API_PATHS.cabRfcs}/${id}`)); setError(""); setSuccess(""); }
+    catch (cause) { setError(cause instanceof Error ? cause.message : "RFC tidak bisa dibuka."); }
+  }
+
+  async function createChange(event: React.FormEvent) {
+    event.preventDefault();
+    const body = { ...createRfc, scheduledWindowStart: createRfc.scheduledWindowStart ? new Date(createRfc.scheduledWindowStart).toISOString() : null, scheduledWindowEnd: createRfc.scheduledWindowEnd ? new Date(createRfc.scheduledWindowEnd).toISOString() : null };
+    await perform(async () => { await client.request(API_PATHS.cabRfcs, { method: "POST", body }); setCreateRfc(initialRfc); }, "RFC dibuat dan masuk musyawarah.");
+  }
+
+  async function createResearch(event: React.FormEvent) {
+    event.preventDefault();
+    await perform(async () => { await client.request(API_PATHS.researchRuns, { method: "POST", body: createRun }); setCreateRun(initialRun); }, "Research run dikirim untuk persetujuan.");
+  }
+
+  if (!entity && restoringSession) return <div className="login-shell"><Panel manga as="section" className="login-card eol-manga-reveal"><div className="logo">◐ <strong>100CENTER</strong></div><p className="eyebrow">EMPIRE OF THE LIGHT · OPERATOR</p><h1>Memulihkan sesi</h1><p>Memeriksa sesi operator yang tersimpan.</p></Panel></div>;
+  if (!entity) return <div className="login-shell"><Panel manga as="section" className="login-card eol-manga-reveal"><div className="logo">◐ <strong>100CENTER</strong></div><p className="eyebrow">EMPIRE OF THE LIGHT · OPERATOR</p><h1>Masuk Command Center</h1><p>Gunakan akun operator lokal yang telah diprovisikan oleh administrator.</p>
+    {error && <Notice tone="danger">{error}</Notice>}
+    <form className="form-grid" onSubmit={signIn}><FieldLabel>Username<TextField autoComplete="username" value={login.username} onChange={e=>setLogin({...login,username:e.target.value})} required/></FieldLabel><FieldLabel>Password<TextField type="password" autoComplete="current-password" value={login.password} onChange={e=>setLogin({...login,password:e.target.value})} required/></FieldLabel><label className="remember-me"><input type="checkbox" checked={rememberMe} onChange={event=>setRememberMe(event.target.checked)}/><span>Ingat saya di perangkat ini selama 30 hari</span></label><Button type="submit" disabled={busy}>{busy?"Memeriksa…":"Masuk"}</Button></form>
+    <div className="login-health"><span>API {snapshot.health}</span><span>Database {snapshot.readiness}</span><Button variant="secondary" disabled={loading} onClick={()=>void refresh()}>Refresh</Button></div>
+  </Panel></div>;
+
+  const canCab = can(entity, "cab:read");
+  const canResearch = can(entity, "research:read");
+  const visibleAgents = agents.filter(item => `${item.term} ${item.code} ${item.role} ${item.tier}`.toLowerCase().includes(search.toLowerCase()));
+  const visibleLexicon = lexicon.filter(item => `${item.code} ${item.arabic} ${item.translit} ${item.term} ${item.attribute} ${item.domain}`.toLowerCase().includes(search.toLowerCase()));
+  const visibleChronicles = chronicles.filter(item => `${item.action} ${item.entity} ${item.user?.username} ${item.user?.displayName}`.toLowerCase().includes(search.toLowerCase()));
+  const visibleUsers = directory.filter(item => `${item.username} ${item.displayName} ${item.email} ${item.tier} ${item.status}`.toLowerCase().includes(search.toLowerCase()));
+  const visibleModules = snapshot.modules.filter(item => `${item.id} ${item.title} ${item.version} ${item.state}`.toLowerCase().includes(search.toLowerCase()));
+  const visibleRfcs = rfcs.filter(item => `${item.code} ${item.title} ${item.tier} ${item.riskLevel} ${item.status}`.toLowerCase().includes(search.toLowerCase()));
+  const visibleRuns = runs.filter(item => `${item.title} ${item.question} ${item.scope} ${item.status}`.toLowerCase().includes(search.toLowerCase()));
+  const pageTitle: Record<Page, string> = { overview: "Command overview", world: "World telemetry & monitoring", continuum: "Continuum control", directory: "Entity directory", knowledge: "Knowledge index", audit: "Audit ledger", cab: "Change advisory board", research: "Research operations" };
+  const pageDescription: Record<Page, string> = { overview: "A live view of system health, governance queues, and operator activity.", world: "Live planetary situation, regional node health, and Batteries DNA sensor fusion.", continuum: "Inspect the agent registry and record a controlled invocation.", directory: "Browse provisioned operators and service agents with server-provided roles.", knowledge: "Search the 99 Asma mappings with their editorial state and source notes.", audit: "Review recent actions recorded by the API, with searchable event history.", cab: "Review change proposals, policy checks, approvals, execution, and rollback.", research: "Manage approval, evidence, workflow, and completion for research runs." };
+  return <div className="shell"><aside className="sidebar"><a className="brand" href="#overview" onClick={e=>{e.preventDefault();setTab("overview");}}><span className="brand-mark">◈</span><span><strong>100CENTER</strong><small>EMPIRE OF THE LIGHT</small></span></a>
+    <div className="operator-card"><span className="avatar">{entity.displayName.slice(0,1).toUpperCase()}</span><span className="operator-meta"><strong>{entity.displayName}</strong><small>{entity.role} · {entity.username}</small></span><span className="online-dot" title="Sesi aktif"/></div>
+    <p className="nav-caption">OPERATIONS</p><div className="view-switcher" role="navigation" aria-label="Command Center sections">{[
+      ["overview","⌂","Overview",true],["world","🌐","World monitor",true],["continuum","✳","Continuum",can(entity,"continuum:read")],["directory","♙","Directory",can(entity,"users:manage")],["knowledge","⌘","Knowledge",can(entity,"continuum:read")],["audit","◷","Audit ledger",can(entity,"continuum:read")],["cab","⇄","Governance · CAB",canCab],["research","⌁","Research",canResearch],
+    ].filter((item)=>item[3]).map(([key,icon,label])=><MangaEffect as="button" action type="button" key={String(key)} className={`nav-item ${tab===key?"is-active":""}`} aria-current={tab===key?"page":undefined} onClick={()=>setTab(key as Page)}><span className="nav-icon">{icon}</span><span>{label}</span>{key==="cab"&&summary?.active? <em>{summary.active}</em>:null}{key==="research"&&runs.filter(run=>run.status==="pending_approval").length>0?<em>{runs.filter(run=>run.status==="pending_approval").length}</em>:null}</MangaEffect>)}</div>
+    <div className="sidebar-bottom"><div className="connection-card"><span className="online-dot" data-state={snapshot.readiness} aria-hidden="true"/><span><strong>Local cluster</strong><small>PostgreSQL · API :4000</small></span><Badge tone={snapshot.readiness==="ok"?"success":snapshot.readiness==="unavailable"?"danger":"warning"}>{snapshot.readiness}</Badge></div><MangaEffect as="button" action type="button" className="logout-button" onClick={()=>void perform(async()=>{await client.request(API_PATHS.logout,{method:"POST"});clearSession();},"Sesi ditutup.")}>↗ <span>Keluar dari sesi</span></MangaEffect><small className="build-label">A-L-L-A-H COMMAND CENTER · ARSY</small></div></aside>
+    <main><header className="topbar"><div className="breadcrumb"><span>COMMAND CENTER</span><b>/</b><strong>{pageTitle[tab]}</strong></div><div className="top-actions"><label className="global-search"><span>⌕</span><TextField className="global-search__input" id="global-search" type="search" value={search} onChange={event=>setSearch(event.target.value)} placeholder="Search this view…" aria-label="Search current view"/><kbd>/</kbd></label><span className="last-check">{snapshot.checkedAt?`Updated ${new Date(snapshot.checkedAt).toLocaleTimeString()}`:"Connecting…"}</span><Button variant="secondary" disabled={loading} onClick={()=>void refresh()}>{loading?"Syncing…":"↻ Sync"}</Button><a className="api-link" href={`${import.meta.env.VITE_API_ORIGIN||"http://127.0.0.1:4000"}${API_PATHS.openapi}`} target="_blank" rel="noreferrer" aria-label="Open API contract">⌘</a></div></header>
+      <MangaPageIntro className="page-heading" eyebrow="A-L-L-A-H · OPERATIONAL COMMAND" title={<span id="active-view-heading">{pageTitle[tab]}</span>} description={pageDescription[tab]} actions={<div className="health-cluster"><span><i data-state={snapshot.health}/><span>API {snapshot.health}</span></span><span><i data-state={snapshot.readiness}/><span>DATABASE {snapshot.readiness}</span></span></div>} />
+      {error&&<Notice tone="danger" className="notice">{error}</Notice>}{success&&<Notice tone="success" className="notice">{success}</Notice>}
+      <div id="active-view" role="region" aria-labelledby="active-view-heading">
+      {tab==="overview"&&<>
+        <MangaTelemetryHero
+          eyebrow={<>SYSTEM PULSE <span className="live-pill" data-state={snapshot.readiness}>● {snapshot.readiness.toUpperCase()}</span></>}
+          title={snapshot.readiness === "ok" ? "All local systems are responding" : "System needs attention"}
+          description="API gateway, PostgreSQL readiness, governance and research are refreshed every 30 seconds."
+          metadata={<><span>◷ {snapshot.checkedAt ? new Date(snapshot.checkedAt).toLocaleString() : "Awaiting first sync"}</span><span>⌘ {snapshot.capabilities.length} active capabilities</span><span>⌁ {String(continuum?.status ?? "pending")} continuum</span></>}
+          pulse="100"
+          sfx={snapshot.readiness === "ok" ? "PULSE!" : "ALERT!"}
+        />
+        <section id="overview"><div className="section-head"><h2>API Boundary</h2><div className="button-row"><a href={`${import.meta.env.VITE_API_ORIGIN||"http://127.0.0.1:4000"}${API_PATHS.openapi}`} target="_blank" rel="noreferrer">Kontrak OpenAPI</a><Button variant="secondary" disabled={loading} onClick={()=>void refresh()}>{loading?"Memeriksa…":"Refresh status"}</Button></div></div>
+          <div className="metrics"><Metric label="PROCESS HEALTH" value={snapshot.health}/><Metric label="DATABASE READINESS" value={snapshot.readiness}/><Metric label="LOGIN" value="Authenticated"/></div>
+          {summary&&<div className="metrics compact-metrics"><Metric label="CAB OPEN" value={summary.active}/><Metric label="HIGH RISK" value={summary.emergency}/><Metric label="RESEARCH RUNS" value={runs.length}/></div>}
+        </section>
+        <section id="modules"><div className="section-head"><h2>Module Registry</h2><span className="eyebrow">FIRST-PARTY · READ ONLY</span></div>{visibleModules.length?<div className="module-list">{visibleModules.map(m=><Panel manga as="article" key={m.id}><div><strong>{m.title}</strong><small>{m.id} · {m.version}</small></div><Badge tone={m.enabled?"success":"neutral"}>{m.enabled?"BOOTSTRAP":"SCAFFOLD"}</Badge></Panel>)}</div>:loading?<LoadingState label="Memuat modul…"/>:error?<ErrorState role="region" title="Registry modul tidak tersedia" description="Muat ulang registry untuk mencoba kembali." action={<Button variant="secondary" onClick={()=>void refresh()}>Coba lagi</Button>}/>:<EmptyState title={search?"No modules match":"Belum ada modul"} description={search?"Try a different search term.":"Registry berhasil dimuat, tetapi belum memiliki modul untuk ditampilkan."}/>}<p className="muted">Kapabilitas: {snapshot.capabilities.length?snapshot.capabilities.join(" · "):"Tidak ada kapabilitas aktif."}</p></section>
+        <section className="workspace-section"><div className="section-head"><div><span className="eyebrow">WORKSPACES</span><h2>Go to operations</h2></div><span className="muted">{entity.role} access</span></div><div className="workspace-grid">{[
+          ["world","🌐","World monitor","Global telemetry, regional nodes, and DNA sensor matrix",true],["continuum","✳","Continuum","Agent registry and invocation history",can(entity,"continuum:read")],["directory","♙","Entity directory","Provisioned users, roles, and status",can(entity,"users:manage")],["knowledge","⌘","Knowledge index","Search source and editorial mappings",can(entity,"continuum:read")],["audit","◷","Audit ledger","Review recent server recorded actions",can(entity,"continuum:read")],["cab","⇄","Governance board","Change proposals and approvals",canCab],["research","⌁","Research operations","Evidence and approval workflow",canResearch],
+        ].filter(item=>item[4]).map(([key,icon,title,description])=><MangaEffect as="button" type="button" key={String(key)} interactive className="workspace-card" onClick={()=>setTab(key as Page)}><span className="workspace-icon">{icon}</span><strong>{title}</strong><small>{description}</small><span className="workspace-arrow">Open workspace ↗</span></MangaEffect>)}</div></section>
+        <section className="activity-preview"><div className="section-head"><div><span className="eyebrow">RECENT ACTIVITY</span><h2>Latest events</h2></div><button className="text-button" onClick={()=>setTab("audit")}>Open ledger ↗</button></div>{chronicles.slice(0,5).length?<div className="event-list">{chronicles.slice(0,5).map(event=><EventRow key={event.id} event={event}/>)}</div>:<EmptyState title="No recent events" description="Audit events will appear here as operators use the system."/>}</section>
+      </>}
+      {tab==="world"&&(worldLoading&&!worldSnapshot?<LoadingState label="Memuat World Monitor…"/>:worldSnapshot?<WorldMonitorView snapshot={worldSnapshot} search={search} nextRefreshIn={worldNextRefreshIn} onRefresh={()=>{setWorldLoading(true);setWorldNextRefreshIn(30);api.request<WorldMonitoringSnapshot>(API_PATHS.worldMonitor).then(setWorldSnapshot).catch(()=>{}).finally(()=>setWorldLoading(false));}}/>:<LoadingState label="Connecting to World Monitor…"/>)}
+      {tab==="continuum"&&<><section className="metrics"><Metric label="REGISTERED AGENTS" value={agents.length}/><Metric label="ACTIVE AGENTS" value={agents.filter(agent=>agent.status==="active").length}/><Metric label="ASMA MAPPINGS" value={lexicon.length}/></section><section><div className="section-head"><div><span className="eyebrow">SERAPH REGISTRY</span><h2>Agent fleet</h2></div><Badge tone="info">Invocation is audit logged</Badge></div><div className="agent-grid">{visibleAgents.map(agent=><Panel manga as="article" key={agent.id} className="agent-card"><div className="agent-head"><span className="agent-symbol">✳</span><Badge tone={agent.status==="active"?"success":"warning"}>{agent.status}</Badge></div><h3>{agent.term}</h3><p className="agent-code">{agent.code} · {agent.tier}</p><p>{agent.role??"Continuum agent"}</p>{can(entity,"continuum:invoke")&&<form className="invoke-form" onSubmit={event=>{event.preventDefault();void perform(()=>client.request(`${API_PATHS.continuumAgents}/${encodeURIComponent(agent.code)}/invoke`,{method:"POST",body:{directive}}),`${agent.term} invocation recorded.`);}}><TextField aria-label={`Directive for ${agent.term}`} value={directive} onChange={event=>setDirective(event.target.value)} maxLength={500}/><Button disabled={busy||!directive.trim()} type="submit">Invoke agent ↗</Button></form>}</Panel>)}</div>{visibleAgents.length===0&&<EmptyState title="No agents match" description="Try a different search term."/>}</section><Notice role="note" className="notice-panel"><span aria-hidden="true">ⓘ</span><p>Agent invocation records an instruction in the local audit ledger. It does not execute external tools or claim a completed task.</p></Notice></>}
+      {tab==="directory"&&<><section className="metrics"><Metric label="TOTAL ENTITIES" value={directory.length}/><Metric label="OPERATORS" value={directory.filter(user=>!user.celestial).length}/><Metric label="SERVICE AGENTS" value={directory.filter(user=>user.celestial).length}/></section><section><div className="section-head"><div><span className="eyebrow">IDENTITY · RBAC</span><h2>Provisioned entities</h2></div><span className="muted">Directory is read only</span></div>{visibleUsers.length?<div className="table-wrap"><table className="data-table"><thead><tr><th>ENTITY</th><th>ROLE</th><th>TIER</th><th>TYPE</th><th>STATUS</th></tr></thead><tbody>{visibleUsers.map(user=><tr key={user.id}><td><strong>{user.displayName}</strong><small>{user.username}</small></td><td>{user.roles?.map(role=>role.name).join(", ")||"Unassigned"}</td><td>{user.tier}</td><td>{user.celestial?"Service agent":user.sovereign?"Sovereign":"Operator"}</td><td><Badge tone={user.status==="active"?"success":"warning"}>{user.status}</Badge></td></tr>)}</tbody></table></div>:<EmptyState title="No entities found" description="The directory returned no matching entities."/>}</section></>}
+      {tab==="knowledge"&&<><Notice role="note" className="notice-panel"><span aria-hidden="true">ⓘ</span><p>Entries are project mappings in editorial review. They are not verified theological definitions. Preserve cited sources and editorial status when using them.</p></Notice><section><div className="section-head"><div><span className="eyebrow">SOURCE INDEX</span><h2>Asma mappings <span className="count-chip">{visibleLexicon.length}</span></h2></div><Badge tone="warning">DRAFT REVIEW</Badge></div><div className="knowledge-grid">{visibleLexicon.map(entry=><MangaEffect as="details" interactive className="knowledge-card" key={entry.id}><summary><span className="knowledge-arabic">{entry.arabic||"◈"}</span><span className="knowledge-title"><strong>{entry.term}</strong><small>{entry.translit} · {entry.code}</small></span><Badge tone="neutral">{entry.editorialStatus}</Badge></summary><div className="knowledge-detail"><p><strong>Project attribute</strong><br/>{entry.attribute}</p><p><strong>Domain</strong><br/>{entry.domain}</p><p>{entry.wisdom}</p><small>Source note: {entry.revelations}</small></div></MangaEffect>)}</div>{visibleLexicon.length===0&&<EmptyState title="No mappings match" description="Try searching by Arabic, transliteration, term, or domain."/>}</section></>}
+      {tab==="audit"&&<section><div className="section-head"><div><span className="eyebrow">ILLIYYIN LEDGER</span><h2>Recorded activity</h2></div><div className="audit-controls"><span className="muted">Page {auditPage}</span><Button variant="secondary" disabled={auditPage<=1||loading} onClick={()=>setAuditPage(page=>Math.max(1,page-1))}>← Newer</Button><Button variant="secondary" disabled={chronicles.length<25||loading} onClick={()=>setAuditPage(page=>page+1)}>Older →</Button></div></div>{visibleChronicles.length?<MangaEffect panel className="event-list event-list-large">{visibleChronicles.map(event=><EventRow key={event.id} event={event} expanded/>)}</MangaEffect>:<EmptyState title="No matching audit events" description="Events are written as operators take actions."/>}</section>}
+      {tab==="cab"&&<>
+        <section><div className="section-head"><h2>Ringkasan CAB</h2><Button variant="secondary" disabled={loading} onClick={()=>void refresh()}>Muat ulang</Button></div><div className="metrics"><Metric label="Total RFC" value={summary?.total??0}/><Metric label="Dalam proses" value={summary?.active??0}/><Metric label="Selesai / rollback" value={`${summary?.completed??0} / ${summary?.reverted??0}`}/></div></section>
+        {can(entity,"cab:write")&&<section><h2>Ajukan perubahan</h2><form className="form-grid form-card" onSubmit={createChange}><FieldLabel>Judul<TextField required minLength={3} value={createRfc.title} onChange={e=>setCreateRfc({...createRfc,title:e.target.value})}/></FieldLabel><div className="form-row"><FieldLabel>Tingkat<SelectField value={createRfc.tier} onChange={e=>setCreateRfc({...createRfc,tier:e.target.value as CreateRfc["tier"]})}><option value="standard">Standard</option><option value="significant">Significant</option><option value="critical">Critical</option><option value="emergency">Emergency</option></SelectField></FieldLabel><FieldLabel>Risiko<SelectField value={createRfc.riskLevel} onChange={e=>setCreateRfc({...createRfc,riskLevel:e.target.value as CreateRfc["riskLevel"]})}><option value="low">Low</option><option value="moderate">Moderate</option><option value="high">High</option><option value="critical">Critical</option></SelectField></FieldLabel></div><FieldLabel>Layanan sasaran<TextField required minLength={3} value={createRfc.targetService} onChange={e=>setCreateRfc({...createRfc,targetService:e.target.value})}/></FieldLabel><FieldLabel>Ringkasan<TextArea required minLength={3} value={createRfc.summary} onChange={e=>setCreateRfc({...createRfc,summary:e.target.value})}/></FieldLabel><FieldLabel>Alasan<TextArea required minLength={3} value={createRfc.justification} onChange={e=>setCreateRfc({...createRfc,justification:e.target.value})}/></FieldLabel><FieldLabel>Rencana eksekusi<TextArea required minLength={3} value={createRfc.executionPlan} onChange={e=>setCreateRfc({...createRfc,executionPlan:e.target.value})}/></FieldLabel><FieldLabel>Rencana rollback<TextArea required minLength={30} value={createRfc.rollbackPlan} onChange={e=>setCreateRfc({...createRfc,rollbackPlan:e.target.value})}/></FieldLabel><div className="form-row"><FieldLabel>Mulai jadwal<TextField type="datetime-local" value={createRfc.scheduledWindowStart} onChange={e=>setCreateRfc({...createRfc,scheduledWindowStart:e.target.value})}/></FieldLabel><FieldLabel>Selesai jadwal<TextField type="datetime-local" value={createRfc.scheduledWindowEnd} onChange={e=>setCreateRfc({...createRfc,scheduledWindowEnd:e.target.value})}/></FieldLabel></div><Button type="submit" disabled={busy}>Ajukan RFC</Button></form></section>}
+        <section className="cab-layout"><div><div className="section-head"><h2>Daftar RFC</h2><span className="eyebrow">{visibleRfcs.length} ditampilkan</span></div>{visibleRfcs.length?<div className="rfc-list">{visibleRfcs.map(rfc=><MangaEffect as="button" action type="button" className={`rfc-item ${selected?.id===rfc.id?"rfc-selected":""}`} key={rfc.id} onClick={()=>void openRfc(rfc.id)}><span><strong>{rfc.title}</strong><small>{rfc.code} · {rfc.tier} · {rfc.riskLevel}</small></span><Badge tone={rfc.status==="approved"||rfc.status==="completed"?"success":rfc.status==="rejected"||rfc.status==="reverted"?"danger":"warning"}>{rfc.status}</Badge></MangaEffect>)}</div>:loading?<LoadingState label="Memuat daftar RFC…"/>:error?<ErrorState role="region" title="Daftar RFC tidak tersedia" description="Muat ulang daftar untuk mencoba kembali." action={<Button variant="secondary" onClick={()=>void refresh()}>Coba lagi</Button>}/>:<EmptyState title={search?"No RFC matches":"Belum ada RFC"} description={search?"Try a different search term.":"Tidak ada usulan perubahan yang dapat diakses pada konteks ini."}/>}</div>
+          <div className="rfc-detail">{selected?<><div className="section-head"><div><span className="eyebrow">{selected.code}</span><h2>{selected.title}</h2></div><Badge tone="warning">{selected.status}</Badge></div><p>{selected.summary}</p><dl><dt>Justifikasi</dt><dd>{selected.justification}</dd><dt>Target</dt><dd>{selected.targetService}</dd><dt>Rencana eksekusi</dt><dd>{selected.executionPlan}</dd><dt>Rencana rollback</dt><dd>{selected.rollbackPlan}</dd><dt>Policy round</dt><dd>{selected.auditRound}</dd></dl>
+            {selected.reviews?.length?<><h3>Review & policy checks</h3><ul>{selected.reviews.map((review,i)=><li key={`${review.reviewerRole}-${i}`}><strong>{review.reviewerRole}</strong> · {review.verdict} — {review.notes}</li>)}</ul></>:null}
+            {selected.executions?.length?<><h3>Riwayat eksekusi</h3><ul>{selected.executions.map((execution,i)=><li key={`${execution.action}-${i}`}>{execution.action} · {execution.outcome} · {new Date(execution.startedAt).toLocaleString()}</li>)}</ul></>:null}
+            <div className="action-row">
+              {selected.status==="deliberation"&&can(entity,"cab:audit")&&<Button variant="secondary" disabled={busy} onClick={()=>void perform(()=>client.request(`${API_PATHS.cabRfcs}/${selected.id}/audit`,{method:"POST",body:{}}),"Policy checks selesai dan tercatat.")}>Jalankan policy checks</Button>}
+              {selected.status==="deliberation"&&can(entity,"cab:review")&&!["critical","emergency"].includes(selected.tier)&&<>
+                <Button disabled={busy} onClick={()=>confirmRfcAction("Setujui perubahan?","Persetujuan akan dicatat pada riwayat musyawarah.","Setujui","primary","/vote",{verdict:"affirm"},"Persetujuan dicatat.")}>Setujui</Button>
+                <Button variant="secondary" disabled={busy} onClick={()=>confirmRfcAction("Minta klarifikasi?","RFC akan ditandai untuk dilengkapi sebelum dapat ditinjau ulang.","Minta klarifikasi","primary","/vote",{verdict:"inquire",notes:"Mohon lengkapi informasi agar dapat ditinjau ulang."},"Permintaan klarifikasi dicatat.")}>Minta klarifikasi</Button>
+                <Button variant="secondary" disabled={busy} onClick={()=>confirmRfcAction("Tolak perubahan?","Penolakan akan dicatat pada riwayat keputusan RFC.","Tolak perubahan","danger","/vote",{verdict:"dissent",notes:"Usulan tidak disetujui."},"Penolakan dicatat.")}>Tolak</Button>
+              </>}
+              {["critical","emergency"].includes(selected.tier)&&selected.status==="deliberation"&&entity.isSovereignAntiBypass&&<>
+                <Button disabled={busy} onClick={()=>confirmRfcAction("Keluarkan dekrit persetujuan?","Usulan berisiko kritis/darurat akan disetujui melalui kewenangan sovereign.","Setujui melalui dekrit","danger","/decree",{verdict:"approve"},"Dekrit persetujuan dicatat.")}>Dekrit setuju</Button>
+                <Button variant="secondary" disabled={busy} onClick={()=>confirmRfcAction("Veto usulan ini?","Veto akan mengakhiri deliberasi usulan dan dicatat sebagai keputusan sovereign.","Veto usulan","danger","/decree",{verdict:"veto"},"Veto dicatat.")}>Veto</Button>
+              </>}
+              {selected.status==="approved"&&can(entity,"cab:execute")&&<Button disabled={busy} onClick={()=>confirmRfcAction("Catat eksekusi RFC?","Tindakan eksekusi akan ditambahkan ke riwayat perubahan.","Catat eksekusi","primary","/execute",{},"Eksekusi dicatat.")}>Tandai selesai</Button>}
+              {selected.status==="completed"&&can(entity,"cab:execute")&&<Button variant="secondary" disabled={busy} onClick={()=>confirmRfcAction("Catat rollback RFC?","Tindakan pemulihan akan ditambahkan ke riwayat perubahan.","Catat rollback","danger","/rollback",{},"Rollback dicatat.")}>Catat rollback</Button>}
+            </div>
+          </>:<p className="muted">Pilih RFC untuk meninjau rincian dan tindakan yang diizinkan.</p>}</div></section>
+      </>}
+      {tab==="research"&&<>
+        {can(entity,"research:write")&&<section><h2>Ajukan riset</h2><form className="form-grid form-card" onSubmit={createResearch}><FieldLabel>Judul<TextField required minLength={3} value={createRun.title} onChange={e=>setCreateRun({...createRun,title:e.target.value})}/></FieldLabel><FieldLabel>Pertanyaan riset<TextArea required minLength={10} value={createRun.question} onChange={e=>setCreateRun({...createRun,question:e.target.value})}/></FieldLabel><FieldLabel>Cakupan<SelectField value={createRun.scope} onChange={e=>setCreateRun({...createRun,scope:e.target.value as ResearchRun["scope"]})}><option value="self">Self</option><option value="community">Community</option><option value="global">Global</option></SelectField></FieldLabel><Button type="submit" disabled={busy}>Kirim untuk persetujuan</Button></form></section>}
+        <section><div className="section-head"><h2>Daftar research run</h2><Button variant="secondary" disabled={loading} onClick={()=>void refresh()}>Muat ulang</Button></div>{visibleRuns.length?<div className="research-list">{visibleRuns.map(run=><ResearchCard key={run.id} run={run} entity={entity} client={client} busy={busy} onAction={perform} onConfirmAction={requestConfirmation} refreshKey={snapshot.checkedAt}/>)}</div>:loading?<LoadingState label="Memuat daftar riset…"/>:error?<ErrorState role="region" title="Daftar riset tidak tersedia" description="Muat ulang daftar untuk mencoba kembali." action={<Button variant="secondary" onClick={()=>void refresh()}>Coba lagi</Button>}/>:<EmptyState title={search?"No research runs match":"Belum ada riset"} description={search?"Try a different search term.":"Belum ada research run pada tenant ini."}/>}</section>
+      </>}
+      </div>
+      <ConfirmDialog
+        open={Boolean(confirmation)}
+        title={confirmation?.title ?? "Konfirmasi tindakan"}
+        description={confirmation?.description ?? ""}
+        confirmLabel={confirmation?.confirmLabel ?? "Konfirmasi"}
+        tone={confirmation?.tone}
+        busy={busy}
+        error={error}
+        onConfirm={confirmPendingAction}
+        onOpenChange={(open) => { if (!open && !busy) setConfirmation(null); }}
+      />
+      <footer>ONE VOCABULARY · HUMAN APPROVAL · EVERY JOURNEY MATTERS</footer>
+    </main></div>;
+}
+
+function Metric({label,value}:{label:string;value:string|number}) { const normalized=String(value).toLowerCase(); const state=normalized==="ok"||normalized==="operational"?"ok":normalized==="degraded"?"degraded":normalized==="unavailable"?"unavailable":undefined; return <Panel manga as="article"><small>{label}</small><strong data-state={state}>{value}</strong></Panel>; }
+
+function EventRow({event,expanded=false}:{event:Chronicle;expanded?:boolean}) {
+  return <article className={`event-row ${expanded?"event-row-expanded":""}`}><span className="event-marker">◦</span><div className="event-main"><div className="event-title"><strong>{event.action.replaceAll("_"," ")}</strong><Badge tone="neutral">{event.entity}</Badge></div><small>{event.user?.displayName??event.user?.username??"System"}{event.entityId?` · ${event.entityId}`:""}</small>{expanded&&event.payload&&<details className="event-payload"><summary>Event details</summary><pre>{JSON.stringify(event.payload,null,2)}</pre></details>}</div><time dateTime={event.createdAt}>{new Date(event.createdAt).toLocaleString()}</time></article>;
+}
+
+function ResearchCard({run,entity,client,busy,onAction,onConfirmAction,refreshKey}: {run:ResearchRun;entity:AuthEntity;client:typeof api;busy:boolean;onAction:(action:()=>Promise<unknown>,message:string)=>Promise<void>;onConfirmAction:(request:ConfirmationRequest)=>void;refreshKey?:string}) {
+  const [detail,setDetail]=useState<ResearchRun|null>(null);
+  const [title,setTitle]=useState(""); const [sourceUri,setSourceUri]=useState(""); const [excerpt,setExcerpt]=useState(""); const [provenance,setProvenance]=useState("{}"); const [resultSummary,setResultSummary]=useState("");
+  const [sourceFamily,setSourceFamily]=useState("other"); const [classification,setClassification]=useState("HYPOTHESIS");
+  useEffect(()=>{void client.request<ResearchRun>(`${API_PATHS.researchRuns}/${run.id}`).then(setDetail).catch(()=>setDetail(run));},[run.id,refreshKey]);
+  async function attachEvidence(event:FormEvent){event.preventDefault();let parsed:Record<string,unknown>;try{parsed=JSON.parse(provenance) as Record<string,unknown>;}catch{return;}await onAction(()=>client.request(`${API_PATHS.researchRuns}/${run.id}/evidence`,{method:"POST",body:{title,sourceUri,sourceFamily,classification,excerpt,provenance:parsed}}),"Bukti sumber tersimpan.");}
+  return <Panel manga as="article" className="research-card"><div className="section-head"><div><h3>{run.title}</h3><small>{run.scope} · {run.id}</small></div><Badge tone={run.status==="completed"?"success":run.status==="rejected"?"danger":"warning"}>{run.status}</Badge></div><p>{run.question}</p>{detail?.resultSummary&&<p><strong>Hasil:</strong> {detail.resultSummary}</p>}{detail?.approvals?.map((approval,i)=><p key={i} className="muted">Approval: {approval.decision}{approval.comments?` — ${approval.comments}`:""}</p>)}
+    {detail?.evidence?.map(item=><article key={item.id} className="evidence-item"><strong>{item.title}</strong><small>{item.sourceFamily} · {item.classification} · <a href={item.sourceUri} target="_blank" rel="noreferrer">sumber</a></small><p>{item.excerpt}</p></article>)}
+    <div className="action-row">
+      {run.status==="pending_approval"&&can(entity,"research:approve")&&<>
+        <Button disabled={busy} onClick={()=>onConfirmAction({title:"Setujui research run?",description:`${run.title} · ${run.id}\nPersetujuan akan membuat workflow dan job riset.`,confirmLabel:"Setujui riset",tone:"primary",successMessage:"Research run disetujui; workflow dan job dibuat.",action:()=>client.request(`${API_PATHS.researchRuns}/${run.id}/approval`,{method:"POST",body:{decision:"approved"}})})}>Setujui riset</Button>
+        <Button variant="secondary" disabled={busy} onClick={()=>onConfirmAction({title:"Tolak research run?",description:`${run.title} · ${run.id}\nPenolakan akan dicatat pada riwayat persetujuan.`,confirmLabel:"Tolak riset",tone:"danger",successMessage:"Penolakan dicatat.",action:()=>client.request(`${API_PATHS.researchRuns}/${run.id}/approval`,{method:"POST",body:{decision:"rejected"}})})}>Tolak riset</Button>
+      </>}
+    </div>
+    {(run.status==="queued"||run.status==="running")&&can(entity,"research:write")&&<><form className="form-grid evidence-form" onSubmit={attachEvidence}><strong>Tambahkan bukti</strong><FieldLabel>Judul sumber<TextField required value={title} onChange={e=>setTitle(e.target.value)}/></FieldLabel><FieldLabel>URL sumber<TextField type="url" required value={sourceUri} onChange={e=>setSourceUri(e.target.value)}/></FieldLabel><div className="form-row"><FieldLabel>Keluarga sumber<SelectField value={sourceFamily} onChange={e=>setSourceFamily(e.target.value)}><option value="quran">Qur'an</option><option value="torah">Torah</option><option value="psalms">Psalms</option><option value="gospels">Gospels</option><option value="other">Lainnya</option></SelectField></FieldLabel><FieldLabel>Klasifikasi<SelectField value={classification} onChange={e=>setClassification(e.target.value)}>{["SCRIPTURE_TEXT","TRADITION_INTERPRETATION","HISTORICAL_CLAIM","VERIFIED_MEASUREMENT","SCIENTIFIC_MODEL","HYPOTHESIS","PROJECT_NARRATIVE","PERSONAL_TESTIMONY"].map(item=><option key={item}>{item}</option>)}</SelectField></FieldLabel></div><FieldLabel>Kutipan / catatan<TextArea required value={excerpt} onChange={e=>setExcerpt(e.target.value)}/></FieldLabel><FieldLabel>Provenance JSON<TextArea value={provenance} onChange={e=>setProvenance(e.target.value)}/></FieldLabel><Button type="submit" disabled={busy}>Simpan bukti</Button></form><form className="form-grid evidence-form" onSubmit={event=>{event.preventDefault();void onAction(()=>client.request(`${API_PATHS.researchRuns}/${run.id}/complete`,{method:"POST",body:{resultSummary}}),"Research run selesai dan diaudit.");}}><FieldLabel>Ringkasan hasil<TextArea required minLength={3} value={resultSummary} onChange={e=>setResultSummary(e.target.value)}/></FieldLabel><Button type="submit" disabled={busy||!(detail?.evidence?.length)}>Selesaikan run</Button></form></>}
+    {detail?.workflow&&<p className="muted">Workflow: {detail.workflow.status}; job: {detail.workflow.jobs.map(job=>`${job.kind} (${job.status})`).join(", ")}</p>}
+  </Panel>;
+}

@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://empireofthelight.example/schemas/error.schema.json",
+  "title": "API Error Response",
+  "type": "object", "additionalProperties": false,
+  "required": ["status", "error"],
+  "properties": {
+    "status": { "const": "error" },
+    "error": { "$ref": "common.schema.json#/$defs/localizedError" }
+  }
+}

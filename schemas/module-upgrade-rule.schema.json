@@ -1,0 +1,25 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://empire.example/schemas/module-upgrade-rule.schema.json",
+  "title": "Reviewed Module Data Upgrade Rule Metadata",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["id", "moduleId", "fromVersion", "toVersion", "review"],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9:_-]{1,127}$" },
+    "moduleId": { "type": "string", "pattern": "^[a-z][a-z0-9-]{1,63}$" },
+    "fromVersion": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "toVersion": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "review": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["decision", "reviewer", "approvedAt", "reference"],
+      "properties": {
+        "decision": { "const": "APPROVED" },
+        "reviewer": { "type": "string", "minLength": 1 },
+        "approvedAt": { "type": "string", "format": "date-time" },
+        "reference": { "type": "string", "minLength": 1 }
+      }
+    }
+  }
+}

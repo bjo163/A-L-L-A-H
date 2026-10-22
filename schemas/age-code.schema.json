@@ -1,0 +1,109 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "title": "AGE CODE Policy",
+  "type": "object",
+  "required": [
+    "schemaVersion",
+    "standardId",
+    "categories",
+    "humanAgeBands",
+    "minimumIndependentOperatorAgeYears",
+    "roleFamilies",
+    "youthPolicy",
+    "scriptureAge",
+    "privacy"
+  ],
+  "properties": {
+    "schemaVersion": {
+      "type": "string"
+    },
+    "standardId": {
+      "const": "AGE_CODE"
+    },
+    "minimumIndependentOperatorAgeYears": {
+      "type": "integer",
+      "minimum": 18
+    },
+    "categories": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "required": [
+          "code",
+          "meaning",
+          "type"
+        ]
+      }
+    },
+    "humanAgeBands": {
+      "type": "array",
+      "minItems": 6,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "minInclusive",
+          "maxExclusive"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "minInclusive": {
+            "type": "integer",
+            "minimum": 0
+          },
+          "maxExclusive": {
+            "type": [
+              "integer",
+              "null"
+            ]
+          }
+        }
+      }
+    },
+    "roleFamilies": {
+      "type": "array",
+      "minItems": 5,
+      "items": {
+        "type": "object",
+        "required": [
+          "id",
+          "realOperatorMinimumAgeYears",
+          "roleAgeUpperLimitYears"
+        ],
+        "properties": {
+          "id": {
+            "type": "string"
+          },
+          "realOperatorMinimumAgeYears": {
+            "type": "integer",
+            "minimum": 18
+          },
+          "roleAgeUpperLimitYears": {
+            "type": "null"
+          }
+        }
+      }
+    },
+    "scriptureAge": {
+      "type": "object",
+      "required": [
+        "chronologicalAgeYears",
+        "evidenceStatus"
+      ],
+      "properties": {
+        "chronologicalAgeYears": {
+          "type": "null"
+        },
+        "evidenceStatus": {
+          "const": "NOT_SPECIFIED_AS_NUMERIC_AGE_IN_QURAN"
+        }
+      }
+    },
+    "privacy": {
+      "type": "object"
+    }
+  }
+}

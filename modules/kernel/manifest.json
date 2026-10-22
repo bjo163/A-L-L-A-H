@@ -1,0 +1,35 @@
+{
+  "id": "kernel",
+  "title": "Platform Kernel",
+  "version": "0.1.0",
+  "owner": "platform-core",
+  "state": "bootstrap_ready",
+  "dependencies": [],
+  "capabilities": [
+    "health",
+    "readiness",
+    "module-registry"
+  ],
+  "permissions": [
+    "module:read"
+  ],
+  "models": [
+    "roles",
+    "permissions",
+    "users",
+    "user_roles",
+    "role_permissions",
+    "audit_logs",
+    "dictionaries",
+    "lexicons",
+    "auth_sessions",
+    "tenants",
+    "tenant_memberships",
+    "module_installations"
+  ],
+  "upgrades": [],
+  "uiSlots": [
+    "settings.modules"
+  ],
+  "runMode": "first_party_allowlisted"
+}

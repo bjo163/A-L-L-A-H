@@ -1,0 +1,29 @@
+{
+  "id": "governance",
+  "title": "Amanah & Shura Governance",
+  "version": "0.1.0",
+  "owner": "governance",
+  "state": "bootstrap_ready",
+  "dependencies": [
+    "kernel"
+  ],
+  "capabilities": [
+    "mandates",
+    "approvals",
+    "appeals"
+  ],
+  "permissions": [
+    "governance:read",
+    "governance:approve"
+  ],
+  "models": [
+    "change_requests",
+    "change_reviews",
+    "change_executions"
+  ],
+  "upgrades": [],
+  "uiSlots": [
+    "settings.governance"
+  ],
+  "runMode": "first_party_allowlisted"
+}

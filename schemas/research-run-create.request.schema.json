@@ -1,0 +1,12 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://empireofthelight.example/schemas/research-run-create.request.schema.json",
+  "title": "Create Research Run Request",
+  "type": "object", "additionalProperties": false,
+  "required": ["title", "question", "scope"],
+  "properties": {
+    "title": { "type": "string", "minLength": 3, "maxLength": 200 },
+    "question": { "type": "string", "minLength": 10, "maxLength": 10000 },
+    "scope": { "enum": ["self", "community", "global"] }
+  }
+}

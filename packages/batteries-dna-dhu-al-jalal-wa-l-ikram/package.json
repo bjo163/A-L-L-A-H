@@ -1,0 +1,15 @@
+{
+  "name": "@empire/batteries-dna-dhu-al-jalal-wa-l-ikram",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Draft Batteries DNA reference only for Dhu al-Jalal wa-l-Ikram (Majesty); lexicon source dzul_jalal.",
+  "exports": {
+    ".": "./index.mjs",
+    "./manifest": "./manifest.json"
+  },
+  "files": [
+    "index.mjs",
+    "manifest.json"
+  ]
+}

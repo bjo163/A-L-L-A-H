@@ -1,0 +1,15 @@
+{
+  "name": "@empire/batteries-dna-nafi",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Draft Batteries DNA bounded project mapping for An-Nafi (Benefit); lexicon source nafi.",
+  "exports": {
+    ".": "./index.mjs",
+    "./manifest": "./manifest.json"
+  },
+  "files": [
+    "index.mjs",
+    "manifest.json"
+  ]
+}

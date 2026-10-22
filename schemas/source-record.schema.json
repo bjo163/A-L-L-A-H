@@ -1,0 +1,23 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://empireofthelight.example/schemas/source-record.schema.json",
+  "title": "Source Record",
+  "type": "object", "additionalProperties": false,
+  "required": ["id", "familyId", "title", "languageTag", "license", "status"],
+  "properties": {
+    "id": { "type": "string", "minLength": 1 },
+    "familyId": { "type": "string", "minLength": 1 },
+    "title": { "type": "string", "minLength": 1 },
+    "creator": { "type": "string" },
+    "publisher": { "type": "string" },
+    "edition": { "type": "string" },
+    "languageTag": { "$ref": "common.schema.json#/$defs/locale" },
+    "sourceUrl": { "type": "string", "format": "uri" },
+    "license": { "type": "string", "minLength": 1 },
+    "licenseUrl": { "type": "string", "format": "uri" },
+    "contentHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "publishedAt": { "type": "string", "format": "date" },
+    "retrievedAt": { "$ref": "common.schema.json#/$defs/dateTime" },
+    "status": { "enum": ["METADATA_ONLY", "LICENSE_REVIEW", "AVAILABLE", "WITHDRAWN"] }
+  }
+}

@@ -1,0 +1,40 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://empire.example/schemas/module-manifest.schema.json",
+  "title": "Allowlisted First-Party Module Manifest",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "id", "title", "version", "owner", "state", "dependencies",
+    "capabilities", "permissions", "models", "upgrades", "uiSlots", "runMode"
+  ],
+  "properties": {
+    "id": { "type": "string", "pattern": "^[a-z][a-z0-9-]{1,63}$" },
+    "title": { "type": "string", "minLength": 1 },
+    "version": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "owner": { "type": "string", "minLength": 1 },
+    "state": { "enum": ["bootstrap_ready", "scaffold_only", "ready", "deprecated"] },
+    "dependencies": { "$ref": "#/$defs/stringIds" },
+    "capabilities": { "$ref": "#/$defs/stringIds" },
+    "permissions": { "$ref": "#/$defs/stringIds" },
+    "models": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9_]{0,62}$" }
+    },
+    "upgrades": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "pattern": "^[a-z][a-z0-9:_-]{1,127}$" }
+    },
+    "uiSlots": { "$ref": "#/$defs/stringIds" },
+    "runMode": { "const": "first_party_allowlisted" }
+  },
+  "$defs": {
+    "stringIds": {
+      "type": "array",
+      "uniqueItems": true,
+      "items": { "type": "string", "minLength": 1 }
+    }
+  }
+}

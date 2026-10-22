@@ -1,0 +1,61 @@
+{
+  "schemaVersion": "0.1.0",
+  "status": "SOURCE_METADATA_ONLY",
+  "families": [
+    {
+      "familyId": "SRC-TOR",
+      "label": "Taurat / Torah traditions",
+      "tradition": "Jewish and Christian Torah/Pentateuch textual witnesses",
+      "referentConceptId": "S010",
+      "textConceptId": "T001",
+      "texts": [
+        "Genesis",
+        "Exodus",
+        "Leviticus",
+        "Numbers",
+        "Deuteronomy"
+      ],
+      "status": "METADATA_ONLY",
+      "licenseStatus": "SOURCE_EDITION_NOT_SELECTED"
+    },
+    {
+      "familyId": "SRC-ZAB",
+      "label": "Zabur / Psalms traditions",
+      "tradition": "Psalms witnesses in multiple numbering traditions",
+      "referentConceptId": "S011",
+      "textConceptId": "T002",
+      "texts": [
+        "Psalms"
+      ],
+      "status": "METADATA_ONLY",
+      "licenseStatus": "SOURCE_EDITION_NOT_SELECTED"
+    },
+    {
+      "familyId": "SRC-INJ",
+      "label": "Injil / Canonical Gospel traditions",
+      "tradition": "Christian canonical four Gospels; Islamic Injil referent remains separate",
+      "referentConceptId": "S012",
+      "textConceptId": "T003",
+      "texts": [
+        "Matthew",
+        "Mark",
+        "Luke",
+        "John"
+      ],
+      "status": "METADATA_ONLY",
+      "licenseStatus": "SOURCE_EDITION_NOT_SELECTED"
+    },
+    {
+      "familyId": "SRC-QUR",
+      "label": "Al-Qur'an / Quranic textual traditions",
+      "tradition": "Islamic Qur'an with edition, reading, translation, tafsir identity",
+      "referentConceptId": "S013",
+      "textConceptId": "T004",
+      "texts": [
+        "Qur'an"
+      ],
+      "status": "METADATA_ONLY",
+      "licenseStatus": "SOURCE_EDITION_NOT_SELECTED"
+    }
+  ]
+}

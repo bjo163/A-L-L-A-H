@@ -1,0 +1,15 @@
+{
+  "name": "@empire/batteries-dna-raqib",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Draft Batteries DNA bounded project mapping for Ar-Raqib (Watchfulness); lexicon source raqib.",
+  "exports": {
+    ".": "./index.mjs",
+    "./manifest": "./manifest.json"
+  },
+  "files": [
+    "index.mjs",
+    "manifest.json"
+  ]
+}

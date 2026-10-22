@@ -1,0 +1,21 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://empireofthelight.example/schemas/observation.schema.json",
+  "title": "Bounded World Observation",
+  "description": "An observation from an identified, authorized source. It never asserts omniscience or coverage beyond the recorded scope.",
+  "type": "object", "additionalProperties": false,
+  "required": ["id", "sourceId", "observedAt", "metric", "value", "unit", "provenance", "scope", "uncertainty"],
+  "properties": {
+    "id": { "$ref": "common.schema.json#/$defs/uuid" },
+    "sourceId": { "type": "string", "minLength": 1 },
+    "observedAt": { "$ref": "common.schema.json#/$defs/dateTime" },
+    "metric": { "type": "string", "minLength": 1 },
+    "value": { "type": ["number", "string", "boolean", "null"] },
+    "unit": { "type": "string", "minLength": 1 },
+    "calibration": { "type": "object", "additionalProperties": false, "properties": { "status": { "enum": ["calibrated", "uncalibrated", "unknown", "not_applicable"] }, "reference": { "type": "string" }, "calibratedAt": { "$ref": "common.schema.json#/$defs/dateTime" }, "validUntil": { "$ref": "common.schema.json#/$defs/dateTime" } } },
+    "provenance": { "$ref": "common.schema.json#/$defs/provenance" },
+    "scope": { "type": "object", "additionalProperties": false, "required": ["description"], "properties": { "description": { "type": "string", "minLength": 1 }, "coverage": { "type": "string" }, "limitations": { "type": "array", "items": { "type": "string" } }, "authorizationId": { "type": "string" } } },
+    "uncertainty": { "$ref": "common.schema.json#/$defs/uncertainty" },
+    "quality": { "enum": ["valid", "suspect", "invalid", "unknown"] }
+  }
+}

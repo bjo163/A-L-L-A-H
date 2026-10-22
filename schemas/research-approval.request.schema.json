@@ -1,0 +1,11 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://empireofthelight.example/schemas/research-approval.request.schema.json",
+  "title": "Research Approval Request",
+  "type": "object", "additionalProperties": false,
+  "required": ["decision"],
+  "properties": {
+    "decision": { "enum": ["approved", "rejected"] },
+    "comments": { "type": "string", "maxLength": 5000 }
+  }
+}

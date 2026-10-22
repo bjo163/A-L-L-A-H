@@ -1,0 +1,15 @@
+{
+  "name": "@empire/batteries-dna-muakhkhir",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "description": "Draft Batteries DNA bounded project mapping for Al-Mu'akhkhir (Delaying); lexicon source muakhkhir.",
+  "exports": {
+    ".": "./index.mjs",
+    "./manifest": "./manifest.json"
+  },
+  "files": [
+    "index.mjs",
+    "manifest.json"
+  ]
+}

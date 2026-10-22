@@ -1,0 +1,50 @@
+{
+  "schemaVersion": "1.0.0",
+  "tests": [
+    {
+      "id": "UNI-01",
+      "query": "Arsy",
+      "expected": [
+        "S009",
+        "P002"
+      ],
+      "rule": "Must disambiguate theological al-'Arsh versus software technology"
+    },
+    {
+      "id": "UNI-02",
+      "query": "Injil",
+      "expected": [
+        "S012",
+        "T003"
+      ],
+      "rule": "Never conflate Islamic scripture referent with four canonical Gospel text witnesses"
+    },
+    {
+      "id": "UNI-03",
+      "query": "Mizan",
+      "expected": [
+        "S004",
+        "U010"
+      ],
+      "rule": "Theological balance not identical to operational fairness scoring"
+    },
+    {
+      "id": "UNI-04",
+      "query": "Raqib Atid angels",
+      "expected": [
+        "W07",
+        "W08"
+      ],
+      "rule": "Descriptor provenance cannot be asserted as Quran-explicit personal names"
+    },
+    {
+      "id": "UNI-05",
+      "query": "God 99 permissions",
+      "expected": [
+        "P008",
+        "P022"
+      ],
+      "rule": "Persona never grants authorization; requires real human mandate"
+    }
+  ]
+}

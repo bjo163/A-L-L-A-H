@@ -1,0 +1,18 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://empireofthelight.example/schemas/approval.schema.json",
+  "title": "Human Approval Record",
+  "type": "object", "additionalProperties": false,
+  "required": ["id", "tenantId", "subjectId", "approverId", "decision", "decidedAt"],
+  "properties": {
+    "id": { "$ref": "common.schema.json#/$defs/uuid" },
+    "tenantId": { "$ref": "common.schema.json#/$defs/uuid" },
+    "subjectId": { "$ref": "common.schema.json#/$defs/uuid" },
+    "approverId": { "$ref": "common.schema.json#/$defs/uuid" },
+    "decision": { "enum": ["approved", "rejected", "revoked"] },
+    "comments": { "type": "string", "maxLength": 5000 },
+    "decidedAt": { "$ref": "common.schema.json#/$defs/dateTime" },
+    "expiresAt": { "$ref": "common.schema.json#/$defs/dateTime" },
+    "policyVersion": { "type": "string", "minLength": 1 }
+  }
+}

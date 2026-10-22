@@ -1,0 +1,10 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://empireofthelight.example/schemas/research-evidence-create.request.schema.json",
+  "title": "Research Evidence Request",
+  "description": "Transitional request contract. New clients should use the v2 structured source/provenance shape; v1 remains accepted for compatibility.",
+  "oneOf": [
+    { "$ref": "research-evidence-create.v1.request.schema.json" },
+    { "$ref": "research-evidence-create.v2.request.schema.json" }
+  ]
+}

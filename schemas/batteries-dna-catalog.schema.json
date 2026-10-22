@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://empireofthelight.example/schemas/batteries-dna-catalog.schema.json",
+  "title": "Batteries DNA Asma Mapping Package Catalog",
+  "description": "A draft, source-linked lexicon catalog and bounded project analogies. Capability strings are proposed identifiers only. The catalog is not a theological authority, executable capability registry, or claim of divine capability for software.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schemaVersion", "registryId", "language", "locales", "source", "mappingRelation", "authorityGranted", "runtimeEnabled", "description", "packages"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "registryId": { "const": "BATTERIES_DNA_ASMA_99" },
+    "language": { "const": "en" },
+    "locales": { "type": "array", "const": ["en"] },
+    "source": { "type": "object", "additionalProperties": false, "required": ["path", "policyReference", "sourceType", "editorialStatus", "listBasis", "references"], "properties": {
+      "path": { "type": "string", "minLength": 1 }, "policyReference": { "type": "string", "minLength": 1 },
+      "sourceType": { "const": "project_mapping_seed" }, "editorialStatus": { "const": "DRAFT_REVIEW" },
+      "listBasis": { "type": "string", "minLength": 1 },
+      "references": { "type": "array", "minItems": 1, "items": { "type": "object", "additionalProperties": false, "required": ["title", "url", "use"], "properties": { "title": { "type": "string", "minLength": 1 }, "url": { "type": "string", "pattern": "^https://[^\\s]+$" }, "use": { "type": "string", "minLength": 1 } } } }
+    } },
+    "mappingRelation": { "const": "inspiredBy" },
+    "authorityGranted": { "const": false },
+    "runtimeEnabled": { "const": false },
+    "description": { "type": "string", "minLength": 1 },
+    "packages": { "type": "array", "minItems": 99, "maxItems": 99, "items": { "$ref": "#/$defs/package" } }
+  },
+  "$defs": {
+    "package": { "type": "object", "additionalProperties": false, "required": ["number", "name", "id", "code", "lexiconCode", "arabic", "transliteration", "label", "attribute", "domain", "wisdom", "mapping", "capability", "recordType", "relation", "scope", "limitations", "status", "authorityGranted", "runtimeEnabled"], "properties": {
+      "number": { "type": "integer", "minimum": 1, "maximum": 99 },
+      "name": { "type": "string", "pattern": "^@empire/batteries-dna-[a-z0-9]+(?:-[a-z0-9]+)*$" },
+      "id": { "type": "string", "pattern": "^dna-[a-z0-9]+(?:-[a-z0-9]+)*$" },
+      "code": { "type": "string", "pattern": "^[a-z0-9]+(?:_[a-z0-9]+)*$" },
+      "lexiconCode": { "type": "string", "pattern": "^[a-z0-9]+(?:_[a-z0-9]+)*$" },
+      "arabic": { "type": "string", "minLength": 1 },
+      "transliteration": { "type": "string", "minLength": 1 },
+      "label": { "type": "string", "minLength": 1 },
+      "attribute": { "type": "string", "minLength": 1 },
+      "domain": { "type": "string", "minLength": 1 },
+      "wisdom": { "type": "string", "minLength": 1, "description": "Legacy source mapping note, not a theological definition." },
+      "mapping": { "type": ["string", "null"], "minLength": 1 },
+      "capability": { "type": ["string", "null"], "pattern": "^[a-z][a-z0-9]+(?:-[a-z0-9]+)*$" },
+      "recordType": { "enum": ["bounded_project_mapping", "reference_only"] },
+      "relation": { "enum": ["inspiredBy", null] },
+      "scope": { "type": "string", "minLength": 1 },
+      "limitations": { "type": "array", "minItems": 1, "items": { "type": "string", "minLength": 1 } },
+      "status": { "const": "DRAFT_REVIEW" },
+      "authorityGranted": { "const": false },
+      "runtimeEnabled": { "const": false }
+    }, "allOf": [
+      { "if": { "properties": { "recordType": { "const": "reference_only" } }, "required": ["recordType"] }, "then": { "properties": { "capability": { "const": null }, "mapping": { "const": null }, "relation": { "const": null } } } },
+      { "if": { "properties": { "recordType": { "const": "bounded_project_mapping" } }, "required": ["recordType"] }, "then": { "properties": { "capability": { "type": "string", "minLength": 1 }, "mapping": { "type": "string", "minLength": 1 }, "relation": { "const": "inspiredBy" } } } }
+    ] }
+  }
+}

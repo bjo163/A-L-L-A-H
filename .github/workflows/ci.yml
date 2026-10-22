@@ -1,0 +1,84 @@
+name: CI
+
+on:
+  push:
+    branches: [dev, main]
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  branch-policy:
+    name: Branch policy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Enforce dev to main
+        env:
+          EVENT: ${{ github.event_name }}
+          HEAD: ${{ github.head_ref }}
+          BASE: ${{ github.base_ref }}
+          HEAD_REPO: ${{ github.event.pull_request.head.repo.full_name }}
+          REPO: ${{ github.repository }}
+          BRANCH: ${{ github.ref_name }}
+        run: |
+          if [[ "$EVENT" == "pull_request" ]]; then
+            [[ "$HEAD" == "dev" && "$BASE" == "main" && "$HEAD_REPO" == "$REPO" ]] || {
+              echo 'Only dev -> main from this repository is allowed.'; exit 1;
+            }
+          else
+            [[ "$BRANCH" == "dev" || "$BRANCH" == "main" ]]
+          fi
+
+  quality:
+    name: Quality checks
+    needs: branch-policy
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    env:
+      NEXT_TELEMETRY_DISABLED: '1'
+      TURBO_TELEMETRY_DISABLED: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+      - uses: pnpm/action-setup@d9184bf108216479bc5a137cc391f4d7b14c870b # v6.1.0
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm run validate
+      - run: pnpm run module:test
+      - run: node --test scripts/tests/*.test.mjs
+      - run: pnpm exec turbo run test
+      - run: pnpm run build
+      - run: pnpm run typecheck
+      - name: Dependency vulnerabilities (high and critical)
+        run: pnpm audit --prod --audit-level high
+
+  release:
+    name: Version and changelog
+    if: github.event_name == 'push'
+    needs: quality
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    concurrency:
+      group: release-ledger
+      queue: max
+      cancel-in-progress: false
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+          persist-credentials: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+      - name: Publish versioned source and changelog
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node scripts/release.mjs

@@ -1,0 +1,197 @@
+:root {
+  /* Base palette: identity and neutral material. */
+  --eol-palette-ink-950: #211d16;
+  --eol-palette-ink-900: #fff9e9;
+  --eol-palette-ink-925: #f5edda;
+  --eol-palette-ink-850: #f4e9cc;
+  --eol-palette-ink-800: #e9dbb7;
+  --eol-palette-slate-700: #d7c8a8;
+  --eol-palette-slate-600: #a99978;
+  --eol-palette-slate-550: #857657;
+  --eol-palette-slate-400: #776d5b;
+  --eol-palette-slate-300: #5b5140;
+  --eol-palette-slate-200: #463d30;
+  --eol-palette-white: #29251d;
+  --eol-palette-cyan-950: #fff9e9;
+  --eol-palette-cyan-900: #e5efc8;
+  --eol-palette-cyan-600: #73943d;
+  --eol-palette-cyan-400: #e7a91f;
+  --eol-palette-cyan-300: #dc9915;
+  --eol-palette-cyan-100: #a94f23;
+  --eol-palette-green-950: #e5efc8;
+  --eol-palette-green-600: #73943d;
+  --eol-palette-green-300: #425d29;
+  --eol-palette-amber-950: #f8e4b1;
+  --eol-palette-amber-700: #a85f28;
+  --eol-palette-amber-300: #75451f;
+  --eol-palette-gold-400: #d98514;
+  --eol-palette-red-950: #f7dfd4;
+  --eol-palette-red-700: #b84c36;
+  --eol-palette-red-300: #803321;
+  --eol-palette-red-400: #a93f2c;
+
+  /* Semantic aliases: components use these instead of palette values. */
+  --eol-color-background: var(--eol-palette-ink-950);
+  --eol-color-surface: var(--eol-palette-ink-900);
+  --eol-color-surface-raised: var(--eol-palette-ink-850);
+  --eol-color-surface-inset: var(--eol-palette-ink-925);
+  --eol-color-surface-action: var(--eol-palette-ink-800);
+  --eol-color-border: var(--eol-palette-slate-700);
+  --eol-color-border-strong: var(--eol-palette-slate-550);
+  --eol-color-text: var(--eol-palette-white);
+  --eol-color-text-muted: var(--eol-palette-slate-400);
+  --eol-color-text-subtle: var(--eol-palette-slate-200);
+  --eol-color-text-inverse: var(--eol-palette-cyan-950);
+  --eol-color-accent: var(--eol-palette-cyan-400);
+  --eol-color-accent-border: var(--eol-palette-cyan-600);
+  --eol-color-accent-strong: var(--eol-palette-cyan-100);
+  --eol-color-accent-subtle: #e7a91f24;
+  --eol-color-focus: var(--eol-palette-cyan-400);
+  --eol-color-gold: var(--eol-palette-gold-400);
+  --eol-color-danger: var(--eol-palette-red-400);
+
+  /* Status colors are paired foreground, surface, and border tokens. */
+  --eol-status-neutral-foreground: var(--eol-palette-slate-300);
+  --eol-status-neutral-surface: #1a2430;
+  --eol-status-neutral-border: #536373;
+  --eol-status-info-foreground: var(--eol-palette-cyan-300);
+  --eol-status-info-surface: var(--eol-palette-cyan-900);
+  --eol-status-info-border: var(--eol-palette-cyan-600);
+  --eol-status-success-foreground: var(--eol-palette-green-300);
+  --eol-status-success-surface: var(--eol-palette-green-950);
+  --eol-status-success-border: var(--eol-palette-green-600);
+  --eol-status-warning-foreground: var(--eol-palette-amber-300);
+  --eol-status-warning-surface: var(--eol-palette-amber-950);
+  --eol-status-warning-border: var(--eol-palette-amber-700);
+  --eol-status-danger-foreground: var(--eol-palette-red-300);
+  --eol-status-danger-surface: var(--eol-palette-red-950);
+  --eol-status-danger-border: var(--eol-palette-red-700);
+
+  /* Spacing, control size, and reading measure. */
+  --eol-space-0: 0;
+  --eol-space-1: 0.25rem;
+  --eol-space-2: 0.5rem;
+  --eol-space-3: 0.75rem;
+  --eol-space-4: 1rem;
+  --eol-space-5: 1.25rem;
+  --eol-space-6: 1.5rem;
+  --eol-space-8: 2rem;
+  --eol-space-10: 2.5rem;
+  --eol-space-12: 3rem;
+  --eol-control-size-sm: 2.25rem;
+  --eol-control-size-md: 2.75rem;
+  --eol-control-size-lg: 3rem;
+  --eol-badge-min-height: 1.5rem;
+  --eol-content-width: 68ch;
+  --eol-workspace-width: 90rem;
+  --eol-sidebar-width: 15rem;
+  --eol-layout-gutter: var(--eol-space-6);
+  --eol-layout-grid-gap: var(--eol-space-4);
+  --eol-layout-grid-min: 16rem;
+  --eol-size-icon-sm: 1rem;
+  --eol-size-icon-md: 1.25rem;
+  --eol-size-icon-lg: 1.5rem;
+
+  /* Typography roles; applications may set their own display face. */
+  --eol-font-sans: "Space Grotesk Variable", Inter, ui-sans-serif, system-ui, sans-serif;
+  --eol-font-mono: "DM Mono", ui-monospace, SFMono-Regular, Consolas, monospace;
+  --eol-font-size-xs: 0.6875rem;
+  --eol-font-size-2xs: 0.625rem;
+  --eol-font-size-sm: 0.75rem;
+  --eol-font-size-md: 0.875rem;
+  --eol-font-size-lg: 1rem;
+  --eol-font-size-xl: 1.25rem;
+  --eol-font-size-2xl: 1.5rem;
+  --eol-font-size-3xl: 2rem;
+  --eol-font-weight-regular: 400;
+  --eol-font-weight-medium: 500;
+  --eol-font-weight-semibold: 600;
+  --eol-font-weight-bold: 700;
+  --eol-line-height-tight: 1.25;
+  --eol-line-height-normal: 1.5;
+  --eol-line-height-relaxed: 1.7;
+  --eol-letter-spacing-label: 0.09em;
+
+  /* Shape, border, focus, and layer order. */
+  --eol-radius-none: 0;
+  --eol-radius-sm: 6px;
+  --eol-radius-md: 12px;
+  --eol-radius-lg: 18px;
+  --eol-radius-full: 999px;
+  --eol-border-width: 1px;
+  --eol-border-width-strong: 2px;
+  --eol-border-width-notice: 3px;
+  --eol-icon-stroke: 1.75;
+  --eol-elevation-panel: 0 8px 24px #49371814;
+  --eol-elevation-popover: 0 12px 32px #49371824;
+  --eol-elevation-dialog: 0 20px 48px #49371838;
+  --eol-focus-width: 2px;
+  --eol-focus-offset: 3px;
+  --eol-layer-base: 0;
+  --eol-layer-menu: 20;
+  --eol-layer-overlay: 40;
+  --eol-layer-dialog: 60;
+  --eol-layer-notice: 80;
+  --eol-layer-tooltip: 100;
+
+  /* Motion and disabled-state treatment. */
+  --eol-motion-fast: 160ms;
+  --eol-motion-normal: 220ms;
+  --eol-motion-slow: 320ms;
+  --eol-easing-standard: ease;
+  --eol-opacity-disabled: 0.55;
+  --eol-texture-lines: repeating-radial-gradient(ellipse at 0% 50%, transparent 0 13px, #d9851422 14px 15px, transparent 16px 27px);
+  --eol-texture-grid: linear-gradient(#7564430a 1px, transparent 1px), linear-gradient(90deg, #7564430a 1px, transparent 1px);
+}
+
+/* Light semantic palette. Consumers opt in with data-theme="light" on the root. */
+:root[data-theme="light"] {
+  --eol-palette-light-neutral-0: #ffffff;
+  --eol-palette-light-neutral-50: #fff9e9;
+  --eol-palette-light-neutral-100: #f5edda;
+  --eol-palette-light-neutral-150: #f4e9cc;
+  --eol-palette-light-neutral-200: #e9dbb7;
+  --eol-palette-light-neutral-400: #d7c8a8;
+  --eol-palette-light-neutral-600: #a99978;
+  --eol-palette-light-neutral-750: #776d5b;
+  --eol-palette-light-neutral-850: #463d30;
+  --eol-palette-light-neutral-950: #29251d;
+  --eol-palette-light-cyan-700: #a94f23;
+  --eol-palette-light-cyan-750: #793b20;
+  --eol-palette-light-cyan-border: #d98514;
+
+  --eol-color-background: var(--eol-palette-light-neutral-50);
+  --eol-color-surface: var(--eol-palette-light-neutral-0);
+  --eol-color-surface-raised: var(--eol-palette-light-neutral-150);
+  --eol-color-surface-inset: var(--eol-palette-light-neutral-100);
+  --eol-color-surface-action: var(--eol-palette-light-neutral-200);
+  --eol-color-border: var(--eol-palette-light-neutral-400);
+  --eol-color-border-strong: var(--eol-palette-light-neutral-600);
+  --eol-color-text: var(--eol-palette-light-neutral-950);
+  --eol-color-text-muted: var(--eol-palette-light-neutral-750);
+  --eol-color-text-subtle: var(--eol-palette-light-neutral-850);
+  --eol-color-text-inverse: #ffffff;
+  --eol-color-accent: var(--eol-palette-light-cyan-700);
+  --eol-color-accent-border: var(--eol-palette-light-cyan-border);
+  --eol-color-accent-strong: var(--eol-palette-light-cyan-750);
+  --eol-color-accent-subtle: #e7a91f24;
+  --eol-color-focus: var(--eol-palette-light-cyan-700);
+  --eol-color-gold: #80602b;
+  --eol-color-danger: #a3443f;
+
+  --eol-status-neutral-foreground: #465852;
+  --eol-status-neutral-surface: #e7eeeb;
+  --eol-status-neutral-border: #9eb1aa;
+  --eol-status-info-foreground: #15566b;
+  --eol-status-info-surface: #e1f0f3;
+  --eol-status-info-border: #7faeb8;
+  --eol-status-success-foreground: #1c6248;
+  --eol-status-success-surface: #e0efe7;
+  --eol-status-success-border: #83ad98;
+  --eol-status-warning-foreground: #705018;
+  --eol-status-warning-surface: #f4eddb;
+  --eol-status-warning-border: #c8ad72;
+  --eol-status-danger-foreground: #873b39;
+  --eol-status-danger-surface: #f4e3e1;
+  --eol-status-danger-border: #c78983;
+}

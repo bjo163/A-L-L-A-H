@@ -1,0 +1,342 @@
+import { useEffect, useState } from "react";
+import { createRoot } from "react-dom/client";
+import { Badge, Button, buttonClassName, ConfirmDialog, EmptyState, ErrorState, FieldError, FieldLabel, HelpText, LoadingState, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, Notice, Panel, SectionHeading, SelectField, Skeleton, StatGrid, Switch, Tabs, TextArea, TextField } from "../src";
+import "../src/styles.css";
+import "../src/manga-theme.css";
+import "./catalog.css";
+
+function Catalog() {
+  const [busy, setBusy] = useState(false);
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+  const [activeTab, setActiveTab] = useState("overview");
+  const [confirmOpen, setConfirmOpen] = useState(false);
+  const [confirmBusy, setConfirmBusy] = useState(false);
+  const [confirmError, setConfirmError] = useState<string>();
+  const [announcements, setAnnouncements] = useState<Array<{ id: number; tone: "success" | "danger"; role: "status" | "alert" }>>([]);
+  const tabItems = [
+    { value: "overview", label: "Overview", content: <TabMountExample name="Overview" /> },
+    { value: "details", label: "Details", content: <TabMountExample name="Details" /> },
+    { value: "long-label", label: "UnbrokenLabelForNarrowViewportsAndTranslatedContent", content: <TabMountExample name="Long label" /> },
+    { value: "disabled", label: "Unavailable", content: <p>This panel is unavailable.</p>, disabled: true },
+  ];
+  function setPreviewTheme(isLight: boolean) {
+    const next = isLight ? "light" : "dark";
+    document.documentElement.dataset.theme = next;
+    setTheme(next);
+    const canvas = getComputedStyle(document.documentElement)
+      .getPropertyValue("--eol-color-background")
+      .trim();
+    document.querySelector('meta[name="theme-color"]')?.setAttribute("content", canvas);
+  }
+
+  function openConfirmationPreview() {
+    setConfirmError(undefined);
+    setConfirmBusy(false);
+    setConfirmOpen(true);
+  }
+
+  function simulateConfirmationFailure() {
+    setConfirmBusy(true);
+    window.setTimeout(() => {
+      setConfirmBusy(false);
+      setConfirmError("Preview only: the example request was not sent.");
+    }, 900);
+  }
+
+  const tokenSamples = [
+    ["Background", "--eol-color-background"],
+    ["Surface", "--eol-color-surface"],
+    ["Raised", "--eol-color-surface-raised"],
+    ["Border", "--eol-color-border"],
+    ["Strong border", "--eol-color-border-strong"],
+    ["Text", "--eol-color-text"],
+    ["Muted text", "--eol-color-text-muted"],
+    ["Accent", "--eol-color-accent"],
+    ["Focus", "--eol-color-focus"],
+  ];
+
+  return (
+    <main className="catalog-shell">
+      <header className="catalog-header">
+        <p className="catalog-eyebrow">EMPIRE OF THE LIGHT / MANGA EDITION</p>
+        <h1>Stories in every line.</h1>
+        <p>
+          A lively shared visual language: inked panels, screentone, dramatic
+          motion, and a few well-timed sound effects.
+        </p>
+        <MangaSfx text="ZAP!" className="catalog-sfx" />
+        <span className="catalog-burst" aria-hidden="true" />
+        <Switch checked={theme === "light"} onCheckedChange={setPreviewTheme} aria-label="Preview light theme">
+          Preview light theme
+        </Switch>
+      </header>
+
+      <section className="manga-showcase" aria-label="Manga visual effects preview">
+        <MangaEffect as="article" panel screentone className="manga-panel manga-panel--hero">
+          <span className="manga-panel__index">01 / THE BIG PICTURE</span>
+          <span className="manga-panel__screentone" aria-hidden="true" />
+          <span className="manga-panel__burst" aria-hidden="true" />
+          <p className="manga-panel__copy">A universe of ideas,<br /><strong>drawn together.</strong></p>
+          <MangaSfx text="BAM!" className="manga-panel__sfx" />
+          <span className="manga-panel__caption">THE STORY SO FAR →</span>
+        </MangaEffect>
+        <MangaEffect as="article" panel speedLines className="manga-panel manga-panel--motion">
+          <span className="manga-panel__index">02 / KEEP IT MOVING</span>
+          <span className="manga-panel__motion-lines" aria-hidden="true" />
+          <MangaOrbit className="catalog-manga-orbit" />
+          <div className="manga-speech">Clear tools.<br /><b>Big energy.</b><i aria-hidden="true" /></div>
+          <MangaSfx text="WHOOSH" className="manga-panel__sfx manga-panel__sfx--small" />
+          <span className="manga-panel__caption">MOTION WITH A PURPOSE</span>
+        </MangaEffect>
+      </section>
+
+      <section className="catalog-section" aria-labelledby="buttons-heading">
+        <div className="catalog-section-heading">
+          <div>
+            <p className="catalog-eyebrow">ACTIONS</p>
+            <h2 id="buttons-heading">Buttons</h2>
+          </div>
+          <p>Use a clear verb and reserve the primary style for the main action.</p>
+        </div>
+        <Panel className="catalog-card catalog-row">
+          <Button onClick={() => setBusy((value) => !value)}>
+            {busy ? "Finish example" : "Primary action"}
+          </Button>
+          <Button variant="secondary">Secondary action</Button>
+          <Button variant="quiet">Quiet action</Button>
+          <Button disabled>Unavailable</Button>
+          <a className={buttonClassName("secondary")} href="#tokens-heading">Anchor action</a>
+        </Panel>
+        <p className="catalog-caption" aria-live="polite">
+          {busy
+            ? "The primary control is responding to input."
+            : "Controls use native button semantics and can be reached by keyboard."}
+        </p>
+      </section>
+
+      <section className="catalog-section" aria-labelledby="tabs-heading">
+        <div className="catalog-section-heading">
+          <div>
+            <p className="catalog-eyebrow">KEYBOARD NAVIGATION</p>
+            <h2 id="tabs-heading">Tabs</h2>
+          </div>
+          <p>Use arrow keys to move and activate, with Home/End shortcuts and one tab stop. Only the active panel mounts; switching back resets its local state.</p>
+        </div>
+        <Panel className="catalog-card">
+          <Tabs items={tabItems} value={activeTab} onValueChange={setActiveTab} label="Catalog examples" />
+        </Panel>
+      </section>
+
+      <section className="catalog-section" aria-labelledby="badges-heading">
+        <div className="catalog-section-heading">
+          <div>
+            <p className="catalog-eyebrow">LABELS</p>
+            <h2 id="badges-heading">Badges</h2>
+          </div>
+          <p>Color supports the label; it does not replace the status text.</p>
+        </div>
+        <Panel className="catalog-card catalog-row">
+          <Badge tone="neutral">Scaffold</Badge>
+          <Badge tone="info">Design</Badge>
+          <Badge tone="success">Ready</Badge>
+          <Badge tone="warning">Research</Badge>
+          <Badge tone="danger">Unavailable</Badge>
+        </Panel>
+      </section>
+
+      <section className="catalog-section" aria-labelledby="notices-heading">
+        <div className="catalog-section-heading">
+          <div>
+            <p className="catalog-eyebrow">FEEDBACK</p>
+            <h2 id="notices-heading">Notices</h2>
+          </div>
+          <p>Static examples do not announce on page load. Add a live update to inspect announcement roles.</p>
+        </div>
+        <div className="catalog-row">
+          <Button variant="secondary" onClick={() => setAnnouncements((items) => [...items, { id: items.length + 1, tone: "success", role: "status" }])}>Add status update</Button>
+          <Button variant="danger" onClick={() => setAnnouncements((items) => [...items, { id: items.length + 1, tone: "danger", role: "alert" }])}>Add urgent update</Button>
+        </div>
+        <div className="catalog-notices">
+          <Notice role="note">Research metadata is available for review.</Notice>
+          <Notice tone="success" role="note">The requested change was recorded successfully.</Notice>
+          <Notice tone="warning" role="note">
+            Readiness is degraded while a required service is unavailable.
+          </Notice>
+          <Notice tone="danger" role="note">
+            This action could not be completed. Your work is still available.
+          </Notice>
+          <Notice tone="danger" role="note">
+            This persistent issue is documented here and does not require an interrupting announcement.
+          </Notice>
+          <Notice role="note">
+            Long-content fixture: this message intentionally spans several sentences so reviewers can inspect wrapping, spacing, and reading order at narrow widths. It explains that the displayed information comes from a local preview, may be incomplete, and should not be treated as a live operational signal until the owning service confirms its source, timestamp, and current access permissions.
+          </Notice>
+          <Notice tone="info" role="note">Long identifier fixture: request-reference-7f2c8a14d1e04f0bb9b9a805be38f123 should wrap inside this notice without widening the page.</Notice>
+          {announcements.map(({ id, tone, role }) => (
+            <Notice key={id} tone={tone} role={role}>
+              {role === "alert" ? `Urgent preview ${id}: the request could not be completed.` : `Status preview ${id}: the update was recorded.`}
+            </Notice>
+          ))}
+        </div>
+      </section>
+
+      <section className="catalog-section" aria-labelledby="panels-heading">
+        <div className="catalog-section-heading">
+          <div>
+            <p className="catalog-eyebrow">SURFACES</p>
+            <h2 id="panels-heading">Panels</h2>
+          </div>
+          <p>Choose semantic elements in the consuming application.</p>
+        </div>
+        <div className="catalog-panels">
+          <Panel as="article" className="catalog-card">
+            <p className="catalog-eyebrow">PROCESS HEALTH</p>
+            <h3>Available</h3>
+            <p>The process answered its health request.</p>
+          </Panel>
+          <Panel as="article" className="catalog-card">
+            <p className="catalog-eyebrow">SOURCE CONTEXT</p>
+            <h3>Traceable by design</h3>
+            <p>Identity, edition, and review state belong beside evidence.</p>
+          </Panel>
+        </div>
+      </section>
+
+      <section className="catalog-section" aria-labelledby="compositions-heading">
+        <SectionHeading
+          className="catalog-section-heading"
+          eyebrow="REUSABLE COMPOSITIONS"
+          title="Page context and quick stats"
+          id="compositions-heading"
+          aside="Shared layout primitives keep page hierarchy consistent while leaving copy and domain details to each app."
+        />
+        <Panel className="catalog-card catalog-composition">
+          <MangaPageIntro
+            className="catalog-intro-demo"
+            breadcrumb="Portal / Overview"
+            eyebrow="PAGE INTRO"
+            title="A clear place to begin."
+            description="Use a consistent heading, summary, and action area across related pages."
+            sfx="BAM!"
+          />
+          <StatGrid items={[
+            { value: "07", label: "Architecture layers" },
+            { value: "06", label: "Technology domains" },
+            { value: "01", label: "Human decision authority" },
+          ]} />
+          <MangaLoadingState className="catalog-manga-loading" eyebrow="ATLAS" label="Loading system map…" sfx="ZIP!" />
+        </Panel>
+      </section>
+
+      <section className="catalog-section" aria-labelledby="tokens-heading">
+        <div className="catalog-section-heading">
+          <div>
+            <p className="catalog-eyebrow">FOUNDATIONS</p>
+            <h2 id="tokens-heading">Semantic color tokens</h2>
+          </div>
+          <p>Components use semantic roles; palette values stay in the token layer.</p>
+        </div>
+        <div className="catalog-token-grid">
+          {tokenSamples.map(([label, token]) => (
+            <Panel as="article" className="catalog-token" key={token}>
+              <span className="catalog-token-swatch" style={{ background: `var(${token})` }} aria-hidden="true" />
+              <span className="catalog-token-label">{label}</span>
+              <code>{token}</code>
+            </Panel>
+          ))}
+        </div>
+      </section>
+
+      <section className="catalog-section" aria-labelledby="states-heading">
+        <div className="catalog-section-heading">
+          <div>
+            <p className="catalog-eyebrow">DATA FEEDBACK</p>
+            <h2 id="states-heading">Loading, empty, and error</h2>
+          </div>
+          <p>Keep an empty result distinct from an unavailable resource.</p>
+        </div>
+        <div className="catalog-states">
+          <LoadingState aria-live="off" label="Loading module registry…" />
+          <LoadingState aria-live="off" label="Module registry loaded" busy={false} />
+          <EmptyState role="region" title="No modules registered" description="The catalog responded successfully and contains no entries yet." />
+          <EmptyState role="region" title="No matching evidence" description="Change the filters or broaden the search scope to look again." />
+          <ErrorState role="region" title="Module catalog unavailable" description="The catalog could not be loaded." action={<Button variant="secondary">Try again</Button>} />
+          <Panel className="catalog-card catalog-skeleton">
+            <p className="catalog-caption">Decorative loading placeholder</p>
+            <Skeleton width="65%" />
+            <Skeleton width="40%" />
+            <Skeleton shape="rect" width="100%" />
+          </Panel>
+        </div>
+      </section>
+
+      <section className="catalog-section" aria-labelledby="fields-heading">
+        <div className="catalog-section-heading">
+          <div>
+            <p className="catalog-eyebrow">FORM CONTROLS</p>
+            <h2 id="fields-heading">Native fields and validation</h2>
+          </div>
+          <p>Keep browser validation and native keyboard behavior; connect help and errors with described-by IDs.</p>
+        </div>
+        <Panel className="catalog-card catalog-field-demo">
+          <FieldLabel htmlFor="catalog-title">Research title</FieldLabel>
+          <TextField id="catalog-title" aria-invalid="true" aria-describedby="catalog-title-help catalog-title-error" defaultValue="" />
+          <HelpText id="catalog-title-help">Use a short title that distinguishes this research run.</HelpText>
+          <FieldError id="catalog-title-error" role="note">Enter a title before submitting.</FieldError>
+          <FieldLabel htmlFor="catalog-question">Research question</FieldLabel>
+          <TextArea id="catalog-question" rows={3} placeholder="What do you want to understand?" />
+          <FieldLabel htmlFor="catalog-scope">Scope</FieldLabel>
+          <SelectField id="catalog-scope" required defaultValue="" aria-invalid="true" aria-describedby="catalog-scope-error">
+            <option value="">Choose a scope</option>
+            <option value="self">Self</option>
+            <option value="community">Community</option>
+            <option value="global">Global</option>
+          </SelectField>
+          <FieldError id="catalog-scope-error" role="note">Choose a scope before you continue.</FieldError>
+          <FieldLabel htmlFor="catalog-disabled">Unavailable field</FieldLabel>
+          <TextField id="catalog-disabled" disabled value="Managed by the workspace" />
+        </Panel>
+      </section>
+
+      <section className="catalog-section" aria-labelledby="dialog-heading">
+        <div className="catalog-section-heading">
+          <div>
+            <p className="catalog-eyebrow">CONFIRMATION</p>
+            <h2 id="dialog-heading">Modal confirmation</h2>
+          </div>
+          <p>Keyboard focus stays in the modal, Escape closes it, and focus returns to the opener. Confirm simulates a short busy state followed by an in-dialog error; it does not send data.</p>
+        </div>
+        <Button variant="danger" onClick={openConfirmationPreview}>Preview confirmation</Button>
+        <ConfirmDialog
+          open={confirmOpen}
+          title="Remove this example?"
+          description="This is a catalog preview. No data will be sent or changed."
+          confirmLabel="Confirm example"
+          cancelLabel="Cancel"
+          busyLabel="Processing…"
+          busy={confirmBusy}
+          error={confirmError}
+          tone="danger"
+          onConfirm={simulateConfirmationFailure}
+          onOpenChange={setConfirmOpen}
+        />
+      </section>
+
+      <footer className="catalog-footer">
+        Keep application layouts local. Promote a pattern into this package only
+        after its behavior and shared use are understood.
+      </footer>
+    </main>
+  );
+}
+
+function TabMountExample({ name }: { name: string }) {
+  const [mountCount, setMountCount] = useState(0);
+  useEffect(() => setMountCount((count) => count + 1), []);
+  return <p>{name} panel mounted {mountCount} time{mountCount === 1 ? "" : "s"}. Switching away and back starts a fresh panel.</p>;
+}
+
+const root = document.getElementById("root");
+if (!root) throw new Error("Missing catalog root");
+
+createRoot(root).render(<Catalog />);

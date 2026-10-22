@@ -1,0 +1,15 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://empire.example/schemas/module-installation.schema.json",
+  "title": "Installed Module Schema Record",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["moduleId", "moduleVersion", "schemaHash", "status", "lastSyncedAt"],
+  "properties": {
+    "moduleId": { "type": "string", "pattern": "^[a-z][a-z0-9-]{1,63}$" },
+    "moduleVersion": { "type": "string", "pattern": "^\\d+\\.\\d+\\.\\d+$" },
+    "schemaHash": { "type": "string", "pattern": "^[a-f0-9]{64}$" },
+    "status": { "const": "installed" },
+    "lastSyncedAt": { "type": "string", "format": "date-time" }
+  }
+}
