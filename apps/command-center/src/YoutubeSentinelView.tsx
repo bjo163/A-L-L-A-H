@@ -331,7 +331,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
         cell: (item: YoutubeMonitoredItem) => {
           const idx = visibleItems.findIndex((it) => it.id === item.id);
           return (
-            <span style={{ color: "var(--eol-color-text-muted)", fontFamily: "var(--eol-font-mono)", fontSize: 11 }}>
+            <span className="sentinel-match-index">
               {idx >= 0 ? idx + 1 : "•"}
             </span>
           );
@@ -351,8 +351,8 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                 (e.target as HTMLElement).style.display = "none";
               }}
             />
-            <div style={{ minWidth: 0, flex: 1 }}>
-              <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4, flexWrap: "wrap" }}>
+            <div className="sentinel-rule-summary">
+              <div className="sentinel-card-badge-row">
                 {item.direction === "POSITIVE" ? (
                   <Badge tone="success">✨ HIKMAH / POSITIF</Badge>
                 ) : item.direction === "NEUTRAL" ? (
@@ -368,7 +368,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                 {item.isNew && (
                   <Badge tone="success">BARU</Badge>
                 )}
-                <span className="sentinel-card-source-pill" style={{ position: "static", fontSize: 9, padding: "1px 5px" }}>
+                <span className="sentinel-card-source-pill sentinel-card-source-pill--inline">
                   {item.sourceType}
                 </span>
               </div>
@@ -382,7 +382,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                 {item.title}
               </a>
               {item.matchedRules && item.matchedRules.length > 0 && (
-                <div style={{ display: "flex", gap: 4, marginTop: 4, flexWrap: "wrap" }}>
+                <div className="sentinel-card-rule-tags">
                   {item.matchedRules.slice(0, 2).map((r, idx) => (
                     <span
                       key={idx}
@@ -399,16 +399,16 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                     </span>
                   ))}
                   {item.matchedRules.length > 2 && (
-                    <span style={{ fontSize: 10, color: "var(--eol-color-text-muted)", alignSelf: "center" }}>
+                    <span className="sentinel-rule-overflow">
                       +{item.matchedRules.length - 2} lagi
                     </span>
                   )}
                 </div>
               )}
-              <div style={{ display: "flex", gap: 8, marginTop: 4, fontSize: 11, color: "var(--eol-color-text-muted)" }}>
+              <div className="sentinel-card-metadata">
                 {item.durationText && <span>⏱️ {item.durationText}</span>}
                 {item.publishedAt && <span>📅 {item.publishedAt}</span>}
-                <span style={{ fontFamily: "var(--eol-font-mono)", opacity: 0.7 }}>ID: {item.videoId}</span>
+                <span className="sentinel-video-id">ID: {item.videoId}</span>
               </div>
             </div>
           </div>
@@ -419,8 +419,8 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
         header: "Channel",
         cell: (item: YoutubeMonitoredItem) => (
           <div>
-            <span style={{ fontWeight: 600 }}>{item.channelTitle}</span>
-            <div style={{ fontSize: 11, color: "var(--eol-color-text-muted)" }}>
+            <span className="sentinel-channel-name">{item.channelTitle}</span>
+            <div className="sentinel-view-count">
               {item.viewCountText}
             </div>
           </div>
@@ -435,11 +435,11 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               {item.category.replace(/_/g, " ")}
             </Badge>
             {item.direction === "POSITIVE" && item.wisdomGuidance?.scriptureRef ? (
-              <div style={{ fontSize: 10, color: "#4ade80", marginTop: 4 }}>
+              <div className="sentinel-scripture-reference">
                 📖 {item.wisdomGuidance.scriptureRef}
               </div>
             ) : item.tauhidGuidance?.dalilRef ? (
-              <div style={{ fontSize: 10, color: "var(--eol-color-text-muted)", marginTop: 4 }}>
+              <div className="sentinel-source-reference">
                 📜 {item.tauhidGuidance.dalilRef}
               </div>
             ) : null}
@@ -469,7 +469,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
             >
               {item.direction === "POSITIVE" ? "100" : item.riskScore}
             </span>
-            <span style={{ fontSize: 10, color: "var(--eol-color-text-muted)" }}>
+            <span className="sentinel-score-suffix">
               {item.direction === "POSITIVE" ? " HIKMAH" : "/100"}
             </span>
           </div>
@@ -480,8 +480,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
         header: "Status Tindakan",
         cell: (item: YoutubeMonitoredItem) => (
           <select
-            className="sentinel-select"
-            style={{ fontSize: 11, padding: "3px 6px" }}
+            className="sentinel-select sentinel-select--compact"
             value={item.workflowStatus}
             onChange={(e) => void handleAction(item.id, e.target.value as YoutubeWorkflowStatus)}
           >
@@ -508,7 +507,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
         key: "scannedAt",
         header: "Waktu Scan",
         cell: (item: YoutubeMonitoredItem) => (
-          <span style={{ whiteSpace: "nowrap", fontSize: 11, color: "var(--eol-color-text-muted)" }}>
+          <span className="sentinel-scan-timestamp">
             {new Date(item.scannedAt).toLocaleDateString("id-ID", { hour: "2-digit", minute: "2-digit" })}
           </span>
         ),
@@ -523,10 +522,9 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               <>
                 <button
                   type="button"
-                  className="sentinel-table-btn"
+                  className="sentinel-table-btn sentinel-table-btn--positive"
                   title="Lihat Hikmah & Amplifikasi Kebaikan"
                   onClick={() => setActiveModal({ type: "wisdom", item })}
-                  style={{ background: "rgba(34, 197, 94, 0.15)", color: "#4ade80", borderColor: "rgba(34, 197, 94, 0.4)" }}
                 >
                   ✨ Hikmah &amp; Amplify
                 </button>
@@ -555,9 +553,8 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               href={item.url}
               target="_blank"
               rel="noopener noreferrer"
-              className="sentinel-table-btn"
+              className="sentinel-table-btn sentinel-table-btn--link"
               title="Buka Video di YouTube"
-              style={{ textDecoration: "none" }}
             >
               ↗
             </a>
@@ -677,7 +674,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
         )}
 
         <div className="sentinel-presets">
-          <span className="muted" style={{ fontWeight: 700, marginRight: 4 }}>
+          <span className="muted sentinel-presets-label">
             Preset Cepat:
           </span>
           {[
@@ -707,8 +704,8 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
       {/* ── Filters Bar ──────────────────────────────────────────────────────── */}
       <div className="sentinel-filter-bar">
         {/* Direction Switcher Tabs */}
-        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", width: "100%", marginBottom: 10 }}>
-          <span className="muted" style={{ fontWeight: 700, fontSize: 13 }}>
+        <div className="sentinel-direction-row">
+          <span className="muted sentinel-direction-label">
             Arah Sentinel:
           </span>
           <div className="sentinel-direction-switcher">
@@ -735,14 +732,13 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
             </button>
           </div>
 
-          <span className="muted" style={{ fontWeight: 700, marginLeft: "auto", fontSize: 13 }}>
+          <span className="muted sentinel-tradition-label">
             Tradisi Agama:
           </span>
           <select
-            className="sentinel-select"
+            className="sentinel-select sentinel-select--wide"
             value={selectedTradition}
             onChange={(e) => setSelectedTradition(e.target.value as SentinelTradition | "ALL")}
-            style={{ minWidth: 160 }}
           >
             <option value="ALL">Semua Tradisi</option>
             <option value="ISLAM">🕌 Islam</option>
@@ -859,7 +855,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
           </label>
         </div>
 
-        <div className="sentinel-filter-group" style={{ display: "flex", justifyContent: "space-between", alignItems: "center", width: "100%", marginTop: 4 }}>
+        <div className="sentinel-filter-group sentinel-filter-group--spread">
           <span className="muted">Menampilkan {visibleItems.length} dari {items.length} temuan di database</span>
           <div className="sentinel-view-mode-buttons">
             <button
@@ -938,7 +934,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                   <Badge tone={statusTone(item.workflowStatus)}>
                     {item.workflowStatus.replace(/_/g, " ")}
                   </Badge>
-                  <span className="muted" style={{ marginLeft: "auto", fontWeight: 700 }}>
+                  <span className="muted sentinel-risk-score-label">
                     Skor: {item.riskScore}/100
                   </span>
                 </div>
@@ -999,8 +995,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                     href={item.url}
                     target="_blank"
                     rel="noopener noreferrer"
-                    className="text-button"
-                    style={{ fontSize: 11, marginLeft: "auto" }}
+                    className="text-button sentinel-video-link"
                   >
                     Buka YouTube ↗
                   </a>
@@ -1029,9 +1024,9 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               Salin draf pengaduan berikut untuk dilaporkan melalui fitur <strong>Report / Laporkan</strong> di antarmuka resmi YouTube:
             </p>
 
-            <div style={{ marginBottom: 12 }}>
+            <div className="sentinel-space-after-3">
               <strong className="sentinel-modal-label">Kategori Laporan yang Dipilih:</strong>
-              <p className="eol-notice eol-notice--warning" style={{ margin: "6px 0", fontSize: 12 }}>
+              <p className="eol-notice eol-notice--warning sentinel-modal-notice">
                 {activeModal.item.reportPacket.policyReference} ({activeModal.item.reportPacket.reportedCategory})
               </p>
             </div>
@@ -1040,8 +1035,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               <strong className="sentinel-modal-label">Teks Aduan Siap Salin:</strong>
               <textarea
                 readOnly
-                className="sentinel-search-input"
-                style={{ width: "100%", height: 110, marginTop: 6, fontSize: 11 }}
+                className="sentinel-search-input sentinel-modal-textarea--report"
                 value={activeModal.item.reportPacket.generatedComplaint}
               />
             </div>
@@ -1095,7 +1089,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
 
             <div className="sentinel-tauhid-box sentinel-space-after-4">
               {activeModal.item.tauhidGuidance.arabicText && (
-                <div className="sentinel-arabic" style={{ fontSize: 18 }}>
+                <div className="sentinel-arabic sentinel-arabic--large">
                   {activeModal.item.tauhidGuidance.arabicText}
                 </div>
               )}
@@ -1105,7 +1099,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               <div className="sentinel-dalil-text sentinel-modal-label">
                 &ldquo;{activeModal.item.tauhidGuidance.translation}&rdquo;
               </div>
-              <p style={{ margin: "8px 0 0", fontSize: 11, color: "var(--eol-color-text)" }}>
+              <p className="sentinel-modal-principle">
                 <strong>Prinsip Akidah:</strong> {activeModal.item.tauhidGuidance.theologicalPrinciple}
               </p>
             </div>
@@ -1114,8 +1108,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               <strong className="sentinel-modal-label">Draf Komentar Bantahan Edukatif:</strong>
               <textarea
                 readOnly
-                className="sentinel-search-input"
-                style={{ width: "100%", height: 95, marginTop: 6, fontSize: 11 }}
+                className="sentinel-search-input sentinel-modal-textarea--counter"
                 value={activeModal.item.counterDakwahBrief.suggestedCommentResponse}
               />
             </div>
@@ -1171,20 +1164,20 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
             {activeModal.item.wisdomGuidance && (
               <div className="sentinel-wisdom-box sentinel-space-after-4">
                 {activeModal.item.wisdomGuidance.originalText && (
-                  <div className="sentinel-arabic" style={{ fontSize: 18, color: "#4ade80" }}>
+                  <div className="sentinel-arabic sentinel-arabic--positive">
                     {activeModal.item.wisdomGuidance.originalText}
                   </div>
                 )}
-                <div className="sentinel-dalil-ref" style={{ color: "#86efac" }}>
+                <div className="sentinel-dalil-ref sentinel-dalil-ref--positive">
                   📖 {activeModal.item.wisdomGuidance.scriptureRef}
                 </div>
                 <div className="sentinel-wisdom-quote">
                   &ldquo;{activeModal.item.wisdomGuidance.translation}&rdquo;
                 </div>
-                <p style={{ margin: "8px 0 0", fontSize: 11, color: "var(--eol-color-text)" }}>
+                <p className="sentinel-modal-principle">
                   <strong>Nilai Inti:</strong> {activeModal.item.wisdomGuidance.coreValue}
                 </p>
-                <p style={{ margin: "4px 0 0", fontSize: 11, color: "var(--eol-color-text-muted)" }}>
+                <p className="sentinel-modal-detail">
                   <strong>Saran Operator:</strong> {activeModal.item.wisdomGuidance.recommendedAction}
                 </p>
               </div>
@@ -1195,21 +1188,14 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                 <strong className="sentinel-modal-label">Draf Teks Amplifikasi &amp; Berbagi:</strong>
                 <textarea
                   readOnly
-                  className="sentinel-search-input"
-                  style={{ width: "100%", height: 85, marginTop: 6, fontSize: 11 }}
+                  className="sentinel-search-input sentinel-modal-textarea--amplify"
                   value={activeModal.item.amplifyPacket.suggestedShareCaption}
                 />
-                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 6 }}>
+                <div className="sentinel-amplify-tag-list">
                   {activeModal.item.amplifyPacket.suggestedHashtags.map((tag) => (
                     <span
                       key={tag}
-                      style={{
-                        fontSize: 10,
-                        padding: "2px 6px",
-                        background: "rgba(59, 130, 246, 0.15)",
-                        color: "#60a5fa",
-                        borderRadius: 3,
-                      }}
+                      className="sentinel-amplify-tag"
                     >
                       {tag}
                     </span>
@@ -1271,7 +1257,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               <code>{activeModal.snippetCode}</code>
             </pre>
 
-            <div className="button-row" style={{ justifyContent: "flex-end", marginTop: 14 }}>
+            <div className="button-row sentinel-actions-end sentinel-modal-actions">
               <Button
                 variant="primary"
                 onClick={() => {
