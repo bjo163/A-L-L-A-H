@@ -103,6 +103,14 @@
   --eol-control-size-sm: 2.25rem;
   --eol-control-size-md: 2.75rem;
   --eol-control-size-lg: 3rem;
+  /* Density tightens layout rhythm; control hit targets remain unchanged. */
+  --eol-density-stack-gap: var(--eol-space-4);
+  --eol-density-inline-gap: var(--eol-space-3);
+  --eol-density-grid-gap: var(--eol-layout-grid-gap);
+  --eol-density-section-gap: var(--eol-space-4);
+  --eol-density-section-space: var(--eol-space-8);
+  --eol-density-table-cell-block: var(--eol-space-3);
+  --eol-density-card-padding: var(--eol-space-4);
   --eol-badge-min-height: 1.5rem;
   --eol-content-width: 68ch;
   --eol-workspace-width: 90rem;
@@ -185,4 +193,24 @@
   --eol-opacity-disabled: 0.55;
   --eol-texture-lines: repeating-radial-gradient(ellipse at 0% 50%, transparent 0 13px, var(--eol-palette-texture-amber) 14px 15px, transparent 16px 27px);
   --eol-texture-grid: linear-gradient(var(--eol-palette-texture-slate) 1px, transparent 1px), linear-gradient(90deg, var(--eol-palette-texture-slate) 1px, transparent 1px);
+}
+
+[data-density="comfortable"] {
+  --eol-density-stack-gap: var(--eol-space-4);
+  --eol-density-inline-gap: var(--eol-space-3);
+  --eol-density-grid-gap: var(--eol-layout-grid-gap);
+  --eol-density-section-gap: var(--eol-space-4);
+  --eol-density-section-space: var(--eol-space-8);
+  --eol-density-table-cell-block: var(--eol-space-3);
+  --eol-density-card-padding: var(--eol-space-4);
+}
+
+[data-density="compact"] {
+  --eol-density-stack-gap: var(--eol-space-3);
+  --eol-density-inline-gap: var(--eol-space-2);
+  --eol-density-grid-gap: var(--eol-space-3);
+  --eol-density-section-gap: var(--eol-space-3);
+  --eol-density-section-space: var(--eol-space-4);
+  --eol-density-table-cell-block: var(--eol-space-2);
+  --eol-density-card-padding: var(--eol-space-3);
 }

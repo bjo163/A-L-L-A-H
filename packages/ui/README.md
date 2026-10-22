@@ -12,6 +12,10 @@ The visual catalog uses static local fixtures and does not call product APIs. It
 
 The catalog also includes a fabricated Portal homepage and one composition fixture for each Command Center category (Overview, World Monitor, Continuum, Directory, Knowledge, Audit, CAB, and Research). These previews exercise shared patterns only; application authorization, routing, and workflows remain outside the package.
 
+### Density and interaction sizing
+
+The package defines `comfortable` and `compact` density through inherited `data-density` tokens. Comfortable is the default. Compact reduces shared layout gaps, section rhythm, card spacing, and table row block padding; explicit `data-gap` layout props remain authoritative. Density does not change `--eol-control-size-sm/md/lg`, button/input minimum heights, or other interactive hit targets. The current control sizes are 36/44/48 CSS px; this is a sizing contract, not a claim that every 36px control meets every accessibility target-size criterion. Prefer the 44px medium size for primary form and action controls, and use small controls only where the surrounding design and target-size exceptions have been reviewed. Pattern-specific density may additionally tune its own non-interactive content, such as metric typography.
+
 Run `pnpm audit:ui-css` to find repeated property declarations within the same selector and grouping context. The current source audit reports 157 findings; each needs triage before the audit can be used as a clean CI gate.
 
 `pnpm validate:ui-assets` checks the asset manifest against the inline SVG icon and brand inventories, font package versions and stylesheet imports, and the included font license texts. It scans `assets/generated/` and verifies the SHA-256 digest of each manifest entry, detecting unlisted, missing, and modified generated files. The current brand concepts are exploratory and Orbit remains provisional. No generated vector or binary assets are checked in today.

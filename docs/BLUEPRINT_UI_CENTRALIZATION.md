@@ -323,7 +323,7 @@ Owner: UI maintainer + design. Dependensi: C01. Gate: seluruh nilai visual memil
 - [x] **UI-C05-07** — Tetapkan skala typography, line-height, weight, tracking dan tabular numbers.
 - [x] **UI-C05-08** — Tetapkan spacing, reading width, section rhythm dan grid gap.
 - [x] **UI-C05-09** — Tetapkan border, radius, elevation, focus dan layer stack.
-- [ ] **UI-C05-10** — Tetapkan size kontrol dan density resmi beserta area interaksinya.
+- [x] **UI-C05-10** — Tetapkan size kontrol dan density resmi beserta area interaksinya. Package mendefinisikan control size 36/44/48 CSS px serta token density inherited `comfortable`/`compact`; compact mengurangi gap, rhythm section, padding card, dan tinggi padding tabel lebih dulu tanpa mengubah target kontrol/button/input. `data-gap` eksplisit mengalahkan density. Batasan dan anjuran size 44px untuk aksi/form utama ada di README package; review target exception per komponen dan penerimaan visual tetap berlangsung di C12/C16.
 - [ ] **UI-C05-11** — Tetapkan breakpoint/container behavior yang digunakan patterns.
 - [x] **UI-C05-12** — Satukan palet dark/light dan hentikan penimpaan global berulang.
 - [x] **UI-C05-13** — Definisikan profil editorial/operational sebagai token presentasi yang terbatas.
