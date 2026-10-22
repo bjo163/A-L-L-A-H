@@ -12,6 +12,8 @@ export { Button, buttonClassName } from "./primitives/Button";
 export type { ButtonProps, ButtonSize, ButtonVariant } from "./primitives/Button";
 export { ActionLink } from "./primitives/ActionLink";
 export type { ActionLinkProps } from "./primitives/ActionLink";
+export { Checkbox } from "./primitives/Checkbox";
+export type { CheckboxProps } from "./primitives/Checkbox";
 export { ConfirmDialog } from "./primitives/ConfirmDialog";
 export type { ConfirmDialogProps, ConfirmDialogTone } from "./primitives/ConfirmDialog";
 export { EmptyState } from "./primitives/EmptyState";
