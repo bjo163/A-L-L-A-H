@@ -16,9 +16,9 @@
   --eol-color-text-muted: var(--eol-palette-dark-text-muted);
   --eol-color-text-inverse: var(--eol-palette-dark-text-inverse);
   --eol-color-on-accent: var(--eol-palette-dark-ink-950);
-  --eol-color-link: var(--eol-palette-dark-pink-strong);
   --eol-color-accent: var(--eol-palette-dark-pink);
   --eol-color-accent-strong: var(--eol-palette-dark-pink-strong);
+  --eol-color-link: var(--eol-color-accent-strong);
   --eol-color-action-primary: var(--eol-palette-dark-pink);
   --eol-color-accent-border: var(--eol-palette-dark-pink);
   --eol-color-accent-subtle: var(--eol-color-surface-selected);
@@ -59,17 +59,12 @@
   --eol-manga-paper: var(--eol-color-surface);
   --eol-manga-secondary: var(--eol-palette-manga-cyan);
   --eol-manga-stage: var(--eol-palette-manga-stage);
-  --eol-manga-secondary-bright: var(--eol-palette-manga-mint);
   --eol-manga-purple-strong: var(--eol-palette-manga-purple);
   --eol-manga-violet: var(--eol-palette-manga-violet);
   --eol-manga-rose: var(--eol-palette-manga-rose);
   --eol-manga-mint: var(--eol-palette-manga-green);
   --eol-manga-blue: var(--eol-palette-manga-blue);
-  --eol-manga-orange: var(--eol-palette-manga-orange);
   --eol-manga-accent-hover: var(--eol-palette-manga-pink-hover);
-  --eol-manga-status-success-strong: var(--eol-palette-status-success-dark-strong);
-  --eol-manga-status-warning-strong: var(--eol-status-warning-foreground);
-  --eol-manga-status-danger-strong: var(--eol-status-danger-foreground);
   --eol-manga-sfx-background: var(--eol-color-accent);
   --eol-manga-sfx-foreground: var(--eol-color-text);
   --eol-manga-sfx-border: 3px solid var(--eol-manga-ink);
@@ -93,9 +88,9 @@
   --eol-color-text-muted: var(--eol-palette-light-text-muted);
   --eol-color-text-inverse: var(--eol-palette-light-white);
   --eol-color-on-accent: var(--eol-palette-light-white);
-  --eol-color-link: var(--eol-palette-light-pink-strong);
   --eol-color-accent: var(--eol-palette-light-pink);
   --eol-color-accent-strong: var(--eol-palette-light-pink-strong);
+  --eol-color-link: var(--eol-color-accent-strong);
   --eol-color-action-primary: var(--eol-palette-light-pink-strong);
   --eol-color-accent-border: var(--eol-palette-light-ink);
   --eol-color-accent-subtle: var(--eol-color-surface-selected);
@@ -132,9 +127,6 @@
   --eol-map-marker-outline: var(--eol-palette-map-marker-outline);
   --eol-manga-ink: var(--eol-palette-light-ink);
   --eol-manga-paper: var(--eol-palette-light-white);
-  --eol-manga-status-success-strong: var(--eol-status-success-foreground);
-  --eol-manga-status-warning-strong: var(--eol-status-warning-foreground);
-  --eol-manga-status-danger-strong: var(--eol-status-danger-foreground);
   --eol-manga-sfx-foreground: var(--eol-manga-paper);
   --eol-manga-stage-foreground: var(--eol-manga-paper);
 }

@@ -35,7 +35,6 @@
   --eol-palette-status-info-dark-surface: #15333d;
   --eol-palette-status-info-dark-border: #36b6cc;
   --eol-palette-status-success-dark-foreground: #c7ff80;
-  --eol-palette-status-success-dark-strong: #c8ff82;
   --eol-palette-status-success-dark-surface: #26351e;
   --eol-palette-status-success-dark-border: #92ca4f;
   --eol-palette-status-warning-dark-foreground: #ffe07a;
@@ -61,13 +60,11 @@
   --eol-palette-status-danger-light-border: #c78983;
   --eol-palette-manga-stage: #8065ed;
   --eol-palette-manga-cyan: #56d9e8;
-  --eol-palette-manga-mint: #56e3d3;
   --eol-palette-manga-purple: #6745e8;
   --eol-palette-manga-violet: #9375ff;
   --eol-palette-manga-rose: var(--eol-palette-dark-pink);
   --eol-palette-manga-green: #49d8bd;
   --eol-palette-manga-blue: #44cdeb;
-  --eol-palette-manga-orange: #ff9a55;
   --eol-palette-manga-pink-hover: #ff7d98;
   --eol-palette-system-arsy: #49d8bd;
   --eol-palette-system-heliogrid: #d7f75b;
@@ -84,13 +81,11 @@
   --eol-palette-map-label-shadow: rgb(0 0 0 / 95%);
   --eol-palette-map-marker-outline: rgb(255 255 255 / 70%);
   --eol-palette-shadow-ink-1: #49371814;
-  --eol-palette-shadow-ink-2: #49371824;
   --eol-palette-shadow-ink-3: #49371838;
   --eol-palette-texture-amber: #d9851422;
   --eol-palette-texture-slate: #7564430a;
 
   /* Spacing, control size, and reading measure. */
-  --eol-space-0: 0;
   --eol-space-1: 0.25rem;
   --eol-space-2: 0.5rem;
   --eol-space-3: 0.75rem;
@@ -114,13 +109,11 @@
   --eol-badge-min-height: 1.5rem;
   --eol-content-width: 68ch;
   --eol-workspace-width: 90rem;
-  --eol-sidebar-width: 15rem;
-  --eol-layout-gutter: var(--eol-space-6);
+  --eol-sidebar-width: 260px;
   --eol-layout-container-gutter-wide: 2.5rem;
   --eol-layout-container-gutter-medium: 1.625rem;
   --eol-layout-container-gutter-narrow: 1.0625rem;
   --eol-layout-grid-gap: var(--eol-space-4);
-  --eol-layout-grid-min: 16rem;
   --eol-layout-anchor-offset: 1.875rem;
   --eol-layout-anchor-offset-large: 6.875rem;
   --eol-section-space-editorial: clamp(4rem, 8vw, 7rem);
@@ -128,7 +121,6 @@
   --eol-section-gap-editorial: var(--eol-space-6);
   --eol-section-gap-operational: var(--eol-space-4);
   --eol-size-icon-sm: 1rem;
-  --eol-size-icon-md: 1.25rem;
   --eol-size-icon-lg: 1.5rem;
 
   /* Typography roles; applications may set their own display face. */
@@ -178,21 +170,17 @@
   --eol-border-width-notice: 3px;
   --eol-icon-stroke: 1.8;
   --eol-elevation-panel: 0 8px 24px var(--eol-palette-shadow-ink-1);
-  --eol-elevation-popover: 0 12px 32px var(--eol-palette-shadow-ink-2);
   --eol-elevation-dialog: 0 20px 48px var(--eol-palette-shadow-ink-3);
   --eol-focus-width: 2px;
   --eol-focus-offset: 3px;
   --eol-layer-base: 0;
   --eol-layer-menu: 20;
   --eol-layer-overlay: 40;
-  --eol-layer-dialog: 60;
-  --eol-layer-notice: 80;
-  --eol-layer-tooltip: 100;
+  --eol-layer-dialog: 1000;
 
   /* Motion and disabled-state treatment. */
   --eol-motion-fast: 160ms;
   --eol-motion-normal: 220ms;
-  --eol-motion-slow: 320ms;
   --eol-motion-interaction: 150ms;
   --eol-motion-interface: 180ms;
   --eol-motion-deliberate: 200ms;

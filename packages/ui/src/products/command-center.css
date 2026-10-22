@@ -3,7 +3,7 @@
 .eol-workspace-shell a, .eol-auth-layout a { color: var(--eol-color-accent); }
 .eol-workspace-shell a:hover, .eol-workspace-shell .text-button:hover, .eol-auth-layout a:hover, .eol-auth-layout .text-button:hover { color: var(--eol-color-accent-strong); }
 
-.eol-workspace-shell { display: grid; grid-template-columns: 260px minmax(0, 1fr); min-height: 100vh; }
+.eol-workspace-shell { display: grid; grid-template-columns: var(--eol-sidebar-width) minmax(0, 1fr); min-height: 100vh; }
 :where(.eol-workspace-shell) .eol-workspace-shell__navigation { display: contents; }
 :where(.eol-workspace-shell) .eol-workspace-shell__toggle { display: none; }
 .eol-workspace-shell .sidebar { position: sticky; top: 0; display: flex; flex-direction: column; height: 100vh; padding: 25px 16px 18px; border-right: 1px solid var(--eol-color-border); background: linear-gradient(180deg, var(--eol-color-surface-inset) 0%, var(--eol-color-background) 100%); }
@@ -224,7 +224,7 @@
 .eol-workspace-shell .world-event-detail { margin: 4px 0 6px; color: var(--eol-color-text); font-size: 12px; }
 
 .eol-workspace-shell .world-map-container .eol-map-frame__canvas { min-height: 0; height: 440px; border: 2px solid var(--eol-manga-ink); border-radius: 0; box-shadow: 4px 4px 0 var(--eol-manga-ink); }
-.eol-workspace-shell .world-map-canvas { position: relative; isolation: isolate; z-index: 0; width: 100%; height: 100%; overflow: hidden; }
+.eol-workspace-shell .world-map-canvas { position: relative; isolation: isolate; z-index: var(--eol-layer-base); width: 100%; height: 100%; overflow: hidden; }
 
 /* Region node cards (in the grid below the map) — now buttons */
 .eol-workspace-shell .region-node-card {
@@ -517,7 +517,7 @@
   inset: 0;
   background: rgba(0, 0, 0, 0.7);
   backdrop-filter: blur(4px);
-  z-index: 1000;
+  z-index: var(--eol-layer-dialog);
   display: grid;
   place-items: center;
   padding: 20px;
