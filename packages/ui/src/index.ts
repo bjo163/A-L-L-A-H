@@ -100,6 +100,8 @@ export { ReadinessList } from "./patterns/ReadinessList";
 export type { ReadinessItem, ReadinessListProps } from "./patterns/ReadinessList";
 export { Timeline } from "./patterns/Timeline";
 export type { TimelineItem, TimelineProps } from "./patterns/Timeline";
+export { DecisionSummary, FormSection, ReviewActions } from "./patterns/ReviewPatterns";
+export type { DecisionSummaryProps, FormSectionProps, ReviewActionsProps } from "./patterns/ReviewPatterns";
 export { Grid, Inline, Stack } from "./patterns/Layout";
 export type { GridProps, InlineProps, LayoutSpace, StackProps } from "./patterns/Layout";
 export { StatusIndicator } from "./patterns/StatusIndicator";
