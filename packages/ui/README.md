@@ -74,6 +74,10 @@ The centralization blueprint tracks the remaining migration and acceptance work.
 | ConfirmDialog | Controlled `open`, `title`, `description`, `confirmLabel`, `onConfirm`, `onOpenChange`; optional tone, busy, error, cancel label, and localized busy label | Uses `<dialog>.showModal()`, cycles Tab/Shift+Tab among visible dialog controls, and returns focus to the opener when closed. Escape closes unless busy. Pending requests set `aria-busy="true"`, disable both actions, and show the localized busy label; API errors render inside the modal. Set `busyLabel` and `cancelLabel` to match the consuming UI language. Server authorization remains authoritative. |
 | buttonClassName | Variant and optional extra classes | Adds the shared action styles to an app-owned link while preserving its native routing and semantics. |
 
+### Navigation adapters
+
+`@empire/ui` does not own application routing. Portal consumers keep Next.js `Link` behavior and may use `buttonClassName` for shared action styling. Command Center keeps local view selection in application state and uses native buttons for its view switcher. `Breadcrumbs` and `SkipLink` remain router-neutral and use plain anchors, so the package serves both applications without importing a router runtime.
+
 ## Adding and changing components
 
 Promote a pattern when a real consumer workflow needs it, its interaction or accessibility behavior should stay consistent across applications, and its API can remain independent of product data, routing, and permissions. A primitive may be shared before a second product adopts it when native behavior or accessibility is difficult to reproduce safely; record its first consumer and review another adoption before expanding its API. Keep page composition, product language, artwork, and one-off layouts in the application. A shared component needs a typed contract, named states and keyboard behavior, a catalog example, and a consumer before it is considered ready.
