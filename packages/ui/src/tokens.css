@@ -147,6 +147,7 @@
   --eol-font-size-heading-2: var(--eol-font-size-3xl);
   --eol-font-size-heading-3: var(--eol-font-size-xl);
   --eol-font-size-heading-4: var(--eol-font-size-lg);
+  --eol-font-size-heading-operational: 1.0625rem;
   --eol-font-size-metric-editorial: 2.4375rem;
   --eol-font-size-metric-editorial-compact: 1.6875rem;
   --eol-font-weight-regular: 400;
@@ -163,6 +164,7 @@
   --eol-letter-spacing-display: -0.06em;
   --eol-letter-spacing-heading: -0.035em;
   --eol-letter-spacing-heading-compact: -0.045em;
+  --eol-letter-spacing-heading-operational: -0.02em;
   --eol-font-numeric: tabular-nums lining-nums;
 
   /* Shape, border, focus, and layer order. */

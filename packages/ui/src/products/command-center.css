@@ -66,7 +66,7 @@ h1 { margin: 8px 0 6px; color: var(--eol-color-text); font-size: clamp(27px, 3vw
 .health-cluster i[data-state="unavailable"] { background: var(--eol-status-danger-foreground); }
 .notice { margin-top: 18px; }
 #active-view > section { margin-top: 24px; }
-h2 { margin: 4px 0 0; color: var(--eol-color-text-subtle); font-size: 17px; font-weight: 500; letter-spacing: -.02em; }
+h2 { margin: 4px 0 0; color: var(--eol-color-text-subtle); font-size: var(--eol-font-size-heading-operational); font-weight: var(--eol-font-weight-medium); letter-spacing: var(--eol-letter-spacing-heading-operational); }
 .muted { color: var(--eol-color-text-muted); font-size: 10px; line-height: 1.6; }
 .button-row, .action-row, .audit-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; }
 .button-row a, .text-button { color: var(--eol-color-accent); font-size: 10px; }
