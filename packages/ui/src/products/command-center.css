@@ -245,14 +245,14 @@
 }
 
 /* ── YouTube Tauhid Sentinel Styles ───────────────────────────────────────── */
-.sentinel-tab-switcher {
+.eol-workspace-shell .sentinel-tab-switcher {
   display: flex;
   gap: 12px;
   margin: 16px 0 24px;
   border-bottom: 2px solid var(--eol-manga-ink);
   padding-bottom: 8px;
 }
-.sentinel-tab-btn {
+.eol-workspace-shell .sentinel-tab-btn {
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -266,44 +266,44 @@
   box-shadow: 3px 3px 0 var(--eol-manga-ink);
   transition: all 0.15s ease;
 }
-.sentinel-tab-btn:hover {
+.eol-workspace-shell .sentinel-tab-btn:hover {
   transform: translate(-1px, -1px);
   box-shadow: 4px 4px 0 var(--eol-manga-ink);
   color: var(--eol-color-text);
 }
-.sentinel-tab-btn.is-active {
+.eol-workspace-shell .sentinel-tab-btn.is-active {
   background: var(--eol-color-accent);
   color: #fff;
   transform: translate(-2px, -2px);
   box-shadow: 5px 5px 0 var(--eol-manga-ink);
 }
 
-.sentinel-scanner-panel {
+.eol-workspace-shell .sentinel-scanner-panel {
   padding: 20px;
   border: 2px solid var(--eol-manga-ink);
   background: var(--eol-color-surface-raised);
   box-shadow: 4px 4px 0 var(--eol-manga-ink);
   margin-bottom: 24px;
 }
-.sentinel-scanner-head {
+.eol-workspace-shell .sentinel-scanner-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
   gap: 14px;
   margin-bottom: 12px;
 }
-.sentinel-scanner-head h3 {
+.eol-workspace-shell .sentinel-scanner-head h3 {
   margin: 0;
   font-size: 16px;
   font-weight: 700;
   letter-spacing: -0.01em;
 }
-.sentinel-search-bar {
+.eol-workspace-shell .sentinel-search-bar {
   display: flex;
   gap: 10px;
   margin-bottom: 14px;
 }
-.sentinel-search-input {
+.eol-workspace-shell .sentinel-search-input {
   flex: 1;
   padding: 10px 14px;
   border: 2px solid var(--eol-manga-ink);
@@ -311,14 +311,14 @@
   color: var(--eol-color-text);
   font: 500 13px var(--eol-font-mono);
 }
-.sentinel-presets {
+.eol-workspace-shell .sentinel-presets {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 8px;
   margin-top: 10px;
 }
-.sentinel-preset-btn {
+.eol-workspace-shell .sentinel-preset-btn {
   padding: 4px 10px;
   border: 1px solid var(--eol-manga-ink);
   background: var(--eol-color-surface);
@@ -327,13 +327,13 @@
   cursor: pointer;
   transition: all 0.15s;
 }
-.sentinel-preset-btn:hover {
+.eol-workspace-shell .sentinel-preset-btn:hover {
   background: var(--eol-color-accent-subtle);
   color: var(--eol-color-accent-strong);
   border-color: var(--eol-color-accent);
 }
 
-.sentinel-filter-bar {
+.eol-workspace-shell .sentinel-filter-bar {
   display: flex;
   flex-wrap: wrap;
   gap: 12px;
@@ -345,13 +345,13 @@
   box-shadow: 3px 3px 0 var(--eol-manga-ink);
   margin-bottom: 20px;
 }
-.sentinel-filter-group {
+.eol-workspace-shell .sentinel-filter-group {
   display: flex;
   align-items: center;
   gap: 8px;
   flex-wrap: wrap;
 }
-.sentinel-select {
+.eol-workspace-shell .sentinel-select {
   padding: 6px 10px;
   border: 1px solid var(--eol-manga-ink);
   background: var(--eol-color-surface-raised);
@@ -360,13 +360,13 @@
   border-radius: var(--eol-radius-none);
 }
 
-.sentinel-grid {
+.eol-workspace-shell .sentinel-grid {
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
   gap: 20px;
   margin-top: 16px;
 }
-.sentinel-card {
+.eol-workspace-shell .sentinel-card {
   display: flex;
   flex-direction: column;
   border: 2px solid var(--eol-manga-ink);
@@ -375,11 +375,11 @@
   transition: transform 0.15s, box-shadow 0.15s;
   overflow: hidden;
 }
-.sentinel-card:hover {
+.eol-workspace-shell .sentinel-card:hover {
   transform: translate(-2px, -2px);
   box-shadow: 6px 6px 0 var(--eol-manga-ink);
 }
-.sentinel-card-thumb-container {
+.eol-workspace-shell .sentinel-card-thumb-container {
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
@@ -387,17 +387,17 @@
   overflow: hidden;
   border-bottom: 2px solid var(--eol-manga-ink);
 }
-.sentinel-card-thumb {
+.eol-workspace-shell .sentinel-card-thumb {
   width: 100%;
   height: 100%;
   object-fit: cover;
   opacity: 0.9;
   transition: transform 0.2s;
 }
-.sentinel-card:hover .sentinel-card-thumb {
+.eol-workspace-shell .sentinel-card:hover .sentinel-card-thumb {
   transform: scale(1.03);
 }
-.sentinel-card-duration {
+.eol-workspace-shell .sentinel-card-duration {
   position: absolute;
   bottom: 8px;
   right: 8px;
@@ -407,7 +407,7 @@
   font: 700 10px var(--eol-font-mono);
   border-radius: 2px;
 }
-.sentinel-card-source-pill {
+.eol-workspace-shell .sentinel-card-source-pill {
   position: absolute;
   top: 8px;
   left: 8px;
@@ -418,39 +418,39 @@
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
-.sentinel-card-body {
+.eol-workspace-shell .sentinel-card-body {
   display: flex;
   flex-direction: column;
   flex: 1;
   padding: 16px;
   gap: 12px;
 }
-.sentinel-card-badges {
+.eol-workspace-shell .sentinel-card-badges {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
   gap: 6px;
 }
-.sentinel-card-title {
+.eol-workspace-shell .sentinel-card-title {
   margin: 0;
   font-size: 14px;
   font-weight: 700;
   line-height: 1.4;
   color: var(--eol-color-text);
 }
-.sentinel-card-channel {
+.eol-workspace-shell .sentinel-card-channel {
   display: flex;
   align-items: center;
   justify-content: space-between;
   color: var(--eol-color-text-muted);
   font: 11px var(--eol-font-mono);
 }
-.sentinel-rules-box {
+.eol-workspace-shell .sentinel-rules-box {
   padding: 10px;
   background: var(--eol-color-surface-inset);
   border: 1px dashed var(--eol-color-border-strong);
 }
-.sentinel-rules-title {
+.eol-workspace-shell .sentinel-rules-title {
   font: 700 10px var(--eol-font-mono);
   color: var(--eol-color-text-muted);
   text-transform: uppercase;
@@ -459,13 +459,13 @@
   align-items: center;
   justify-content: space-between;
 }
-.sentinel-rule-item {
+.eol-workspace-shell .sentinel-rule-item {
   font-size: 11px;
   line-height: 1.4;
   margin-bottom: 4px;
   color: var(--eol-color-text);
 }
-.sentinel-rule-weight {
+.eol-workspace-shell .sentinel-rule-weight {
   font-weight: 700;
   padding: 1px 4px;
   border-radius: 2px;
@@ -474,12 +474,12 @@
   font-size: 9px;
   margin-left: 4px;
 }
-.sentinel-tauhid-box {
+.eol-workspace-shell .sentinel-tauhid-box {
   padding: 12px;
   background: var(--eol-color-accent-subtle);
   border-left: 4px solid var(--eol-color-accent);
 }
-.sentinel-arabic {
+.eol-workspace-shell .sentinel-arabic {
   font-family: "Amiri", "Scheherazade New", serif;
   font-size: 16px;
   direction: rtl;
@@ -487,18 +487,18 @@
   color: var(--eol-color-text);
   margin-bottom: 4px;
 }
-.sentinel-dalil-ref {
+.eol-workspace-shell .sentinel-dalil-ref {
   font: 700 10px var(--eol-font-mono);
   color: var(--eol-color-accent-strong);
   margin-bottom: 4px;
 }
-.sentinel-dalil-text {
+.eol-workspace-shell .sentinel-dalil-text {
   font-size: 11px;
   font-style: italic;
   color: var(--eol-color-text-subtle);
   line-height: 1.45;
 }
-.sentinel-card-actions {
+.eol-workspace-shell .sentinel-card-actions {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -508,7 +508,7 @@
   border-top: 1px solid var(--eol-color-border);
 }
 
-.sentinel-modal-overlay {
+.eol-workspace-shell .sentinel-modal-overlay {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.7);
@@ -518,7 +518,7 @@
   place-items: center;
   padding: 20px;
 }
-.sentinel-modal {
+.eol-workspace-shell .sentinel-modal {
   width: 100%;
   max-width: 650px;
   max-height: 90vh;
@@ -528,7 +528,7 @@
   box-shadow: 8px 8px 0 var(--eol-manga-ink);
   padding: 24px;
 }
-.sentinel-modal-head {
+.eol-workspace-shell .sentinel-modal-head {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -536,12 +536,12 @@
   border-bottom: 2px solid var(--eol-manga-ink);
   padding-bottom: 10px;
 }
-.sentinel-modal-head h3 {
+.eol-workspace-shell .sentinel-modal-head h3 {
   margin: 0;
   font-size: 18px;
   font-weight: 700;
 }
-.sentinel-code-snippet {
+.eol-workspace-shell .sentinel-code-snippet {
   padding: 12px;
   background: #111;
   color: #39ff14;
@@ -599,39 +599,39 @@
 }
 
 /* -- Sentinel Playwright Automated Crawler Elements ------------- */
-.sentinel-browser-status-bar {
+.eol-workspace-shell .sentinel-browser-status-bar {
   margin: 10px 0 14px 0;
   padding: 8px 12px;
   background: var(--eol-color-surface-inset);
   border: 1px dashed var(--eol-manga-ink);
   border-radius: 4px;
 }
-.sentinel-toggle-label {
+.eol-workspace-shell .sentinel-toggle-label {
   display: flex;
   align-items: center;
   gap: 10px;
   cursor: pointer;
   font-size: 13px;
 }
-.sentinel-toggle-label input[type="checkbox"] {
+.eol-workspace-shell .sentinel-toggle-label input[type="checkbox"] {
   width: 18px;
   height: 18px;
   cursor: pointer;
   accent-color: #ff6b35;
 }
-.sentinel-toggle-label span {
+.eol-workspace-shell .sentinel-toggle-label span {
   display: flex;
   flex-direction: column;
 }
-.sentinel-toggle-label strong {
+.eol-workspace-shell .sentinel-toggle-label strong {
   color: var(--eol-color-text);
   font-size: 12px;
 }
-.sentinel-toggle-label small {
+.eol-workspace-shell .sentinel-toggle-label small {
   color: var(--eol-color-text-subtle);
   font-size: 11px;
 }
-.sentinel-scanning-banner {
+.eol-workspace-shell .sentinel-scanning-banner {
   display: flex;
   align-items: center;
   gap: 14px;
@@ -642,18 +642,18 @@
   border-radius: 6px;
   animation: pulse-sentinel 2s infinite ease-in-out;
 }
-.sentinel-scanning-banner strong {
+.eol-workspace-shell .sentinel-scanning-banner strong {
   display: block;
   font-size: 13px;
   color: #ff6b35;
   margin-bottom: 4px;
 }
-.sentinel-scanning-banner p {
+.eol-workspace-shell .sentinel-scanning-banner p {
   margin: 0;
   font-size: 12px;
   color: var(--eol-color-text-subtle);
 }
-.sentinel-spinner {
+.eol-workspace-shell .sentinel-spinner {
   width: 24px;
   height: 24px;
   border: 3px solid rgba(255, 107, 53, 0.2);
@@ -671,19 +671,19 @@
 }
 
 /* -- Sentinel Engine Selector Elements --------------------------- */
-.sentinel-engine-controls {
+.eol-workspace-shell .sentinel-engine-controls {
   display: flex;
   align-items: center;
   gap: 12px;
   flex-wrap: wrap;
   margin-bottom: 6px;
 }
-.sentinel-engine-buttons {
+.eol-workspace-shell .sentinel-engine-buttons {
   display: flex;
   gap: 6px;
   flex-wrap: wrap;
 }
-.sentinel-engine-btn {
+.eol-workspace-shell .sentinel-engine-btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -697,16 +697,16 @@
   cursor: pointer;
   transition: all 0.15s ease;
 }
-.sentinel-engine-btn:hover {
+.eol-workspace-shell .sentinel-engine-btn:hover {
   color: var(--eol-color-text);
   border-color: #ff6b35;
 }
-.sentinel-engine-btn--active {
+.eol-workspace-shell .sentinel-engine-btn--active {
   background: #ff6b35;
   color: #fff;
   border-color: #ff6b35;
 }
-.sentinel-engine-note {
+.eol-workspace-shell .sentinel-engine-note {
   display: block;
   font-size: 11px;
   color: var(--eol-color-text-subtle);
@@ -714,7 +714,7 @@
 }
 
 /* ── Sentinel View Mode & Table View ────────────────────────────── */
-.sentinel-view-mode-buttons {
+.eol-workspace-shell .sentinel-view-mode-buttons {
   display: inline-flex;
   gap: 4px;
   background: var(--eol-color-surface-raised, #1a1a1a);
@@ -722,7 +722,7 @@
   border: 1px solid var(--eol-manga-ink, #333);
   border-radius: 4px;
 }
-.sentinel-view-btn {
+.eol-workspace-shell .sentinel-view-btn {
   padding: 4px 10px;
   font: 700 11px var(--eol-font-sans);
   background: transparent;
@@ -732,15 +732,15 @@
   cursor: pointer;
   transition: all 0.15s ease;
 }
-.sentinel-view-btn:hover {
+.eol-workspace-shell .sentinel-view-btn:hover {
   color: var(--eol-color-text, #fff);
 }
-.sentinel-view-btn--active {
+.eol-workspace-shell .sentinel-view-btn--active {
   background: var(--eol-manga-highlight, #ff6b35);
   color: #fff;
 }
 
-.sentinel-table {
+.eol-workspace-shell .sentinel-table {
   font-size: 12px;
 }
 .eol-data-table-wrap:has(.sentinel-table) {
