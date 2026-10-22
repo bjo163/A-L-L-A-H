@@ -7,7 +7,7 @@
 .eol-metric-grid[data-columns="6"] { --eol-metric-columns: 6; }
 .eol-metric-grid__item { display: grid; min-width: 0; align-content: start; gap: var(--eol-space-2); padding: var(--eol-space-4); border: var(--eol-border-width) solid var(--eol-color-border); border-radius: var(--eol-radius-md); background: linear-gradient(135deg, var(--eol-color-surface-raised), var(--eol-color-surface-inset)); color: var(--eol-color-text); }
 .eol-metric-grid__label { color: var(--eol-color-text-muted); font: var(--eol-font-weight-medium) var(--eol-font-size-2xs)/var(--eol-line-height-normal) var(--eol-font-mono); letter-spacing: var(--eol-letter-spacing-label); text-transform: uppercase; overflow-wrap: anywhere; }
-.eol-metric-grid__value { min-width: 0; color: var(--eol-color-text); font-size: var(--eol-font-size-2xl); font-weight: var(--eol-font-weight-medium); line-height: var(--eol-line-height-tight); overflow-wrap: anywhere; }
+.eol-metric-grid__value { min-width: 0; color: var(--eol-color-text); font-size: var(--eol-font-size-2xl); font-weight: var(--eol-font-weight-medium); line-height: var(--eol-line-height-tight); font-variant-numeric: var(--eol-font-numeric); overflow-wrap: anywhere; }
 .eol-metric-grid__detail { color: var(--eol-color-text-muted); font-size: var(--eol-font-size-xs); line-height: var(--eol-line-height-relaxed); overflow-wrap: anywhere; }
 .eol-metric-grid__freshness { color: var(--eol-color-text-muted); font: var(--eol-font-size-2xs)/var(--eol-line-height-normal) var(--eol-font-mono); overflow-wrap: anywhere; }
 .eol-metric-grid__item[data-tone="success"] .eol-metric-grid__value { color: var(--eol-status-success-foreground); }
