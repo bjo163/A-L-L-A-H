@@ -24,6 +24,8 @@ export class YoutubeSentinelItemModel extends BatteriesModel {
     thumbnailUrl:       { type: "text",      nullable: true },
 
     // ── Heuristic evaluation ──────────────────────────────────────
+    direction:          { type: "string",    required: true,  defaultTo: "NEGATIVE", index: true },
+    tradition:          { type: "string",    required: true,  defaultTo: "ISLAM",    index: true },
     riskScore:          { type: "integer",   required: true,  defaultTo: 0, index: true },
     riskLevel:          { type: "string",    required: true,  index: true },
     category:           { type: "string",    required: true,  index: true },
@@ -37,11 +39,20 @@ export class YoutubeSentinelItemModel extends BatteriesModel {
     /** JSON object of TauhidGuidance */
     tauhidGuidance:     { type: "jsonb",     nullable: true },
 
+    /** JSON object of WisdomGuidance (for POSITIVE direction) */
+    wisdomGuidance:     { type: "jsonb",     nullable: true },
+
     /** JSON object of YoutubeReportPacket */
     reportPacket:       { type: "jsonb",     nullable: true },
 
+    /** JSON object of YoutubeAmplifyPacket (for POSITIVE direction) */
+    amplifyPacket:      { type: "jsonb",     nullable: true },
+
     /** JSON object of CounterDakwahBrief */
     counterDakwahBrief: { type: "jsonb",     nullable: true },
+
+    /** JSON object of WisdomBrief (for POSITIVE direction) */
+    wisdomBrief:        { type: "jsonb",     nullable: true },
 
     // ── Operator workflow ─────────────────────────────────────────
     workflowStatus:     { type: "string",    required: true,  defaultTo: "PENDING_REVIEW", index: true },
@@ -55,7 +66,15 @@ export class YoutubeSentinelItemModel extends BatteriesModel {
   };
 
   static override get jsonAttributes(): string[] {
-    return ["matchedRules", "tauhidGuidance", "reportPacket", "counterDakwahBrief"];
+    return [
+      "matchedRules",
+      "tauhidGuidance",
+      "wisdomGuidance",
+      "reportPacket",
+      "amplifyPacket",
+      "counterDakwahBrief",
+      "wisdomBrief",
+    ];
   }
 
   // ── TypeScript property declarations ──────────────────────────────
@@ -70,6 +89,8 @@ export class YoutubeSentinelItemModel extends BatteriesModel {
   publishedAt?: string | null;
   thumbnailUrl?: string | null;
 
+  direction!: string;
+  tradition!: string;
   riskScore!: number;
   riskLevel!: string;
   category!: string;
@@ -78,8 +99,11 @@ export class YoutubeSentinelItemModel extends BatteriesModel {
   isRefutation!: boolean;
   matchedRules!: unknown[];
   tauhidGuidance?: unknown | null;
+  wisdomGuidance?: unknown | null;
   reportPacket?: unknown | null;
+  amplifyPacket?: unknown | null;
   counterDakwahBrief?: unknown | null;
+  wisdomBrief?: unknown | null;
 
   workflowStatus!: string;
   operatorNotes?: string | null;

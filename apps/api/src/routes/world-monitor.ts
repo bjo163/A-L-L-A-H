@@ -1,6 +1,6 @@
 import type { FastifyInstance } from "fastify";
 import { generateBrowserAutomationSnippet, getWorldMonitoringSnapshot, scanYoutube, youtubeSentinelRepo } from "@empire/batteries-world-monitor";
-import type { WorldMonitoringSnapshot, YoutubeMonitoredItem, YoutubeWorkflowStatus } from "@empire/batteries-world-monitor";
+import type { SentinelDirection, SentinelTradition, WorldMonitoringSnapshot, YoutubeMonitoredItem, YoutubeWorkflowStatus } from "@empire/batteries-world-monitor";
 import { checkDatabaseHealth } from "../db.js";
 import { getActiveWorldMonitorSources, refreshWorldMonitorSources } from "../world-monitor-ingest.js";
 import { WorldMonitorObservationModel, WorldMonitorSourceRunModel, YoutubeSentinelItemModel, YoutubeSentinelScanModel } from "@empire/batteries-base";
@@ -122,6 +122,8 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
         querystring: {
           type: "object",
           properties: {
+            direction: { type: "string" },
+            tradition: { type: "string" },
             category: { type: "string" },
             riskLevel: { type: "string" },
             workflowStatus: { type: "string" },
@@ -134,6 +136,8 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
     },
     async (request) => {
       const query = (request.query ?? {}) as {
+        direction?: SentinelDirection;
+        tradition?: SentinelTradition;
         category?: string;
         riskLevel?: string;
         workflowStatus?: string;
@@ -151,6 +155,8 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
       if (isDbUp) {
         try {
           let q = YoutubeSentinelItemModel.query().whereNull("deleted_at").orderBy("risk_score", "desc");
+          if (query.direction && (query.direction as string) !== "ALL") q = q.where({ direction: query.direction }) as typeof q;
+          if (query.tradition && (query.tradition as string) !== "ALL") q = q.where({ tradition: query.tradition }) as typeof q;
           if (query.category && query.category !== "ALL") q = q.where({ category: query.category }) as typeof q;
           if (query.riskLevel && query.riskLevel !== "ALL") q = q.where({ risk_level: query.riskLevel }) as typeof q;
           if (query.workflowStatus && query.workflowStatus !== "ALL") q = q.where({ workflow_status: query.workflowStatus }) as typeof q;
@@ -182,8 +188,25 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
         items,
         persistenceMode: isDbUp ? "database" : "in_memory",
         taxonomy: {
+          directions: [
+            { id: "ALL", label: "Semua Arah Deteksi" },
+            { id: "NEGATIVE", label: "Negatif (Kesesatan / Khurafat)" },
+            { id: "POSITIVE", label: "Positif (Kebajikan & Hikmah)" },
+            { id: "NEUTRAL", label: "Netral (Edukasi / Jurnalistik)" },
+          ],
+          traditions: [
+            { id: "ALL", label: "Semua Tradisi" },
+            { id: "ISLAM", label: "Islam" },
+            { id: "KRISTEN", label: "Kristen" },
+            { id: "KATOLIK", label: "Katolik" },
+            { id: "HINDU", label: "Hindu" },
+            { id: "BUDDHA", label: "Buddha" },
+            { id: "KHONGHUCU", label: "Khonghucu" },
+            { id: "UNIVERSAL", label: "Universal" },
+          ],
           categories: [
             { id: "ALL", label: "Semua Kategori" },
+            // Negatif
             { id: "SIHIR_PELET", label: "Sihir & Pelet" },
             { id: "DUKUN_RAMALAN", label: "Dukun & Ramalan" },
             { id: "PESUGIHAN_TUMBAL", label: "Pesugihan & Tumbal" },
@@ -191,13 +214,23 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
             { id: "BENDA_KERAMAT_JIMAT", label: "Benda Keramat & Jimat" },
             { id: "KUBURAN_SESAJEN", label: "Makam & Sesajen" },
             { id: "UMUM_SYIRIK", label: "Kesyirikan Umum" },
+            // Positif
+            { id: "TAUHID_DAKWAH", label: "Dakwah Tauhid" },
+            { id: "AKHLAK_KARIMAH", label: "Akhlak Karimah" },
+            { id: "KASIH_KRISTIANI", label: "Kasih Kristiani" },
+            { id: "DHARMA_HINDU", label: "Dharma Hindu" },
+            { id: "DHARMA_BUDDHA", label: "Dharma Buddha" },
+            { id: "KEBAJIKAN_KHONGHUCU", label: "Kebajikan Khonghucu" },
+            { id: "UNIVERSAL_HIKMAH", label: "Hikmah Universal" },
+            // Netral
+            { id: "BEBAS_SYIRIK", label: "Bebas Syirik / Edukasi" },
           ],
           riskLevels: [
             { id: "ALL", label: "Semua Level Risiko" },
             { id: "CRITICAL_SYIRIK", label: "Kritis (Syirik Nyata)" },
             { id: "HIGH_SYIRIK_RISK", label: "Tinggi (Bahaya Okultisme)" },
             { id: "ADVISORY_SUPERSTITION", label: "Peringatan (Takhayul/Khurafat)" },
-            { id: "DAKWAH_REFUTATION", label: "Bantahan Dakwah Tauhid" },
+            { id: "DAKWAH_REFUTATION", label: "Bantahan Dakwah Tauhid / Hikmah" },
             { id: "NOMINAL_CLEAR", label: "Aman" },
           ],
           statuses: [
@@ -207,6 +240,10 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
             { id: "COUNTER_DAKWAH_QUEUED", label: "Disposisi Bantahan Tauhid" },
             { id: "REPORT_FILED", label: "Laporan YouTube Terkirim" },
             { id: "FALSE_POSITIVE_DISMISSED", label: "Bukan Pelanggaran / Edukasi" },
+            { id: "WISDOM_QUEUED", label: "Antrean Hikmah" },
+            { id: "AMPLIFY_RECOMMENDED", label: "Rekomendasi Amplifikasi" },
+            { id: "SHARED_VIA_DAKWAH", label: "Telah Diamplifikasi" },
+            { id: "ARCHIVED_REFERENCE", label: "Arsip Referensi Luhur" },
           ],
         },
       };
@@ -318,6 +355,10 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
                 "COUNTER_DAKWAH_QUEUED",
                 "REPORT_FILED",
                 "FALSE_POSITIVE_DISMISSED",
+                "WISDOM_QUEUED",
+                "AMPLIFY_RECOMMENDED",
+                "SHARED_VIA_DAKWAH",
+                "ARCHIVED_REFERENCE",
               ],
             },
             notes: { type: "string" },

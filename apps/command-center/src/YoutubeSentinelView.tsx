@@ -1,6 +1,8 @@
 import { useEffect, useMemo, useState } from "react";
 import { API_PATHS, createApiClient } from "@empire/api-contract";
 import type {
+  SentinelDirection,
+  SentinelTradition,
   YoutubeMonitoredItem,
   YoutubeRiskLevel,
   YoutubeScanSummary,
@@ -17,10 +19,10 @@ interface YoutubeSentinelViewProps {
 
 const AUTO_SCAN_QUERIES = [
   "pesugihan uang gaib",
+  "kajian tauhid sunnah",
   "dukun santet online",
+  "khotbah kristen kasih",
   "cek khodam gratis",
-  "pelet jarak jauh ampuh",
-  "ritual syirik tumbal",
 ];
 
 export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewProps) {
@@ -30,6 +32,8 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
   const [scanning, setScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState<string | null>(null);
   const [queryInput, setQueryInput] = useState("pesugihan uang gaib");
+  const [selectedDirection, setSelectedDirection] = useState<SentinelDirection | "ALL">("ALL");
+  const [selectedTradition, setSelectedTradition] = useState<SentinelTradition | "ALL">("ALL");
   const [selectedCategory, setSelectedCategory] = useState("ALL");
   const [selectedRiskLevel, setSelectedRiskLevel] = useState("ALL");
   const [selectedStatus, setSelectedStatus] = useState("ALL");
@@ -41,7 +45,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
   const [viewMode, setViewMode] = useState<"table" | "grid">("table");
   const [toast, setToast] = useState<string | null>(null);
   const [activeModal, setActiveModal] = useState<{
-    type: "report" | "counter_dakwah" | "snippet";
+    type: "report" | "counter_dakwah" | "wisdom" | "snippet";
     item?: YoutubeMonitoredItem;
     snippetCode?: string;
   } | null>(null);
@@ -263,20 +267,22 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
   const visibleItems = useMemo(() => {
     return items.filter((item) => {
       const matchesSearch = searchQuery
-        ? `${item.title} ${item.channelTitle} ${item.category} ${item.descriptionSnippet}`
+        ? `${item.title} ${item.channelTitle} ${item.category} ${item.descriptionSnippet} ${item.tradition ?? ""}`
             .toLowerCase()
             .includes(searchQuery.toLowerCase())
         : true;
+      const matchesDir = selectedDirection === "ALL" || item.direction === selectedDirection;
+      const matchesTrad = selectedTradition === "ALL" || item.tradition === selectedTradition;
       const matchesCat = selectedCategory === "ALL" || item.category === selectedCategory;
       const matchesRisk = selectedRiskLevel === "ALL" || item.riskLevel === selectedRiskLevel;
       const matchesStatus = selectedStatus === "ALL" || item.workflowStatus === selectedStatus;
       const matchesHideResolved = hideResolved
-        ? item.workflowStatus !== "REPORT_FILED" && item.workflowStatus !== "FALSE_POSITIVE_DISMISSED"
+        ? item.workflowStatus !== "REPORT_FILED" && item.workflowStatus !== "FALSE_POSITIVE_DISMISSED" && item.workflowStatus !== "SHARED_VIA_DAKWAH"
         : true;
       const matchesOnlyNew = onlyNew ? Boolean(item.isNew) : true;
-      return matchesSearch && matchesCat && matchesRisk && matchesStatus && matchesHideResolved && matchesOnlyNew;
+      return matchesSearch && matchesDir && matchesTrad && matchesCat && matchesRisk && matchesStatus && matchesHideResolved && matchesOnlyNew;
     });
-  }, [items, searchQuery, selectedCategory, selectedRiskLevel, selectedStatus, hideResolved, onlyNew]);
+  }, [items, searchQuery, selectedDirection, selectedTradition, selectedCategory, selectedRiskLevel, selectedStatus, hideResolved, onlyNew]);
 
   const riskBadgeTone = (level: YoutubeRiskLevel) => {
     switch (level) {
@@ -302,6 +308,14 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
       case "REPORT_FILED":
         return "success";
       case "FALSE_POSITIVE_DISMISSED":
+        return "neutral";
+      case "WISDOM_QUEUED":
+        return "warning";
+      case "AMPLIFY_RECOMMENDED":
+        return "success";
+      case "SHARED_VIA_DAKWAH":
+        return "info";
+      case "ARCHIVED_REFERENCE":
         return "neutral";
       default:
         return "warning";
@@ -339,21 +353,24 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
             />
             <div style={{ minWidth: 0, flex: 1 }}>
               <div style={{ display: "flex", alignItems: "center", gap: 6, marginBottom: 4, flexWrap: "wrap" }}>
+                {item.direction === "POSITIVE" ? (
+                  <Badge tone="success">✨ HIKMAH / POSITIF</Badge>
+                ) : item.direction === "NEUTRAL" ? (
+                  <Badge tone="neutral">ℹ️ NETRAL</Badge>
+                ) : (
+                  <Badge tone="danger">⚠️ ANCAMAN AKIDAH</Badge>
+                )}
+                {item.tradition && (
+                  <span className={`sentinel-tradition-badge sentinel-tradition-badge--${item.tradition.toLowerCase()}`}>
+                    {item.tradition}
+                  </span>
+                )}
                 {item.isNew && (
-                  <Badge tone="success">✨ BARU</Badge>
+                  <Badge tone="success">BARU</Badge>
                 )}
                 <span className="sentinel-card-source-pill" style={{ position: "static", fontSize: 9, padding: "1px 5px" }}>
                   {item.sourceType}
                 </span>
-                {item.transcriptAnalyzed ? (
-                  <span style={{ fontSize: 9, padding: "1px 6px", background: "rgba(59, 130, 246, 0.2)", color: "#60a5fa", border: "1px solid #3b82f6", borderRadius: 3, fontWeight: 700 }}>
-                    📝 Transkrip Lengkap
-                  </span>
-                ) : (
-                  <span style={{ fontSize: 9, padding: "1px 6px", background: "rgba(107, 114, 128, 0.15)", color: "var(--eol-color-text-muted)", borderRadius: 3 }}>
-                    📄 Metadata
-                  </span>
-                )}
               </div>
               <a
                 href={item.url}
@@ -411,24 +428,30 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
       },
       {
         key: "category",
-        header: "Kategori Tauhid",
+        header: "Kategori & Nilai",
         cell: (item: YoutubeMonitoredItem) => (
           <div>
-            <Badge tone="info">{item.category.replace(/_/g, " ")}</Badge>
-            {item.tauhidGuidance?.dalilRef && (
+            <Badge tone={item.direction === "POSITIVE" ? "success" : "info"}>
+              {item.category.replace(/_/g, " ")}
+            </Badge>
+            {item.direction === "POSITIVE" && item.wisdomGuidance?.scriptureRef ? (
+              <div style={{ fontSize: 10, color: "#4ade80", marginTop: 4 }}>
+                📖 {item.wisdomGuidance.scriptureRef}
+              </div>
+            ) : item.tauhidGuidance?.dalilRef ? (
               <div style={{ fontSize: 10, color: "var(--eol-color-text-muted)", marginTop: 4 }}>
                 📜 {item.tauhidGuidance.dalilRef}
               </div>
-            )}
+            ) : null}
           </div>
         ),
       },
       {
         key: "riskLevel",
-        header: "Tingkat Risiko",
+        header: "Tingkat Risiko / Nilai",
         cell: (item: YoutubeMonitoredItem) => (
           <Badge tone={riskBadgeTone(item.riskLevel)}>
-            {item.riskLevel.replace(/_/g, " ")}
+            {item.direction === "POSITIVE" ? "NILAI LUHUR" : item.riskLevel.replace(/_/g, " ")}
           </Badge>
         ),
       },
@@ -441,12 +464,14 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               style={{
                 fontWeight: 700,
                 fontFamily: "var(--eol-font-mono)",
-                color: item.riskScore >= 70 ? "#ff4d4d" : item.riskScore >= 40 ? "#f59e0b" : "#10b981",
+                color: item.direction === "POSITIVE" ? "#10b981" : item.riskScore >= 70 ? "#ff4d4d" : item.riskScore >= 40 ? "#f59e0b" : "#10b981",
               }}
             >
-              {item.riskScore}
+              {item.direction === "POSITIVE" ? "100" : item.riskScore}
             </span>
-            <span style={{ fontSize: 10, color: "var(--eol-color-text-muted)" }}>/100</span>
+            <span style={{ fontSize: 10, color: "var(--eol-color-text-muted)" }}>
+              {item.direction === "POSITIVE" ? " HIKMAH" : "/100"}
+            </span>
           </div>
         ),
       },
@@ -460,11 +485,22 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
             value={item.workflowStatus}
             onChange={(e) => void handleAction(item.id, e.target.value as YoutubeWorkflowStatus)}
           >
-            <option value="PENDING_REVIEW">Menunggu Telaah</option>
-            <option value="VERIFIED_SYIRIK">Terverifikasi Melanggar</option>
-            <option value="COUNTER_DAKWAH_QUEUED">Bantahan Tauhid</option>
-            <option value="REPORT_FILED">Laporan Terkirim</option>
-            <option value="FALSE_POSITIVE_DISMISSED">Bukan Pelanggaran</option>
+            {item.direction === "POSITIVE" ? (
+              <>
+                <option value="WISDOM_QUEUED">Antrean Hikmah</option>
+                <option value="AMPLIFY_RECOMMENDED">Rekomendasi Amplifikasi</option>
+                <option value="SHARED_VIA_DAKWAH">Telah Diamplifikasi</option>
+                <option value="ARCHIVED_REFERENCE">Arsip Referensi Luhur</option>
+              </>
+            ) : (
+              <>
+                <option value="PENDING_REVIEW">Menunggu Telaah</option>
+                <option value="VERIFIED_SYIRIK">Terverifikasi Melanggar</option>
+                <option value="COUNTER_DAKWAH_QUEUED">Bantahan Tauhid</option>
+                <option value="REPORT_FILED">Laporan Terkirim</option>
+                <option value="FALSE_POSITIVE_DISMISSED">Bukan Pelanggaran</option>
+              </>
+            )}
           </select>
         ),
       },
@@ -483,22 +519,38 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
         align: "end",
         cell: (item: YoutubeMonitoredItem) => (
           <div className="sentinel-table-actions" style={{ justifyContent: "flex-end" }}>
-            <button
-              type="button"
-              className="sentinel-table-btn"
-              title="Buat Laporan Pelanggaran"
-              onClick={() => setActiveModal({ type: "report", item })}
-            >
-              🚩 Lapor
-            </button>
-            <button
-              type="button"
-              className="sentinel-table-btn"
-              title="Draf Bantahan Tauhid"
-              onClick={() => setActiveModal({ type: "counter_dakwah", item })}
-            >
-              🛡️ Bantahan
-            </button>
+            {item.direction === "POSITIVE" ? (
+              <>
+                <button
+                  type="button"
+                  className="sentinel-table-btn"
+                  title="Lihat Hikmah & Amplifikasi Kebaikan"
+                  onClick={() => setActiveModal({ type: "wisdom", item })}
+                  style={{ background: "rgba(34, 197, 94, 0.15)", color: "#4ade80", borderColor: "rgba(34, 197, 94, 0.4)" }}
+                >
+                  ✨ Hikmah &amp; Amplify
+                </button>
+              </>
+            ) : (
+              <>
+                <button
+                  type="button"
+                  className="sentinel-table-btn"
+                  title="Buat Laporan Pelanggaran"
+                  onClick={() => setActiveModal({ type: "report", item })}
+                >
+                  🚩 Lapor
+                </button>
+                <button
+                  type="button"
+                  className="sentinel-table-btn"
+                  title="Draf Bantahan Tauhid"
+                  onClick={() => setActiveModal({ type: "counter_dakwah", item })}
+                >
+                  🛡️ Bantahan
+                </button>
+              </>
+            )}
             <a
               href={item.url}
               target="_blank"
@@ -526,7 +578,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
       )}
 
       {/* ── Summary Stats ────────────────────────────────────────────────────── */}
-      <div className="metrics world-metrics" style={{ gridTemplateColumns: "repeat(5, minmax(0, 1fr))", marginBottom: 20 }}>
+      <div className="metrics world-metrics" style={{ gridTemplateColumns: "repeat(6, minmax(0, 1fr))", marginBottom: 20 }}>
         <Panel manga as="article">
           <small>TOTAL VIDEO DIPANTAU</small>
           <strong>{summary?.totalMonitored ?? items.length}</strong>
@@ -541,6 +593,12 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
           <small>RISIKO TINGGI (OKULTISME)</small>
           <strong style={{ color: "var(--eol-manga-status-warning-strong)" }}>
             {summary?.highRiskCount ?? 0}
+          </strong>
+        </Panel>
+        <Panel manga as="article">
+          <small>HIKMAH &amp; KEBAJIKAN</small>
+          <strong style={{ color: "#4ade80" }}>
+            {summary?.positiveContentCount ?? items.filter((i) => i.direction === "POSITIVE").length}
           </strong>
         </Panel>
         <Panel manga as="article">
@@ -669,6 +727,55 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
 
       {/* ── Filters Bar ──────────────────────────────────────────────────────── */}
       <div className="sentinel-filter-bar">
+        {/* Direction Switcher Tabs */}
+        <div style={{ display: "flex", alignItems: "center", gap: 10, flexWrap: "wrap", width: "100%", marginBottom: 10 }}>
+          <span className="muted" style={{ fontWeight: 700, fontSize: 13 }}>
+            Arah Sentinel:
+          </span>
+          <div className="sentinel-direction-switcher">
+            <button
+              type="button"
+              className={`sentinel-direction-tab ${selectedDirection === "ALL" ? "sentinel-direction-tab--active-all" : ""}`}
+              onClick={() => setSelectedDirection("ALL")}
+            >
+              🌐 Semua Arah ({items.length})
+            </button>
+            <button
+              type="button"
+              className={`sentinel-direction-tab ${selectedDirection === "NEGATIVE" ? "sentinel-direction-tab--active-neg" : ""}`}
+              onClick={() => setSelectedDirection("NEGATIVE")}
+            >
+              ⚠️ Kesesatan &amp; Khurafat ({items.filter((i) => i.direction === "NEGATIVE").length})
+            </button>
+            <button
+              type="button"
+              className={`sentinel-direction-tab ${selectedDirection === "POSITIVE" ? "sentinel-direction-tab--active-pos" : ""}`}
+              onClick={() => setSelectedDirection("POSITIVE")}
+            >
+              ✨ Kebajikan &amp; Hikmah ({items.filter((i) => i.direction === "POSITIVE").length})
+            </button>
+          </div>
+
+          <span className="muted" style={{ fontWeight: 700, marginLeft: "auto", fontSize: 13 }}>
+            Tradisi Agama:
+          </span>
+          <select
+            className="sentinel-select"
+            value={selectedTradition}
+            onChange={(e) => setSelectedTradition(e.target.value as SentinelTradition | "ALL")}
+            style={{ minWidth: 160 }}
+          >
+            <option value="ALL">Semua Tradisi</option>
+            <option value="ISLAM">🕌 Islam</option>
+            <option value="KRISTEN">✝️ Kristen</option>
+            <option value="KATOLIK">⛪ Katolik</option>
+            <option value="HINDU">🕉️ Hindu</option>
+            <option value="BUDDHA">☸️ Buddha</option>
+            <option value="KHONGHUCU">☯️ Khonghucu</option>
+            <option value="UNIVERSAL">🌟 Universal</option>
+          </select>
+        </div>
+
         <div className="sentinel-filter-group">
           <span className="muted" style={{ fontWeight: 700 }}>
             Kategori:
@@ -679,13 +786,27 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
             <option value="ALL">Semua Kategori ({items.length})</option>
-            <option value="SIHIR_PELET">Sihir, Santet &amp; Pelet</option>
-            <option value="DUKUN_RAMALAN">Dukun &amp; Ramalan Tarot</option>
-            <option value="PESUGIHAN_TUMBAL">Pesugihan &amp; Tumbal</option>
-            <option value="KHODAM_JIN">Khodam &amp; Jin</option>
-            <option value="BENDA_KERAMAT_JIMAT">Benda Keramat &amp; Jimat</option>
-            <option value="KUBURAN_SESAJEN">Makam &amp; Sesajen</option>
-            <option value="BEBAS_SYIRIK">Bebas Syirik / Edukasi</option>
+            <optgroup label="⚠️ Arah Negatif (Kesesatan)">
+              <option value="SIHIR_PELET">Sihir, Santet &amp; Pelet</option>
+              <option value="DUKUN_RAMALAN">Dukun &amp; Ramalan Tarot</option>
+              <option value="PESUGIHAN_TUMBAL">Pesugihan &amp; Tumbal</option>
+              <option value="KHODAM_JIN">Khodam &amp; Jin</option>
+              <option value="BENDA_KERAMAT_JIMAT">Benda Keramat &amp; Jimat</option>
+              <option value="KUBURAN_SESAJEN">Makam &amp; Sesajen</option>
+              <option value="UMUM_SYIRIK">Kesyirikan Umum</option>
+            </optgroup>
+            <optgroup label="✨ Arah Positif (Kebajikan & Hikmah)">
+              <option value="TAUHID_DAKWAH">Dakwah Pemurnian Tauhid</option>
+              <option value="AKHLAK_KARIMAH">Pendidikan Akhlak Karimah</option>
+              <option value="KASIH_KRISTIANI">Kasih Kristiani &amp; Pengharapan</option>
+              <option value="DHARMA_HINDU">Ajaran Dharma Hindu</option>
+              <option value="DHARMA_BUDDHA">Dharma Buddha &amp; Kebaikan Universal</option>
+              <option value="KEBAJIKAN_KHONGHUCU">Kebajikan Moral Khonghucu</option>
+              <option value="UNIVERSAL_HIKMAH">Hikmah Kebijaksanaan Hidup</option>
+            </optgroup>
+            <optgroup label="ℹ️ Edukasi / Netral">
+              <option value="BEBAS_SYIRIK">Bebas Syirik / Edukasi</option>
+            </optgroup>
           </select>
 
           <span className="muted" style={{ fontWeight: 700, marginLeft: 8 }}>
@@ -700,7 +821,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
             <option value="CRITICAL_SYIRIK">Kritis (Syirik Nyata)</option>
             <option value="HIGH_SYIRIK_RISK">Tinggi (Bahaya Okultisme)</option>
             <option value="ADVISORY_SUPERSTITION">Peringatan (Khurafat/Takhayul)</option>
-            <option value="DAKWAH_REFUTATION">Bantahan Dakwah Tauhid</option>
+            <option value="DAKWAH_REFUTATION">Bantahan / Hikmah Positif</option>
             <option value="NOMINAL_CLEAR">Aman</option>
           </select>
 
@@ -718,6 +839,10 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
             <option value="COUNTER_DAKWAH_QUEUED">Disposisi Bantahan Tauhid</option>
             <option value="REPORT_FILED">Laporan YouTube Terkirim</option>
             <option value="FALSE_POSITIVE_DISMISSED">Bukan Pelanggaran</option>
+            <option value="WISDOM_QUEUED">Antrean Hikmah</option>
+            <option value="AMPLIFY_RECOMMENDED">Rekomendasi Amplifikasi</option>
+            <option value="SHARED_VIA_DAKWAH">Telah Diamplifikasi</option>
+            <option value="ARCHIVED_REFERENCE">Arsip Referensi Luhur</option>
           </select>
 
           <span className="muted" style={{ fontWeight: 700, marginLeft: 8 }}>
@@ -1039,6 +1164,106 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                 }
               >
                 Disposisikan ke Tim Dakwah
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {/* ── Modal: Hikmah & Amplifikasi Kebaikan (Direction = POSITIVE) ──────── */}
+      {activeModal?.type === "wisdom" && activeModal.item && (
+        <div className="sentinel-modal-overlay" onClick={() => setActiveModal(null)}>
+          <div className="sentinel-modal" onClick={(e) => e.stopPropagation()}>
+            <div className="sentinel-modal-head">
+              <div>
+                <span className="eyebrow">KURASI KEBAJIKAN &amp; HIKMAH LUHUR</span>
+                <h3>Amplifikasi Dakwah &amp; Nilai Kebijaksanaan</h3>
+              </div>
+              <Button variant="secondary" onClick={() => setActiveModal(null)}>
+                Tutup ✕
+              </Button>
+            </div>
+
+            <p style={{ fontSize: 12, lineHeight: 1.6 }}>
+              Konten ini teridentifikasi sebagai pembawa nilai kebajikan luhur dari tradisi{" "}
+              <strong>{activeModal.item.tradition}</strong>. Gunakan materi berikut untuk amplifikasi media atau rujukan edukasi:
+            </p>
+
+            {activeModal.item.wisdomGuidance && (
+              <div className="sentinel-wisdom-box" style={{ marginBottom: 16 }}>
+                {activeModal.item.wisdomGuidance.originalText && (
+                  <div className="sentinel-arabic" style={{ fontSize: 18, color: "#4ade80" }}>
+                    {activeModal.item.wisdomGuidance.originalText}
+                  </div>
+                )}
+                <div className="sentinel-dalil-ref" style={{ color: "#86efac" }}>
+                  📖 {activeModal.item.wisdomGuidance.scriptureRef}
+                </div>
+                <div className="sentinel-wisdom-quote">
+                  &ldquo;{activeModal.item.wisdomGuidance.translation}&rdquo;
+                </div>
+                <p style={{ margin: "8px 0 0", fontSize: 11, color: "var(--eol-color-text)" }}>
+                  <strong>Nilai Inti:</strong> {activeModal.item.wisdomGuidance.coreValue}
+                </p>
+                <p style={{ margin: "4px 0 0", fontSize: 11, color: "var(--eol-color-text-muted)" }}>
+                  <strong>Saran Operator:</strong> {activeModal.item.wisdomGuidance.recommendedAction}
+                </p>
+              </div>
+            )}
+
+            {activeModal.item.amplifyPacket && (
+              <div style={{ marginBottom: 16 }}>
+                <strong style={{ fontSize: 12 }}>Draf Teks Amplifikasi &amp; Berbagi:</strong>
+                <textarea
+                  readOnly
+                  className="sentinel-search-input"
+                  style={{ width: "100%", height: 85, marginTop: 6, fontSize: 11 }}
+                  value={activeModal.item.amplifyPacket.suggestedShareCaption}
+                />
+                <div style={{ display: "flex", gap: 6, flexWrap: "wrap", marginTop: 6 }}>
+                  {activeModal.item.amplifyPacket.suggestedHashtags.map((tag) => (
+                    <span
+                      key={tag}
+                      style={{
+                        fontSize: 10,
+                        padding: "2px 6px",
+                        background: "rgba(59, 130, 246, 0.15)",
+                        color: "#60a5fa",
+                        borderRadius: 3,
+                      }}
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            <div className="button-row" style={{ justifyContent: "flex-end" }}>
+              <Button
+                variant="secondary"
+                onClick={() => {
+                  if (activeModal.item?.amplifyPacket) {
+                    void navigator.clipboard.writeText(
+                      `${activeModal.item.amplifyPacket.suggestedShareCaption}\n\n${activeModal.item.amplifyPacket.suggestedHashtags.join(" ")}`,
+                    );
+                    notify("Draf amplifikasi dan tagar disalin ke clipboard!");
+                  }
+                }}
+              >
+                📋 Salin Materi Amplifikasi
+              </Button>
+              <Button
+                variant="primary"
+                onClick={() =>
+                  void handleAction(
+                    activeModal.item!.id,
+                    "AMPLIFY_RECOMMENDED",
+                    "Rekomendasikan konten untuk dipromosikan di saluran resmi Empire of the Light",
+                  )
+                }
+              >
+                ✨ Rekomendasikan Amplifikasi
               </Button>
             </div>
           </div>

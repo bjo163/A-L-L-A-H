@@ -1,9 +1,15 @@
 import { existsSync } from "node:fs";
 import type {
   CounterDakwahBrief,
+  SentinelDirection,
+  SentinelTradition,
   TauhidGuidance,
+  WisdomBrief,
+  WisdomGuidance,
+  YoutubeAmplifyPacket,
   YoutubeMatchedRule,
   YoutubeMonitoredItem,
+  YoutubePositiveCategory,
   YoutubeReportPacket,
   YoutubeRiskLevel,
   YoutubeScanQuery,
@@ -164,7 +170,7 @@ const DAKWAH_REFUTATION_MARKERS = [
 ];
 
 // Quran & Sunnah Theological Dalil Matrix
-const TAUHID_DALIL_MATRIX: Record<YoutubeViolationCategory, TauhidGuidance> = {
+const TAUHID_DALIL_MATRIX: Partial<Record<YoutubeViolationCategory, TauhidGuidance>> = {
   SIHIR_PELET: {
     topic: "Keharaman Sihir, Santet, dan Pelet",
     dalilRef: "QS. Al-Baqarah: 102 & QS. Thaha: 69",
@@ -231,9 +237,150 @@ const TAUHID_DALIL_MATRIX: Record<YoutubeViolationCategory, TauhidGuidance> = {
   },
 };
 
+// Positive Wisdom & Virtue Rules (Direction = POSITIVE)
+interface PositiveWisdomRuleDefinition {
+  id: string;
+  category: YoutubePositiveCategory;
+  tradition: SentinelTradition;
+  label: string;
+  regex: RegExp;
+  weight: number;
+}
+
+const POSITIVE_WISDOM_RULES: PositiveWisdomRuleDefinition[] = [
+  // 1. Tauhid & Dakwah Islam
+  {
+    id: "RULE_POS_TAUHID_ISLAM",
+    category: "TAUHID_DAKWAH",
+    tradition: "ISLAM",
+    label: "Dakwah Pemurnian Tauhid & Sunnah",
+    regex: /\b(kajian\s+tauhid|kemurnian\s+tauhid|makna\s+laa\s+ilaha\s+illallah|tauhid\s+rububiyah|tauhid\s+uluhiyah|asma\s+wa\s+sifat|mengenal\s+allah|mentauhidkan\s+allah)\b/i,
+    weight: 40,
+  },
+  {
+    id: "RULE_POS_AKHLAK_ISLAM",
+    category: "AKHLAK_KARIMAH",
+    tradition: "ISLAM",
+    label: "Pendidikan Akhlak Karimah & Adab",
+    regex: /\b(akhlak\s+mulia|akhlak\s+karimah|adab\s+penuntut\s+ilmu|birrul\s+walidain|berbakti\s+pada\s+orang\s+tua|menjaga\s+lisan|keutamaan\s+sabar|ikhlas\s+beramal)\b/i,
+    weight: 35,
+  },
+  // 2. Kasih Kristiani & Khotbah Moral
+  {
+    id: "RULE_POS_KASIH_KRISTIANI",
+    category: "KASIH_KRISTIANI",
+    tradition: "KRISTEN",
+    label: "Khotbah Moral Kasih Kristiani & Pengharapan",
+    regex: /\b(khotbah\s+kristen|kasih\s+agape|hukum\s+kasih|renungan\s+kristen|khotbah\s+minggu|buah\s+roh|pengampunan\s+dan\s+kasih|kesetiaan\s+tuhan|roti\s+hidup)\b/i,
+    weight: 35,
+  },
+  // 3. Dharma Hindu
+  {
+    id: "RULE_POS_DHARMA_HINDU",
+    category: "DHARMA_HINDU",
+    tradition: "HINDU",
+    label: "Ajaran Kebajikan Dharma & Karma Phala",
+    regex: /\b(ajaran\s+dharma|karma\s+phala|tri\s+kaya\s+parisudha|tat\s+twam\s+asi|dharma\s+wacana|moksa|bhagavad\s+gita\s+indonesia)\b/i,
+    weight: 35,
+  },
+  // 4. Dharma Buddha
+  {
+    id: "RULE_POS_DHARMA_BUDDHA",
+    category: "DHARMA_BUDDHA",
+    tradition: "BUDDHA",
+    label: "Kebijaksanaan Jalan Utama Berunsur Delapan",
+    regex: /\b(dhammadesana|dhammapada|jalan\s+mulia\s+berunsur\s+delapan|metta\s+karuna|meditasi\s+vipassana|cinta\s+kasih\s+universal|kebijaksanaan\s+buddha)\b/i,
+    weight: 35,
+  },
+  // 5. Khonghucu
+  {
+    id: "RULE_POS_KHONGHUCU",
+    category: "KEBAJIKAN_KHONGHUCU",
+    tradition: "KHONGHUCU",
+    label: "Kebajikan Ren & Li (Kemanusiaan dan Kesusilaan)",
+    regex: /\b(kebajikan\s+ren|ajaran\s+kesusilaan\s+li|budi\s+pekerti\s+khonghucu|jalan\s+suci\s+dao|moral\s+kebajikan\s+khonghucu)\b/i,
+    weight: 35,
+  },
+  // 6. Universal
+  {
+    id: "RULE_POS_UNIVERSAL_HIKMAH",
+    category: "UNIVERSAL_HIKMAH",
+    tradition: "UNIVERSAL",
+    label: "Pemberdayaan Moral & Kebijaksanaan Hidup Universal",
+    regex: /\b(kebijaksanaan\s+hidup|falsafah\s+moral|kejujuran\s+integritas|menemukan\s+kedamaian\s+jiwa|filosofi\s+kebajikan|pemberdayaan\s+budi\s+pekerti)\b/i,
+    weight: 30,
+  },
+];
+
+// Matrix of Wisdom Guidance for POSITIVE items
+const WISDOM_GUIDANCE_MATRIX: Record<YoutubePositiveCategory, WisdomGuidance> = {
+  TAUHID_DAKWAH: {
+    tradition: "ISLAM",
+    topic: "Pemurnian Tauhid & Keikhlasan Beribadah",
+    scriptureRef: "QS. Al-Ikhlas: 1-4 & QS. Adz-Dzariyat: 56",
+    originalText: "وَمَا خَلَقْتُ الْجِنَّ وَالْإِنسَ إِلَّا لِيَعْبُدُونِ",
+    translation: "Dan Aku tidak menciptakan jin dan manusia melainkan supaya mereka mengabdi kepada-Ku.",
+    coreValue: "Tauhid Murni, Ikhlas, Menjauhi Kemusyrikan, Ketenangan Jiwa Bersama Allah",
+    recommendedAction: "Amplify ke umat: sebarkan kajian ini sebagai rujukan literasi akidah yang kokoh.",
+  },
+  AKHLAK_KARIMAH: {
+    tradition: "ISLAM",
+    topic: "Keteladanan Akhlak & Budi Pekerti Luhur",
+    scriptureRef: "HR. At-Tirmidzi No. 2003",
+    originalText: "إِنَّمَا بُعِثْتُ لِأُتَمِّمَ صَالِحَ الْأَخْلَاقِ",
+    translation: "Sesungguhnya aku diutus hanyalah untuk menyempurnakan kesalehan akhlak.",
+    coreValue: "Santun, Kejujuran, Birrul Walidain, Kasih Sayang Antar Sesama",
+    recommendedAction: "Jadikan referensi pendidikan keluarga dan kurikulum karakter generasi muda.",
+  },
+  KASIH_KRISTIANI: {
+    tradition: "KRISTEN",
+    topic: "Khotbah Kasih Agape & Pengharapan",
+    scriptureRef: "1 Korintus 13:13 & Matius 22:37-39",
+    originalText: "νυνὶ δὲ μένει πίστις, ἐλπίς, ἀγάπη, τὰ τρία ταῦτα· μείζων δὲ τούτων ἡ ἀγάπη.",
+    translation: "Demikianlah tinggal ketiga hal ini, yaitu iman, pengharapan dan kasih, dan yang paling besar di antaranya ialah kasih.",
+    coreValue: "Kasih Tanpa Pamrih, Pengampunan, Perdamaian, Pengharapan yang Teguh",
+    recommendedAction: "Rekomendasikan sebagai teladan kerukunan, kesantunan bertutur kata, dan kasih sesama.",
+  },
+  DHARMA_HINDU: {
+    tradition: "HINDU",
+    topic: "Ajaran Kebenaran Dharma & Tri Kaya Parisudha",
+    scriptureRef: "Bhagavad Gita 4.7-8 & Sarasamuccaya",
+    originalText: "यदा यदा हि धर्मस्य ग्लानिर्भवति भारत। अभ्युत्थानमधर्मस्य तदात्मानं सृजाम्यहम्॥",
+    translation: "Kapan pun kebajikan (dharma) merosot dan kejahatan merajalela, saat itulah Aku menjelma.",
+    coreValue: "Pikiran Baik, Perkataan Baik, Perbuatan Baik (Tri Kaya Parisudha)",
+    recommendedAction: "Petik hikmah kebajikan moral dan pentingnya menjaga keseimbangan semesta.",
+  },
+  DHARMA_BUDDHA: {
+    tradition: "BUDDHA",
+    topic: "Cinta Kasih Universal (Metta Karuna) & Pengendalian Diri",
+    scriptureRef: "Dhammapada Yamakavagga & Karaniya Metta Sutta",
+    originalText: "न हि वेरेन वेरानि सम्मन्तीध कुदाचनं। अवेरेन च सम्मन्ति एस धम्मो सनन्तनो॥",
+    translation: "Kebencian tidak akan pernah berakhir bila dibalas dengan kebencian. Hanya dengan cinta kasih kebencian akan berakhir.",
+    coreValue: "Pengendalian Pikiran, Cinta Kasih Tanpa Batas, Kewaspadaan Batin",
+    recommendedAction: "Simpan sebagai referensi keteduhan jiwa dan penawar amarah publik.",
+  },
+  KEBAJIKAN_KHONGHUCU: {
+    tradition: "KHONGHUCU",
+    topic: "Keluhuran Budi Pekerti (Ren) & Kesusilaan (Li)",
+    scriptureRef: "Lun Yu (Sabda Suci Confucius)",
+    originalText: "己所不欲，勿施于人",
+    translation: "Apa yang tidak kau inginkan terjadi pada dirimu, jangan perbuat kepada orang lain.",
+    coreValue: "Tenggang Rasa (Shu), Bakti kepada Orang Tua (Xiao), Integritas Moral",
+    recommendedAction: "Jadikan rujukan etika sosial dan penghormatan terhadap orang tua.",
+  },
+  UNIVERSAL_HIKMAH: {
+    tradition: "UNIVERSAL",
+    topic: "Kebijaksanaan Moral, Kejujuran, & Integritas Kemanusiaan",
+    scriptureRef: "Universal Human Wisdom",
+    translation: "Hati yang damai dan hidup yang jujur adalah kekayaan terbesar manusia.",
+    coreValue: "Integritas, Kejujuran, Kerendahan Hati, Kemanusiaan yang Adil",
+    recommendedAction: "Arsipkan sebagai inspirasi umum kebaikan tanpa sekat.",
+  },
+};
+
 /**
  * Analyzes video title, channel, and description snippet using deterministic heuristic rules.
- * Does not require external LLMs or AI APIs.
+ * Supports dual-direction: NEGATIVE (deviation / superstition) and POSITIVE (virtue / wisdom).
  */
 export function evaluateVideoText(params: {
   title: string;
@@ -241,6 +388,8 @@ export function evaluateVideoText(params: {
   channelTitle?: string;
   transcript?: string;
 }): {
+  direction: SentinelDirection;
+  tradition: SentinelTradition;
   category: YoutubeViolationCategory;
   riskLevel: YoutubeRiskLevel;
   riskScore: number;
@@ -248,11 +397,11 @@ export function evaluateVideoText(params: {
   isRefutation: boolean;
   matchedRules: YoutubeMatchedRule[];
   transcriptExcerpt?: string;
+  positiveCategory?: YoutubePositiveCategory;
 } {
   const corpus = `${params.title} ${params.description ?? ""} ${params.channelTitle ?? ""} ${params.transcript ?? ""}`.trim();
   const matchedRules: YoutubeMatchedRule[] = [];
   const categoryScores: Partial<Record<YoutubeViolationCategory, number>> = {};
-  let transcriptExcerpt: string | undefined = undefined;
 
   // 1. Check for refutation / dakwah counter markers
   let refutationScore = 0;
@@ -270,7 +419,7 @@ export function evaluateVideoText(params: {
     }
   }
 
-  // 2. Evaluate violation heuristic rules
+  // 2. Evaluate violation heuristic rules (NEGATIVE direction)
   for (const rule of HEURISTIC_RULES) {
     const match = rule.regex.exec(corpus);
     if (match) {
@@ -303,23 +452,83 @@ export function evaluateVideoText(params: {
     }
   }
 
-  // If heavy refutation markers are present and outbalance violations, classify as DAKWAH_REFUTATION
-  const totalViolationRaw = Object.values(categoryScores).reduce((acc, val) => acc + (val ?? 0), 0);
-  const isRefutation = refutationScore >= 30 && refutationScore >= totalViolationRaw * 0.4;
+  // 4. Evaluate Positive Wisdom rules (POSITIVE direction)
+  let positiveScore = 0;
+  let topPositiveCategory: YoutubePositiveCategory | undefined = undefined;
+  let detectedTradition: SentinelTradition = "ISLAM";
+  let maxPosScore = 0;
 
-  if (isRefutation) {
+  for (const posRule of POSITIVE_WISDOM_RULES) {
+    const match = posRule.regex.exec(corpus);
+    if (match) {
+      positiveScore += posRule.weight;
+      matchedRules.push({
+        ruleId: posRule.id,
+        category: posRule.category,
+        pattern: posRule.regex.source,
+        weight: posRule.weight,
+        label: posRule.label,
+        excerpt: match[0],
+      });
+      if (posRule.weight > maxPosScore) {
+        maxPosScore = posRule.weight;
+        topPositiveCategory = posRule.category;
+        detectedTradition = posRule.tradition;
+      }
+    }
+  }
+
+  // Tradition fallback detector if not set by positive rule
+  if (/\b(kristen|gereja|pendeta|alkitab|injil|katolik|romo|pastur|paus)\b/i.test(corpus)) {
+    detectedTradition = "KRISTEN";
+  } else if (/\b(hindu|pura|pedanda|veda|weda|dharma\s+hindu)\b/i.test(corpus)) {
+    detectedTradition = "HINDU";
+  } else if (/\b(buddha|vihara|biksu|bhikkhu|tripitaka|dhammapada)\b/i.test(corpus)) {
+    detectedTradition = "BUDDHA";
+  } else if (/\b(khonghucu|kelenteng|litang|confucius)\b/i.test(corpus)) {
+    detectedTradition = "KHONGHUCU";
+  }
+
+  // Calculate raw violation sum
+  const totalViolationRaw = Object.values(categoryScores).reduce((acc, val) => acc + (val ?? 0), 0);
+
+  // DECISION MATRIX FOR DIRECTION:
+  // Case A: Pure positive content (positive wisdom matches present, zero or trivial negative markers)
+  if (topPositiveCategory && totalViolationRaw === 0 && transactionalBoost === 0) {
     return {
-      category: "BEBAS_SYIRIK",
+      direction: "POSITIVE",
+      tradition: detectedTradition,
+      category: topPositiveCategory,
       riskLevel: "DAKWAH_REFUTATION",
-      riskScore: 5,
-      confidence: 0.92,
-      isRefutation: true,
+      riskScore: 0,
+      confidence: Math.min(0.99, Number((0.75 + matchedRules.length * 0.08).toFixed(2))),
+      isRefutation: false,
       matchedRules,
+      positiveCategory: topPositiveCategory,
     };
   }
 
+  // Case B: Explicit refutation / debunking of negative content
+  const isRefutation = refutationScore >= 30 && refutationScore >= totalViolationRaw * 0.4;
+  if (isRefutation) {
+    return {
+      direction: "POSITIVE",
+      tradition: detectedTradition,
+      category: topPositiveCategory ?? "TAUHID_DAKWAH",
+      riskLevel: "DAKWAH_REFUTATION",
+      riskScore: 5,
+      confidence: 0.95,
+      isRefutation: true,
+      matchedRules,
+      positiveCategory: topPositiveCategory ?? "TAUHID_DAKWAH",
+    };
+  }
+
+  // Case C: Clear / Neutral (no matches anywhere)
   if (matchedRules.length === 0) {
     return {
+      direction: "NEUTRAL",
+      tradition: detectedTradition,
       category: "BEBAS_SYIRIK",
       riskLevel: "NOMINAL_CLEAR",
       riskScore: 0,
@@ -329,7 +538,7 @@ export function evaluateVideoText(params: {
     };
   }
 
-  // Determine primary category by max score
+  // Case D: Negative content detected (Syirik, Dukun, Khodam, Pesugihan, dsb)
   let primaryCategory: YoutubeViolationCategory = "UMUM_SYIRIK";
   let maxCatScore = 0;
   for (const [cat, score] of Object.entries(categoryScores)) {
@@ -339,9 +548,8 @@ export function evaluateVideoText(params: {
     }
   }
 
-  // Calculate normalized risk score (0-100)
   const calculatedScore = Math.min(100, Math.max(10, maxCatScore + transactionalBoost));
-  const confidence = Math.min(0.99, Number((0.65 + (matchedRules.length * 0.08)).toFixed(2)));
+  const confidence = Math.min(0.99, Number((0.65 + matchedRules.length * 0.08).toFixed(2)));
 
   let riskLevel: YoutubeRiskLevel = "ADVISORY_SUPERSTITION";
   if (calculatedScore >= 70 || primaryCategory === "SIHIR_PELET" || primaryCategory === "PESUGIHAN_TUMBAL") {
@@ -350,8 +558,9 @@ export function evaluateVideoText(params: {
     riskLevel = "HIGH_SYIRIK_RISK";
   }
 
-
   return {
+    direction: "NEGATIVE",
+    tradition: detectedTradition,
     category: primaryCategory,
     riskLevel,
     riskScore: calculatedScore,
@@ -384,7 +593,14 @@ export function buildMonitoredItem(raw: {
     transcript: raw.transcript,
   });
 
-  const guidance = TAUHID_DALIL_MATRIX[analysis.category] ?? TAUHID_DALIL_MATRIX.UMUM_SYIRIK;
+  const guidance: TauhidGuidance = TAUHID_DALIL_MATRIX[analysis.category] ?? TAUHID_DALIL_MATRIX.UMUM_SYIRIK ?? {
+    topic: "Penjagaan Tauhid & Akidah",
+    dalilRef: "QS. Luqman: 13",
+    arabicText: "إِنَّ الشِّرْكَ لَظُلْمٌ عَظِيمٌ",
+    translation: "Sesungguhnya menyekutukan (ALLAH) adalah benar-benar kezaliman yang besar.",
+    theologicalPrinciple: "Tauhid adalah pondasi seluruh amal perbuatan.",
+    recommendedAction: "Tingkatkan literasi Tauhid dan kuatkan benteng akidah keluarga.",
+  };
 
   // Build ready-to-file YouTube report packet
   const reportCategory = analysis.category === "PESUGIHAN_TUMBAL" || analysis.riskScore >= 70
@@ -418,6 +634,39 @@ export function buildMonitoredItem(raw: {
       `Jangan biarkan akidah kita goyah demi janji palsu perdukunan dan pesugihan. Kembalilah kepada Tauhid yang lurus.`,
   };
 
+  // Build Wisdom and Amplify packets for POSITIVE content
+  const posCategory = (analysis.positiveCategory ?? "TAUHID_DAKWAH") as YoutubePositiveCategory;
+  const wisdomGuidance = WISDOM_GUIDANCE_MATRIX[posCategory] ?? WISDOM_GUIDANCE_MATRIX.TAUHID_DAKWAH;
+
+  const amplifyPacket: YoutubeAmplifyPacket = {
+    platform: "YouTube",
+    targetUrl: `https://www.youtube.com/watch?v=${raw.videoId}`,
+    videoTitle: raw.title,
+    channelTitle: raw.channelTitle,
+    tradition: analysis.tradition,
+    wisdomCategory: posCategory,
+    generatedEndorsement: `Rekomendasi tayangan inspiratif & berfaedah: "${raw.title}" oleh ${raw.channelTitle}. Mengandung nilai ${wisdomGuidance.coreValue}.`,
+    suggestedHashtags: ["#DakwahKebajikan", "#KajianMoral", "#EmpireOfTheLight", "#HikmahLuhur", `#Tradisi${analysis.tradition}`],
+    suggestedShareCaption: `Mari luangkan waktu menyimak konten bermanfaat ini: "${raw.title}". Rujukan: ${wisdomGuidance.scriptureRef} — "${wisdomGuidance.translation}".`,
+  };
+
+  const wisdomBrief: WisdomBrief = {
+    summary: `Kurasi konten kebajikan bertema: ${wisdomGuidance.topic}.`,
+    coreValues: [wisdomGuidance.coreValue],
+    keyInsights: [
+      wisdomGuidance.translation,
+      wisdomGuidance.recommendedAction,
+      `Tradisi: ${analysis.tradition}`,
+    ],
+    suggestedShareComment: `MasyaAllah/Praise be, tayangan yang menyejukkan hati dan menguatkan budi pekerti. Rujukan: ${wisdomGuidance.scriptureRef}.`,
+  };
+
+  const defaultWorkflowStatus: YoutubeWorkflowStatus = analysis.direction === "POSITIVE"
+    ? "AMPLIFY_RECOMMENDED"
+    : analysis.riskScore >= 70
+    ? "PENDING_REVIEW"
+    : "VERIFIED_SYIRIK";
+
   return {
     id: `yt-${raw.videoId}`,
     videoId: raw.videoId,
@@ -430,6 +679,8 @@ export function buildMonitoredItem(raw: {
     durationText: raw.durationText,
     thumbnailUrl: raw.thumbnailUrl ?? `https://i.ytimg.com/vi/${raw.videoId}/hqdefault.jpg`,
     descriptionSnippet: raw.description ?? raw.title,
+    direction: analysis.direction,
+    tradition: analysis.tradition,
     riskLevel: analysis.riskLevel,
     category: analysis.category,
     riskScore: analysis.riskScore,
@@ -437,9 +688,12 @@ export function buildMonitoredItem(raw: {
     isRefutation: analysis.isRefutation,
     matchedRules: analysis.matchedRules,
     tauhidGuidance: guidance,
+    wisdomGuidance,
     reportPacket,
+    amplifyPacket,
     counterDakwahBrief,
-    workflowStatus: analysis.riskScore >= 70 ? "PENDING_REVIEW" : "VERIFIED_SYIRIK",
+    wisdomBrief,
+    workflowStatus: defaultWorkflowStatus,
     scannedAt: new Date().toISOString(),
     sourceType: raw.sourceType ?? "verified_seed",
     transcriptAnalyzed: Boolean(raw.transcript && raw.transcript.length > 0),
@@ -545,6 +799,55 @@ const SEED_YOUTUBE_RECORDS = [
     durationText: "12:00",
     description: "Mantra khusus memanggil jin khodam pendamping untuk menjaga rumah dan penarik rezeki otomatis.",
   },
+  // ── Konten Positif / Kebajikan Lintas Tradisi (Direction = POSITIVE) ──
+  {
+    videoId: "hikmah_islam_01",
+    title: "KAJIAN TAUHID: MENGENAL ALLAH DAN MEMURNIKAN IBADAH HANYA KEPADA-NYA",
+    channelTitle: "Cahaya Sunnah & Hikmah",
+    viewCountText: "420K views",
+    durationText: "38:40",
+    description: "Penjelasan mendalam makna kalimat Laa Ilaha Illallah, pentingnya mentauhidkan Allah, dan menjauhi segala bentuk kemusyrikan demi keselamatan dunia akhirat.",
+  },
+  {
+    videoId: "hikmah_islam_02",
+    title: "AKHLAK MULIA DAN ADAB SEORANG MUSLIM: PENTINGNYA BIRRUL WALIDAIN DAN MENJAGA LISAN",
+    channelTitle: "Mimbar Budi Pekerti",
+    viewCountText: "310K views",
+    durationText: "29:15",
+    description: "Kajian budi pekerti Islam tentang keutamaan berbakti pada orang tua, adab penuntut ilmu, serta keikhlasan dalam beramal sehari-hari.",
+  },
+  {
+    videoId: "hikmah_kristen_01",
+    title: "KHOTBAH KRISTEN: HUKUM KASIH AGAPE, PENGAMPUNAN, DAN PENGHARAPAN DI DALAM TUHAN",
+    channelTitle: "Kabar Baik & Pengharapan",
+    viewCountText: "280K views",
+    durationText: "35:20",
+    description: "Renungan firman mengenai hukum kasih, buah roh kesabaran, serta kekuatan pengampunan dan kasih sesama manusia tanpa membeda-bedakan.",
+  },
+  {
+    videoId: "hikmah_hindu_01",
+    title: "DHARMA WACANA: TRI KAYA PARISUDHA DAN MAKNA KARMA PHALA DALAM KEHIDUPAN NYATA",
+    channelTitle: "Suara Dharma Nusantara",
+    viewCountText: "95K views",
+    durationText: "24:10",
+    description: "Pemahaman ajaran Dharma tentang tiga perbuatan suci: pikiran yang baik, perkataan yang jujur, dan perbuatan yang bajik bagi keharmonisan semesta.",
+  },
+  {
+    videoId: "hikmah_buddha_01",
+    title: "DHAMMADESANA: JALAN MULIA BERUNSUR DELAPAN DAN KEDAMAIAN CINTA KASIH UNIVERSAL METTA",
+    channelTitle: "Pustaka Kebijaksanaan",
+    viewCountText: "115K views",
+    durationText: "41:00",
+    description: "Uraian bait-bait Dhammapada tentang mengendalikan pikiran dari amarah, melatih ketenangan batin, serta menebarkan cinta kasih universal kepada semua makhluk.",
+  },
+  {
+    videoId: "hikmah_khonghucu_01",
+    title: "BUDI PEKERTI KHONGHUCU: KELUHURAN NILAI REN DAN LI DALAM KELUARGA DAN MASYARAKAT",
+    channelTitle: "Harmoni Kebajikan",
+    viewCountText: "62K views",
+    durationText: "22:50",
+    description: "Pelajaran moral luhur ajaran Khonghucu tentang kemanusiaan (Ren), kesusilaan (Li), dan prinsip tenggang rasa saling menghormati.",
+  },
 ];
 
 // In-Memory Repository
@@ -568,6 +871,8 @@ class YoutubeSentinelRepository {
   }
 
   public getItems(filters?: {
+    direction?: SentinelDirection;
+    tradition?: SentinelTradition;
     category?: string;
     riskLevel?: string;
     workflowStatus?: string;
@@ -576,6 +881,14 @@ class YoutubeSentinelRepository {
     onlyNew?: boolean;
   }): YoutubeMonitoredItem[] {
     let result = Array.from(this.items.values());
+
+    if (filters?.direction && (filters.direction as string) !== "ALL") {
+      result = result.filter((item) => item.direction === filters.direction);
+    }
+
+    if (filters?.tradition && (filters.tradition as string) !== "ALL") {
+      result = result.filter((item) => item.tradition === filters.tradition);
+    }
 
     if (filters?.hideResolved) {
       result = result.filter(
@@ -607,7 +920,8 @@ class YoutubeSentinelRepository {
           item.channelTitle.toLowerCase().includes(term) ||
           item.category.toLowerCase().includes(term) ||
           item.riskLevel.toLowerCase().includes(term) ||
-          item.descriptionSnippet.toLowerCase().includes(term),
+          item.descriptionSnippet.toLowerCase().includes(term) ||
+          (item.tradition && item.tradition.toLowerCase().includes(term)),
       );
     }
 
@@ -667,6 +981,8 @@ class YoutubeSentinelRepository {
 
   public getSummary(): YoutubeScanSummary {
     const all = Array.from(this.items.values());
+    const positiveItems = all.filter((i) => i.direction === "POSITIVE");
+    const traditions = Array.from(new Set(all.map((i) => i.tradition).filter(Boolean)));
     return {
       totalMonitored: all.length,
       criticalSyirikCount: all.filter((i) => i.riskLevel === "CRITICAL_SYIRIK").length,
@@ -675,9 +991,11 @@ class YoutubeSentinelRepository {
       counterDakwahCount: all.filter((i) => i.riskLevel === "DAKWAH_REFUTATION").length,
       safeCount: all.filter((i) => i.riskLevel === "NOMINAL_CLEAR").length,
       pendingReviewCount: all.filter((i) => i.workflowStatus === "PENDING_REVIEW").length,
-      actionTakenCount: all.filter((i) => i.workflowStatus === "REPORT_FILED" || i.workflowStatus === "COUNTER_DAKWAH_QUEUED").length,
+      actionTakenCount: all.filter((i) => i.workflowStatus === "REPORT_FILED" || i.workflowStatus === "COUNTER_DAKWAH_QUEUED" || i.workflowStatus === "AMPLIFY_RECOMMENDED" || i.workflowStatus === "SHARED_VIA_DAKWAH").length,
       lastScanTimestamp: this.lastScanTimestamp,
       activeSensors: ["dna-basir", "dna-hafiz", "dna-khabir", "dna-haqq", "dna-ahad"],
+      positiveContentCount: positiveItems.length,
+      detectedTraditions: traditions,
     };
   }
 

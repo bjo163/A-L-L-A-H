@@ -64,22 +64,75 @@ export type YoutubeRiskLevel =
   | "DAKWAH_REFUTATION"
   | "NOMINAL_CLEAR";
 
-export type YoutubeViolationCategory =
+/**
+ * Polaritas arah deteksi Sentinel.
+ * NEGATIVE = konten kesesatan / bahaya / eksploitatif
+ * POSITIVE = konten kebajikan / dakwah / kebijaksanaan luhur
+ * NEUTRAL  = konten edukasi / analisis / berita netral
+ */
+export type SentinelDirection = "NEGATIVE" | "POSITIVE" | "NEUTRAL";
+
+/**
+ * Tradisi agama / kebijaksanaan yang teridentifikasi dalam konten.
+ * Digunakan untuk kontekstualisasi pada kedua arah (negatif & positif).
+ */
+export type SentinelTradition =
+  | "ISLAM"
+  | "KRISTEN"
+  | "KATOLIK"
+  | "HINDU"
+  | "BUDDHA"
+  | "KHONGHUCU"
+  | "UNIVERSAL";
+
+/** Kategori pelanggaran untuk konten arah NEGATIVE */
+export type YoutubeNegativeCategory =
   | "SIHIR_PELET"
   | "DUKUN_RAMALAN"
   | "PESUGIHAN_TUMBAL"
   | "KHODAM_JIN"
   | "BENDA_KERAMAT_JIMAT"
   | "KUBURAN_SESAJEN"
-  | "UMUM_SYIRIK"
-  | "BEBAS_SYIRIK";
+  | "UMUM_SYIRIK";
 
-export type YoutubeWorkflowStatus =
+/** Kategori kebajikan untuk konten arah POSITIVE */
+export type YoutubePositiveCategory =
+  | "TAUHID_DAKWAH"
+  | "AKHLAK_KARIMAH"
+  | "KASIH_KRISTIANI"
+  | "DHARMA_HINDU"
+  | "DHARMA_BUDDHA"
+  | "KEBAJIKAN_KHONGHUCU"
+  | "UNIVERSAL_HIKMAH";
+
+/** Kategori netral — konten edukasi/analisis, termasuk refutation/debunking */
+export type YoutubeNeutralCategory = "BEBAS_SYIRIK";
+
+/** Gabungan seluruh kategori yang mungkin */
+export type YoutubeViolationCategory =
+  | YoutubeNegativeCategory
+  | YoutubePositiveCategory
+  | YoutubeNeutralCategory;
+
+/** Status alur kerja untuk konten arah NEGATIVE (tindakan laporan & bantahan) */
+export type YoutubeNegativeWorkflowStatus =
   | "PENDING_REVIEW"
   | "VERIFIED_SYIRIK"
   | "COUNTER_DAKWAH_QUEUED"
   | "REPORT_FILED"
   | "FALSE_POSITIVE_DISMISSED";
+
+/** Status alur kerja untuk konten arah POSITIVE (tindakan amplifikasi & referensi) */
+export type YoutubePositiveWorkflowStatus =
+  | "WISDOM_QUEUED"
+  | "AMPLIFY_RECOMMENDED"
+  | "SHARED_VIA_DAKWAH"
+  | "ARCHIVED_REFERENCE";
+
+/** Gabungan seluruh status alur kerja */
+export type YoutubeWorkflowStatus =
+  | YoutubeNegativeWorkflowStatus
+  | YoutubePositiveWorkflowStatus;
 
 export interface YoutubeMatchedRule {
   ruleId: string;
@@ -99,6 +152,25 @@ export interface TauhidGuidance {
   recommendedAction: string;
 }
 
+/**
+ * Panduan kebijaksanaan untuk konten arah POSITIVE.
+ * Menyimpan kutipan luhur dari tradisi agama/kebijaksanaan yang terdeteksi.
+ */
+export interface WisdomGuidance {
+  tradition: SentinelTradition;
+  topic: string;
+  /** Referensi teks suci / sumber kebijaksanaan (Quran, Injil, Veda, Tripitaka, dll) */
+  scriptureRef: string;
+  /** Teks asli dalam bahasa aslinya (Arab, Yunani, Sansekerta, Tionghoa, dll) */
+  originalText?: string;
+  /** Terjemahan ke Bahasa Indonesia */
+  translation: string;
+  /** Nilai luhur inti yang terkandung */
+  coreValue: string;
+  /** Saran tindakan positif untuk operator */
+  recommendedAction: string;
+}
+
 export interface YoutubeReportPacket {
   platform: "YouTube";
   targetUrl: string;
@@ -110,12 +182,33 @@ export interface YoutubeReportPacket {
   recommendedTimestamp: string;
 }
 
+/** Paket amplifikasi dakwah / kebaikan untuk konten arah POSITIVE */
+export interface YoutubeAmplifyPacket {
+  platform: "YouTube";
+  targetUrl: string;
+  videoTitle: string;
+  channelTitle: string;
+  tradition: SentinelTradition;
+  wisdomCategory: YoutubePositiveCategory;
+  generatedEndorsement: string;
+  suggestedHashtags: string[];
+  suggestedShareCaption: string;
+}
+
 export interface CounterDakwahBrief {
   summary: string;
   dalilReferences: string[];
   keyRebuttalPoints: string[];
   suggestedCommentResponse: string;
   educationalReferenceVideo?: string;
+}
+
+/** Ringkasan hikmah untuk konten arah POSITIVE */
+export interface WisdomBrief {
+  summary: string;
+  coreValues: string[];
+  keyInsights: string[];
+  suggestedShareComment: string;
 }
 
 export interface YoutubeMonitoredItem {
@@ -130,15 +223,38 @@ export interface YoutubeMonitoredItem {
   durationText?: string;
   thumbnailUrl: string;
   descriptionSnippet: string;
+
+  /** Arah deteksi Sentinel: NEGATIVE / POSITIVE / NEUTRAL */
+  direction: SentinelDirection;
+
+  /** Tradisi agama / kebijaksanaan yang teridentifikasi */
+  tradition: SentinelTradition;
+
   riskLevel: YoutubeRiskLevel;
   category: YoutubeViolationCategory;
   riskScore: number;
   confidence: number;
   isRefutation: boolean;
   matchedRules: YoutubeMatchedRule[];
+
+  /** Panduan teologi — untuk direction NEGATIVE */
   tauhidGuidance: TauhidGuidance;
+
+  /** Panduan kebijaksanaan — untuk direction POSITIVE */
+  wisdomGuidance?: WisdomGuidance;
+
+  /** Paket laporan — untuk direction NEGATIVE */
   reportPacket: YoutubeReportPacket;
+
+  /** Paket amplifikasi — untuk direction POSITIVE */
+  amplifyPacket?: YoutubeAmplifyPacket;
+
+  /** Bantahan Tauhid — untuk direction NEGATIVE */
   counterDakwahBrief: CounterDakwahBrief;
+
+  /** Ringkasan hikmah — untuk direction POSITIVE */
+  wisdomBrief?: WisdomBrief;
+
   workflowStatus: YoutubeWorkflowStatus;
   operatorNotes?: string;
   scannedAt: string;
@@ -160,6 +276,10 @@ export interface YoutubeScanQuery {
   engine?: YoutubeCrawlerEngine;
   sortBy?: YoutubeSortBy;
   onlyNew?: boolean;
+  /** Filter berdasarkan arah deteksi */
+  direction?: SentinelDirection;
+  /** Filter berdasarkan tradisi agama */
+  tradition?: SentinelTradition;
 }
 
 export interface YoutubeScanResult {
@@ -183,5 +303,8 @@ export interface YoutubeScanSummary {
   actionTakenCount: number;
   lastScanTimestamp: string;
   activeSensors: string[];
+  /** Jumlah konten positif / dakwah yang terdeteksi */
+  positiveContentCount?: number;
+  /** Tradisi yang terdeteksi */
+  detectedTraditions?: string[];
 }
-
