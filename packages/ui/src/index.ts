@@ -1,9 +1,9 @@
 export { Badge } from "./primitives/Badge";
 export type { BadgeProps, BadgeTone } from "./primitives/Badge";
-export { LogoMark } from "./brand/BrandConcepts";
-export type { LogoMarkProps } from "./brand/BrandConcepts";
-export { BrandLockup } from "./brand/BrandConcepts";
-export type { BrandLockupProps } from "./brand/BrandConcepts";
+export { LogoMark } from "./brand/BrandIdentity";
+export type { LogoMarkProps } from "./brand/BrandIdentity";
+export { BrandLockup } from "./brand/BrandIdentity";
+export type { BrandLockupProps } from "./brand/BrandIdentity";
 export {
   ActivityIcon, AgentIcon, ApprovalIcon, ArrowDownRightIcon, ArrowLeftIcon, ArrowRightIcon, ArrowUpIcon, ArrowUpRightIcon,
   ArrowsIcon, AuditIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon, CloseIcon,

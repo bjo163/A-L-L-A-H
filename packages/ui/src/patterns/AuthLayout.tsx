@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { BrandLockup } from "../brand/BrandConcepts";
+import { BrandLockup } from "../brand/BrandIdentity";
 import { Panel } from "../primitives/Panel";
 
 export type AuthLayoutProps = {

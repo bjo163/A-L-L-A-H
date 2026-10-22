@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { BrandLockup } from "../src/brand/BrandConcepts";
+import { BrandLockup } from "../src/brand/BrandIdentity";
 import { buttonClassName, CallToAction, IconText, MetricGrid, PortalDomainCard, PublicShell, ResponsiveNavigation, SectionHeading, ArrowDownRightIcon } from "../src";
 import "./preview.css";
 

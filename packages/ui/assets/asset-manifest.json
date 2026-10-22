@@ -94,7 +94,7 @@
       "status": "Shared vector candidates; verify domain-owner interpretation and visual legibility."
     },
     "brandConcepts": {
-      "source": "src/brand/BrandConcepts.tsx",
+      "source": "src/brand/BrandIdentity.tsx",
       "inventoryType": "BrandConcept",
       "names": [
         "aperture",
