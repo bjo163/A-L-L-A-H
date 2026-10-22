@@ -13,7 +13,7 @@ const enabled=planEnabled(manifests,config.approvedEnabled);
 assert.deepEqual(enabled.map(x=>x.id),ordered.filter(m=>config.approvedEnabled.includes(m.id)).map(m=>m.id));
 assert.ok(enabled.every(m=>m.models.length>0),"every enabled module must declare registered models");
 const expectedModels={
- kernel:["roles","permissions","users","partners","user_roles","role_permissions","audit_logs","dictionaries","legacy_dictionary_imports","lexicons","auth_sessions","tenants","tenant_memberships","module_installations","world_monitor_observations","world_monitor_source_runs","world_monitor_aggregates","youtube_sentinel_items","youtube_sentinel_scans"],
+ kernel:["roles","permissions","users","tenants","partners","user_roles","role_permissions","audit_logs","dictionaries","legacy_dictionary_imports","lexicons","auth_sessions","tenant_memberships","module_installations","world_monitor_observations","world_monitor_source_runs","world_monitor_aggregates","youtube_sentinel_items","youtube_sentinel_scans"],
  governance:["change_requests","change_reviews","change_executions"],
  research:["research_runs","research_workflows","research_jobs","research_evidence","research_approvals"],
  work:["workspaces","projects","tasks","documents","comments","notifications","notification_outbox","tags","tag_assignments","youtube_sentinel_partner_links","crm_opportunities","catalog_items","sales_quotes","sales_quote_lines","sales_orders","sales_order_lines","operational_invoices","operational_payments","operational_expenses","calendar_activities"]

@@ -14,7 +14,7 @@ permissions:
   actions: write
 
 concurrency:
-  group: promotion-follow-up
+  group: promotion-follow-up-${{ github.event.workflow_run.head_sha }}
   cancel-in-progress: false
 
 jobs:

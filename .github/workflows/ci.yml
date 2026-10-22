@@ -115,7 +115,10 @@ jobs:
           cache-from: type=gha,scope=api
           cache-to: type=gha,scope=api,mode=max
       - name: Verify API startup with PostgreSQL
-        run: docker compose --project-directory . --env-file infra/docker.env.example -p empire-ci -f infra/compose.yaml up -d --no-build --wait --wait-timeout 180 api
+        run: |
+          export EMPIRE_OWNER_PASSWORD="$(openssl rand -hex 32)"
+          export EMPIRE_ARCHITECT_PASSWORD="$(openssl rand -hex 32)"
+          docker compose --project-directory . --env-file infra/docker.env.example -p empire-ci -f infra/compose.yaml up -d --no-build --wait --wait-timeout 180 api
       - name: API startup diagnostics
         if: failure()
         run: docker compose --project-directory . --env-file infra/docker.env.example -p empire-ci -f infra/compose.yaml logs --no-color api postgres

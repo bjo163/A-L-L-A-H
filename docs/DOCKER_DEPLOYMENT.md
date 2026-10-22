@@ -12,6 +12,11 @@ From the repository root, copy `infra/docker.env.example` to `.env`. Set `POSTGR
 
 Start the stack:
 
+For a new database, also set distinct `EMPIRE_OWNER_PASSWORD` and
+`EMPIRE_ARCHITECT_PASSWORD` values in `.env` (or Coolify environment variables).
+They provision the `4-lah` and `shadow` operator accounts. Existing accounts keep
+their current passwords; the variables do not reset them on restart.
+
 ```sh
 docker compose --project-directory . --env-file .env -f infra/compose.yaml config
 docker compose --project-directory . --env-file .env -f infra/compose.yaml up -d --build
@@ -43,6 +48,9 @@ the dependent frontends are waiting for API readiness. In particular,
 image whose World Monitor entry points at TypeScript source. The package now builds
 and exports `dist/index.js`; rebuild the API and Command Center from the updated
 source. Increasing the health-check timeout cannot repair a missing runtime module.
+Fresh provisioning also creates `tenants` before `partners`, which references it.
+If startup asks for `EMPIRE_OWNER_PASSWORD` or `EMPIRE_ARCHITECT_PASSWORD`, provide
+the two first-provisioning passwords above and redeploy.
 
 ## Backup and restore
 

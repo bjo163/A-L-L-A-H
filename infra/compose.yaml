@@ -25,6 +25,8 @@ services:
     restart: unless-stopped
     environment:
       NODE_ENV: production
+      EMPIRE_OWNER_PASSWORD: ${EMPIRE_OWNER_PASSWORD:-}
+      EMPIRE_ARCHITECT_PASSWORD: ${EMPIRE_ARCHITECT_PASSWORD:-}
       API_HOST: 0.0.0.0
       API_PORT: 4000
       DATABASE_URL: postgres://empire:${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}@postgres:5432/empire
