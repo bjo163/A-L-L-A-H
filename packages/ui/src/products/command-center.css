@@ -230,7 +230,7 @@
   border: 2px solid var(--eol-manga-ink);
   background: var(--eol-color-surface);
   color: var(--eol-color-text);
-  cursor: pointer; transition: border-color 0.15s, background 0.15s, transform 0.15s, box-shadow 0.15s;
+  cursor: pointer; transition: border-color var(--eol-motion-interaction) var(--eol-easing-standard), background var(--eol-motion-interaction) var(--eol-easing-standard), transform var(--eol-motion-interaction) var(--eol-easing-standard), box-shadow var(--eol-motion-interaction) var(--eol-easing-standard);
 }
 .eol-workspace-shell .region-node-card:hover {
   border-color: var(--eol-manga-ink);
@@ -264,7 +264,7 @@
   font: 700 12px var(--eol-font-sans);
   cursor: pointer;
   box-shadow: 3px 3px 0 var(--eol-manga-ink);
-  transition: all 0.15s ease;
+  transition: all var(--eol-motion-interaction) var(--eol-easing-standard);
 }
 .eol-workspace-shell .sentinel-tab-btn:hover {
   transform: translate(-1px, -1px);
@@ -325,7 +325,7 @@
   color: var(--eol-color-text-subtle);
   font: 11px var(--eol-font-sans);
   cursor: pointer;
-  transition: all 0.15s;
+  transition: all var(--eol-motion-interaction) var(--eol-easing-standard);
 }
 .eol-workspace-shell .sentinel-preset-btn:hover {
   background: var(--eol-color-accent-subtle);
@@ -372,7 +372,7 @@
   border: 2px solid var(--eol-manga-ink);
   background: var(--eol-color-surface);
   box-shadow: 4px 4px 0 var(--eol-manga-ink);
-  transition: transform 0.15s, box-shadow 0.15s;
+  transition: transform var(--eol-motion-interaction) var(--eol-easing-standard), box-shadow var(--eol-motion-interaction) var(--eol-easing-standard);
   overflow: hidden;
 }
 .eol-workspace-shell .sentinel-card:hover {
@@ -392,7 +392,7 @@
   height: 100%;
   object-fit: cover;
   opacity: 0.9;
-  transition: transform 0.2s;
+  transition: transform var(--eol-motion-deliberate) var(--eol-easing-standard);
 }
 .eol-workspace-shell .sentinel-card:hover .sentinel-card-thumb {
   transform: scale(1.03);
@@ -573,7 +573,7 @@
   border-bottom: none;
   color: var(--eol-color-text-subtle);
   cursor: pointer;
-  transition: color 0.15s, background 0.15s;
+  transition: color var(--eol-motion-interaction) var(--eol-easing-standard), background var(--eol-motion-interaction) var(--eol-easing-standard);
   margin-bottom: -2px;
 }
 .eol-workspace-shell .world-subtab-btn:hover {
@@ -640,7 +640,7 @@
   background: rgba(255, 107, 53, 0.08);
   border: 2px solid #ff6b35;
   border-radius: 6px;
-  animation: pulse-sentinel 2s infinite ease-in-out;
+  animation: pulse-sentinel var(--eol-motion-pulse) infinite var(--eol-easing-in-out);
 }
 .eol-workspace-shell .sentinel-scanning-banner strong {
   display: block;
@@ -659,15 +659,12 @@
   border: 3px solid rgba(255, 107, 53, 0.2);
   border-top-color: #ff6b35;
   border-radius: 50%;
-  animation: spin-sentinel 0.8s linear infinite;
+  animation: eol-spin var(--eol-motion-spinner) var(--eol-easing-linear) infinite;
   flex-shrink: 0;
-}
-@keyframes spin-sentinel {
-  to { transform: rotate(360deg); }
 }
 @keyframes pulse-sentinel {
   0%, 100% { opacity: 1; }
-  50% { opacity: 0.85; }
+  50% { opacity: var(--eol-motion-intensity-sentinel-pulse); }
 }
 
 /* -- Sentinel Engine Selector Elements --------------------------- */
@@ -695,7 +692,7 @@
   color: var(--eol-color-text-subtle);
   border-radius: 4px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--eol-motion-interaction) var(--eol-easing-standard);
 }
 .eol-workspace-shell .sentinel-engine-btn:hover {
   color: var(--eol-color-text);
@@ -730,7 +727,7 @@
   border: none;
   border-radius: 3px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--eol-motion-interaction) var(--eol-easing-standard);
 }
 .eol-workspace-shell .sentinel-view-btn:hover {
   color: var(--eol-color-text, #fff);
@@ -836,7 +833,7 @@
   color: var(--eol-color-text, #eee);
   border-radius: 3px;
   cursor: pointer;
-  transition: all 0.15s ease;
+  transition: all var(--eol-motion-interaction) var(--eol-easing-standard);
 }
 .sentinel-table-btn:hover {
   border-color: var(--eol-manga-highlight, #ff6b35);
@@ -862,7 +859,7 @@
   background: transparent;
   color: var(--eol-color-text-muted, #999);
   cursor: pointer;
-  transition: all 0.2s ease;
+  transition: all var(--eol-motion-deliberate) var(--eol-easing-standard);
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -1051,7 +1048,7 @@
   height: 100%;
   width: calc(var(--sentinel-bar-percent, 4) * 1%);
   border-radius: 3px;
-  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  transition: width var(--eol-motion-progress) var(--eol-easing-emphasized);
   display: flex;
   align-items: center;
   justify-content: flex-end;
@@ -1103,7 +1100,7 @@
   cursor: pointer;
   padding: 3px 6px;
   border-radius: 4px;
-  transition: background 0.15s ease;
+  transition: background var(--eol-motion-interaction) var(--eol-easing-standard);
 }
 .sentinel-legend-item:hover {
   background: rgba(255, 255, 255, 0.08);
