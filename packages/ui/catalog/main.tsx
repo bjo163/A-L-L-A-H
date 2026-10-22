@@ -1,13 +1,12 @@
 import { useEffect, useState } from "react";
 import { createRoot } from "react-dom/client";
 import { BrandConcepts } from "../src/brand/BrandConcepts";
-import { ActionGroup, ActionLink, AuthLayout, Badge, BrandLockup, Button, buttonClassName, Card, Checkbox, ConfirmDialog, Container, DataTable, DecisionSummary, Disclosure, EmptyState, EntityCard, ErrorState, EventList, Field, FieldError, FieldLabel, FilterBar, FormSection, Grid, Heading, HelpText, Icon, IconButton, IconText, iconGroups, Inline, LiveRegion, Metadata, NavGroup, NavItem, LoadingState, ListDetail, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MangaTelemetryHero, MetricGrid, Notice, Panel, Pagination, ReadinessList, RegionSummary, ResourceState, ReviewActions, SectionHeading, SelectField, Skeleton, Stack, StatusIndicator, Switch, Tabs, TextArea, Text, TextField, Timeline } from "../src";
+import { ActionGroup, ActionLink, AuthLayout, Badge, BrandLockup, Button, buttonClassName, Card, Checkbox, ConfirmDialog, Container, DataTable, DecisionSummary, Disclosure, EmptyState, EntityCard, ErrorState, EventList, Field, FieldError, FieldLabel, FilterBar, FormSection, Grid, Heading, HelpText, Icon, IconButton, IconText, iconGroups, Inline, LiveRegion, Metadata, NavGroup, NavItem, LoadingState, ListDetail, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MangaTelemetryHero, MetricGrid, Notice, Panel, Pagination, ReadinessList, RegionSummary, ResourceState, ReviewActions, SectionHeading, SelectField, Skeleton, Stack, StatusIndicator, Tabs, TextArea, Text, TextField, ThemeControl, Timeline } from "../src";
 import "../src/ui.css";
 import "./catalog.css";
 
 function Catalog() {
   const [busy, setBusy] = useState(false);
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
   const [activeTab, setActiveTab] = useState("overview");
   const [confirmOpen, setConfirmOpen] = useState(false);
   const [confirmBusy, setConfirmBusy] = useState(false);
@@ -19,10 +18,7 @@ function Catalog() {
     { value: "long-label", label: "UnbrokenLabelForNarrowViewportsAndTranslatedContent", content: <TabMountExample name="Long label" /> },
     { value: "disabled", label: "Unavailable", content: <p>This panel is unavailable.</p>, disabled: true },
   ];
-  function setPreviewTheme(isLight: boolean) {
-    const next = isLight ? "light" : "dark";
-    document.documentElement.dataset.theme = next;
-    setTheme(next);
+  function syncThemeColor() {
     const canvas = getComputedStyle(document.documentElement)
       .getPropertyValue("--eol-color-background")
       .trim();
@@ -66,9 +62,7 @@ function Catalog() {
         </p>
         <MangaSfx text="ZAP!" className="catalog-sfx" />
         <span className="catalog-burst" aria-hidden="true" />
-        <Switch checked={theme === "light"} onCheckedChange={setPreviewTheme} aria-label="Preview light theme">
-          Preview light theme
-        </Switch>
+        <ThemeControl label="Preview color theme" lightLabel="Light" darkLabel="Dark" lightIcon={<Icon name="sun" size={16}/>} darkIcon={<Icon name="moon" size={16}/>} onThemeChange={syncThemeColor} />
       </header>
 
       <section className="catalog-section" aria-labelledby="brand-concepts-heading">

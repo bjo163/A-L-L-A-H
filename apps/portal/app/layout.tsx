@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { PrimaryNavigation } from "../components/PrimaryNavigation";
 import { getPortalLanguage, text } from "../lib/i18n";
-import { BrandLockup, IconText, PublicShell } from "@empire/ui";
+import { BrandLockup, IconText, PublicShell, ThemeBootstrap } from "@empire/ui";
 import "@empire/ui/portal.css";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -21,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function RootLayout({children}:{children:ReactNode}) {
   const language = await getPortalLanguage();
-  return <html lang={language} suppressHydrationWarning data-theme="dark" data-scroll-behavior="smooth"><head><script dangerouslySetInnerHTML={{__html:"try{var t=localStorage.getItem('eol-theme');if(t==='light'||t==='dark')document.documentElement.dataset.theme=t}catch(e){}"}} /></head><body>
+  return <html lang={language} suppressHydrationWarning data-theme="dark" data-scroll-behavior="smooth"><head><ThemeBootstrap /></head><body>
     <PublicShell
       skipLabel={text(language,"Lewati ke konten utama","Skip to main content")}
       footerLabel={text(language,"Navigasi footer","Footer navigation")}

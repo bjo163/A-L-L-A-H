@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-import { Icon, ResponsiveNavigation, Switch } from "@empire/ui";
+import { Icon, ResponsiveNavigation, ThemeControl } from "@empire/ui";
 import type { PortalLanguage } from "../lib/i18n";
 
 const labels = {
@@ -25,7 +25,6 @@ export function PrimaryNavigation({ language }: { language: PortalLanguage }) {
   const [hash, setHash] = useState("");
   const [pending, startTransition] = useTransition();
   const [languagePending, setLanguagePending] = useState(false);
-  const [theme, setTheme] = useState<"dark" | "light">("dark");
   const copy = labels[language];
 
   useEffect(() => {
@@ -38,20 +37,6 @@ export function PrimaryNavigation({ language }: { language: PortalLanguage }) {
   useEffect(() => {
     setLanguagePending(false);
   }, [language]);
-
-  useEffect(() => {
-    const saved = window.localStorage.getItem("eol-theme");
-    const current = saved === "light" ? "light" : "dark";
-    setTheme(current);
-    document.documentElement.dataset.theme = current;
-  }, []);
-
-  function changeTheme(isLight: boolean) {
-    const next = isLight ? "light" : "dark";
-    setTheme(next);
-    document.documentElement.dataset.theme = next;
-    window.localStorage.setItem("eol-theme", next);
-  }
 
   function changeLanguage(nextLanguage: PortalLanguage) {
     if (nextLanguage === language) return;
@@ -81,10 +66,7 @@ export function PrimaryNavigation({ language }: { language: PortalLanguage }) {
           <button type="button" aria-pressed={language === "en"} onClick={() => changeLanguage("en")} disabled={pending || languagePending}>EN</button>
           {(pending || languagePending) && <span className="language-status" role="status">{copy.loading}</span>}
         </div>
-        <Switch className="theme-toggle" checked={theme === "light"} onCheckedChange={changeTheme} aria-label={copy.theme}>
-          <span className="theme-toggle-icon" aria-hidden="true"><Icon name={theme === "dark" ? "moon" : "sun"} size={15}/></span>
-          <span className="theme-toggle-label">{theme === "dark" ? copy.dark : copy.light}</span>
-        </Switch>
+        <ThemeControl label={copy.theme} lightLabel={copy.light} darkLabel={copy.dark} lightIcon={<Icon name="sun" size={15}/>} darkIcon={<Icon name="moon" size={15}/>} />
     </ResponsiveNavigation>
   );
 }
