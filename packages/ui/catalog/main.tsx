@@ -141,7 +141,8 @@ function Catalog() {
         <div className="brand-concept__active">
           <BrandLockup name="A-L-L-A-H" descriptor="PUBLIC PORTAL" />
           <BrandLockup size="compact" name="100CENTER" descriptor="OPERATOR WORKSPACE" />
-          <span>Provisional working mark · Orbit</span>
+          <BrandLockup layout="stacked" name="A-L-L-A-H" descriptor="STACKED LOCKUP" />
+          <span>Provisional working mark · Orbit · LogoMark is the mark-only variant.</span>
         </div>
         <BrandConcepts />
       </section>

@@ -19,13 +19,14 @@ export type BrandLockupProps = {
   name: ReactNode;
   descriptor: ReactNode;
   size?: "regular" | "compact";
+  layout?: "horizontal" | "stacked";
   tone?: "default" | "subtle";
   className?: string;
 };
 
 /** Shared product lockup; its visible name and descriptor supply its text name. */
-export function BrandLockup({ name, descriptor, size = "regular", tone = "default", className = "" }: BrandLockupProps) {
-  const classes = ["eol-brand-lockup", `eol-brand-lockup--${size}`, `eol-brand-lockup--${tone}`, className].filter(Boolean).join(" ");
+export function BrandLockup({ name, descriptor, size = "regular", layout = "horizontal", tone = "default", className = "" }: BrandLockupProps) {
+  const classes = ["eol-brand-lockup", `eol-brand-lockup--${size}`, `eol-brand-lockup--${layout}`, `eol-brand-lockup--${tone}`, className].filter(Boolean).join(" ");
   return (
     <span className={classes}>
       <span className="eol-brand-lockup__mark" aria-hidden="true"><LogoMark /></span>
@@ -96,6 +97,10 @@ export function BrandConcepts() {
             <div className="brand-concept__lockup brand-concept__lockup--compact">
               <BrandConceptMark concept={concept} className="brand-concept__lockup-mark" />
               <span><strong>100CENTER</strong><small>OPERATOR WORKSPACE</small></span>
+            </div>
+            <div className="brand-concept__lockup brand-concept__lockup--stacked">
+              <BrandConceptMark concept={concept} className="brand-concept__lockup-mark" />
+              <span><strong>A-L-L-A-H</strong><small>STACKED LOCKUP</small></span>
             </div>
             <div className="brand-concept__favicon">
               <BrandConceptMark concept={concept} />

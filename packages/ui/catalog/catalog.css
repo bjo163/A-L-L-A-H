@@ -40,6 +40,7 @@ body { margin: 0; min-width: 0; }
 .brand-concept__previews { display: grid; gap: 10px; margin-top: 18px; }
 .brand-concept__lockup { display: flex; min-width: 0; align-items: center; gap: 9px; padding: 10px; border: 1px solid var(--eol-color-border); background: var(--eol-color-background); }
 .brand-concept__lockup--compact { background: var(--eol-color-surface-raised); }
+.brand-concept__lockup--stacked { flex-direction: column; align-items: flex-start; }
 .brand-concept__lockup-mark { width: 30px; height: 30px; flex: none; color: var(--eol-color-accent); }
 .brand-concept__lockup span { display: grid; min-width: 0; gap: 3px; }
 .brand-concept__lockup strong { overflow: hidden; font-size: .72rem; letter-spacing: .08em; text-overflow: ellipsis; white-space: nowrap; }

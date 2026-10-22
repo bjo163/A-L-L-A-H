@@ -255,11 +255,11 @@ Owner: design + UI maintainer. Dependensi: C00. Gate: satu arah dipilih melalui 
 
 Owner: brand/vector designer + maintainer. Dependensi: C01. Gate: master vector dan pedoman dapat dipakai semua konsumen.
 
-- [ ] **UI-C02-01** — Tulis brief makna Empire of the Light, A-L-L-A-H dan 100CENTER.
+- [x] **UI-C02-01** — Tulis brief makna Empire of the Light, A-L-L-A-H dan 100CENTER. Makna parent brand, akronim Portal, batas authority claim, dan peran 100CENTER tercatat di `packages/ui/brand/BRAND_SYSTEM.md`.
 - [x] **UI-C02-02** — Susun eksplorasi aperture, orbit dan monogram tanpa memakai simbol generik sebagai final otomatis.
 - [ ] **UI-C02-03** — Nilai konsep memakai scorecard dan simulasi permukaan produk.
 - [ ] **UI-C02-04** — Gambar master mark SVG dengan geometri dan optical correction yang terdokumentasi.
-- [ ] **UI-C02-05** — Buat lockup horizontal, stacked dan mark-only.
+- [x] **UI-C02-05** — Buat lockup horizontal, stacked dan mark-only. `BrandLockup` package menyediakan layout horizontal/stacked dengan nama dan descriptor editable; `LogoMark` menjadi varian mark-only dekoratif. Katalog membandingkan tiga konsep di layout product screens dan favicon.
 - [ ] **UI-C02-06** — Buat lockup produk Portal dan 100CENTER dari keluarga induk.
 - [ ] **UI-C02-07** — Buat versi monochrome, inverse dan full-brand.
 - [ ] **UI-C02-08** — Buat versi optik kecil untuk 16/24/32px bila master kehilangan detail.
@@ -850,3 +850,6 @@ Pembaruan WorkspaceShell: shell Command Center sekarang dirakit melalui Workspac
 | UI-C08-03 | Semua link CTA Portal memakai buttonClassName dari @empire/ui dengan variant dan ukuran eol-button--lg; class legacy .btn dan aturan bentuk/ukuran tombolnya dihapus. React/Next Link dan elemen anchor tetap menjadi anchor sehingga aksi navigasi tidak berubah menjadi button. Aturan tema Portal hanya menyesuaikan ukuran besar pada breakpoint kecil dan manga treatment yang memang merupakan profil presentasi package. | UI dan Portal typecheck serta Portal production build lulus sebelum perubahan CSS terakhir yang hanya mengganti selector not-found dari .btn menjadi .eol-button--lg; pemeriksaan read-only pada Portal berjalan tetap memuat halaman. Ulangi browser visual review untuk ukuran CTA responsive di UI-C12-16/UI-C16-06. Tanggal: 2026-10-22. |
 
 | UI-C04-03 | @empire/ui exports six named DomainSymbol SVGs from one source with shared 24px viewBox, currentColor, 1.8 stroke, round caps/joins, decorative semantics, and a typed domain name. PortalDomainCard now selects the package symbol by typed metadata, while domain labels stay visible. The UI catalog previews all six side by side, and asset-manifest inventories them alongside the existing icon family. | pnpm validate:ui-assets, pnpm --filter @empire/ui typecheck, pnpm --filter @empire/ui catalog:build, and pnpm --filter @empire/portal typecheck pass. Visual review of metaphor fit at 16px and both themes remains a human design gate; provisional symbols do not settle the official brand mark review in C02. Tanggal: 2026-10-22. |
+
+| UI-C02-01 | packages/ui/brand/BRAND_SYSTEM.md merangkum arti Empire of the Light, A-L-L-A-H sebagai akronim Portal, 100CENTER sebagai workspace operator, dan batas klaim otoritas. Brief mengambil copy dari Portal dan peran produk yang ada; ia tidak mengklaim kepemilikan merek atau approval final. | Review traceability melalui sumber dan route Portal/Command Center; penetapan final identity dan trademark review tetap UI-C02-03/UI-C02-15. Tanggal: 2026-10-22. |
+| UI-C02-05 | BrandLockup package mendukung lockup horizontal dan stacked dengan teks live; LogoMark menyediakan mark-only. Katalog membandingkan tiga calon dengan Portal, workspace, dialog, dan ukuran favicon. | UI, Portal, dan Command Center typechecks serta UI catalog build lulus. Lockup API tersedia, sementara proporsi/clear space visual dan pemilihan final masih menunggu review pada UI-C02-03/UI-C02-09/UI-C02-13. Tanggal: 2026-10-22. |
