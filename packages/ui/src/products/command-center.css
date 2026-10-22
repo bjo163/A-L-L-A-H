@@ -188,9 +188,12 @@
   :where(.eol-workspace-shell) .eol-workspace-shell__toggle { position: sticky; z-index: 6; top: 0; display: flex; width: 100%; justify-content: flex-start; margin-block: 0 8px; }
   :where(.eol-workspace-shell) .eol-workspace-shell__navigation { display: block; }
   :where(.eol-workspace-shell) .eol-workspace-shell__navigation[data-open="false"] { display: none; }
+  :where(.eol-workspace-shell) .eol-workspace-shell__navigation[data-open="true"] { max-height: calc(100vh - 56px); overflow-y: auto; overscroll-behavior: contain; }
   .eol-workspace-shell .sidebar { position: relative; width: 100%; height: auto; padding: 12px 14px; border-right: 0; border-bottom: 1px solid var(--eol-color-border); }
   .eol-workspace-shell .brand { padding: 0 4px 12px; }
-  .eol-workspace-shell .operator-card { display: none; }.eol-workspace-shell .nav-caption, .eol-workspace-shell .sidebar-bottom { display: none; }
+  .eol-workspace-shell .nav-caption { margin-block: 4px 8px; }
+  .eol-workspace-shell .operator-card { display: flex; }
+  .eol-workspace-shell .sidebar-bottom { display: grid; margin-top: 12px; }
   .eol-workspace-shell .view-switcher { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 6px; }
   .eol-workspace-shell .nav-item { min-width: 0; min-height: 38px; justify-content: flex-start; gap: 7px; padding-inline: 8px; font-size: 10px; white-space: nowrap; }
   .eol-workspace-shell .nav-icon { width: 16px; height: 16px; flex: none; }

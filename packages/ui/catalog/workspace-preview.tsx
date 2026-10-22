@@ -20,14 +20,14 @@ function WorkspacePreview() {
       <nav className="view-switcher" aria-label="Workspace fixture pages">
         {pages.map((page, index) => <NavItem key={page} className="nav-item" current={active === page} icon={<Icon name={(["home", "agent", "users", "audit", "evidence"] as const)[index]} size={18} />} onClick={() => setActive(page)}>{page}</NavItem>)}
       </nav>
-      <div className="sidebar-bottom"><div className="connection-card"><span className="online-dot" data-state="ok" aria-hidden="true"/><span><strong>Fixture cluster</strong><small>Static local preview</small></span><Badge tone="success">Ready</Badge></div></div>
+      <div className="sidebar-bottom"><div className="connection-card"><span className="online-dot" data-state="ok" aria-hidden="true"/><span><strong>Fixture cluster</strong><small>Static local preview</small></span><Badge tone="success">Ready</Badge></div><Button variant="secondary" size="sm"><Icon name="logOut" size={16}/>Sign out fixture</Button></div>
     </aside>}
     header={<header className="topbar"><Breadcrumbs className="breadcrumb" label="Workspace location" items={[{ label: "COMMAND CENTER" }, { label: active, current: true }]} /><Button variant="secondary" size="sm"><Icon name="refresh" size={14}/>Sync fixture</Button></header>}
   >
     <MangaPageIntro className="page-heading" eyebrow="WORKSPACE SHELL FIXTURE" title={active} description="Navigation, skip link, responsive shell, header and main landmark are shared by the package." />
     <SectionHeading layout="compact" title={`${active} overview`} aside={<Badge tone="info">Static fixture</Badge>} />
     <MetricGrid columns={3} density="compact" items={[{ label: "Navigation", value: "Shared" }, { label: "Content", value: "App slot" }, { label: "Permissions", value: "Consumer" }]} />
-    <Panel className="workspace-preview-note"><p>Resize the catalog viewport and use the navigation toggle. On small screens, select a page to focus its new heading, or press Escape to close navigation and return focus to the toggle.</p></Panel>
+    <Panel className="workspace-preview-note"><p>Resize the catalog viewport and use the navigation toggle. Opening it reveals operator identity and the sign-out action. Select a page to focus its new heading, or press Escape to close navigation and return focus to the toggle.</p></Panel>
   </WorkspaceShell>;
 }
 
