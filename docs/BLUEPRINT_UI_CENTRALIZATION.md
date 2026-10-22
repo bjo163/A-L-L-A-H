@@ -225,7 +225,7 @@ Owner: maintainer UI + product/design. Dependensi: tidak ada. Gate: inventaris d
 - [x] **UI-C00-02** — Inventaris semua route, view, modal, loading, error, empty dan permission state.
 - [x] **UI-C00-03** — Inventaris ekspor package dan consumer aktual setiap ekspor.
 - [x] **UI-C00-04** — Inventaris selector lokal, inline style, token literal dan custom property.
-- [ ] **UI-C00-05** — Petakan duplikasi CSS identik beserta konteks media/theme.
+- [x] **UI-C00-05** — Petakan duplikasi CSS identik beserta konteks media/theme.
 - [ ] **UI-C00-06** — Petakan duplikasi semantik: Metric versus StatGrid, panel versus MangaEffect, headings dan status.
 - [x] **UI-C00-07** — Inventaris simbol Unicode, emoji, logo CSS, aset raster/SVG dan lisensinya.
 - [ ] **UI-C00-08** — Buat baseline screenshot untuk seluruh permukaan wajib.
@@ -658,6 +658,7 @@ Status penerimaan + tanggal:
 ```
 
 ### Catatan bukti wave W0
+| UI-C00-05 | Audit parser PostCSS pada 15 stylesheet authoring milik Portal, Command Center, dan `packages/ui/src` (tanpa output build/vendor). Scan awal menghitung 136 hit deklarasi berulang pada selector/konteks yang sama; cleanup menghapus 41 blok rule Portal yang identik dan memusatkan reset dasar (`:root`, box-sizing, body margin, link decoration, dan brand alignment) di `packages/ui/src/styles.css`. Scan ulang menyisakan 18 grup deklarasi berulang di layer tema/override Portal, yang dicatat untuk harmonisasi pada migrasi halaman berikutnya; hasilnya belum berarti nol duplikasi CSS. | Peta mencakup konteks selector, media, dan theme. Reset lintas produk yang diperiksa kini punya satu owner package; duplikasi residual Portal tetap menjadi pekerjaan implementasi. Browser visual acceptance tidak dilakukan pada slice ini. |
 
 | ID | Bukti yang diperiksa | Hasil dan batas |
 | --- | --- | --- |

@@ -3,6 +3,12 @@
 @import "@fontsource/dm-mono/latin-500.css";
 @import "./patterns/container.css";
 
+:root { font-family: var(--eol-font-sans); color: var(--eol-color-text); background: var(--eol-color-background); font-synthesis: none; }
+* { box-sizing: border-box; }
+body { margin: 0; }
+a { text-decoration: none; }
+.brand { display: flex; align-items: center; }
+
 .eol-icon {
   display: inline-block;
   flex: none;
