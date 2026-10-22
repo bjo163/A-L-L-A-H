@@ -10,10 +10,7 @@
 .eol-metric-grid__value { min-width: 0; color: var(--eol-color-text); font-size: var(--eol-font-size-2xl); font-weight: var(--eol-font-weight-medium); line-height: var(--eol-line-height-tight); font-variant-numeric: var(--eol-font-numeric); overflow-wrap: anywhere; }
 .eol-metric-grid__detail { color: var(--eol-color-text-muted); font-size: var(--eol-font-size-xs); line-height: var(--eol-line-height-relaxed); overflow-wrap: anywhere; }
 .eol-metric-grid__freshness { color: var(--eol-color-text-muted); font: var(--eol-font-size-2xs)/var(--eol-line-height-normal) var(--eol-font-mono); overflow-wrap: anywhere; }
-.eol-metric-grid__item[data-tone="success"] .eol-metric-grid__value { color: var(--eol-status-success-foreground); }
-.eol-metric-grid__item[data-tone="warning"] .eol-metric-grid__value { color: var(--eol-status-warning-foreground); }
-.eol-metric-grid__item[data-tone="danger"] .eol-metric-grid__value { color: var(--eol-status-danger-foreground); }
-.eol-metric-grid__item[data-tone="info"] .eol-metric-grid__value { color: var(--eol-status-info-foreground); }
+.eol-metric-grid__item[data-tone] .eol-metric-grid__value { color: var(--eol-component-status-foreground); }
 .eol-metric-grid--compact { gap: var(--eol-space-2); }
 .eol-metric-grid--compact .eol-metric-grid__item { padding: var(--eol-space-3); }
 .eol-metric-grid--compact .eol-metric-grid__value { font-size: var(--eol-font-size-xl); }

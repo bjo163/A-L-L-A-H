@@ -15,8 +15,9 @@ export function Badge({
 }: BadgeProps) {
   return (
     <span
-      className={classNames("eol-badge", `eol-badge--${tone}`, className)}
       {...props}
+      className={classNames("eol-badge", `eol-badge--${tone}`, className)}
+      data-tone={tone}
     >
       {children}
     </span>

@@ -83,12 +83,14 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   vertical-align: -0.125em;
 }
 :dir(rtl) .eol-icon[data-directional="true"] { transform: scaleX(-1); }
-.eol-status-indicator { display: inline-flex; align-items: center; gap: var(--eol-space-2); padding: var(--eol-space-1) var(--eol-space-2); border: var(--eol-border-width) solid var(--eol-status-neutral-border); border-radius: var(--eol-radius-sm); color: var(--eol-status-neutral-foreground); background: var(--eol-status-neutral-surface); font: var(--eol-font-weight-medium) var(--eol-font-size-2xs)/var(--eol-line-height-tight) var(--eol-font-mono); letter-spacing: var(--eol-letter-spacing-label); }
+.eol-badge[data-tone], .eol-status-indicator[data-tone], .eol-metric-grid__item[data-tone] { --eol-component-status-foreground: var(--eol-status-neutral-foreground); --eol-component-status-surface: var(--eol-status-neutral-surface); --eol-component-status-border: var(--eol-status-neutral-border); }
+.eol-badge[data-tone="info"], .eol-status-indicator[data-tone="info"], .eol-metric-grid__item[data-tone="info"] { --eol-component-status-foreground: var(--eol-status-info-foreground); --eol-component-status-surface: var(--eol-status-info-surface); --eol-component-status-border: var(--eol-status-info-border); }
+.eol-badge[data-tone="success"], .eol-status-indicator[data-tone="success"], .eol-metric-grid__item[data-tone="success"] { --eol-component-status-foreground: var(--eol-status-success-foreground); --eol-component-status-surface: var(--eol-status-success-surface); --eol-component-status-border: var(--eol-status-success-border); }
+.eol-badge[data-tone="warning"], .eol-status-indicator[data-tone="warning"], .eol-metric-grid__item[data-tone="warning"] { --eol-component-status-foreground: var(--eol-status-warning-foreground); --eol-component-status-surface: var(--eol-status-warning-surface); --eol-component-status-border: var(--eol-status-warning-border); }
+.eol-badge[data-tone="danger"], .eol-status-indicator[data-tone="danger"], .eol-metric-grid__item[data-tone="danger"] { --eol-component-status-foreground: var(--eol-status-danger-foreground); --eol-component-status-surface: var(--eol-status-danger-surface); --eol-component-status-border: var(--eol-status-danger-border); }
+.eol-badge[data-tone], .eol-status-indicator[data-tone] { color: var(--eol-component-status-foreground); background: var(--eol-component-status-surface); border-color: var(--eol-component-status-border); }
+.eol-status-indicator { display: inline-flex; align-items: center; gap: var(--eol-space-2); padding: var(--eol-space-1) var(--eol-space-2); border: var(--eol-border-width) solid var(--eol-component-status-border); border-radius: var(--eol-radius-sm); color: var(--eol-component-status-foreground); background: var(--eol-component-status-surface); font: var(--eol-font-weight-medium) var(--eol-font-size-2xs)/var(--eol-line-height-tight) var(--eol-font-mono); letter-spacing: var(--eol-letter-spacing-label); }
 .eol-status-indicator__dot { width: 6px; height: 6px; flex: none; border-radius: 50%; background: currentColor; }
-.eol-status-indicator[data-tone="info"] { border-color: var(--eol-status-info-border); color: var(--eol-status-info-foreground); background: var(--eol-status-info-surface); }
-.eol-status-indicator[data-tone="success"] { border-color: var(--eol-status-success-border); color: var(--eol-status-success-foreground); background: var(--eol-status-success-surface); }
-.eol-status-indicator[data-tone="warning"] { border-color: var(--eol-status-warning-border); color: var(--eol-status-warning-foreground); background: var(--eol-status-warning-surface); }
-.eol-status-indicator[data-tone="danger"] { border-color: var(--eol-status-danger-border); color: var(--eol-status-danger-foreground); background: var(--eol-status-danger-surface); }
 
 .eol-panel {
   border: var(--eol-border-width) solid var(--eol-color-border);
@@ -289,12 +291,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   text-transform: uppercase;
 }
 
-.eol-badge--neutral { color: var(--eol-status-neutral-foreground); background: var(--eol-status-neutral-surface); border-color: var(--eol-status-neutral-border); }
-.eol-badge--info { color: var(--eol-status-info-foreground); background: var(--eol-status-info-surface); border-color: var(--eol-status-info-border); }
-.eol-badge--success { color: var(--eol-status-success-foreground); background: var(--eol-status-success-surface); border-color: var(--eol-status-success-border); }
-.eol-badge--warning { color: var(--eol-status-warning-foreground); background: var(--eol-status-warning-surface); border-color: var(--eol-status-warning-border); }
-.eol-badge--danger { color: var(--eol-status-danger-foreground); background: var(--eol-status-danger-surface); border-color: var(--eol-status-danger-border); }
-
 .eol-button {
   display: inline-flex;
   align-items: center;
@@ -425,7 +421,8 @@ button:focus-visible, a:focus-visible, input:focus-visible, textarea:focus-visib
   .eol-state,
   .eol-dialog,
   .eol-notice,
-  .eol-badge {
+  .eol-badge,
+  .eol-status-indicator {
     border-color: CanvasText;
     background: Canvas;
     color: CanvasText;
