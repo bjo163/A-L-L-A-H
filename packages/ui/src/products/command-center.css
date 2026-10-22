@@ -1081,11 +1081,6 @@
   gap: 20px;
   height: 100%;
 }
-:where(.eol-workspace-shell) .sentinel-donut-svg {
-  width: 130px;
-  height: 130px;
-  flex-shrink: 0;
-}
 :where(.eol-workspace-shell) .sentinel-donut-legend {
   display: flex;
   flex-direction: column;

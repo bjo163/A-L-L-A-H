@@ -7,6 +7,7 @@
 - Shared layout, typography, field, action, navigation, data, review, map, timeline, resource-state, and authentication patterns.
 - `AuthLayout`, `NavItem`, `NavGroup`, `DataTable`, `EventList`, `Pagination`, `Disclosure`, `ListDetail`, and review pattern exports.
 - Shared vector icon registry, `LogoMark`, `BrandLockup`, theme tokens, map aliases, and catalog fixtures.
+- `DonutChart` for reusable, accessible distribution charts with semantic status tones.
 
 ### Changed
 

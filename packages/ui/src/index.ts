@@ -63,6 +63,8 @@ export { IconText } from "./patterns/IconText";
 export type { IconTextProps } from "./patterns/IconText";
 export { MetricGrid } from "./patterns/MetricGrid";
 export type { MetricGridProps, MetricItem } from "./patterns/MetricGrid";
+export { DonutChart } from "./patterns/DonutChart";
+export type { DonutChartProps, DonutChartSegment, DonutChartTone } from "./patterns/DonutChart";
 export { MangaSfx } from "./patterns/MangaSfx";
 export type { MangaSfxProps } from "./patterns/MangaSfx";
 export { MangaEffect } from "./patterns/MangaEffect";

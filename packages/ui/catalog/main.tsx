@@ -2,7 +2,7 @@ import { useCallback, useEffect, useRef, useState, type FormEvent } from "react"
 import { createRoot } from "react-dom/client";
 import { BrandConcepts } from "../src/brand/BrandConcepts";
 import { OperationalCategoryFixtures, PortalHomeFixture } from "./PageFixtures";
-import { ActionGroup, ActionLink, ActionPanel, ArchitectureLayers, AuthLayout, Badge, BrandLockup, Button, buttonClassName, CallToAction, Card, Checkbox, ConfirmDialog, Container, DataTable, DecisionSummary, Disclosure, DomainSymbol, domainSymbolNames, EmptyState, EntityCard, ErrorState, EventList, Field, FieldError, FieldLabel, FilterBar, FormSection, Grid, Heading, HelpText, Icon, IconButton, IconText, iconDisplaySizes, iconGroups, IdentityCardGroup, Inline, LiveRegion, Metadata, NavGroup, NavItem, LoadingState, ListDetail, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MangaTelemetryHero, MetricGrid, ModuleGrid, Notice, PageCrosslinks, Panel, Pagination, PortalDomainCard, ReadinessBoard, ReadinessList, RegionSummary, RepositoryOverview, ResourceState, ReviewActions, ResponsiveTabs, RoadmapPreview, RoadmapTimeline, Section, SectionHeading, SelectField, Skeleton, Stack, StatusIndicator, SystemAtlas, SystemDetailPanel, Tabs, TextArea, Text, TextField, ThemeControl, Timeline, WorkflowSteps, ArrowUpRightIcon, ArrowLeftIcon, ArrowRightIcon, SearchIcon, CloseIcon, SunIcon, MoonIcon, HomeIcon, LockIcon } from "../src";
+import { ActionGroup, ActionLink, ActionPanel, ArchitectureLayers, AuthLayout, Badge, BrandLockup, Button, buttonClassName, CallToAction, Card, Checkbox, ConfirmDialog, Container, DataTable, DecisionSummary, Disclosure, DonutChart, DomainSymbol, domainSymbolNames, EmptyState, EntityCard, ErrorState, EventList, Field, FieldError, FieldLabel, FilterBar, FormSection, Grid, Heading, HelpText, Icon, IconButton, IconText, iconDisplaySizes, iconGroups, IdentityCardGroup, Inline, LiveRegion, Metadata, NavGroup, NavItem, LoadingState, ListDetail, MapFrame, MapLegend, MangaEffect, MangaLoadingState, MangaOrbit, MangaPageIntro, MangaSfx, MangaTelemetryHero, MetricGrid, ModuleGrid, Notice, PageCrosslinks, Panel, Pagination, PortalDomainCard, ReadinessBoard, ReadinessList, RegionSummary, RepositoryOverview, ResourceState, ReviewActions, ResponsiveTabs, RoadmapPreview, RoadmapTimeline, Section, SectionHeading, SelectField, Skeleton, Stack, StatusIndicator, SystemAtlas, SystemDetailPanel, Tabs, TextArea, Text, TextField, ThemeControl, Timeline, WorkflowSteps, ArrowUpRightIcon, ArrowLeftIcon, ArrowRightIcon, SearchIcon, CloseIcon, SunIcon, MoonIcon, HomeIcon, LockIcon } from "../src";
 import "../src/portal.css";
 import "./catalog.css";
 
@@ -365,6 +365,18 @@ function Catalog() {
             { label: "Actions", value: "08", tone: "info" },
             { label: "Last scan", value: "2m ago" },
           ]} />
+        </Panel>
+        <Panel className="catalog-card">
+          <h3>Distribution chart</h3>
+          <DonutChart
+            label="Review direction distribution"
+            centerLabel="ITEMS"
+            segments={[
+              { id: "declined", label: "Declined", value: 4, tone: "danger" },
+              { id: "approved", label: "Approved", value: 7, tone: "success" },
+              { id: "pending", label: "Pending", value: 3, tone: "info" },
+            ]}
+          />
         </Panel>
       </section>
 

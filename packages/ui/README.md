@@ -30,6 +30,7 @@ Run `pnpm audit:ui-css` to find repeated identical property declarations within 
 - `Panel` for semantic, reusable surface containers.
 - `Container` for shared reading, content, and workspace widths with responsive gutters.
 - `PageIntro`, `SectionHeading`, and `MetricGrid` for consistent page composition and both editorial and operational metric presentations.
+- `DonutChart` for token-colored distribution rings with an accessible text summary; data aggregation, visible legends, and filtering stay consumer-owned.
 - `MetricGrid` accepts 2–6 columns and label, value, detail, tone, and freshness; apps own business-state mapping and freshness copy. Five/six-column grids collapse to three, two, then one column at shared breakpoints.
 - `MangaEffect` for reusable manga panel, screentone, speed-line, reveal, and hover treatments.
 - `MangaOrbit` for static decorative orbit rings.
@@ -67,6 +68,7 @@ Run `pnpm audit:ui-css` to find repeated identical property declarations within 
 | Container | `as` semantic element; `reading`, `content`, or `workspace` width | Applies the shared max-width and responsive gutter tokens. Content and workflow remain in the app. |
 | SectionHeading | Required title; optional eyebrow, aside, heading level, `section` or `compact` layout, and semantic class hooks | Shares heading anatomy and responsive stacking. The app supplies localized copy and actions. |
 | MetricGrid | `editorial` or `operational` profile; `comfortable` or `compact` density; 2–6 columns; items with label, value, detail, tone, and freshness | Uses one shared anatomy for Portal summary bands and Command Center operational metrics. The app supplies all domain meaning; the editorial profile keeps the value-first band while the operational profile uses label-first cards. |
+| DonutChart | Accessible `label`, localized `centerLabel`, and segments with stable `id`, text `label`, nonnegative `value`, and semantic `tone` | Owns SVG geometry, theme-aware status strokes, center total, and accessible text summary. The app owns aggregation, business meaning, filtering, and the visible interactive legend. Zero-value segments are omitted and a zero-total chart remains a labeled empty ring. |
 | MangaEffect | `as` semantic element; optional `panel`, `interactive`, `action`, `row`, `speedLines`, `screentone`, and `reveal` flags; element attributes | Composes named manga treatments and transitions from the shared stylesheet. Decorative orbit rings are static; motion is reserved for loading, progress, and active feedback. Applications supply content and layout-specific classes. `interactive` includes the common panel treatment. |
 | MangaPageIntro | `PageIntro` content props plus optional `sfx` and `sfxClassName` | Uses the shared angular panel, halftone accent, and reveal treatment; optional SFX lettering stays decorative. Breadcrumbs, copy, and actions remain application content. |
 | MangaTelemetryHero | Required `eyebrow`, `title`, `pulse`, and `sfx`; optional `description`, `metadata`, and `className` | Provides one shared telemetry hero composition, including its orbit, manga panel, reveal motion, and decorative SFX. |
