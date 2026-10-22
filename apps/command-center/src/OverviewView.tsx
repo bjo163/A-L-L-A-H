@@ -1,11 +1,11 @@
 import type { CabSummary } from "@empire/api-contract";
-import { Badge, Button, EmptyState, ErrorState, EventList, Icon, LoadingState, MangaEffect, MangaTelemetryHero, MetricGrid, Panel, SectionHeading, StatusIndicator } from "@empire/ui";
-import type { IconName } from "@empire/ui";
+import { ArrowUpRightIcon, ArrowsIcon, Badge, Button, ClockIcon, CommandIcon, EmptyState, ErrorState, EventList, LoadingState, MangaEffect, MangaTelemetryHero, MetricGrid, Panel, SectionHeading, StatusIndicator } from "@empire/ui";
+import type { IconComponent } from "@empire/ui";
 
 type Signal = "checking" | "ok" | "degraded" | "unavailable";
 type OverviewModule = { id: string; title: string; version: string; state: string; enabled: boolean };
 type OverviewEvent = { id: string; timestamp: string; actor: string; action: string; details: string };
-type Workspace = { key: string; title: string; description: string; icon: IconName };
+type Workspace = { key: string; title: string; description: string; icon: IconComponent };
 
 type OverviewViewProps = {
   health: Signal;
@@ -33,7 +33,7 @@ export function OverviewView({ health, readiness, checkedAt, continuumStatus, ca
       eyebrow={<>SYSTEM PULSE <StatusIndicator tone={readiness === "ok" ? "success" : readiness === "unavailable" ? "neutral" : "warning"}>{readiness.toUpperCase()}</StatusIndicator></>}
       title={readiness === "ok" ? "All local systems are responding" : "System needs attention"}
       description="API gateway, PostgreSQL readiness, governance and research are refreshed every 30 seconds."
-      metadata={<><span><Icon name="clock" size={13} /> {checkedAt ? new Date(checkedAt).toLocaleString() : "Awaiting first sync"}</span><span><Icon name="command" size={13} /> {capabilities.length} active capabilities</span><span><Icon name="arrows" size={13} /> {continuumStatus} continuum</span></>}
+      metadata={<><span><ClockIcon size={13} /> {checkedAt ? new Date(checkedAt).toLocaleString() : "Awaiting first sync"}</span><span><CommandIcon size={13} /> {capabilities.length} active capabilities</span><span><ArrowsIcon size={13} /> {continuumStatus} continuum</span></>}
       pulse="100"
       sfx={readiness === "ok" ? "PULSE!" : "ALERT!"}
     />
@@ -46,8 +46,8 @@ export function OverviewView({ health, readiness, checkedAt, continuumStatus, ca
         : loading ? <LoadingState label="Memuat modul…" /> : error ? <ErrorState role="region" title="Registry modul tidak tersedia" description="Muat ulang registry untuk mencoba kembali." action={<Button variant="secondary" onClick={onRefresh}>Coba lagi</Button>} /> : <EmptyState title={searching ? "No modules match" : "Belum ada modul"} description={searching ? "Try a different search term." : "Registry berhasil dimuat, tetapi belum memiliki modul untuk ditampilkan."} />}
       <p className="muted">Kapabilitas: {capabilities.length ? capabilities.join(" · ") : "Tidak ada kapabilitas aktif."}</p>
     </section>
-    <section className="workspace-section"><SectionHeading layout="compact" eyebrow="WORKSPACES" title="Go to operations" aside={<span className="muted">{operatorRole} access</span>} /><div className="workspace-grid">{workspaces.map((workspace) => <MangaEffect as="button" type="button" key={workspace.key} interactive className="workspace-card" onClick={() => onNavigate(workspace.key)}><span className="workspace-icon"><Icon name={workspace.icon} size={18} /></span><strong>{workspace.title}</strong><small>{workspace.description}</small><span className="workspace-arrow">Open workspace <Icon name="arrowUpRight" size={12} /></span></MangaEffect>)}</div></section>
-    <section className="activity-preview"><SectionHeading layout="compact" eyebrow="RECENT ACTIVITY" title="Latest events" aside={<button className="text-button" onClick={() => onNavigate("audit")}>Open ledger <Icon name="arrowUpRight" size={12} /></button>} />
+    <section className="workspace-section"><SectionHeading layout="compact" eyebrow="WORKSPACES" title="Go to operations" aside={<span className="muted">{operatorRole} access</span>} /><div className="workspace-grid">{workspaces.map((workspace) => { const WorkspaceIcon = workspace.icon; return <MangaEffect as="button" type="button" key={workspace.key} interactive className="workspace-card" onClick={() => onNavigate(workspace.key)}><span className="workspace-icon"><WorkspaceIcon size={18} /></span><strong>{workspace.title}</strong><small>{workspace.description}</small><span className="workspace-arrow">Open workspace <ArrowUpRightIcon size={12} /></span></MangaEffect>; })}</div></section>
+    <section className="activity-preview"><SectionHeading layout="compact" eyebrow="RECENT ACTIVITY" title="Latest events" aside={<button className="text-button" onClick={() => onNavigate("audit")}>Open ledger <ArrowUpRightIcon size={12} /></button>} />
       <EventList className="event-list" events={events} empty={<EmptyState title="No recent events" description="Audit events will appear here as operators use the system." />} />
     </section>
   </>;

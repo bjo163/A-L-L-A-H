@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Badge, type BadgeTone } from "../primitives/Badge";
 import { Button } from "../primitives/Button";
-import { Icon } from "../primitives/Icon";
+import { CloseIcon } from "../primitives/Icon";
 import { Panel } from "../primitives/Panel";
 
 export type MapFrameState = "ready" | "loading" | "empty" | "stale" | "error" | "unavailable" | "webgl-unavailable";
@@ -144,7 +144,7 @@ export function RegionSummary({
           variant="quiet"
           onClick={onClear}
         >
-          <Icon name="close" size={14} />
+          <CloseIcon size={14} />
           {clearLabel}
         </Button>
       )}

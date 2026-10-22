@@ -1,7 +1,7 @@
 import type { ReactNode } from "react";
 import { Badge } from "../primitives/Badge";
 import type { BadgeTone } from "../primitives/Badge";
-import { Icon } from "../primitives/Icon";
+import { ActivityIcon } from "../primitives/Icon";
 
 export type TelemetryEvent = {
   id: string;
@@ -29,7 +29,7 @@ export function TelemetryEventList({ events, empty }: TelemetryEventListProps) {
     <div className="event-list event-list-large">
       {events.map((event) => (
         <article key={event.id} className="event-row event-row-expanded">
-          <span className="event-marker"><Icon name="activity" size={16} /></span>
+          <span className="event-marker"><ActivityIcon size={16} /></span>
           <div className="event-main">
             <div className="event-title">
               <strong>{event.title}</strong>

@@ -34,6 +34,7 @@ import {
   Timeline,
   WorkflowSteps,
   buttonClassName,
+  ArrowDownRightIcon,
 } from "../src";
 
 export function PortalHomeFixture() {
@@ -54,7 +55,7 @@ export function PortalHomeFixture() {
         title={<>LIVE.<br/><em>LEARN. ACT.</em></>}
         description="A fabricated public portal page assembled from shared shell, intro, card, process, and CTA patterns."
         sfx="ZAP!"
-        actions={<nav className="page-hero-links" aria-label="Fixture actions"><a href="#portal-domains"><IconText icon="arrowDownRight">Explore domains</IconText></a><a href="#portal-actions">See readiness</a></nav>}
+        actions={<nav className="page-hero-links" aria-label="Fixture actions"><a href="#portal-domains"><IconText icon={<ArrowDownRightIcon />}>Explore domains</IconText></a><a href="#portal-actions">See readiness</a></nav>}
       />
       <section className="section" id="portal-domains">
         <div className="eol-container">

@@ -1,6 +1,6 @@
 import { createRoot } from "react-dom/client";
 import { BrandLockup } from "../src/brand/BrandConcepts";
-import { buttonClassName, CallToAction, IconText, MetricGrid, PortalDomainCard, PublicShell, ResponsiveNavigation, SectionHeading } from "../src";
+import { buttonClassName, CallToAction, IconText, MetricGrid, PortalDomainCard, PublicShell, ResponsiveNavigation, SectionHeading, ArrowDownRightIcon } from "../src";
 import "./preview.css";
 
 const params = new URLSearchParams(window.location.search);
@@ -30,7 +30,7 @@ function ResponsiveFixture() {
           <h1>{english ? <>ONE SYSTEM.<br/><em>EVERY SCREEN.</em></> : <>SATU SISTEM.<br/><em>SEMUA LAYAR.</em></>}</h1>
           <p>{english ? "The iframe width is the actual CSS viewport for this shared Portal composition." : "Lebar iframe menjadi viewport CSS sebenarnya untuk komposisi Portal bersama ini."}</p>
           <div className="catalog-preview-actions">
-            <a className={buttonClassName("primary", "btn")} href="#preview-domains"><IconText icon="arrowDownRight">{english ? "View domains" : "Lihat domain"}</IconText></a>
+            <a className={buttonClassName("primary", "btn")} href="#preview-domains"><IconText icon={<ArrowDownRightIcon />}>{english ? "View domains" : "Lihat domain"}</IconText></a>
             <a className={buttonClassName("secondary", "btn")} href="#preview-actions">{english ? "Review next steps" : "Tinjau langkah lanjut"}</a>
           </div>
         </section>

@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { buttonClassName, Container, IconText, ModuleGridItem, RepositoryOverview, SystemAtlas } from "@empire/ui";
+import { ArrowLeftIcon, ArrowRightIcon, buttonClassName, ChevronDownIcon, Container, IconText, ModuleGridItem, RepositoryOverview, SystemAtlas, ArrowUpRightIcon, ExternalLinkIcon } from "@empire/ui";
 import { getPortalLanguage } from "../../lib/i18n";
 import { PortalPageCrosslinks, PortalPageIntro } from "../../components/PortalPageChrome";
 
@@ -46,9 +46,9 @@ export default async function SystemsPage() {
       description={en ? "Seven layers connect human needs, scientific work, energy infrastructure, and evidence-based decisions. This is a proposed architecture, not a list of installed equipment." : "Tujuh lapisan menghubungkan kebutuhan manusia, pekerjaan ilmiah, infrastruktur energi, dan keputusan berbasis bukti. Ini adalah arsitektur usulan, bukan daftar perangkat yang sudah terpasang."}
       sfx={en ? "POW!" : "DOR!"}
       links={[
-        { href: "/#ekosistem", label: en ? "Technology domains" : "Domain teknologi", icon: "chevronDown" },
-        { href: "/#penjelajah", label: en ? "System explorer" : "Penjelajah sistem", icon: "chevronDown" },
-        { href: "/roadmap", label: en ? "Implementation status" : "Status implementasi", icon: "arrowUpRight" },
+        { href: "/#ekosistem", label: en ? "Technology domains" : "Domain teknologi", icon: <ChevronDownIcon /> },
+        { href: "/#penjelajah", label: en ? "System explorer" : "Penjelajah sistem", icon: <ChevronDownIcon /> },
+        { href: "/roadmap", label: en ? "Implementation status" : "Status implementasi", icon: <ArrowUpRightIcon /> },
       ]}
     />
     <SystemAtlas items={planeContent.map((item, index) => ({
@@ -64,14 +64,14 @@ export default async function SystemsPage() {
       eyebrow={en ? "IMPLEMENTATION IN REPOSITORY" : "IMPLEMENTASI DI REPOSITORI"}
       title={en ? <>ONE <em>MODULAR MONOREPO.</em></> : <>SATU <em>MONOREPO MODULAR.</em></>}
       description={en ? "100CENTER uses React + Vite, this public portal uses Next.js, the local API uses Fastify, and storage uses local PostgreSQL. New research modules remain proposals until contracts and ownership are approved." : "100CENTER memakai React + Vite, portal publik ini memakai Next.js, API lokal memakai Fastify, dan penyimpanan memakai PostgreSQL lokal. Modul riset baru tetap berstatus usulan sampai kontrak dan kepemilikannya disetujui."}
-      actions={<Link className={buttonClassName("primary", "eol-button--lg")} href="/roadmap"><IconText icon="arrowUpRight">{en ? "Review readiness" : "Tinjau kesiapan"}</IconText></Link>}
+      actions={<Link className={buttonClassName("primary", "eol-button--lg")} href="/roadmap"><IconText icon={<ArrowUpRightIcon />}>{en ? "Review readiness" : "Tinjau kesiapan"}</IconText></Link>}
       modules={modules}
       modulesLabel={en ? "Repository modules" : "Modul repositori"}
     />
     <PortalPageCrosslinks label={en ? "Related pages" : "Halaman terkait"} links={[
-      { href: "/#ekosistem", label: en ? "Back to technology domains" : "Kembali ke domain teknologi", icon: "arrowLeft", iconPosition: "start" },
-      { href: "/roadmap", label: en ? "Continue to roadmap & readiness" : "Lanjut ke peta jalan & kesiapan", icon: "arrowRight" },
+      { href: "/#ekosistem", label: en ? "Back to technology domains" : "Kembali ke domain teknologi", icon: <ArrowLeftIcon />, iconPosition: "start" },
+      { href: "/roadmap", label: en ? "Continue to roadmap & readiness" : "Lanjut ke peta jalan & kesiapan", icon: <ArrowRightIcon /> },
     ]}/>
-    <p className="source-line">{en ? "Read the architecture blueprint: " : "Baca blueprint arsitektur: "}<a href="https://github.com/bjo163/empire-of-the-light/blob/main/docs/BLUEPRINT_V5_QUANTUM_PROTON_BEYOND_AI.md" target="_blank" rel="noopener noreferrer"><IconText icon="externalLink">GENESIS v5 Master Blueprint</IconText></a></p>
+    <p className="source-line">{en ? "Read the architecture blueprint: " : "Baca blueprint arsitektur: "}<a href="https://github.com/bjo163/empire-of-the-light/blob/main/docs/BLUEPRINT_V5_QUANTUM_PROTON_BEYOND_AI.md" target="_blank" rel="noopener noreferrer"><IconText icon={<ExternalLinkIcon />}>GENESIS v5 Master Blueprint</IconText></a></p>
   </Container>;
 }

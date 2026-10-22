@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Icon } from "../primitives/Icon";
+import { ArrowUpRightIcon } from "../primitives/Icon";
 import { MangaEffect } from "./MangaEffect";
 
 export type ArchitectureLayer = { id: string; code: string; title: ReactNode; description: ReactNode; href: string };
@@ -16,7 +16,7 @@ export type ArchitectureLayersProps = {
 export function ArchitectureLayers({ items, renderLink, orchestrationLabel, summary, action }: ArchitectureLayersProps) {
   return <div className="plane-layout">
     <div className="plane-list">{items.map((item) => {
-      const children = <><span>{item.code}</span><strong>{item.title}</strong><p>{item.description}</p><Icon name="arrowUpRight" size={14}/></>;
+      const children = <><span>{item.code}</span><strong>{item.title}</strong><p>{item.description}</p><ArrowUpRightIcon size={14}/></>;
       const props = { href: item.href, className: "plane-row", children, itemId: item.id, key: item.id };
       return renderLink ? renderLink(props) : <MangaEffect key={item.id} as="a" row href={item.href} className="plane-row">{children}</MangaEffect>;
     })}</div>

@@ -2,7 +2,7 @@ import type { ReactNode } from "react";
 import { classNames } from "../primitives/classNames";
 import { Badge } from "../primitives/Badge";
 import type { BadgeTone } from "../primitives/Badge";
-import { Icon } from "../primitives/Icon";
+import { GlobeIcon } from "../primitives/Icon";
 import { Card } from "./Card";
 
 export type RegionSelectMetric = { label: ReactNode; value: ReactNode };
@@ -22,7 +22,7 @@ export function RegionSelectCard({ name, code, coordinates, status, tone, metric
   return (
     <Card as="button" type="button" interactive selected={selected} aria-pressed={selected} className={classNames("agent-card region-node-card", selected && "region-node-card--selected")} onClick={onSelect}>
       <span className="agent-head">
-        <span className="agent-symbol"><Icon name="globe" size={18} /></span>
+        <span className="agent-symbol"><GlobeIcon size={18} /></span>
         <Badge tone={tone}>{status}</Badge>
       </span>
       <h3>{name}</h3>

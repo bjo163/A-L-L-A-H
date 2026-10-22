@@ -2,7 +2,7 @@
 
 import { useRef, useState, type MouseEvent, type ReactNode, type KeyboardEvent } from "react";
 import { Button } from "../primitives/Button";
-import { Icon } from "../primitives/Icon";
+import { CloseIcon, MenuIcon } from "../primitives/Icon";
 import { classNames } from "../primitives/classNames";
 import { SkipLink } from "./Navigation";
 
@@ -51,7 +51,7 @@ export function WorkspaceShell({
       onClick={() => setNavigationOpen((open) => !open)}
       onKeyDown={handleEscape}
     >
-      <Icon name={navigationOpen ? "close" : "menu"} size={16} />
+      {navigationOpen ? <CloseIcon size={16} /> : <MenuIcon size={16} />}
       {navigationOpen ? closeLabel : menuLabel}
     </Button>
     <div id={navigationId} className="eol-workspace-shell__navigation" data-open={navigationOpen} onClick={handleNavigationClick} onKeyDown={handleEscape}>

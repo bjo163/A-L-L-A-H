@@ -1,6 +1,6 @@
 import { lazy, Suspense, useState } from "react";
 import type { WorldMonitoringSnapshot } from "@empire/batteries-world-monitor";
-import { Badge, Button, EmptyState, Grid, Icon, LoadingState, MangaTelemetryHero, MapFrame, MetricGrid, RegionSelectCard, RegionSummary, SectionHeading, SensorDisclosure, StatusIndicator, Tabs, TelemetryEventList } from "@empire/ui";
+import { Badge, Button, EmptyState, Grid, LoadingState, MangaTelemetryHero, MapFrame, MetricGrid, RegionSelectCard, RegionSummary, SectionHeading, SensorDisclosure, StatusIndicator, Tabs, TelemetryEventList, GlobeIcon, ClockIcon, SparkIcon, CommandIcon, RefreshIcon, ActivityIcon } from "@empire/ui";
 
 const WorldGlobeMap = lazy(async () => ({ default: (await import("./WorldGlobeMap")).WorldGlobeMap }));
 const YoutubeSentinelView = lazy(async () => ({ default: (await import("./YoutubeSentinelView")).YoutubeSentinelView }));
@@ -59,12 +59,12 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
       tabClassName="world-subtab-btn"
       selectedTabClassName="world-subtab-btn--active"
       items={[
-        { value: "systems", label: <><Icon name="globe" size={14} /> World Systems</>, content: <>
+        { value: "systems", label: <><GlobeIcon size={14} /> World Systems</>, content: <>
       <MangaTelemetryHero
         eyebrow={<>SERVICE STATUS <StatusIndicator tone={systemState === "ok" ? "success" : systemState === "unavailable" ? "neutral" : "warning"}>{snapshot.globalAlertLevel === "unknown" ? "STATUS UNKNOWN" : `ALERT LEVEL ${snapshot.globalAlertLevel.toUpperCase()}`}</StatusIndicator></>}
         title="System and regional monitoring"
         description="API and database health are checked live. Regional infrastructure, energy, and DNA sensor sources are not connected yet."
-        metadata={<><span><Icon name="clock" size={13}/> Updated {new Date(snapshot.timestamp).toLocaleTimeString()}</span><span><Icon name="globe" size={13}/> {snapshot.regions.length} Reference Regions</span><span><Icon name="spark" size={13}/> {totalHeliogrid} Heliogrid Load</span><span><Icon name="command" size={13}/> {snapshot.dnaSensors.length} DNA Mappings</span></>}
+        metadata={<><span><ClockIcon size={13}/> Updated {new Date(snapshot.timestamp).toLocaleTimeString()}</span><span><GlobeIcon size={13}/> {snapshot.regions.length} Reference Regions</span><span><SparkIcon size={13}/> {totalHeliogrid} Heliogrid Load</span><span><CommandIcon size={13}/> {snapshot.dnaSensors.length} DNA Mappings</span></>}
         pulse={snapshot.apiUptimeSeconds === null ? "N/A" : `${snapshot.apiUptimeSeconds}s`}
         sfx="RADAR!"
       />
@@ -76,10 +76,10 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
         <SectionHeading layout="compact" eyebrow="GEOSPATIAL OVERLAY" title="Regional Reference Locations" aside={<div className="button-row world-map-actions">
             {nextRefreshIn !== undefined && (
               <span className="muted world-map-countdown">
-                <Icon name="refresh" size={12} /> Auto in {nextRefreshIn}s
+                <RefreshIcon size={12} /> Auto in {nextRefreshIn}s
               </span>
             )}
-            <Button variant="secondary" onClick={onRefresh}><Icon name="refresh" size={15}/>Refresh Pulse</Button>
+            <Button variant="secondary" onClick={onRefresh}><RefreshIcon size={15}/>Refresh Pulse</Button>
           </div>} />
 
         <Suspense fallback={<MapFrame title="Interactive region map" state="loading" stateTitle="Loading map adapter" description="The regional reference list below remains available." />}>
@@ -212,7 +212,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
         }))} empty={<EmptyState title="No verified telemetry events" description="No live event source is connected. Audit records are not exposed through this public endpoint." />} />
       </section>
         </> },
-        { value: "youtube", label: <><Icon name="activity" size={14} /> YouTube Sentinel <span className="world-subtab-badge">TAUHID</span></>, content: <Suspense fallback={<LoadingState label="Loading YouTube Sentinel…" />}><YoutubeSentinelView searchQuery={search} /></Suspense> },
+        { value: "youtube", label: <><ActivityIcon size={14} /> YouTube Sentinel <span className="world-subtab-badge">TAUHID</span></>, content: <Suspense fallback={<LoadingState label="Loading YouTube Sentinel…" />}><YoutubeSentinelView searchQuery={search} /></Suspense> },
       ]}
     />
   );

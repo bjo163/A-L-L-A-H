@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
-import { Icon, ResponsiveNavigation, ThemeControl } from "@empire/ui";
+import { ResponsiveNavigation, ThemeControl, ExternalLinkIcon, SunIcon, MoonIcon } from "@empire/ui";
 import type { PortalLanguage } from "../lib/i18n";
 
 const labels = {
@@ -55,7 +55,7 @@ export function PrimaryNavigation({ language }: { language: PortalLanguage }) {
           const active = "key" in link && current;
           return (
             <Link href={link.href} key={link.key} aria-current={active ? "page" : undefined} aria-label={label} {...("external" in link ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
-              {label}{"external" in link && <Icon name="externalLink" size={13} />}
+              {label}{"external" in link && <ExternalLinkIcon size={13} />}
             </Link>
           );
         })}
@@ -66,7 +66,7 @@ export function PrimaryNavigation({ language }: { language: PortalLanguage }) {
           <button type="button" aria-pressed={language === "en"} onClick={() => changeLanguage("en")} disabled={pending || languagePending}>EN</button>
           {(pending || languagePending) && <span className="language-status" role="status">{copy.loading}</span>}
         </div>
-        <ThemeControl label={copy.theme} lightLabel={copy.light} darkLabel={copy.dark} lightIcon={<Icon name="sun" size={15}/>} darkIcon={<Icon name="moon" size={15}/>} />
+        <ThemeControl label={copy.theme} lightLabel={copy.light} darkLabel={copy.dark} lightIcon={<SunIcon size={15}/>} darkIcon={<MoonIcon size={15}/>} />
     </ResponsiveNavigation>
   );
 }

@@ -1,4 +1,4 @@
-import { Icon, ResponsiveTabs, SystemDetailPanel } from "@empire/ui";
+import { ResponsiveTabs, SystemDetailPanel, ArrowUpRightIcon } from "@empire/ui";
 import type { TabItem } from "@empire/ui";
 import { getPortalSystems } from "../lib/portal-systems";
 import type { PortalLanguage } from "../lib/i18n";
@@ -10,7 +10,7 @@ export function Explorer({ language }: { language: PortalLanguage }) {
 
   const tabs: readonly TabItem<SystemId>[] = items.map((item) => ({
     value: item.id,
-    label: <><span>{item.code}</span><strong>{item.name}</strong><Icon name="arrowUpRight" size={14}/></>,
+    label: <><span>{item.code}</span><strong>{item.name}</strong><ArrowUpRightIcon size={14}/></>,
     content: <SystemDetailPanel
       systemId={item.id}
       category={item.descriptor}

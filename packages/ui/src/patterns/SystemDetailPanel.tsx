@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import { Badge, type BadgeTone } from "../primitives/Badge";
-import { Icon } from "../primitives/Icon";
+import { InputIcon, OutputIcon } from "../primitives/Icon";
 import { MangaEffect } from "./MangaEffect";
 
 export type SystemDetailPanelProps = {
@@ -37,8 +37,8 @@ export function SystemDetailPanel({
     <h3>{name}</h3>
     <p className="explorer-description">{description}</p>
     <div className="explorer-io">
-      <div><span className="panel-label">{inputsLabel}</span>{inputs.map((input, index) => <p key={index}><Icon name="input" size={14}/> {input}</p>)}</div>
-      <div><span className="panel-label">{outputsLabel}</span>{outputs.map((output, index) => <p key={index}><Icon name="output" size={14}/> {output}</p>)}</div>
+      <div><span className="panel-label">{inputsLabel}</span>{inputs.map((input, index) => <p key={index}><InputIcon size={14}/> {input}</p>)}</div>
+      <div><span className="panel-label">{outputsLabel}</span>{outputs.map((output, index) => <p key={index}><OutputIcon size={14}/> {output}</p>)}</div>
     </div>
     <p className="explorer-note">{note}</p>
   </MangaEffect>;

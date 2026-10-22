@@ -1,9 +1,9 @@
 import Link from "next/link";
-import type { ReactNode } from "react";
-import { IconText, MangaEffect, MangaPageIntro, PageCrosslinks } from "@empire/ui";
-import type { IconName } from "@empire/ui";
+import type { ReactElement, ReactNode } from "react";
+import { IconText, MangaEffect, MangaPageIntro, PageCrosslinks, ArrowLeftIcon } from "@empire/ui";
+import type { IconGlyphProps } from "@empire/ui";
 
-export type PageLink = { href: string; label: string; external?: boolean; icon?: IconName; iconPosition?: "start" | "end" };
+export type PageLink = { href: string; label: string; external?: boolean; icon?: ReactElement<IconGlyphProps>; iconPosition?: "start" | "end" };
 
 function PageLinkLabel({ link }: { link: PageLink }) {
   return link.icon ? <IconText icon={link.icon} position={link.iconPosition}>{link.label}</IconText> : link.label;
@@ -19,7 +19,7 @@ export function PortalPageIntro({
     className="page-hero"
     eyebrowClassName="eyebrow"
     actionsClassName="page-hero-links"
-    breadcrumb={<div className="page-breadcrumb"><Link href="/"><IconText icon="arrowLeft" position="start">{homeLabel}</IconText></Link><span>/</span> {section} <span>/</span> {chapter}</div>}
+    breadcrumb={<div className="page-breadcrumb"><Link href="/"><IconText icon={<ArrowLeftIcon />} position="start">{homeLabel}</IconText></Link><span>/</span> {section} <span>/</span> {chapter}</div>}
     eyebrow={eyebrow}
     title={title}
     description={description}

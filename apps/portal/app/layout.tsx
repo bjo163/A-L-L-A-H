@@ -3,7 +3,7 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import { PrimaryNavigation } from "../components/PrimaryNavigation";
 import { getPortalLanguage, text } from "../lib/i18n";
-import { BrandLockup, IconText, PublicShell, ThemeBootstrap } from "@empire/ui";
+import { BrandLockup, IconText, PublicShell, ThemeBootstrap, ArrowUpRightIcon, ExternalLinkIcon } from "@empire/ui";
 import "@empire/ui/portal.css";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -28,9 +28,9 @@ export default async function RootLayout({children}:{children:ReactNode}) {
       footerLabel={text(language,"Navigasi footer","Footer navigation")}
       brand={<Link className="brand" href="/" aria-label={text(language,"Beranda A-L-L-A-H","A-L-L-A-H home")}><BrandLockup name="A-L-L-A-H" descriptor="EMPIRE OF THE LIGHT" /></Link>}
       navigation={<PrimaryNavigation language={language} />}
-      action={<Link className="header-cta" href="/systems"><IconText icon="arrowUpRight">{text(language,"Jelajahi sistem","Explore systems")}</IconText></Link>}
+      action={<Link className="header-cta" href="/systems"><IconText icon={<ArrowUpRightIcon />}>{text(language,"Jelajahi sistem","Explore systems")}</IconText></Link>}
       footerBrand={<BrandLockup size="compact" tone="subtle" name="A-L-L-A-H · EMPIRE OF THE LIGHT" descriptor={text(language,"Belajar dengan terang. Bertindak dengan bukti.","Learn with clarity. Act with evidence.")} />}
-      footerContent={<><span>GENESIS v5.0 · {text(language,"PORTAL RISET PUBLIK","PUBLIC RESEARCH PORTAL")}</span><span>{text(language,"Diawasi manusia · Sumber jelas","Human-governed · Source-grounded")}</span><Link href="/#identitas">A-L-L-A-H</Link><Link href="/#ekosistem">{text(language,"Ekosistem","Ecosystem")}</Link><Link href="/systems">{text(language,"Atlas sistem","System atlas")}</Link><Link href="/roadmap">{text(language,"Peta jalan & kesiapan","Roadmap & readiness")}</Link><a href="https://github.com/bjo163/empire-of-the-light" target="_blank" rel="noopener noreferrer"><IconText icon="externalLink">GitHub</IconText></a></>}
+      footerContent={<><span>GENESIS v5.0 · {text(language,"PORTAL RISET PUBLIK","PUBLIC RESEARCH PORTAL")}</span><span>{text(language,"Diawasi manusia · Sumber jelas","Human-governed · Source-grounded")}</span><Link href="/#identitas">A-L-L-A-H</Link><Link href="/#ekosistem">{text(language,"Ekosistem","Ecosystem")}</Link><Link href="/systems">{text(language,"Atlas sistem","System atlas")}</Link><Link href="/roadmap">{text(language,"Peta jalan & kesiapan","Roadmap & readiness")}</Link><a href="https://github.com/bjo163/empire-of-the-light" target="_blank" rel="noopener noreferrer"><IconText icon={<ExternalLinkIcon />}>GitHub</IconText></a></>}
     >{children}</PublicShell>
   </body></html>;
 }

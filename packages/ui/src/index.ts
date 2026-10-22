@@ -3,9 +3,16 @@ export type { BadgeProps, BadgeTone } from "./primitives/Badge";
 export { LogoMark } from "./brand/BrandConcepts";
 export { BrandLockup } from "./brand/BrandConcepts";
 export type { BrandLockupProps } from "./brand/BrandConcepts";
-export { Icon, iconDisplaySizes, iconGroups, iconNames } from "./primitives/Icon";
+export {
+  ActivityIcon, AgentIcon, ApprovalIcon, ArrowDownRightIcon, ArrowLeftIcon, ArrowRightIcon, ArrowUpIcon, ArrowUpRightIcon,
+  ArrowsIcon, AuditIcon, CheckIcon, ChevronDownIcon, ChevronLeftIcon, ChevronRightIcon, ChevronUpIcon, CloseIcon,
+  ClockIcon, CommandIcon, CopyIcon, DirectoryIcon, DocumentIcon, DownloadIcon, EditIcon, ErrorIcon, EvidenceIcon, ExternalLinkIcon,
+  FilterIcon, GlobeIcon, HistoryIcon, HomeIcon, InfoIcon, InputIcon, KnowledgeIcon, LockIcon, LogOutIcon, MenuIcon,
+  ModulesIcon, MoonIcon, OutputIcon, PendingIcon, PlusIcon, RefreshIcon, SearchIcon, SettingsIcon, SourceIcon, SparkIcon,
+  SuccessIcon, SunIcon, TeamIcon, UserIcon, UsersIcon, WarningIcon, Icon, iconDisplaySizes, iconGroups, iconNames,
+} from "./primitives/Icon";
 export { directionalIconNames } from "./primitives/Icon";
-export type { DirectionalIconName, IconName } from "./primitives/Icon";
+export type { DirectionalIconName, IconComponent, IconGlyphProps, IconName, IconProps } from "./primitives/Icon";
 export { IconButton } from "./primitives/IconButton";
 export type { IconButtonProps } from "./primitives/IconButton";
 export { Button, buttonClassName } from "./primitives/Button";

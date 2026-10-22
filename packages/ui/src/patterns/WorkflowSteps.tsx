@@ -1,5 +1,5 @@
 import type { ReactNode } from "react";
-import { Icon } from "../primitives/Icon";
+import { ArrowRightIcon } from "../primitives/Icon";
 import { Panel } from "../primitives/Panel";
 
 export type WorkflowStep = { id: string; number: string; title: ReactNode; description: ReactNode };
@@ -12,7 +12,7 @@ export function WorkflowSteps({ label, items }: WorkflowStepsProps) {
       <span className="flow-number">{step.number}</span>
       <h3>{step.title}</h3>
       <p>{step.description}</p>
-      {index < items.length - 1 && <Icon name="arrowRight" className="flow-arrow" size={16}/>}
+      {index < items.length - 1 && <ArrowRightIcon className="flow-arrow" size={16}/>}
     </Panel>)}
   </div>;
 }

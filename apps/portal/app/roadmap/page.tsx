@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { ActionPanel, buttonClassName, Container, IconText, ReadinessBoard, RoadmapTimeline, SectionHeading } from "@empire/ui";
+import { ActionPanel, ArrowLeftIcon, ArrowUpIcon, buttonClassName, Container, IconText, ReadinessBoard, RoadmapTimeline, SectionHeading, ExternalLinkIcon } from "@empire/ui";
 import type { ReadinessBoardItem, RoadmapTimelineItem } from "@empire/ui";
 import { getPortalLanguage } from "../../lib/i18n";
 import { PortalPageCrosslinks, PortalPageIntro } from "../../components/PortalPageChrome";
@@ -76,9 +76,9 @@ export default async function RoadmapPage() {
       description={en ? "This roadmap distinguishes code, scientific literature, physical equipment, and operational certification. A concept is not a deployment; a successful build does not prove a real-world experiment." : "Peta jalan membedakan kode, literatur ilmiah, perangkat fisik, dan sertifikasi operasi. Konsep bukan deployment; build yang berhasil juga belum membuktikan eksperimen dunia nyata."}
       sfx={en ? "CHECK!" : "CEK!"}
       links={[
-        { href: "/systems", label: en ? "Architecture atlas" : "Peta arsitektur", icon: "arrowLeft", iconPosition: "start" },
+        { href: "/systems", label: en ? "Architecture atlas" : "Peta arsitektur", icon: <ArrowLeftIcon />, iconPosition: "start" },
         { href: "/#ekosistem", label: en ? "Technology domains" : "Domain teknologi" },
-        { href: "https://github.com/bjo163/empire-of-the-light", label: en ? "Repository" : "Repositori", external: true, icon: "externalLink" },
+        { href: "https://github.com/bjo163/empire-of-the-light", label: en ? "Repository" : "Repositori", external: true, icon: <ExternalLinkIcon /> },
       ]}
     />
     <section className="roadmap-page-grid">
@@ -105,11 +105,11 @@ export default async function RoadmapPage() {
       eyebrow={en ? "OPEN WORK" : "KERJA TERBUKA"}
       title={en ? "CHANGES CAN BE TRACED." : "PERUBAHAN DAPAT DITELUSURI."}
       description={en ? "Review engineering and research proposals, then follow changes on GitHub. Deployments and scientific results each require their own evidence." : "Tinjau proposal rekayasa dan riset, lalu ikuti perubahannya melalui GitHub. Deployment dan hasil ilmiah membutuhkan bukti masing-masing."}
-      action={<a className={buttonClassName("primary", "eol-button--lg")} href="https://github.com/bjo163/empire-of-the-light" target="_blank" rel="noopener noreferrer"><IconText icon="externalLink">{en ? "Explore GitHub" : "Jelajahi GitHub"}</IconText></a>}
+      action={<a className={buttonClassName("primary", "eol-button--lg")} href="https://github.com/bjo163/empire-of-the-light" target="_blank" rel="noopener noreferrer"><IconText icon={<ExternalLinkIcon />}>{en ? "Explore GitHub" : "Jelajahi GitHub"}</IconText></a>}
     />
     <PortalPageCrosslinks label={en ? "Related pages" : "Halaman terkait"} links={[
-      { href: "/systems", label: en ? "Back to system atlas" : "Kembali ke atlas sistem", icon: "arrowLeft", iconPosition: "start" },
-      { href: "/#peta-jalan", label: en ? "Back to roadmap overview" : "Kembali ke ringkasan peta jalan", icon: "arrowUp" },
+      { href: "/systems", label: en ? "Back to system atlas" : "Kembali ke atlas sistem", icon: <ArrowLeftIcon />, iconPosition: "start" },
+      { href: "/#peta-jalan", label: en ? "Back to roadmap overview" : "Kembali ke ringkasan peta jalan", icon: <ArrowUpIcon /> },
     ]}/>
   </Container>;
 }
