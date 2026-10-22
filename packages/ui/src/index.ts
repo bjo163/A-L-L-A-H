@@ -3,7 +3,7 @@ export type { BadgeProps, BadgeTone } from "./primitives/Badge";
 export { LogoMark } from "./brand/BrandConcepts";
 export { BrandLockup } from "./brand/BrandConcepts";
 export type { BrandLockupProps } from "./brand/BrandConcepts";
-export { Icon, iconGroups, iconNames } from "./primitives/Icon";
+export { Icon, iconDisplaySizes, iconGroups, iconNames } from "./primitives/Icon";
 export { directionalIconNames } from "./primitives/Icon";
 export type { DirectionalIconName, IconName } from "./primitives/Icon";
 export { IconButton } from "./primitives/IconButton";

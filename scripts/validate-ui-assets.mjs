@@ -23,6 +23,11 @@ await inventory(manifest.vectors.icons, /export const iconNames = \[([\s\S]*?)\]
 await inventory(manifest.vectors.brandConcepts, /export type BrandConcept = ([^;]+);/, "brand concepts");
 
 const iconSource = await read(manifest.vectors.icons.source);
+const sizeMatch = iconSource.match(/export const iconDisplaySizes = \[([\s\S]*?)\] as const/);
+const displaySizes = sizeMatch ? [...sizeMatch[1].matchAll(/\b(\d+)\b/g)].map((match) => Number(match[1])) : [];
+const recommendedDisplaySizes = manifest.vectors.icons.strokeFamily?.recommendedDisplaySizes;
+if (!sizeMatch || JSON.stringify(displaySizes) !== JSON.stringify(recommendedDisplaySizes)) errors.push("icon display sizes must match the recommended optical sizes in asset-manifest.json");
+if (!displaySizes.length || displaySizes.some((size, index) => size < 16 || (index > 0 && size <= displaySizes[index - 1]))) errors.push("icon display sizes must be ascending and at least 16 CSS px");
 const iconSvg = iconSource.match(/<svg\b([\s\S]*?)>/)?.[1] ?? "";
 const family = manifest.vectors.icons.strokeFamily;
 const expectedIconRoot = {

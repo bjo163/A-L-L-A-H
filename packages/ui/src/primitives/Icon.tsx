@@ -11,6 +11,8 @@ export const iconNames = [
 ] as const;
 
 export type IconName = (typeof iconNames)[number];
+/** Recommended optical display sizes; custom numeric sizes remain available for tight layouts. */
+export const iconDisplaySizes = [16, 20, 24, 32] as const;
 export const directionalIconNames = [
   "chevronLeft", "chevronRight", "arrowLeft", "arrowRight", "arrowUpRight", "arrowDownRight", "input", "output",
 ] as const satisfies readonly IconName[];

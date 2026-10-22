@@ -15,6 +15,7 @@
         "strokeWidth": 1.8,
         "strokeLinecap": "round",
         "strokeLinejoin": "round",
+        "recommendedDisplaySizes": [16, 20, 24, 32],
         "perIconOverrides": false
       },
       "names": [
