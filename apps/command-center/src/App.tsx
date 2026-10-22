@@ -14,6 +14,7 @@ import { KnowledgeView, type KnowledgeEntry } from "./KnowledgeView";
 import { AuditView, type AuditEvent } from "./AuditView";
 import { ResearchView, type ResearchDraft } from "./ResearchView";
 import { CabView, type CabActionRequest, type CabDraft } from "./CabView";
+import { OverviewView } from "./OverviewView";
 
 type Signal = "checking" | "ok" | "degraded" | "unavailable";
 type Module = { id: string; title: string; version: string; state: string; enabled: boolean };
@@ -308,23 +309,25 @@ export function App() {
       <MangaPageIntro className="page-heading" eyebrow="A-L-L-A-H · OPERATIONAL COMMAND" title={<span id="active-view-heading">{activePage.title}</span>} description={activePage.description} actions={<div className="health-cluster"><span><i data-state={snapshot.health}/><span>API {snapshot.health}</span></span><span><i data-state={snapshot.readiness}/><span>DATABASE {snapshot.readiness}</span></span></div>} />
       {error&&<Notice tone="danger" className="notice">{error}</Notice>}{success&&<Notice tone="success" className="notice">{success}</Notice>}
       <div id="active-view" role="region" aria-labelledby="active-view-heading">
-      {tab==="overview"&&<>
-        <MangaTelemetryHero
-          eyebrow={<>SYSTEM PULSE <StatusIndicator tone={snapshot.readiness === "ok" ? "success" : snapshot.readiness === "unavailable" ? "neutral" : "warning"}>{snapshot.readiness.toUpperCase()}</StatusIndicator></>}
-          title={snapshot.readiness === "ok" ? "All local systems are responding" : "System needs attention"}
-          description="API gateway, PostgreSQL readiness, governance and research are refreshed every 30 seconds."
-          metadata={<><span><Icon name="clock" size={13}/> {snapshot.checkedAt ? new Date(snapshot.checkedAt).toLocaleString() : "Awaiting first sync"}</span><span><Icon name="command" size={13}/> {snapshot.capabilities.length} active capabilities</span><span><Icon name="arrows" size={13}/> {String(continuum?.status ?? "pending")} continuum</span></>}
-          pulse="100"
-          sfx={snapshot.readiness === "ok" ? "PULSE!" : "ALERT!"}
-        />
-        <section id="overview"><div className="section-head"><h2>API Boundary</h2><div className="button-row"><a href={`${import.meta.env.VITE_API_ORIGIN||"http://127.0.0.1:4000"}${API_PATHS.openapi}`} target="_blank" rel="noreferrer">Kontrak OpenAPI</a><Button variant="secondary" disabled={loading} onClick={()=>void refresh()}>{loading?"Memeriksa…":"Refresh status"}</Button></div></div>
-          <MetricGrid density="compact" items={[{label:"Process health",value:snapshot.health,tone:snapshot.health==="ok"?"success":snapshot.health==="degraded"?"warning":"neutral"},{label:"Database readiness",value:snapshot.readiness,tone:snapshot.readiness==="ok"?"success":snapshot.readiness==="degraded"?"warning":"neutral"},{label:"Login",value:"Authenticated",tone:"success"}]}/>
-          {summary&&<MetricGrid density="compact" className="overview-secondary-metrics" items={[{label:"CAB open",value:summary.active},{label:"High risk",value:summary.emergency,tone:summary.emergency>0?"warning":"neutral"},{label:"Research runs",value:runs.length}]}/>}
-        </section>
-        <section id="modules"><div className="section-head"><h2>Module Registry</h2><span className="eyebrow">FIRST-PARTY · READ ONLY</span></div>{visibleModules.length?<div className="module-list">{visibleModules.map(m=><Panel manga as="article" key={m.id}><div><strong>{m.title}</strong><small>{m.id} · {m.version}</small></div><Badge tone={m.enabled?"success":"neutral"}>{m.enabled?"BOOTSTRAP":"SCAFFOLD"}</Badge></Panel>)}</div>:loading?<LoadingState label="Memuat modul…"/>:error?<ErrorState role="region" title="Registry modul tidak tersedia" description="Muat ulang registry untuk mencoba kembali." action={<Button variant="secondary" onClick={()=>void refresh()}>Coba lagi</Button>}/>:<EmptyState title={search?"No modules match":"Belum ada modul"} description={search?"Try a different search term.":"Registry berhasil dimuat, tetapi belum memiliki modul untuk ditampilkan."}/>}<p className="muted">Kapabilitas: {snapshot.capabilities.length?snapshot.capabilities.join(" · "):"Tidak ada kapabilitas aktif."}</p></section>
-        <section className="workspace-section"><div className="section-head"><div><span className="eyebrow">WORKSPACES</span><h2>Go to operations</h2></div><span className="muted">{entity.role} access</span></div><div className="workspace-grid">{pageItems.filter(({key})=>key!=="overview"&&pageAllowed(key)).map(({key,workspaceTitle,description})=><MangaEffect as="button" type="button" key={key} interactive className="workspace-card" onClick={()=>setTab(key)}><span className="workspace-icon"><Icon name={pageIcons[key]} size={18}/></span><strong>{workspaceTitle}</strong><small>{description}</small><span className="workspace-arrow">Open workspace <Icon name="arrowUpRight" size={12}/></span></MangaEffect>)}</div></section>
-      <section className="activity-preview"><div className="section-head"><div><span className="eyebrow">RECENT ACTIVITY</span><h2>Latest events</h2></div><button className="text-button" onClick={()=>setTab("audit")}>Open ledger <Icon name="arrowUpRight" size={12}/></button></div><EventList className="event-list" events={chronicles.slice(0,5).map(event=>({id:event.id,timestamp:new Date(event.createdAt).toLocaleString(),actor:event.user?.displayName??event.user?.username??"System",action:event.action.replaceAll("_"," "),details:event.entityId?`${event.entity} · ${event.entityId}`:event.entity}))} empty={<EmptyState title="No recent events" description="Audit events will appear here as operators use the system."/>}/></section>
-      </>}
+      {tab==="overview"&&<OverviewView
+        health={snapshot.health}
+        readiness={snapshot.readiness}
+        checkedAt={snapshot.checkedAt}
+        continuumStatus={String(continuum?.status ?? "pending")}
+        capabilities={snapshot.capabilities}
+        summary={summary}
+        researchRunCount={runs.length}
+        modules={visibleModules}
+        workspaces={pageItems.filter(({key})=>key!=="overview"&&pageAllowed(key)).map(({key,workspaceTitle,description})=>({key,title:workspaceTitle,description,icon:pageIcons[key]}))}
+        events={chronicles.slice(0,5).map(event=>({id:event.id,timestamp:new Date(event.createdAt).toLocaleString(),actor:event.user?.displayName??event.user?.username??"System",action:event.action.replaceAll("_"," "),details:event.entityId?`${event.entity} · ${event.entityId}`:event.entity}))}
+        loading={loading}
+        error={error}
+        searching={Boolean(search)}
+        operatorRole={entity.role}
+        openApiUrl={`${import.meta.env.VITE_API_ORIGIN||"http://127.0.0.1:4000"}${API_PATHS.openapi}`}
+        onRefresh={()=>void refresh()}
+        onNavigate={key=>setTab(key as Page)}
+      />}
       {tab==="world"&&(worldLoading&&!worldSnapshot?<LoadingState label="Memuat World Monitor…"/>:worldSnapshot?<WorldMonitorView snapshot={worldSnapshot} search={search} nextRefreshIn={worldNextRefreshIn} refreshError={worldError} onRefresh={()=>void refreshWorld()} notificationPermission={worldNotificationPermission} onEnableNotifications={()=>void enableWorldMonitorNotifications()}/>:worldError?<ErrorState title="World Monitor is unavailable" description={worldError} action={<Button variant="secondary" onClick={()=>void refreshWorld()}>Retry</Button>}/>:<LoadingState label="Connecting to World Monitor…"/>)}
       {tab==="continuum"&&<ContinuumView
         agentCount={agents.length}
@@ -360,7 +363,8 @@ export function App() {
         onSelectRfc={id=>void openRfc(id)}
         onAudit={()=>{if(selected)void perform(()=>client.request(`${API_PATHS.cabRfcs}/${selected.id}/audit`,{method:"POST",body:{}}),"Policy checks selesai dan tercatat.")}}
         onConfirmAction={request=>confirmRfcAction(request.title,request.description,request.confirmLabel,request.tone,request.endpoint,request.body,request.successMessage)}
-      />}      {tab==="research"&&<ResearchView draft={createRun} runs={visibleRuns} busy={busy} loading={loading} error={error} searching={Boolean(search)} canWrite={can(entity,"research:write")} canApprove={can(entity,"research:approve")} client={client} refreshKey={snapshot.checkedAt} onDraftChange={setCreateRun} onCreate={createResearch} onRefresh={()=>void refresh()} onAction={perform} onConfirmAction={requestConfirmation}/>}
+      />}
+      {tab==="research"&&<ResearchView draft={createRun} runs={visibleRuns} busy={busy} loading={loading} error={error} searching={Boolean(search)} canWrite={can(entity,"research:write")} canApprove={can(entity,"research:approve")} client={client} refreshKey={snapshot.checkedAt} onDraftChange={setCreateRun} onCreate={createResearch} onRefresh={()=>void refresh()} onAction={perform} onConfirmAction={requestConfirmation}/>}
       </div>
       <ConfirmDialog
         open={Boolean(confirmation)}
