@@ -9,7 +9,7 @@ import type {
   YoutubeViolationCategory,
   YoutubeWorkflowStatus,
 } from "@empire/batteries-world-monitor";
-import { Badge, Button, DataTable, type DataTableColumn, EmptyState, MetricGrid, Panel, StatusIndicator, DocumentIcon, DownloadIcon, CopyIcon, IconText, SparkIcon, WarningIcon, AuditIcon, ModulesIcon, CheckIcon, GlobeIcon } from "@empire/ui";
+import { Badge, Button, DataTable, type DataTableColumn, EmptyState, MetricGrid, Panel, StatusIndicator, DocumentIcon, DownloadIcon, CopyIcon, IconText, SparkIcon, WarningIcon, AuditIcon, ModulesIcon, CheckIcon, GlobeIcon, ActivityIcon, AgentIcon, ArrowUpRightIcon, ClockIcon, HistoryIcon, KnowledgeIcon, PlusIcon, SettingsIcon, SourceIcon } from "@empire/ui";
 
 const api = createApiClient(import.meta.env.VITE_API_ORIGIN || "http://127.0.0.1:4000");
 
@@ -85,7 +85,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
     let crawlerModeUsed = "";
     for (let i = 0; i < AUTO_SCAN_QUERIES.length; i++) {
       const q = AUTO_SCAN_QUERIES[i];
-      setScanProgress(`🔍 Memindai kata kunci ${i + 1}/${AUTO_SCAN_QUERIES.length}: "${q}"…`);
+      setScanProgress(`Memindai kata kunci ${i + 1}/${AUTO_SCAN_QUERIES.length}: "${q}"…`);
       try {
         const res = await api.request<{
           ok: boolean;
@@ -111,11 +111,11 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
     setScanning(false);
     const modeLabel =
       crawlerModeUsed === "youtubei_innertube"
-        ? "⚡ YouTube.js InnerTube"
+        ? "YouTube.js InnerTube"
         : crawlerModeUsed === "playwright_headless_browser"
-        ? "🤖 Playwright Chromium"
-        : "🌐 Live Fetch";
-    notify(`✅ Auto-pemindaian selesai via ${modeLabel}: ${totalScanned} video dievaluasi dari ${AUTO_SCAN_QUERIES.length} kata kunci.`);
+          ? "Playwright Chromium"
+          : "Live Fetch";
+    notify(`Auto-pemindaian selesai via ${modeLabel}: ${totalScanned} video dievaluasi dari ${AUTO_SCAN_QUERIES.length} kata kunci.`);
   }
 
   useEffect(() => {
@@ -134,7 +134,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
     if (!q) return;
 
     setScanning(true);
-    setScanProgress(`🔍 Memindai: "${q}"…`);
+    setScanProgress(`Memindai: "${q}"…`);
     try {
       const res = await api.request<{
         ok: boolean;
@@ -161,14 +161,14 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
         setItems(res.items);
         setSummary(res.summary);
         const mode = res.crawlerMode === "youtubei_innertube"
-          ? "⚡ YouTube.js (InnerTube Native Client)"
+          ? "YouTube.js (InnerTube Native Client)"
           : res.crawlerMode === "playwright_headless_browser"
-          ? "🤖 Playwright Headless Browser (Chromium)"
-          : res.crawlerMode === "http_live_fetch"
-          ? "🌐 Live HTTP Network Fetch"
-          : res.crawlerMode === "fallback_synthetic"
-          ? "⚠️ Fallback Sintetik (Jaringan Dibatasi)"
-          : "🔍 Heuristic";
+            ? "Playwright Headless Browser (Chromium)"
+            : res.crawlerMode === "http_live_fetch"
+              ? "Live HTTP Network Fetch"
+              : res.crawlerMode === "fallback_synthetic"
+                ? "Fallback Sintetik (Jaringan Dibatasi)"
+                : "Heuristic";
         notify(`Pemindaian selesai via ${mode}: ${res.scannedCount} video dievaluasi.${res.diagnosticMessage ? " Info: " + res.diagnosticMessage : ""}`);
       }
     } catch (err) {
@@ -354,11 +354,11 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
             <div className="sentinel-rule-summary">
               <div className="sentinel-card-badge-row">
                 {item.direction === "POSITIVE" ? (
-                  <Badge tone="success">✨ HIKMAH / POSITIF</Badge>
+                  <Badge tone="success"><IconText icon={<SparkIcon />}>HIKMAH / POSITIF</IconText></Badge>
                 ) : item.direction === "NEUTRAL" ? (
-                  <Badge tone="neutral">ℹ️ NETRAL</Badge>
+                  <Badge tone="neutral">NETRAL</Badge>
                 ) : (
-                  <Badge tone="danger">⚠️ ANCAMAN AKIDAH</Badge>
+                  <Badge tone="danger"><IconText icon={<WarningIcon />}>ANCAMAN AKIDAH</IconText></Badge>
                 )}
                 {item.tradition && (
                   <span className={`sentinel-tradition-badge sentinel-tradition-badge--${item.tradition.toLowerCase()}`}>
@@ -388,7 +388,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                       key={idx}
                       className={`sentinel-matched-rule${r.weight > 0 ? " sentinel-matched-rule--risk" : " sentinel-matched-rule--safe"}`}
                     >
-                      {r.weight > 0 ? `⚠️ ${r.label}` : `🛡️ ${r.label}`}
+                      <IconText icon={r.weight > 0 ? <WarningIcon /> : <CheckIcon />}>{r.label}</IconText>
                     </span>
                   ))}
                   {item.matchedRules.length > 2 && (
@@ -399,8 +399,8 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                 </div>
               )}
               <div className="sentinel-card-metadata">
-                {item.durationText && <span>⏱️ {item.durationText}</span>}
-                {item.publishedAt && <span>📅 {item.publishedAt}</span>}
+                {item.durationText && <IconText icon={<ClockIcon />}>{item.durationText}</IconText>}
+                {item.publishedAt && <IconText icon={<HistoryIcon />}>{item.publishedAt}</IconText>}
                 <span className="sentinel-video-id">ID: {item.videoId}</span>
               </div>
             </div>
@@ -429,11 +429,11 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
             </Badge>
             {item.direction === "POSITIVE" && item.wisdomGuidance?.scriptureRef ? (
               <div className="sentinel-scripture-reference">
-                📖 {item.wisdomGuidance.scriptureRef}
+                <IconText icon={<KnowledgeIcon />}>{item.wisdomGuidance.scriptureRef}</IconText>
               </div>
             ) : item.tauhidGuidance?.dalilRef ? (
               <div className="sentinel-source-reference">
-                📜 {item.tauhidGuidance.dalilRef}
+                <IconText icon={<SourceIcon />}>{item.tauhidGuidance.dalilRef}</IconText>
               </div>
             ) : null}
           </div>
@@ -515,7 +515,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                   title="Lihat Hikmah & Amplifikasi Kebaikan"
                   onClick={() => setActiveModal({ type: "wisdom", item })}
                 >
-                  ✨ Hikmah &amp; Amplify
+                  <IconText icon={<SparkIcon />}>Hikmah &amp; Amplify</IconText>
                 </button>
               </>
             ) : (
@@ -526,7 +526,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                   title="Buat Laporan Pelanggaran"
                   onClick={() => setActiveModal({ type: "report", item })}
                 >
-                  🚩 Lapor
+                  <IconText icon={<WarningIcon />}>Lapor</IconText>
                 </button>
                 <button
                   type="button"
@@ -534,7 +534,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                   title="Draf Bantahan Tauhid"
                   onClick={() => setActiveModal({ type: "counter_dakwah", item })}
                 >
-                  🛡️ Bantahan
+                  <IconText icon={<CheckIcon />}>Bantahan</IconText>
                 </button>
               </>
             )}
@@ -545,7 +545,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
               className="sentinel-table-btn sentinel-table-btn--link"
               title="Buka Video di YouTube"
             >
-              ↗
+              <ArrowUpRightIcon size={14} />
             </a>
           </div>
         ),
@@ -621,21 +621,21 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                 className={`sentinel-engine-btn ${selectedEngine === "auto" ? "sentinel-engine-btn--active" : ""}`}
                 onClick={() => setSelectedEngine("auto")}
               >
-                ⚡ Auto (YouTube.js + Playwright)
+                <IconText icon={<SparkIcon />}>Auto (YouTube.js + Playwright)</IconText>
               </button>
               <button
                 type="button"
                 className={`sentinel-engine-btn ${selectedEngine === "innertube" ? "sentinel-engine-btn--active" : ""}`}
                 onClick={() => setSelectedEngine("innertube")}
               >
-                🚀 YouTube.js (InnerTube Native - Sangat Cepat)
+                <IconText icon={<ActivityIcon />}>YouTube.js (InnerTube Native - Sangat Cepat)</IconText>
               </button>
               <button
                 type="button"
                 className={`sentinel-engine-btn ${selectedEngine === "playwright" ? "sentinel-engine-btn--active" : ""}`}
                 onClick={() => setSelectedEngine("playwright")}
               >
-                🤖 Playwright (Chromium Headless Browser)
+                <IconText icon={<AgentIcon />}>Playwright (Chromium Headless Browser)</IconText>
               </button>
             </div>
           </div>
@@ -651,7 +651,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
             <div className="sentinel-spinner" />
             <div>
               <strong>
-                {scanProgress ?? "⚡ Menginisialisasi crawler YouTube..."}
+                {scanProgress ?? "Menginisialisasi crawler YouTube..."}
               </strong>
               <p>
                 {scanProgress
@@ -667,13 +667,13 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
             Preset Cepat:
           </span>
           {[
-            { label: "💰 Pesugihan Uang Gaib", query: "pesugihan uang gaib tanpa tumbal" },
-            { label: "🔮 Cek Khodam & Panggil Jin", query: "cek khodam live pengisian khodam" },
-            { label: "🗡️ Jimat Kebal & Mustika", query: "jimat kebal bacok keris pusaka bertuah" },
-            { label: "🃏 Ramalan Tarot & Zodiak", query: "baca kartu tarot ramalan nasib 2026" },
-            { label: "⚡ Santet & Pelet Jarak Jauh", query: "santet jarak jauh pelet semar mesem" },
-            { label: "🏛️ Ngalap Berkah Makam", query: "ngalap berkah makam keramat minta nomor" },
-            { label: "🕌 Bantahan Ustadz Sunnah", query: "bahaya syirik ustadz membongkar trik dukun" },
+            { label: "Pesugihan Uang Gaib", query: "pesugihan uang gaib tanpa tumbal" },
+            { label: "Cek Khodam & Panggil Jin", query: "cek khodam live pengisian khodam" },
+            { label: "Jimat Kebal & Mustika", query: "jimat kebal bacok keris pusaka bertuah" },
+            { label: "Ramalan Tarot & Zodiak", query: "baca kartu tarot ramalan nasib 2026" },
+            { label: "Santet & Pelet Jarak Jauh", query: "santet jarak jauh pelet semar mesem" },
+            { label: "Ngalap Berkah Makam", query: "ngalap berkah makam keramat minta nomor" },
+            { label: "Bantahan Ustadz Sunnah", query: "bahaya syirik ustadz membongkar trik dukun" },
           ].map((preset) => (
             <button
               key={preset.label}
@@ -931,7 +931,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                 <h4 className="sentinel-card-title">{item.title}</h4>
 
                 <div className="sentinel-card-channel">
-                  <span>📺 {item.channelTitle}</span>
+                  <span>{item.channelTitle}</span>
                   <span>{item.viewCountText}</span>
                 </div>
 
@@ -959,7 +959,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                     <div className="sentinel-arabic">{item.tauhidGuidance.arabicText}</div>
                   )}
                   <div className="sentinel-dalil-ref">
-                    📜 {item.tauhidGuidance.dalilRef}
+                    <IconText icon={<SourceIcon />}>{item.tauhidGuidance.dalilRef}</IconText>
                   </div>
                   <div className="sentinel-dalil-text">
                     &ldquo;{item.tauhidGuidance.translation}&rdquo;
@@ -972,13 +972,13 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                     variant="secondary"
                     onClick={() => setActiveModal({ type: "report", item })}
                   >
-                    🚩 Laporkan
+                    <IconText icon={<WarningIcon />}>Laporkan</IconText>
                   </Button>
                   <Button
                     variant="secondary"
                     onClick={() => setActiveModal({ type: "counter_dakwah", item })}
                   >
-                    🛡️ Bantahan Tauhid
+                    <IconText icon={<CheckIcon />}>Bantahan Tauhid</IconText>
                   </Button>
                   <a
                     href={item.url}
@@ -986,7 +986,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                     rel="noopener noreferrer"
                     className="text-button sentinel-video-link"
                   >
-                    Buka YouTube ↗
+                    <IconText icon={<ArrowUpRightIcon />}>Buka YouTube</IconText>
                   </a>
                 </div>
               </div>
@@ -1039,7 +1039,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                   notify("Teks aduan berhasil disalin ke clipboard!");
                 }}
               >
-                📋 Salin Teks
+                <IconText icon={<CopyIcon />}>Salin Teks</IconText>
               </Button>
               <Button
                 variant="primary"
@@ -1083,7 +1083,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                 </div>
               )}
               <div className="sentinel-dalil-ref">
-                📜 {activeModal.item.tauhidGuidance.dalilRef}
+                  <IconText icon={<SourceIcon />}>{activeModal.item.tauhidGuidance.dalilRef}</IconText>
               </div>
               <div className="sentinel-dalil-text sentinel-modal-label">
                 &ldquo;{activeModal.item.tauhidGuidance.translation}&rdquo;
@@ -1112,7 +1112,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                   notify("Draf komentar dakwah disalin ke clipboard!");
                 }}
               >
-                📋 Salin Komentar
+                <IconText icon={<CopyIcon />}>Salin Komentar</IconText>
               </Button>
               <Button
                 variant="primary"
@@ -1158,7 +1158,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                   </div>
                 )}
                 <div className="sentinel-dalil-ref sentinel-dalil-ref--positive">
-                  📖 {activeModal.item.wisdomGuidance.scriptureRef}
+                  <IconText icon={<KnowledgeIcon />}>{activeModal.item.wisdomGuidance.scriptureRef}</IconText>
                 </div>
                 <div className="sentinel-wisdom-quote">
                   &ldquo;{activeModal.item.wisdomGuidance.translation}&rdquo;
@@ -1205,7 +1205,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                   }
                 }}
               >
-                📋 Salin Materi Amplifikasi
+                <IconText icon={<CopyIcon />}>Salin Materi Amplifikasi</IconText>
               </Button>
               <Button
                 variant="primary"
@@ -1217,7 +1217,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                   )
                 }
               >
-                ✨ Rekomendasikan Amplifikasi
+                <IconText icon={<SparkIcon />}>Rekomendasikan Amplifikasi</IconText>
               </Button>
             </div>
           </div>
@@ -1254,7 +1254,7 @@ export function YoutubeSentinelView({ searchQuery = "" }: YoutubeSentinelViewPro
                   notify("Skrip browser automation disalin ke clipboard!");
                 }}
               >
-                📋 Salin Skrip Otomasi
+                <IconText icon={<CopyIcon />}>Salin Skrip Otomasi</IconText>
               </Button>
             </div>
           </div>
