@@ -31,6 +31,7 @@ Run `pnpm audit:ui-css` to find repeated property declarations within the same s
 - `MangaLoadingState` for a shared manga-styled loading panel and motion.
 - `MapFrame`, `MapLegend`, and `RegionSummary` for map source states and shared map information patterns.
 - `RegionSelectCard` for accessible, controlled region selection with status and a compact metric summary; the Command Center World Monitor supplies region records and status mapping.
+- `SensorDisclosure` and `TelemetryEventList` for shared operational sensor and event feed composition; consumers provide source values, status mapping, and filter behavior.
 - `StatusIndicator` for a compact status label with a non-color shape cue and shared semantic tones.
 - `Badge` for maturity and status labels.
 - `Icon`, `iconNames`, `directionalIconNames`, and `iconGroups` for the original shared 24px SVG stroke family. Arrows, chevrons, and input/output glyphs mirror automatically in RTL; other glyphs do not. Icons are decorative by default; `label` is for an SVG that carries meaning without an adjacent accessible name.

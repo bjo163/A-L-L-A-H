@@ -1,6 +1,6 @@
 import { useState } from "react";
 import type { WorldMonitoringSnapshot } from "@empire/batteries-world-monitor";
-import { Badge, Button, EmptyState, Icon, MangaEffect, MangaTelemetryHero, MetricGrid, Panel, RegionSelectCard, RegionSummary, StatusIndicator, TextField } from "@empire/ui";
+import { Badge, Button, EmptyState, Icon, MangaTelemetryHero, MetricGrid, RegionSelectCard, RegionSummary, SectionHeading, SensorDisclosure, StatusIndicator, Tabs, TelemetryEventList } from "@empire/ui";
 import { WorldGlobeMap } from "./WorldGlobeMap";
 import { YoutubeSentinelView } from "./YoutubeSentinelView";
 
@@ -14,11 +14,6 @@ interface WorldMonitorViewProps {
   notificationPermission: NotificationPermission | "unsupported";
   onEnableNotifications: () => void;
 }
-
-const monitoredLocations = [
-  ["London", "london"], ["New York", "new-york"], ["Tokyo", "tokyo"], ["Nairobi", "nairobi"],
-  ["São Paulo", "sao-paulo"], ["Delhi", "delhi"], ["Sydney", "sydney"], ["Reykjavík", "reykjavik"],
-] as const;
 
 type WorldSubTab = "systems" | "youtube";
 
@@ -55,16 +50,15 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
   const systemState = snapshot.status === "operational" ? "ok" : snapshot.status === "unavailable" ? "unavailable" : "degraded";
 
   return (
-    <>
-      <div className="world-subtab-bar" role="tablist" aria-label="World Monitor views">
-        <button type="button" role="tab" aria-selected={subTab === "systems"} className={`world-subtab-btn${subTab === "systems" ? " world-subtab-btn--active" : ""}`} onClick={() => setSubTab("systems")}>
-          <Icon name="globe" size={14} /> World Systems
-        </button>
-        <button type="button" role="tab" aria-selected={subTab === "youtube"} className={`world-subtab-btn world-subtab-btn--sentinel${subTab === "youtube" ? " world-subtab-btn--active" : ""}`} onClick={() => setSubTab("youtube")}>
-          <Icon name="activity" size={14} /> YouTube Sentinel <span className="world-subtab-badge">TAUHID</span>
-        </button>
-      </div>
-      {subTab === "youtube" ? <YoutubeSentinelView searchQuery={search} /> : <>
+    <Tabs
+      label="World Monitor views"
+      value={subTab}
+      onValueChange={setSubTab}
+      listClassName="world-subtab-bar"
+      tabClassName="world-subtab-btn"
+      selectedTabClassName="world-subtab-btn--active"
+      items={[
+        { value: "systems", label: <><Icon name="globe" size={14} /> World Systems</>, content: <>
       <MangaTelemetryHero
         eyebrow={<>SERVICE STATUS <StatusIndicator tone={systemState === "ok" ? "success" : systemState === "unavailable" ? "neutral" : "warning"}>{snapshot.globalAlertLevel === "unknown" ? "STATUS UNKNOWN" : `ALERT LEVEL ${snapshot.globalAlertLevel.toUpperCase()}`}</StatusIndicator></>}
         title="System and regional monitoring"
@@ -78,20 +72,14 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
 
       {/* ── Globe Map ─────────────────────────────────────────────────────────── */}
       <section className="world-map-section">
-        <div className="section-head">
-          <div>
-            <span className="eyebrow">GEOSPATIAL OVERLAY</span>
-            <h2>Regional Reference Locations</h2>
-          </div>
-          <div className="button-row world-map-actions">
+        <SectionHeading className="section-head" eyebrowClassName="eyebrow" eyebrow="GEOSPATIAL OVERLAY" title="Regional Reference Locations" aside={<div className="button-row world-map-actions">
             {nextRefreshIn !== undefined && (
               <span className="muted world-map-countdown">
                 <Icon name="refresh" size={12} /> Auto in {nextRefreshIn}s
               </span>
             )}
             <Button variant="secondary" onClick={onRefresh}><Icon name="refresh" size={15}/>Refresh Pulse</Button>
-          </div>
-        </div>
+          </div>} />
 
         <WorldGlobeMap
           regions={snapshot.regions}
@@ -122,9 +110,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
 
       {/* ── Global Metrics ───────────────────────────────────────────────────── */}
       <section>
-        <div className="section-head">
-          <h2>Global System Metrics</h2>
-        </div>
+        <SectionHeading className="section-head" title="Global System Metrics" />
         <MetricGrid columns={4} density="compact" items={[
           { label: "API / database status", value: snapshot.status.toUpperCase(), tone: systemState === "ok" ? "success" : systemState === "unavailable" ? "neutral" : "warning" },
           { label: "Verified regional nodes", value: snapshot.totalMonitoredNodes },
@@ -135,13 +121,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
 
       {/* ── Regional Nodes ───────────────────────────────────────────────────── */}
       <section>
-        <div className="section-head">
-          <div>
-            <span className="eyebrow">DISTRIBUTED TOPOLOGY</span>
-            <h2>Regional Reference Locations <span className="count-chip">{visibleRegions.length}</span></h2>
-          </div>
-          <span className="muted">Reference locations; live regional data unavailable</span>
-        </div>
+        <SectionHeading className="section-head" eyebrowClassName="eyebrow" eyebrow="DISTRIBUTED TOPOLOGY" title={<>Regional Reference Locations <span className="count-chip">{visibleRegions.length}</span></>} aside={<span className="muted">Reference locations; live regional data unavailable</span>} />
         <div className="agent-grid">
           {visibleRegions.map((region) => (
             <RegionSelectCard
@@ -169,27 +149,17 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
 
       {/* ── DNA Sensor Matrix ────────────────────────────────────────────────── */}
       <section>
-        <div className="section-head">
-          <div>
-            <span className="eyebrow">CATALOG MAPPINGS</span>
-            <h2>Batteries DNA Catalog Mappings <span className="count-chip">{visibleSensors.length}</span></h2>
-          </div>
-          <Badge tone="info">Source: @empire/batteries-dna</Badge>
-        </div>
+        <SectionHeading className="section-head" eyebrowClassName="eyebrow" eyebrow="CATALOG MAPPINGS" title={<>Batteries DNA Catalog Mappings <span className="count-chip">{visibleSensors.length}</span></>} aside={<Badge tone="info">Source: @empire/batteries-dna</Badge>} />
         <div className="knowledge-grid">
           {visibleSensors.map((sensor) => (
-            <MangaEffect as="details" interactive className="knowledge-card" key={sensor.dnaId}>
-              <summary>
-                <span className="knowledge-arabic">{sensor.arabic || <Icon name="spark" size={18}/>}</span>
-                <span className="knowledge-title">
-                  <strong>{sensor.transliteration}</strong>
-                  <small>{sensor.dnaId} · {sensor.capability}</small>
-                </span>
-                <Badge tone={sensor.currentStatus === "healthy" ? "success" : "neutral"}>
-                  {sensor.currentStatus.toUpperCase()}
-                </Badge>
-              </summary>
-              <div className="knowledge-detail">
+            <SensorDisclosure
+              key={sensor.dnaId}
+              name={sensor.transliteration}
+              identity={<>{sensor.dnaId} · {sensor.capability}</>}
+              symbol={sensor.arabic || undefined}
+              status={sensor.currentStatus.toUpperCase()}
+              tone={sensor.currentStatus === "healthy" ? "success" : "neutral"}
+            >
                 <p>
                   <strong>Planned Monitoring Use</strong>
                   <br />
@@ -201,8 +171,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
                 <small>
                   Limitations: {sensor.limitations[0]} {sensor.limitations[1]}
                 </small>
-              </div>
-            </MangaEffect>
+            </SensorDisclosure>
           ))}
         </div>
         {visibleSensors.length === 0 && (
@@ -212,12 +181,7 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
 
       {/* ── Live Feed ────────────────────────────────────────────────────────── */}
       <section>
-        <div className="section-head">
-          <div>
-            <span className="eyebrow">SITUATIONAL INTELLIGENCE</span>
-            <h2>Telemetry &amp; Event Feed</h2>
-          </div>
-          {snapshot.telemetryFeeds.length > 0 && (
+        <SectionHeading className="section-head" eyebrowClassName="eyebrow" eyebrow="SITUATIONAL INTELLIGENCE" title="Telemetry & Event Feed" aside={snapshot.telemetryFeeds.length > 0 ? (
             <div className="button-row">
               {["ALL", "physical", "heliogrid", "cyber", "environmental"].map((cat) => (
                 <Button
@@ -229,38 +193,24 @@ export function WorldMonitorView({ snapshot, search, onRefresh, nextRefreshIn, r
                 </Button>
               ))}
             </div>
-          )}
-        </div>
-        {visibleFeeds.length ? (
-          <div className="event-list event-list-large">
-            {visibleFeeds.map((feed) => (
-              <article key={feed.id} className="event-row event-row-expanded">
-                <span className="event-marker"><Icon name="activity" size={16}/></span>
-                <div className="event-main">
-                  <div className="event-title">
-                    <strong>{feed.title}</strong>
-                    <Badge tone={feed.severity === "critical" ? "danger" : feed.severity === "warning" ? "warning" : "info"}>
-                      {feed.severity.toUpperCase()}
-                    </Badge>
-                    <Badge tone="neutral">{feed.regionCode}</Badge>
-                    <Badge tone="info">{feed.associatedDna}</Badge>
-                  </div>
-                  <p className="world-event-detail">
-                    {feed.detail}
-                  </p>
-                  <small>
-                    Source: {feed.source} · Category: {feed.category}
-                  </small>
-                </div>
-                <time dateTime={feed.timestamp}>{new Date(feed.timestamp).toLocaleTimeString()}</time>
-              </article>
-            ))}
-          </div>
-        ) : (
-          <EmptyState title="No verified telemetry events" description="No live event source is connected. Audit records are not exposed through this public endpoint." />
-        )}
+        ) : undefined} />
+        <TelemetryEventList events={visibleFeeds.map((feed) => ({
+          id: feed.id,
+          title: feed.title,
+          severity: feed.severity.toUpperCase(),
+          severityTone: feed.severity === "critical" ? "danger" as const : feed.severity === "warning" ? "warning" as const : "info" as const,
+          region: feed.regionCode,
+          sourceTag: feed.associatedDna,
+          detail: feed.detail,
+          source: feed.source,
+          category: feed.category,
+          timestamp: feed.timestamp,
+          timestampLabel: new Date(feed.timestamp).toLocaleTimeString(),
+        }))} empty={<EmptyState title="No verified telemetry events" description="No live event source is connected. Audit records are not exposed through this public endpoint." />} />
       </section>
-      </>}
-    </>
+        </> },
+        { value: "youtube", label: <><Icon name="activity" size={14} /> YouTube Sentinel <span className="world-subtab-badge">TAUHID</span></>, content: <YoutubeSentinelView searchQuery={search} /> },
+      ]}
+    />
   );
 }

@@ -26,8 +26,10 @@ import {
   ReadinessList,
   RegionSummary,
   RegionSelectCard,
+  SensorDisclosure,
   ReviewActions,
   StatusIndicator,
+  TelemetryEventList,
   TextField,
   Timeline,
   WorkflowSteps,
@@ -90,7 +92,8 @@ export function OperationalCategoryFixtures() {
       </MapFrame>
       <RegionSummary eyebrow="FIXTURE · -6.20°, 106.80°" name="Jakarta sample region" status="Nominal" tone="success" metrics={[{ label: "Sensors", value: 12 }, { label: "Uptime", value: "99.9%" }]}/>
       <RegionSelectCard name="Jakarta fixture" code="JKT" coordinates="-6.20°, 106.80°" status="NOMINAL" tone="success" metrics={[{ label: "Latency", value: "24 ms" }, { label: "Nodes", value: 8 }, { label: "Uptime", value: "99.9%" }, { label: "Grid Load", value: "Unavailable" }]} onSelect={() => undefined}/>
-      <EventList events={[{ id: "sensor-event", timestamp: "2026-10-22T10:02:00Z", actor: "Sensor fixture", action: "Reported nominal reading", details: "YouTube Sentinel and sensor rows belong in this static event preview." }]}/>
+      <SensorDisclosure name="Grid health fixture" identity="DNA-014 · infrastructure health" symbol={<span lang="ar" dir="rtl">ن</span>} status="HEALTHY" tone="success"><p>Fabricated monitoring purpose and limitation notes for the shared sensor disclosure.</p></SensorDisclosure>
+      <TelemetryEventList events={[{ id: "sensor-event", title: "Nominal reading received", severity: "INFO", severityTone: "info", region: "JKT", sourceTag: "DNA-014", detail: "Fabricated telemetry detail for the shared event feed.", source: "Fixture source", category: "environmental", timestamp: "2026-10-22T10:02:00Z", timestampLabel: "10:02:00" }]} empty={<p>No fabricated events.</p>}/>
       <Notice role="note">Map, region and sensor values are fabricated catalog data.</Notice>
     </ViewFixture>
     <ViewFixture title="03 · Continuum">
