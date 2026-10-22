@@ -287,8 +287,8 @@
   color: var(--eol-color-text);
 }
 .eol-workspace-shell .sentinel-tab-btn.is-active {
-  background: var(--eol-color-accent);
-  color: #fff;
+  background: var(--eol-color-action-primary);
+  color: var(--eol-color-on-accent);
   transform: translate(-2px, -2px);
   box-shadow: 5px 5px 0 var(--eol-manga-ink);
 }
@@ -398,7 +398,7 @@
   position: relative;
   width: 100%;
   aspect-ratio: 16 / 9;
-  background: #000;
+  background: var(--eol-palette-media-matte);
   overflow: hidden;
   border-bottom: 2px solid var(--eol-manga-ink);
 }
@@ -417,8 +417,8 @@
   bottom: 8px;
   right: 8px;
   padding: 2px 6px;
-  background: rgba(0, 0, 0, 0.85);
-  color: #fff;
+  background: var(--eol-palette-media-overlay);
+  color: var(--eol-color-text-inverse);
   font: 700 10px var(--eol-font-mono);
   border-radius: 2px;
 }
@@ -558,11 +558,11 @@
 }
 .eol-workspace-shell .sentinel-code-snippet {
   padding: 12px;
-  background: #111;
-  color: #39ff14;
+  background: var(--eol-color-surface-inset);
+  color: var(--eol-color-text);
   font: 11px var(--eol-font-mono);
   overflow-x: auto;
-  border: 2px solid var(--eol-manga-ink);
+  border: var(--eol-border-width-strong) solid var(--eol-color-border-strong);
   max-height: 350px;
 }
 
@@ -602,13 +602,13 @@
   border-bottom-color: var(--eol-color-background);
 }
 .eol-workspace-shell .world-subtab-btn--sentinel.world-subtab-btn--active {
-  color: #ff6b35;
+  color: var(--eol-color-accent-strong);
 }
 .eol-workspace-shell .world-subtab-badge {
   font: 700 9px var(--eol-font-sans);
   letter-spacing: 0.1em;
-  background: #ff6b35;
-  color: #fff;
+  background: var(--eol-color-action-primary);
+  color: var(--eol-color-on-accent);
   padding: 2px 5px;
   border-radius: 3px;
 }
@@ -632,7 +632,7 @@
   width: 18px;
   height: 18px;
   cursor: pointer;
-  accent-color: #ff6b35;
+  accent-color: var(--eol-color-action-primary);
 }
 .eol-workspace-shell .sentinel-toggle-label span {
   display: flex;
@@ -652,15 +652,15 @@
   gap: 14px;
   padding: 14px 18px;
   margin-bottom: 14px;
-  background: rgba(255, 107, 53, 0.08);
-  border: 2px solid #ff6b35;
+  background: var(--eol-status-info-surface);
+  border: var(--eol-border-width-strong) solid var(--eol-status-info-border);
   border-radius: 6px;
   animation: pulse-sentinel var(--eol-motion-pulse) infinite var(--eol-easing-in-out);
 }
 .eol-workspace-shell .sentinel-scanning-banner strong {
   display: block;
   font-size: 13px;
-  color: #ff6b35;
+  color: var(--eol-status-info-foreground);
   margin-bottom: 4px;
 }
 .eol-workspace-shell .sentinel-scanning-banner p {
@@ -671,8 +671,8 @@
 .eol-workspace-shell .sentinel-spinner {
   width: 24px;
   height: 24px;
-  border: 3px solid rgba(255, 107, 53, 0.2);
-  border-top-color: #ff6b35;
+  border: 3px solid var(--eol-status-info-border);
+  border-top-color: var(--eol-status-info-foreground);
   border-radius: 50%;
   animation: eol-spin var(--eol-motion-spinner) var(--eol-easing-linear) infinite;
   flex-shrink: 0;
@@ -711,12 +711,12 @@
 }
 .eol-workspace-shell .sentinel-engine-btn:hover {
   color: var(--eol-color-text);
-  border-color: #ff6b35;
+  border-color: var(--eol-color-accent-border);
 }
 .eol-workspace-shell .sentinel-engine-btn--active {
-  background: #ff6b35;
-  color: #fff;
-  border-color: #ff6b35;
+  background: var(--eol-color-action-primary);
+  color: var(--eol-color-on-accent);
+  border-color: var(--eol-color-accent-border);
 }
 .eol-workspace-shell .sentinel-engine-note {
   display: block;
@@ -749,7 +749,7 @@
 }
 .eol-workspace-shell .sentinel-view-btn--active {
   background: var(--eol-manga-highlight);
-  color: #fff;
+  color: var(--eol-color-text);
 }
 
 .eol-workspace-shell .sentinel-table {
@@ -797,7 +797,7 @@
   color: var(--eol-color-text);
 }
 :where(.eol-workspace-shell) .sentinel-table tr:hover td {
-  background: rgba(255, 107, 53, 0.06);
+  background: color-mix(in srgb, var(--eol-color-accent) 6%, transparent);
 }
 :where(.eol-workspace-shell) .sentinel-table-thumb {
   width: 76px;
@@ -907,52 +907,18 @@
   display: inline-block;
   padding: 1px 6px;
   font: 700 9px var(--eol-font-mono);
-  border-radius: 3px;
+  border-radius: var(--eol-radius-sm);
+  background: var(--eol-status-neutral-surface);
+  color: var(--eol-status-neutral-foreground);
+  border: 1px solid var(--eol-status-neutral-border);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
 
-:where(.eol-workspace-shell) .sentinel-tradition-badge--islam {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.3);
-}
-
-:where(.eol-workspace-shell) .sentinel-tradition-badge--kristen,
-:where(.eol-workspace-shell) .sentinel-tradition-badge--katolik {
-  background: rgba(59, 130, 246, 0.15);
-  color: #60a5fa;
-  border: 1px solid rgba(59, 130, 246, 0.3);
-}
-
-:where(.eol-workspace-shell) .sentinel-tradition-badge--hindu {
-  background: rgba(245, 158, 11, 0.15);
-  color: #fbbf24;
-  border: 1px solid rgba(245, 158, 11, 0.3);
-}
-
-:where(.eol-workspace-shell) .sentinel-tradition-badge--buddha {
-  background: rgba(234, 179, 8, 0.15);
-  color: #fde047;
-  border: 1px solid rgba(234, 179, 8, 0.3);
-}
-
-:where(.eol-workspace-shell) .sentinel-tradition-badge--khonghucu {
-  background: rgba(244, 63, 94, 0.15);
-  color: #fb7185;
-  border: 1px solid rgba(244, 63, 94, 0.3);
-}
-
-:where(.eol-workspace-shell) .sentinel-tradition-badge--universal {
-  background: rgba(168, 85, 247, 0.15);
-  color: #c084fc;
-  border: 1px solid rgba(168, 85, 247, 0.3);
-}
-
 :where(.eol-workspace-shell) .sentinel-wisdom-box {
-  background: rgba(34, 197, 94, 0.08);
-  border: 1px solid rgba(34, 197, 94, 0.3);
-  border-radius: 6px;
+  background: var(--eol-status-success-surface);
+  border: 1px solid var(--eol-status-success-border);
+  border-radius: var(--eol-radius-sm);
   padding: 12px 14px;
 }
 
@@ -960,7 +926,7 @@
   font-style: italic;
   font-size: 13px;
   line-height: 1.5;
-  color: #e2e8f0;
+  color: var(--eol-color-text);
   margin: 6px 0;
 }
 
@@ -992,9 +958,9 @@
   font-size: 11px;
   padding: 2px 8px;
   border-radius: 4px;
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.3);
+  background: var(--eol-status-success-surface);
+  color: var(--eol-status-success-foreground);
+  border: 1px solid var(--eol-status-success-border);
 }
 
 /* ── Interactive Charts & Visualizations ─────────────────────────────────── */
@@ -1070,16 +1036,10 @@
   padding-right: 6px;
   font-size: 10px;
   font-weight: 700;
-  color: #fff;
+  background: var(--eol-color-action-primary);
+  color: var(--eol-color-on-accent);
   min-width: 24px;
 }
-:where(.eol-workspace-shell) .sentinel-bar-fill--success { background: var(--eol-status-success-foreground); }
-:where(.eol-workspace-shell) .sentinel-bar-fill--info { background: var(--eol-status-info-foreground); }
-:where(.eol-workspace-shell) .sentinel-bar-fill--sky { background: #60a5fa; }
-:where(.eol-workspace-shell) .sentinel-bar-fill--warning { background: var(--eol-status-warning-foreground); }
-:where(.eol-workspace-shell) .sentinel-bar-fill--yellow { background: #eab308; }
-:where(.eol-workspace-shell) .sentinel-bar-fill--rose { background: #f43f5e; }
-:where(.eol-workspace-shell) .sentinel-bar-fill--purple { background: #a855f7; }
 :where(.eol-workspace-shell) .sentinel-bar-fill[data-percent] { --sentinel-bar-percent: attr(data-percent type(<number>)); }
 :where(.eol-workspace-shell) .sentinel-bar-val {
   width: 45px;
@@ -1170,19 +1130,19 @@
   margin-top: 3px;
 }
 :where(.eol-workspace-shell) .sentinel-partner-badge--mitra {
-  background: rgba(16, 185, 129, 0.15);
-  color: #34d399;
-  border: 1px solid rgba(16, 185, 129, 0.35);
+  background: var(--eol-status-neutral-surface);
+  color: var(--eol-status-neutral-foreground);
+  border: 1px solid var(--eol-status-neutral-border);
 }
 :where(.eol-workspace-shell) .sentinel-partner-badge--target {
-  background: rgba(239, 68, 68, 0.15);
-  color: #f87171;
-  border: 1px solid rgba(239, 68, 68, 0.35);
+  background: var(--eol-status-neutral-surface);
+  color: var(--eol-status-neutral-foreground);
+  border: 1px solid var(--eol-status-neutral-border);
 }
 :where(.eol-workspace-shell) .sentinel-partner-badge--linked {
-  background: rgba(59, 130, 246, 0.15);
-  color: #60a5fa;
-  border: 1px solid rgba(59, 130, 246, 0.35);
+  background: var(--eol-status-success-surface);
+  color: var(--eol-status-success-foreground);
+  border: 1px solid var(--eol-status-success-border);
 }
 
 :where(.eol-workspace-shell) .sentinel-partner-form-grid {

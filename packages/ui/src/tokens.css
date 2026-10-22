@@ -17,6 +17,8 @@
   --eol-palette-dark-manga-ink: #070510;
   --eol-palette-feature-deep-teal: #123d3a;
   --eol-palette-feature-deep-navy: #14212f;
+  --eol-palette-media-matte: #000;
+  --eol-palette-media-overlay: rgb(0 0 0 / 85%);
   --eol-palette-light-paper: #f4f2ff;
   --eol-palette-light-surface: #fffefe;
   --eol-palette-light-lime: #d7f75b;
