@@ -10,6 +10,11 @@
       "types": "./dist/index.d.ts",
       "import": "./dist/index.js",
       "default": "./dist/index.js"
+    },
+    "./world-monitor-details": {
+      "types": "./dist/world-monitor-details.d.ts",
+      "import": "./dist/world-monitor-details.js",
+      "default": "./dist/world-monitor-details.js"
     }
   },
   "scripts": {

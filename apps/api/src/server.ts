@@ -26,6 +26,7 @@ import { tenantMembershipRoutes } from "./routes/tenant-memberships.js";
 import { moonwitnessEditorialRoutes, moonwitnessPublicStoryRoutes } from "./routes/moonwitness-editorial.js";
 import { moonwitnessSignalLedgerRoutes } from "./routes/moonwitness-signal-ledger.js";
 import { worldMonitorRoutes } from "./routes/world-monitor.js";
+import { worldMonitorDetailsRoutes } from "./routes/world-monitor-details.js";
 import { startWorldMonitorScheduler } from "./world-monitor-scheduler.js";
 import { startYoutubeSentinelScheduler } from "./youtube-sentinel-scheduler.js";
 import { startNotificationOutboxWorker } from "./collaboration-outbox.js";
@@ -203,6 +204,7 @@ export async function buildServer() {
       await app.register(moonwitnessSignalLedgerRoutes);
     }
     await app.register(worldMonitorRoutes);
+    await app.register(worldMonitorDetailsRoutes);
     await app.ready();
 
     stopWorldMonitorScheduler = startWorldMonitorScheduler();
