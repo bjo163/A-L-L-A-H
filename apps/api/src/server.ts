@@ -27,6 +27,7 @@ import { worldMonitorRoutes } from "./routes/world-monitor.js";
 import { startWorldMonitorScheduler } from "./world-monitor-scheduler.js";
 import { startYoutubeSentinelScheduler } from "./youtube-sentinel-scheduler.js";
 import { startNotificationOutboxWorker } from "./collaboration-outbox.js";
+import { createRequestId } from "./request-id.js";
 
 export async function buildServer() {
   let stage = "source-policy-scan";
@@ -55,9 +56,14 @@ export async function buildServer() {
 
     stage = "http-app-initialization";
     app = Fastify({
+      genReqId: (request) => createRequestId(request.headers["x-request-id"]),
       logger: {
         level: env.NODE_ENV === "production" ? "info" : "debug",
       },
+    });
+    app.addHook("onSend", async (request, reply, payload) => {
+      reply.header("x-request-id", request.id);
+      return payload;
     });
     app.addContentTypeParser("application/octet-stream", { parseAs: "buffer", bodyLimit: 25 * 1024 * 1024 }, (_request, body, done) => done(null, body));
     let stopWorldMonitorScheduler: (() => void) | undefined;
@@ -117,6 +123,7 @@ export async function buildServer() {
     await app.register(cors, {
       origin: env.CORS_ORIGIN.split(",").map((origin) => origin.trim()),
       credentials: true,
+      exposedHeaders: ["x-request-id"],
     });
     await app.register(rateLimit, {
       max: 600,

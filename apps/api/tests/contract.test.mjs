@@ -23,5 +23,8 @@ test("Empire API routes and dashboard compatibility routes are registered", asyn
   assert.match(compat,/\/v1\/readiness/);
   assert.match(compat,/\/v1\/dna\/registry/);
   assert.match(auth,/\/auth\/login/);
+  assert.match(source,/genReqId: \(request\) => createRequestId\(request\.headers\["x-request-id"\]\)/);
+  assert.match(source,/reply\.header\("x-request-id", request\.id\)/);
+  assert.match(source,/exposedHeaders: \["x-request-id"\]/);
   assert.doesNotMatch(source,/role="god"/);
 });
