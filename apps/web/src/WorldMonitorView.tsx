@@ -1,7 +1,9 @@
 import { lazy, Suspense, useState } from "react";
 import type { WorldMonitoringSnapshot } from "@empire/batteries-world-monitor";
 import type { WorldMonitorPublicSummary } from "@empire/api-contract";
-import { Badge, Button, EmptyState, Grid, LoadingState, MangaTelemetryHero, MapFrame, MetricGrid, RegionSelectCard, RegionSummary, SectionHeading, SensorDisclosure, StatusIndicator, Tabs, TelemetryEventList, GlobeIcon, ClockIcon, SparkIcon, CommandIcon, RefreshIcon, ActivityIcon } from "@empire/ui";
+import { Badge, Button, Checkbox, EmptyState, Grid, LoadingState, MangaTelemetryHero, MapFrame, MetricGrid, RegionSelectCard, RegionSummary, SectionHeading, SensorDisclosure, StatusIndicator, Tabs, TelemetryEventList, GlobeIcon, ClockIcon, SparkIcon, CommandIcon, RefreshIcon, ActivityIcon } from "@empire/ui";
+import { WORLD_MONITOR_NOTIFICATION_CATEGORIES } from "./world-monitor-notifications";
+import type { WorldMonitorNotificationPreferences } from "./world-monitor-notifications";
 
 const WorldGlobeMap = lazy(async () => ({ default: (await import("./WorldGlobeMap")).WorldGlobeMap }));
 const YoutubeSentinelView = lazy(async () => ({ default: (await import("./YoutubeSentinelView")).YoutubeSentinelView }));
@@ -17,11 +19,13 @@ interface WorldMonitorViewProps {
   nextRefreshIn?: number;
   notificationPermission: NotificationPermission | "unsupported";
   onEnableNotifications: () => void;
+  notificationPreferences: WorldMonitorNotificationPreferences;
+  onUpdateNotificationPreferences: (update: (current: WorldMonitorNotificationPreferences) => WorldMonitorNotificationPreferences) => void;
 }
 
 type WorldSubTab = "systems" | "youtube";
 
-export function WorldMonitorView({ snapshot, search, sentinelToken, sentinelPermissions, onRefresh, nextRefreshIn, refreshError, notificationPermission, onEnableNotifications }: WorldMonitorViewProps) {
+export function WorldMonitorView({ snapshot, search, sentinelToken, sentinelPermissions, onRefresh, nextRefreshIn, refreshError, notificationPermission, onEnableNotifications, notificationPreferences, onUpdateNotificationPreferences }: WorldMonitorViewProps) {
   const [subTab, setSubTab] = useState<WorldSubTab>("systems");
   const [selectedCategory, setSelectedCategory] = useState<string>("ALL");
   const [selectedRegionId, setSelectedRegionId] = useState<string | undefined>(undefined);
@@ -84,7 +88,30 @@ export function WorldMonitorView({ snapshot, search, sentinelToken, sentinelPerm
         sfx="RADAR!"
       />
       {refreshError && <p role="alert" className="eol-notice eol-notice--warning">Refresh failed: {refreshError} Showing the last successful snapshot.</p>}
-{notificationPermission === "default" && <div className="world-notification-prompt"><span>Enable browser notifications for new World Monitor alerts.</span><Button variant="secondary" onClick={onEnableNotifications}>Enable notifications</Button></div>}
+      <section className="world-notification-prompt" aria-label="World Monitor notification preferences">
+        <div><strong>Browser alert notifications</strong><p>Notifications use the protected, system-wide alert feed. Only selected categories are sent.</p></div>
+        {notificationPermission === "default" && <Button variant="secondary" onClick={onEnableNotifications}>Enable notifications</Button>}
+        {notificationPermission === "denied" && <span role="status">Notifications are blocked in browser settings.</span>}
+        {notificationPermission === "unsupported" && <span role="status">This browser does not support notifications.</span>}
+        <div className="world-notification-categories">
+          {WORLD_MONITOR_NOTIFICATION_CATEGORIES.map((category) => <Checkbox
+            key={category}
+            id={`world-alert-${category}`}
+            label={category.replace(/-/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase())}
+            checked={notificationPreferences.categories[category] !== false}
+            onChange={(event) => { const checked = event.currentTarget.checked; onUpdateNotificationPreferences((current) => ({ ...current, categories: { ...current.categories, [category]: checked } })); }}
+          />)}
+        </div>
+        <Checkbox
+          id="world-alert-quiet-hours"
+          label="Quiet hours"
+          description="Advisory notifications pause during these local hours; critical alerts still come through."
+          checked={notificationPreferences.quietHours.enabled}
+          onChange={(event) => { const checked = event.currentTarget.checked; onUpdateNotificationPreferences((current) => ({ ...current, quietHours: { ...current.quietHours, enabled: checked } })); }}
+        />
+        <label htmlFor="world-alert-quiet-start">From <input id="world-alert-quiet-start" type="time" value={notificationPreferences.quietHours.start} onChange={(event) => { const start = event.currentTarget.value; onUpdateNotificationPreferences((current) => ({ ...current, quietHours: { ...current.quietHours, start } })); }} /></label>
+        <label htmlFor="world-alert-quiet-end">To <input id="world-alert-quiet-end" type="time" value={notificationPreferences.quietHours.end} onChange={(event) => { const end = event.currentTarget.value; onUpdateNotificationPreferences((current) => ({ ...current, quietHours: { ...current.quietHours, end } })); }} /></label>
+      </section>
 
       <section aria-label="Service and provider data health">
         <SectionHeading layout="compact" eyebrow="PROVIDER DATA" title="Freshness and coverage" aside={<span className="muted">Snapshot time: {new Date(snapshot.timestamp).toLocaleString()}</span>} />

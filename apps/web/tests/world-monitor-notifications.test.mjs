@@ -5,8 +5,12 @@ import ts from "typescript";
 
 const source = await readFile(new URL("../src/world-monitor-notifications.ts", import.meta.url), "utf8");
 const compiled = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText;
-const load = new Function("exports", `${compiled}; return notifyNewWorldMonitorAlerts;`);
-const notifyAlerts = load({});
+const load = new Function("exports", `${compiled}; return { notifyNewWorldMonitorAlerts, isWorldMonitorQuietNow };`);
+const { notifyNewWorldMonitorAlerts: notifyAlerts, isWorldMonitorQuietNow } = load({});
+const defaults = {
+  categories: { atmosphere: true, "space-weather": true, earthquake: true, disaster: true },
+  quietHours: { enabled: false, start: "22:00", end: "07:00" },
+};
 
 test("notifications send once for unseen alerts and prefer critical", () => {
   const sent = [];
@@ -57,4 +61,49 @@ test("an invalid baseline timestamp fails closed", () => {
   const current = [{ id: "new", level: "critical", title: "New", detail: "fresh", observedAt: "2026-10-23T10:01:00Z" }];
   assert.equal(notifyAlerts([], current, "granted", () => { sent += 1; }, "not-a-date"), 0);
   assert.equal(sent, 0);
+});
+
+test("category preferences suppress only opted-out categories", () => {
+  const sent = [];
+  const current = [
+    { id: "quake", level: "advisory", category: "earthquake", title: "Quake", detail: "M5" },
+    { id: "air", level: "critical", category: "atmosphere", title: "Air", detail: "PM2.5" },
+  ];
+  const preferences = { ...defaults, categories: { ...defaults.categories, earthquake: false } };
+  assert.equal(notifyAlerts([], current, "granted", (title, body) => sent.push({ title, body }), undefined, preferences), 1);
+  assert.equal(sent.length, 1);
+  assert.match(sent[0].body, /Air/);
+});
+
+test("quiet hours suppress advisories while still delivering critical hazards", () => {
+  const sent = [];
+  const preferences = { ...defaults, quietHours: { enabled: true, start: "22:00", end: "07:00" } };
+  const current = [
+    { id: "advisory", level: "advisory", category: "earthquake", title: "Advisory", detail: "M5" },
+    { id: "critical", level: "critical", category: "disaster", title: "Critical", detail: "Red alert" },
+  ];
+  const count = notifyAlerts([], current, "granted", (title, body) => sent.push({ title, body }), undefined, preferences, new Date(2026, 0, 1, 23, 30));
+  assert.equal(count, 1);
+  assert.equal(sent.length, 1);
+  assert.match(sent[0].body, /Critical/);
+  assert.equal(notifyAlerts([], [current[0]], "granted", () => sent.push({}), undefined, preferences, new Date(2026, 0, 1, 23, 30)), 0);
+});
+
+test("quiet hours support ranges crossing midnight and invalid ranges fail open", () => {
+  const crossing = { enabled: true, start: "22:00", end: "07:00" };
+  assert.equal(isWorldMonitorQuietNow(crossing, new Date(2026, 0, 1, 2, 0)), true);
+  assert.equal(isWorldMonitorQuietNow(crossing, new Date(2026, 0, 1, 8, 0)), false);
+  assert.equal(isWorldMonitorQuietNow({ enabled: true, start: "bad", end: "07:00" }, new Date(2026, 0, 1, 2, 0)), false);
+});
+
+test("disappear and reappear keeps one event notification while a later escalation still alerts", () => {
+  const knownLevels = new Map([["quake-event", "advisory"]]);
+  const advisory = { id: "quake-event", level: "advisory", category: "earthquake", title: "Quake", detail: "M5" };
+  const critical = { ...advisory, level: "critical", detail: "M7" };
+  let sent = 0;
+  assert.equal(notifyAlerts([advisory], [], "granted", () => { sent += 1; }, undefined, defaults, new Date(), knownLevels), 0);
+  assert.equal(notifyAlerts([], [advisory], "granted", () => { sent += 1; }, undefined, defaults, new Date(), knownLevels), 0);
+  assert.equal(notifyAlerts([advisory], [critical], "granted", () => { sent += 1; }, undefined, defaults, new Date(), knownLevels), 1);
+  assert.equal(notifyAlerts([], [critical], "granted", () => { sent += 1; }, undefined, defaults, new Date(), knownLevels), 0);
+  assert.equal(sent, 1);
 });

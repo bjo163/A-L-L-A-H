@@ -19,6 +19,8 @@ import { CollaborationView } from "./CollaborationView";
 import { EnterpriseView } from "./EnterpriseView";
 import type { ApiRequestOptions } from "@empire/api-contract";
 import moonwitnessStoryCrewSheet from "@empire/ui/assets/moonwitness-story-crew-contact-sheet.png";
+import { DEFAULT_WORLD_MONITOR_NOTIFICATION_PREFERENCES, notifyNewWorldMonitorAlerts } from "./world-monitor-notifications";
+import type { WorldMonitorAlertNotification, WorldMonitorNotificationPreferences } from "./world-monitor-notifications";
 
 type Signal = "checking" | "ok" | "degraded" | "unavailable";
 type Module = { id: string; title: string; version: string; state: string; enabled: boolean };
@@ -76,6 +78,16 @@ function toWorldMonitoringSnapshot(summary: WorldMonitorPublicSummary): WorldMon
     history: summary.history.map((item) => ({ ...item, categories: {} })),
   };
 }
+function loadWorldMonitorNotificationPreferences(): WorldMonitorNotificationPreferences {
+  try {
+    const saved = JSON.parse(localStorage.getItem("world-monitor.notification-preferences") ?? "null") as Partial<WorldMonitorNotificationPreferences> | null;
+    if (!saved || typeof saved !== "object") return DEFAULT_WORLD_MONITOR_NOTIFICATION_PREFERENCES;
+    return {
+      categories: { ...DEFAULT_WORLD_MONITOR_NOTIFICATION_PREFERENCES.categories, ...(saved.categories ?? {}) },
+      quietHours: { ...DEFAULT_WORLD_MONITOR_NOTIFICATION_PREFERENCES.quietHours, ...(saved.quietHours ?? {}) },
+    };
+  } catch { return DEFAULT_WORLD_MONITOR_NOTIFICATION_PREFERENCES; }
+}
 const initialRfc: CabDraft = { title: "", tier: "standard", riskLevel: "moderate", summary: "", justification: "", executionPlan: "", rollbackPlan: "", targetService: "", scheduledWindowStart: "", scheduledWindowEnd: "" };
 const initialRun: ResearchDraft = { title: "", question: "", scope: "self" };
 const can = (entity: AuthEntity | null, permission: string) => Boolean(entity?.sovereign || entity?.permissions.includes("*") || entity?.permissions.includes(permission));
@@ -104,6 +116,12 @@ export function App() {
   const [snapshot, setSnapshot] = useState(initialSnapshot);
   const [worldSnapshot, setWorldSnapshot] = useState<WorldMonitorDisplaySnapshot | null>(null);
   const worldSnapshotRef = useRef<WorldMonitorDisplaySnapshot | null>(null);
+  const [worldNotificationPreferences, setWorldNotificationPreferences] = useState(loadWorldMonitorNotificationPreferences);
+  const worldNotificationPreferencesRef = useRef(worldNotificationPreferences);
+  const worldNotificationPermissionRef = useRef<NotificationPermission | "unsupported">(typeof Notification === "undefined" ? "unsupported" : Notification.permission);
+  const worldAlertBaselineRef = useRef<string | undefined>(undefined);
+  const worldAlertSnapshotRef = useRef<WorldMonitorAlertNotification[] | null>(null);
+  const worldAlertLevelsRef = useRef(new Map<string, string>());
   const [worldLoading, setWorldLoading] = useState(false);
   const [worldError, setWorldError] = useState("");
   const [worldNextRefreshIn, setWorldNextRefreshIn] = useState(30);
@@ -135,6 +153,8 @@ export function App() {
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [worldNotificationPermission, setWorldNotificationPermission] = useState<NotificationPermission | "unsupported">(typeof Notification === "undefined" ? "unsupported" : Notification.permission);
+  useEffect(() => { worldNotificationPreferencesRef.current = worldNotificationPreferences; }, [worldNotificationPreferences]);
+  useEffect(() => { worldNotificationPermissionRef.current = worldNotificationPermission; }, [worldNotificationPermission]);
   const client = useMemo(() => ({
     request: <T,>(path: string, options: ApiRequestOptions = {}) => api.request<T>(path, { ...options, token: token || null, tenantId: selectedTenantId || null }),
     upload: <T,>(path: string, file: Blob) => api.upload<T>(path, file, { token: token || null, tenantId: selectedTenantId || null }),
@@ -168,7 +188,18 @@ export function App() {
 
   async function enableWorldMonitorNotifications() {
     if (typeof Notification === "undefined") { setWorldNotificationPermission("unsupported"); return; }
-    setWorldNotificationPermission(await Notification.requestPermission());
+    const permission = await Notification.requestPermission();
+    worldNotificationPermissionRef.current = permission;
+    setWorldNotificationPermission(permission);
+  }
+
+  function updateWorldNotificationPreferences(update: (current: WorldMonitorNotificationPreferences) => WorldMonitorNotificationPreferences) {
+    setWorldNotificationPreferences((current) => {
+      const next = update(current);
+      worldNotificationPreferencesRef.current = next;
+      localStorage.setItem("world-monitor.notification-preferences", JSON.stringify(next));
+      return next;
+    });
   }
 
   function clearSession() {
@@ -262,6 +293,55 @@ export function App() {
       .finally(() => { if (active) setRestoringSession(false); });
     return () => { active = false; };
   }, []);
+
+  // Detailed hazard alerts require the explicit system-wide read permission. Keep
+  // this polling independently refreshed so the comparison never captures a stale
+  // React snapshot or permission value.
+  useEffect(() => {
+    if (!token && !cookieSession || !can(entity, "world-monitor:read")) {
+      worldAlertSnapshotRef.current = null;
+      worldAlertBaselineRef.current = undefined;
+      worldAlertLevelsRef.current.clear();
+      return;
+    }
+    let active = true;
+    const pollAlerts = async () => {
+      try {
+        const page = await client.request<{ items: Array<{ category: string; source: string; kind: string; level: string; observedAt: string; value: string }> }>("/v1/world-monitor/alerts?limit=100");
+        if (!active) return;
+        const current: WorldMonitorAlertNotification[] = page.items.map((item) => ({
+          id: `${item.category}:${item.source}:${item.kind}:${item.observedAt}`,
+          category: item.category,
+          level: item.level,
+          title: item.kind.replace(/-/g, " ").replace(/\b\w/g, (letter) => letter.toUpperCase()),
+          detail: item.value,
+          observedAt: item.observedAt,
+        }));
+        if (worldAlertSnapshotRef.current === null) {
+          worldAlertSnapshotRef.current = current;
+          worldAlertBaselineRef.current = new Date().toISOString();
+          for (const alert of current) worldAlertLevelsRef.current.set(alert.id, alert.level);
+          return;
+        }
+        notifyNewWorldMonitorAlerts(
+          worldAlertSnapshotRef.current,
+          current,
+          worldNotificationPermissionRef.current === "granted" ? "granted" : "denied",
+          (title, body) => new Notification(title, { body, tag: "world-monitor" }),
+          worldAlertBaselineRef.current,
+          worldNotificationPreferencesRef.current,
+          new Date(),
+          worldAlertLevelsRef.current,
+        );
+        worldAlertSnapshotRef.current = current;
+      } catch {
+        // A permission or temporary API failure must not erase the last comparison baseline.
+      }
+    };
+    void pollAlerts();
+    const timer = window.setInterval(() => void pollAlerts(), 30000);
+    return () => { active = false; window.clearInterval(timer); };
+  }, [token, cookieSession, entity, client]);
   useEffect(() => {
     if (!token && !cookieSession) return;
     const timer = window.setInterval(() => void refresh(), 30000);
@@ -419,7 +499,7 @@ export function App() {
         onRefresh={()=>void refresh()}
         onNavigate={key=>setTab(key as Page)}
       />}
-      {tab==="world"&&(worldLoading&&!worldSnapshot?<LoadingState label="Memuat World Monitor…"/>:worldSnapshot?<WorldMonitorView snapshot={worldSnapshot} search={search} sentinelToken={token} sentinelPermissions={{read:can(entity,"sentinel:read"),scan:can(entity,"sentinel:scan"),review:can(entity,"sentinel:review"),schedule:can(entity,"sentinel:schedule")}} nextRefreshIn={worldNextRefreshIn} refreshError={worldError} onRefresh={()=>void refreshWorld()} notificationPermission={worldNotificationPermission} onEnableNotifications={()=>void enableWorldMonitorNotifications()}/>:worldError?<ErrorState title="World Monitor is unavailable" description={worldError} action={<Button variant="secondary" onClick={()=>void refreshWorld()}>Retry</Button>}/>:<LoadingState label="Connecting to World Monitor…"/>)}
+      {tab==="world"&&(worldLoading&&!worldSnapshot?<LoadingState label="Memuat World Monitor…"/>:worldSnapshot?<WorldMonitorView snapshot={worldSnapshot} search={search} sentinelToken={token} sentinelPermissions={{read:can(entity,"sentinel:read"),scan:can(entity,"sentinel:scan"),review:can(entity,"sentinel:review"),schedule:can(entity,"sentinel:schedule")}} nextRefreshIn={worldNextRefreshIn} refreshError={worldError} onRefresh={()=>void refreshWorld()} notificationPermission={worldNotificationPermission} onEnableNotifications={()=>void enableWorldMonitorNotifications()} notificationPreferences={worldNotificationPreferences} onUpdateNotificationPreferences={updateWorldNotificationPreferences}/>:worldError?<ErrorState title="World Monitor is unavailable" description={worldError} action={<Button variant="secondary" onClick={()=>void refreshWorld()}>Retry</Button>}/>:<LoadingState label="Connecting to World Monitor…"/>)}
       {tab==="continuum"&&<ContinuumView
         agentCount={agents.length}
         activeAgentCount={agents.filter(agent=>agent.status==="active").length}
