@@ -71,6 +71,11 @@ function notFound(reply: FastifyReply) { return reply.code(404).send({ status: "
 function pageNumber(request: { query: unknown }) { return parsePublicPage((request.query ?? {}) as Record<string, unknown>); }
 
 export async function moonwitnessPublicApiRoutes(app: FastifyInstance) {
+  app.addHook("onRoute", (route) => {
+    if (route.url.startsWith("/v1/public/moonwitness/")) {
+      route.config = { ...route.config, rateLimit: { max: 120, timeWindow: "1 minute" } };
+    }
+  });
   // Deliberately no session or tenant-selection hook: each query is explicitly
   // constrained to currently public content and projects an allowlisted DTO.
   app.get("/v1/public/moonwitness/collections", { schema: { tags: ["MOONWITNESS Public"], security: [], querystring: PUBLIC_MOONWITNESS_PAGE_QUERY_SCHEMA, response: { 200: collectionListResponse } } }, async (request) => {

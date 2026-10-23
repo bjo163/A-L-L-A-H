@@ -17,7 +17,7 @@ const expectedModels={
  governance:["change_requests","change_reviews","change_executions"],
  research:["research_runs","research_workflows","research_jobs","research_evidence","research_approvals"],
  work:["workspaces","projects","tasks","documents","comments","notifications","notification_outbox","tags","tag_assignments","youtube_sentinel_partner_links","crm_opportunities","catalog_items","sales_quotes","sales_quote_lines","sales_orders","sales_order_lines","operational_invoices","operational_payments","operational_expenses","calendar_activities"],
- "moonwitness-editorial":["moonwitness_collections","moonwitness_stories","moonwitness_story_tags"]
+ "moonwitness-editorial":["moonwitness_collections","moonwitness_stories","moonwitness_story_tags","moonwitness_episodes","moonwitness_scenes","moonwitness_comic_pages","moonwitness_characters","moonwitness_signals","moonwitness_content_revisions","moonwitness_publications"]
 };
 for(const module of enabled)assert.deepEqual(module.models,expectedModels[module.id],"unexpected model ownership for "+module.id);
 const work=read("package.json");
