@@ -71,14 +71,9 @@ function notFound(reply: FastifyReply) { return reply.code(404).send({ status: "
 function pageNumber(request: { query: unknown }) { return parsePublicPage((request.query ?? {}) as Record<string, unknown>); }
 
 export async function moonwitnessPublicApiRoutes(app: FastifyInstance) {
-  app.addHook("onRoute", (route) => {
-    if (route.url.startsWith("/v1/public/moonwitness/")) {
-      route.config = { ...route.config, rateLimit: { max: 120, timeWindow: "1 minute" } };
-    }
-  });
   // Deliberately no session or tenant-selection hook: each query is explicitly
   // constrained to currently public content and projects an allowlisted DTO.
-  app.get("/v1/public/moonwitness/collections", { schema: { tags: ["MOONWITNESS Public"], security: [], querystring: PUBLIC_MOONWITNESS_PAGE_QUERY_SCHEMA, response: { 200: collectionListResponse } } }, async (request) => {
+  app.get("/v1/public/moonwitness/collections", { config: { rateLimit: { max: 120, timeWindow: "1 minute" } }, schema: { tags: ["MOONWITNESS Public"], security: [], querystring: PUBLIC_MOONWITNESS_PAGE_QUERY_SCHEMA, response: { 200: collectionListResponse } } }, async (request) => {
     const query = request.query as Record<string, unknown>; const { page, limit } = pageNumber(request);
     const db = getDatabase() as any; let rowsQuery = await publicCollectionQuery(db);
     if (query.language) rowsQuery = rowsQuery.where({ "c.language": query.language });
@@ -88,14 +83,14 @@ export async function moonwitnessPublicApiRoutes(app: FastifyInstance) {
     return { items: rows.map(projectPublicCollection), ...pageMeta(page, limit, Number(count?.total ?? 0)) };
   });
 
-  app.get("/v1/public/moonwitness/collections/:collectionSlug", { schema: { tags: ["MOONWITNESS Public"], security: [], params: collectionParams, response: { 200: PUBLIC_MOONWITNESS_COLLECTION_SCHEMA, 404: PUBLIC_MOONWITNESS_ERROR_SCHEMA } } }, async (request, reply) => {
+  app.get("/v1/public/moonwitness/collections/:collectionSlug", { config: { rateLimit: { max: 120, timeWindow: "1 minute" } }, schema: { tags: ["MOONWITNESS Public"], security: [], params: collectionParams, response: { 200: PUBLIC_MOONWITNESS_COLLECTION_SCHEMA, 404: PUBLIC_MOONWITNESS_ERROR_SCHEMA } } }, async (request, reply) => {
     const { collectionSlug } = request.params as { collectionSlug: string }; const db = getDatabase() as any;
     const rows = await (await publicCollectionQuery(db)).where({ "c.slug": collectionSlug }).select("c.slug", "c.title", "c.language").limit(2);
     if (rows.length !== 1) return notFound(reply);
     return projectPublicCollection(rows[0]);
   });
 
-  app.get("/v1/public/moonwitness/collections/:collectionSlug/stories", { schema: { tags: ["MOONWITNESS Public"], security: [], params: collectionParams, querystring: PUBLIC_MOONWITNESS_PAGE_QUERY_SCHEMA, response: { 200: storyListResponse, 404: PUBLIC_MOONWITNESS_ERROR_SCHEMA } } }, async (request, reply) => {
+  app.get("/v1/public/moonwitness/collections/:collectionSlug/stories", { config: { rateLimit: { max: 120, timeWindow: "1 minute" } }, schema: { tags: ["MOONWITNESS Public"], security: [], params: collectionParams, querystring: PUBLIC_MOONWITNESS_PAGE_QUERY_SCHEMA, response: { 200: storyListResponse, 404: PUBLIC_MOONWITNESS_ERROR_SCHEMA } } }, async (request, reply) => {
     const { collectionSlug } = request.params as { collectionSlug: string }; const query = request.query as Record<string, unknown>; const { page, limit } = pageNumber(request); const db = getDatabase() as any;
     const collectionRows = await (await publicCollectionQuery(db)).where({ "c.slug": collectionSlug }).select("c.id").limit(2);
     if (collectionRows.length !== 1) return notFound(reply);
@@ -110,7 +105,7 @@ export async function moonwitnessPublicApiRoutes(app: FastifyInstance) {
 
   // Legacy collection-agnostic listing remains available, now backed only by
   // the same approved publication snapshot projection as the scoped endpoint.
-  app.get("/v1/public/moonwitness/stories", { schema: { tags: ["MOONWITNESS Public"], security: [], querystring: PUBLIC_MOONWITNESS_PAGE_QUERY_SCHEMA, response: { 200: storyListResponse } } }, async (request) => {
+  app.get("/v1/public/moonwitness/stories", { config: { rateLimit: { max: 120, timeWindow: "1 minute" } }, schema: { tags: ["MOONWITNESS Public"], security: [], querystring: PUBLIC_MOONWITNESS_PAGE_QUERY_SCHEMA, response: { 200: storyListResponse } } }, async (request) => {
     const query = request.query as Record<string, unknown>; const { page, limit } = pageNumber(request); const db = getDatabase() as any;
     let rowsQuery = publicStoriesQuery(db);
     if (typeof query.language === "string") rowsQuery = rowsQuery.where({ "c.language": query.language });
@@ -121,12 +116,12 @@ export async function moonwitnessPublicApiRoutes(app: FastifyInstance) {
     return { items: rows.map(projectPublicStory).filter(Boolean), ...pageMeta(page, limit, Number(count?.total ?? 0)) };
   });
 
-  app.get("/v1/public/moonwitness/collections/:collectionSlug/stories/:storySlug", { schema: { tags: ["MOONWITNESS Public"], security: [], params: storyParams, response: { 200: PUBLIC_MOONWITNESS_STORY_SCHEMA, 404: PUBLIC_MOONWITNESS_ERROR_SCHEMA } } }, async (request, reply) => {
+  app.get("/v1/public/moonwitness/collections/:collectionSlug/stories/:storySlug", { config: { rateLimit: { max: 120, timeWindow: "1 minute" } }, schema: { tags: ["MOONWITNESS Public"], security: [], params: storyParams, response: { 200: PUBLIC_MOONWITNESS_STORY_SCHEMA, 404: PUBLIC_MOONWITNESS_ERROR_SCHEMA } } }, async (request, reply) => {
     const { collectionSlug, storySlug } = request.params as { collectionSlug: string; storySlug: string }; const db = getDatabase() as any;
     const found = await resolvePublicStory(db, collectionSlug, storySlug); return found ? found.projection : notFound(reply);
   });
 
-  app.get("/v1/public/moonwitness/collections/:collectionSlug/stories/:storySlug/episodes", { schema: { tags: ["MOONWITNESS Public"], security: [], params: storyParams, querystring: PUBLIC_MOONWITNESS_PAGE_QUERY_SCHEMA, response: { 200: episodeListResponse, 404: PUBLIC_MOONWITNESS_ERROR_SCHEMA } } }, async (request, reply) => {
+  app.get("/v1/public/moonwitness/collections/:collectionSlug/stories/:storySlug/episodes", { config: { rateLimit: { max: 120, timeWindow: "1 minute" } }, schema: { tags: ["MOONWITNESS Public"], security: [], params: storyParams, querystring: PUBLIC_MOONWITNESS_PAGE_QUERY_SCHEMA, response: { 200: episodeListResponse, 404: PUBLIC_MOONWITNESS_ERROR_SCHEMA } } }, async (request, reply) => {
     const { collectionSlug, storySlug } = request.params as { collectionSlug: string; storySlug: string }; const { page, limit } = pageNumber(request); const db = getDatabase() as any;
     const story = await resolvePublicStory(db, collectionSlug, storySlug); if (!story) return notFound(reply);
     const episodes = db("moonwitness_episodes").where({ tenant_id: story.tenantId, story_id: story.storyId, status: "published" });
@@ -135,7 +130,7 @@ export async function moonwitnessPublicApiRoutes(app: FastifyInstance) {
     return { items: rows, ...pageMeta(page, limit, Number(count?.total ?? 0)) };
   });
 
-  app.get("/v1/public/moonwitness/collections/:collectionSlug/stories/:storySlug/episodes/:episodeSlug", { schema: { tags: ["MOONWITNESS Public"], security: [], params: episodeParams, response: { 200: PUBLIC_MOONWITNESS_EPISODE_SCHEMA, 404: PUBLIC_MOONWITNESS_ERROR_SCHEMA } } }, async (request, reply) => {
+  app.get("/v1/public/moonwitness/collections/:collectionSlug/stories/:storySlug/episodes/:episodeSlug", { config: { rateLimit: { max: 120, timeWindow: "1 minute" } }, schema: { tags: ["MOONWITNESS Public"], security: [], params: episodeParams, response: { 200: PUBLIC_MOONWITNESS_EPISODE_SCHEMA, 404: PUBLIC_MOONWITNESS_ERROR_SCHEMA } } }, async (request, reply) => {
     const { collectionSlug, storySlug, episodeSlug } = request.params as { collectionSlug: string; storySlug: string; episodeSlug: string }; const db = getDatabase() as any;
     const story = await resolvePublicStory(db, collectionSlug, storySlug); if (!story) return notFound(reply);
     const episode = await db("moonwitness_episodes").where({ tenant_id: story.tenantId, story_id: story.storyId, slug: episodeSlug, status: "published" }).select("id", "slug", "title", "synopsis", "sequence").first();
@@ -148,7 +143,7 @@ export async function moonwitnessPublicApiRoutes(app: FastifyInstance) {
     return { slug: episode.slug, title: episode.title, synopsis: episode.synopsis, sequence: episode.sequence, scenes };
   });
 
-  app.get("/v1/public/moonwitness/collections/:collectionSlug/stories/:storySlug/episodes/:episodeSlug/pages", { schema: { tags: ["MOONWITNESS Public"], security: [], params: episodeParams, querystring: PUBLIC_MOONWITNESS_PAGE_QUERY_SCHEMA, response: { 200: pageListResponse, 404: PUBLIC_MOONWITNESS_ERROR_SCHEMA } } }, async (request, reply) => {
+  app.get("/v1/public/moonwitness/collections/:collectionSlug/stories/:storySlug/episodes/:episodeSlug/pages", { config: { rateLimit: { max: 120, timeWindow: "1 minute" } }, schema: { tags: ["MOONWITNESS Public"], security: [], params: episodeParams, querystring: PUBLIC_MOONWITNESS_PAGE_QUERY_SCHEMA, response: { 200: pageListResponse, 404: PUBLIC_MOONWITNESS_ERROR_SCHEMA } } }, async (request, reply) => {
     const { collectionSlug, storySlug, episodeSlug } = request.params as { collectionSlug: string; storySlug: string; episodeSlug: string }; const { page, limit } = pageNumber(request); const db = getDatabase() as any;
     const story = await resolvePublicStory(db, collectionSlug, storySlug); if (!story) return notFound(reply);
     const episode = await db("moonwitness_episodes").where({ tenant_id: story.tenantId, story_id: story.storyId, slug: episodeSlug, status: "published" }).select("id").first();
@@ -160,7 +155,7 @@ export async function moonwitnessPublicApiRoutes(app: FastifyInstance) {
     return { items: rows.map((item: any) => ({ ...item, assetUrl: null })), ...pageMeta(page, limit, Number(count?.total ?? 0)) };
   });
 
-  app.get("/v1/public/moonwitness/collections/:collectionSlug/stories/:storySlug/episodes/:episodeSlug/pages/:sceneSlug/:sequence", { schema: { tags: ["MOONWITNESS Public"], security: [], params: pageParams, response: { 200: pageDtoSchema, 404: PUBLIC_MOONWITNESS_ERROR_SCHEMA } } }, async (request, reply) => {
+  app.get("/v1/public/moonwitness/collections/:collectionSlug/stories/:storySlug/episodes/:episodeSlug/pages/:sceneSlug/:sequence", { config: { rateLimit: { max: 120, timeWindow: "1 minute" } }, schema: { tags: ["MOONWITNESS Public"], security: [], params: pageParams, response: { 200: pageDtoSchema, 404: PUBLIC_MOONWITNESS_ERROR_SCHEMA } } }, async (request, reply) => {
     const { collectionSlug, storySlug, episodeSlug, sceneSlug, sequence } = request.params as { collectionSlug: string; storySlug: string; episodeSlug: string; sceneSlug: string; sequence: number };
     const db = getDatabase() as any; const story = await resolvePublicStory(db, collectionSlug, storySlug); if (!story) return notFound(reply);
     const episode = await db("moonwitness_episodes").where({ tenant_id: story.tenantId, story_id: story.storyId, slug: episodeSlug, status: "published" }).select("id").first();
@@ -171,9 +166,9 @@ export async function moonwitnessPublicApiRoutes(app: FastifyInstance) {
     return row ? { ...row, assetUrl: null } : notFound(reply);
   });
 
-  app.get("/v1/public/moonwitness/signals", { schema: { tags: ["MOONWITNESS Public"], security: [], querystring: PUBLIC_MOONWITNESS_PAGE_QUERY_SCHEMA, response: { 503: PUBLIC_MOONWITNESS_SIGNAL_UNAVAILABLE_SCHEMA } } }, async (_request, reply) =>
+  app.get("/v1/public/moonwitness/signals", { config: { rateLimit: { max: 120, timeWindow: "1 minute" } }, schema: { tags: ["MOONWITNESS Public"], security: [], querystring: PUBLIC_MOONWITNESS_PAGE_QUERY_SCHEMA, response: { 503: PUBLIC_MOONWITNESS_SIGNAL_UNAVAILABLE_SCHEMA } } }, async (_request, reply) =>
     reply.code(503).send({ status: "publication_unavailable", message: "Public Signal reads await a reviewed, immutable Signal publication workflow." }));
 
-  app.get("/v1/public/moonwitness/signals/:signalId", { schema: { tags: ["MOONWITNESS Public"], security: [], params: { type: "object", required: ["signalId"], properties: { signalId: { type: "string", format: "uuid" } } }, response: { 503: PUBLIC_MOONWITNESS_SIGNAL_UNAVAILABLE_SCHEMA } } }, async (_request, reply) =>
+  app.get("/v1/public/moonwitness/signals/:signalId", { config: { rateLimit: { max: 120, timeWindow: "1 minute" } }, schema: { tags: ["MOONWITNESS Public"], security: [], params: { type: "object", required: ["signalId"], properties: { signalId: { type: "string", format: "uuid" } } }, response: { 503: PUBLIC_MOONWITNESS_SIGNAL_UNAVAILABLE_SCHEMA } } }, async (_request, reply) =>
     reply.code(503).send({ status: "publication_unavailable", message: "Public Signal reads await a reviewed, immutable Signal publication workflow." }));
 }

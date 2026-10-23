@@ -175,7 +175,7 @@ jobs:
     timeout-minutes: 20
     permissions:
       actions: read
-      contents: read
+      contents: write
       pull-requests: write
     steps:
       - name: Wait for successful Security checks on this commit

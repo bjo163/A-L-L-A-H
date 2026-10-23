@@ -12,13 +12,13 @@ const liveMode = process.argv.includes("--live");
 // is a true replay instead of an artificial new observation minute.
 const fixtureTimestamp = new Date(Math.floor(Date.now() / 60_000) * 60_000).toISOString();
 const readFixture = async (name: string) => JSON.parse(await readFile(new URL(`../../tests/fixtures/world-monitor/${name}.json`, import.meta.url), "utf8"));
-const freshFixture = (body: any, url: string) => {
+const freshFixture = (body: any, url: URL) => {
   const value = structuredClone(body);
   const current = fixtureTimestamp;
-  if (url.includes("open-meteo") && Number.isFinite(Date.parse(value.current?.time))) value.current.time = current.slice(0, 19);
-  else if (url.includes("earthquake.usgs.gov") && Array.isArray(value.features?.[0]?.geometry?.coordinates) && value.features[0].geometry.coordinates.length >= 3) value.features[0].properties.time = 1792644360000;
-  else if (url.includes("swpc.noaa.gov") && Array.isArray(value) && value[0]?.time_tag) value[0].time_tag = current.slice(0, 19);
-  else if (url.includes("gdacs.org") && value.features?.[0]?.properties?.fromdate) value.features[0].properties.fromdate = current;
+  if ((url.hostname === "api.open-meteo.com" || url.hostname === "air-quality-api.open-meteo.com") && Number.isFinite(Date.parse(value.current?.time))) value.current.time = current.slice(0, 19);
+  else if (url.hostname === "earthquake.usgs.gov" && Array.isArray(value.features?.[0]?.geometry?.coordinates) && value.features[0].geometry.coordinates.length >= 3) value.features[0].properties.time = 1792644360000;
+  else if (url.hostname === "services.swpc.noaa.gov" && Array.isArray(value) && value[0]?.time_tag) value[0].time_tag = current.slice(0, 19);
+  else if (url.hostname === "www.gdacs.org" && value.features?.[0]?.properties?.fromdate) value.features[0].properties.fromdate = current;
   return value;
 };
 
@@ -26,21 +26,21 @@ const installFixtureFetch = () => {
   const originalFetch = globalThis.fetch;
   let requestCount = 0;
   globalThis.fetch = async (input, init) => {
-    const url = String(input);
+    const requestUrl = new URL(typeof input === "string" || input instanceof URL ? input : input.url);
     if (!init?.signal || new Headers(init.headers).get("accept") !== "application/json") throw new Error("Provider request omitted its timeout or JSON accept header");
     requestCount += 1;
     let fixtureName: string;
-    if (url.includes("air-quality-api.open-meteo.com")) fixtureName = "open-meteo-air-quality";
-    else if (url.includes("api.open-meteo.com")) {
-      const fallback = url.includes("models=gfs_seamless");
-      const londonPrimary = !fallback && url.includes("latitude=51.5&longitude=-0.1");
+    if (requestUrl.hostname === "air-quality-api.open-meteo.com") fixtureName = "open-meteo-air-quality";
+    else if (requestUrl.hostname === "api.open-meteo.com") {
+      const fallback = requestUrl.searchParams.get("models") === "gfs_seamless";
+      const londonPrimary = !fallback && requestUrl.searchParams.get("latitude") === "51.5" && requestUrl.searchParams.get("longitude") === "-0.1";
       fixtureName = londonPrimary ? "open-meteo-malformed" : "open-meteo-weather";
-    } else if (url.includes("earthquake.usgs.gov")) fixtureName = url.includes("/summary/") ? "usgs-malformed" : "usgs-earthquakes";
-    else if (url.includes("swpc.noaa.gov")) fixtureName = url.includes("1m.json") ? "noaa-kp-malformed" : "noaa-kp-reported";
-    else if (url.includes("gdacs.org")) fixtureName = "gdacs-disasters";
-    else throw new Error(`Fixture smoke refused unrecognized network target: ${new URL(url).host}`);
+    } else if (requestUrl.hostname === "earthquake.usgs.gov") fixtureName = requestUrl.pathname.includes("/summary/") ? "usgs-malformed" : "usgs-earthquakes";
+    else if (requestUrl.hostname === "services.swpc.noaa.gov") fixtureName = requestUrl.pathname.endsWith("1m.json") ? "noaa-kp-malformed" : "noaa-kp-reported";
+    else if (requestUrl.hostname === "www.gdacs.org") fixtureName = "gdacs-disasters";
+    else throw new Error("Fixture smoke refused unrecognized network target: " + requestUrl.host);
     const body = await readFixture(fixtureName);
-    return new Response(JSON.stringify(freshFixture(body, url)), { status: 200, headers: { "content-type": "application/json" } });
+    return new Response(JSON.stringify(freshFixture(body, requestUrl)), { status: 200, headers: { "content-type": "application/json" } });
   };
   return { restore: () => { globalThis.fetch = originalFetch; }, requestCount: () => requestCount };
 };
