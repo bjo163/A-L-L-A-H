@@ -41,3 +41,16 @@ test("YouTube Tauhid Sentinel routes are registered with correct contracts", asy
   assert.match(worldMonitorSource, /KUBURAN_SESAJEN/);
   assert.match(worldMonitorSource, /DAKWAH_REFUTATION/);
 });
+
+test("YouTube scan contract bounds operator input and rejects submitted items", async () => {
+  const worldMonitorSource = await readFile(new URL("../src/routes/world-monitor.ts", import.meta.url), "utf8");
+  const scanRoute = worldMonitorSource.match(
+    /app\.post\(\s*"\/v1\/world-monitor\/youtube\/scan",([\s\S]*?)preHandler:/,
+  )?.[1];
+
+  assert.ok(scanRoute, "scan route schema should be present");
+  assert.match(scanRoute, /additionalProperties:\s*false/);
+  assert.match(scanRoute, /query:\s*\{\s*type:\s*"string",\s*minLength:\s*1,\s*maxLength:\s*200\s*\}/);
+  assert.match(scanRoute, /limit:\s*\{\s*type:\s*"integer",\s*minimum:\s*1,\s*maximum:\s*50\s*\}/);
+  assert.doesNotMatch(scanRoute, /items\s*:/);
+});

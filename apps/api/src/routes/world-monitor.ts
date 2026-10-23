@@ -442,10 +442,11 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
         security: [{ bearerAuth: [] }],
         body: {
           type: "object",
+          additionalProperties: false,
           required: ["query"],
           properties: {
-            query: { type: "string" },
-            limit: { type: "number" },
+            query: { type: "string", minLength: 1, maxLength: 200 },
+            limit: { type: "integer", minimum: 1, maximum: 50 },
             forceLive: { type: "boolean" },
             useBrowserAutomation: { type: "boolean" },
             engine: { type: "string", enum: ["innertube", "playwright", "auto"] },
