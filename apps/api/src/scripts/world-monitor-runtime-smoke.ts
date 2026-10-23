@@ -8,10 +8,13 @@ import { readFile } from "node:fs/promises";
 
 const fixtureMode = process.argv.includes("--fixtures");
 const liveMode = process.argv.includes("--live");
+// Keep fixture event time constant across the two poll cycles so the second one
+// is a true replay instead of an artificial new observation minute.
+const fixtureTimestamp = new Date(Math.floor(Date.now() / 60_000) * 60_000).toISOString();
 const readFixture = async (name: string) => JSON.parse(await readFile(new URL(`../../tests/fixtures/world-monitor/${name}.json`, import.meta.url), "utf8"));
 const freshFixture = (body: any, url: string) => {
   const value = structuredClone(body);
-  const current = new Date().toISOString();
+  const current = fixtureTimestamp;
   if (url.includes("open-meteo") && Number.isFinite(Date.parse(value.current?.time))) value.current.time = current.slice(0, 19);
   else if (url.includes("earthquake.usgs.gov") && Array.isArray(value.features?.[0]?.geometry?.coordinates) && value.features[0].geometry.coordinates.length >= 3) value.features[0].properties.time = 1792644360000;
   else if (url.includes("swpc.noaa.gov") && Array.isArray(value) && value[0]?.time_tag) value[0].time_tag = current.slice(0, 19);
@@ -60,9 +63,17 @@ const main = async () => {
     await (WorldMonitorAggregateModel.query() as any).insert({ bucketStart: oldDate, category: "weather", source: retentionSource, recordCount: 0, summary: {} });
   }
   const fixtureFetch = fixtureMode ? installFixtureFetch() : null;
+  let firstPollCounts: { observations: number; sourceRuns: number } | null = null;
+  const countRows = async (table: string) => Number((await db(table).count<{ count: string }>("id as count").first())?.count ?? 0);
   try {
     await refreshWorldMonitorSources();
-    if (fixtureMode) await refreshWorldMonitorSources(); // repeat identical source identities to exercise the real PostgreSQL upsert
+    if (fixtureMode) {
+      firstPollCounts = {
+        observations: await countRows("world_monitor_observations"),
+        sourceRuns: await countRows("world_monitor_source_runs"),
+      };
+      await refreshWorldMonitorSources(); // replay identical identities through PostgreSQL ON CONFLICT
+    }
   } finally { fixtureFetch?.restore(); }
   const counts = {
     observations: await db("world_monitor_observations").count<{ count: string }>("id as count").first(),
@@ -83,6 +94,12 @@ const main = async () => {
   }
   if (fixtureMode) {
     if (!fixtureFetch || fixtureFetch.requestCount() < 40) throw new Error("Fixture runtime smoke did not exercise the provider and fallback request matrix twice");
+    if (!firstPollCounts || Number(counts.observations?.count ?? 0) !== firstPollCounts.observations) {
+      throw new Error("Replaying identical provider fixtures increased the unique observation count");
+    }
+    if (Number(counts.sourceRuns?.count ?? 0) <= firstPollCounts.sourceRuns) {
+      throw new Error("Replaying provider fixtures did not preserve a new source-run audit record");
+    }
     const hasRun = (source: string, status: string) => categoryRuns.some((run) => run.source === source && run.status === status);
     for (const [source, status] of [
       ["open-meteo-weather-london", "failed"], ["open-meteo-gfs-weather-london", "success"],
@@ -97,7 +114,7 @@ const main = async () => {
     const retainedRuns = await db("world_monitor_source_runs").where({ source: retentionSource }).count<{ count: string }>("id as count").first();
     const retainedAggregates = await db("world_monitor_aggregates").where({ source: retentionSource }).count<{ count: string }>("id as count").first();
     if (Number(retainedObservations?.count) + Number(retainedRuns?.count) + Number(retainedAggregates?.count) !== 0) throw new Error("Fixture runtime smoke did not prune the aged retention sentinels");
-    console.log(JSON.stringify({ fixtureMode: true, fakeProviderRequests: fixtureFetch.requestCount(), fallbackProvenanceCount: fallbackObservations.length, stableObservationUpserts: Number(quakeIdentityCount?.count), retentionSentinelsRemoved: true }));
+    console.log(JSON.stringify({ fixtureMode: true, fakeProviderRequests: fixtureFetch.requestCount(), firstPollObservationCount: firstPollCounts.observations, replayObservationCount: Number(counts.observations?.count), firstPollSourceRunCount: firstPollCounts.sourceRuns, replaySourceRunCount: Number(counts.sourceRuns?.count), fallbackProvenanceCount: fallbackObservations.length, stableObservationUpserts: Number(quakeIdentityCount?.count), retentionSentinelsRemoved: true }));
   }
   await closeDatabase();
 };
