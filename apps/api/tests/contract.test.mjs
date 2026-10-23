@@ -28,3 +28,12 @@ test("Empire API routes and dashboard compatibility routes are registered", asyn
   assert.match(source,/exposedHeaders: \["x-request-id"\]/);
   assert.doesNotMatch(source,/role="god"/);
 });
+
+test("YouTube Sentinel UI labels heuristic results as review signals, not religious or policy verdicts", async()=>{
+  const sentinel=await readFile(new URL("../../web/src/YoutubeSentinelView.tsx",import.meta.url),"utf8");
+  assert.match(sentinel,/Kecocokan Aturan \/ Topik/);
+  assert.match(sentinel,/Banyak aturan cocok/);
+  assert.match(sentinel,/Topik keagamaan umum/);
+  assert.match(sentinel,/Entitas untuk telaah kontekstual/);
+  assert.doesNotMatch(sentinel,/Target Investigasi \/ Pantauan Syirik|Kesyirikan Umum|Bebas Syirik \/ Edukasi/);
+});

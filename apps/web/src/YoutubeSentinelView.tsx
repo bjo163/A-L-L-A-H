@@ -584,7 +584,7 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
       },
       {
         key: "riskLevel",
-        header: "Tingkat Risiko / Nilai",
+        header: "Kecocokan Aturan / Topik",
         cell: (item: YoutubeMonitoredItem) => (
           <Badge tone={riskBadgeTone(item.riskLevel)}>
             {item.direction === "POSITIVE" ? "NILAI LUHUR" : riskLevelLabel(item.riskLevel)}
@@ -709,7 +709,7 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
         density="compact"
         items={[
           { label: "Total video dipantau", value: summary?.totalMonitored ?? items.length },
-          { label: "Banyak kecocokan heuristik", value: summary?.criticalSyirikCount ?? 0, tone: "warning" },
+          { label: "Banyak aturan cocok", value: summary?.criticalSyirikCount ?? 0, tone: "warning" },
           { label: "Kecocokan heuristik sedang", value: summary?.highRiskCount ?? 0, tone: "neutral" },
           { label: "Hikmah & kebajikan", value: summary?.positiveContentCount ?? items.filter((item) => item.direction === "POSITIVE").length, tone: "success" },
           { label: "Bantahan dakwah tauhid", value: summary?.counterDakwahCount ?? 0, tone: "success" },
@@ -843,7 +843,7 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
                   title="Klik untuk filter arah Negatif"
                 >
                     <span className="sentinel-legend-color sentinel-legend-color--danger" />
-                  <span><IconText icon={<WarningIcon />}>Kecocokan aturan:</IconText> <strong>{items.filter((i) => i.direction === "NEGATIVE").length}</strong></span>
+                  <span><IconText icon={<WarningIcon />}>Aturan untuk ditelaah:</IconText> <strong>{items.filter((i) => i.direction === "NEGATIVE").length}</strong></span>
                 </div>
                 <div
                   className="sentinel-legend-item"
@@ -1047,7 +1047,7 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
               <option value="KHODAM_JIN">Khodam &amp; Jin</option>
               <option value="BENDA_KERAMAT_JIMAT">Benda Keramat &amp; Jimat</option>
               <option value="KUBURAN_SESAJEN">Makam &amp; Sesajen</option>
-              <option value="UMUM_SYIRIK">Kesyirikan Umum</option>
+              <option value="UMUM_SYIRIK">Topik keagamaan umum</option>
             </optgroup>
             <optgroup label="Arah Positif (Kebajikan & Hikmah)">
               <option value="TAUHID_DAKWAH">Dakwah Pemurnian Tauhid</option>
@@ -1059,7 +1059,7 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
               <option value="UNIVERSAL_HIKMAH">Hikmah Kebijaksanaan Hidup</option>
             </optgroup>
             <optgroup label="Edukasi / Netral">
-              <option value="BEBAS_SYIRIK">Bebas Syirik / Edukasi</option>
+              <option value="BEBAS_SYIRIK">Edukasi / konteks umum</option>
             </optgroup>
           </select>
 
@@ -1071,8 +1071,8 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
             value={selectedRiskLevel}
             onChange={(e) => setSelectedRiskLevel(e.target.value)}
           >
-            <option value="ALL">Semua Level Risiko</option>
-            <option value="CRITICAL_SYIRIK">Banyak kecocokan heuristik</option>
+            <option value="ALL">Semua Sinyal Heuristik</option>
+            <option value="CRITICAL_SYIRIK">Banyak aturan cocok</option>
             <option value="HIGH_SYIRIK_RISK">Kecocokan heuristik sedang</option>
             <option value="ADVISORY_SUPERSTITION">Kecocokan heuristik terbatas</option>
             <option value="DAKWAH_REFUTATION">Bantahan / Hikmah Positif</option>
@@ -1613,7 +1613,7 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
                     onChange={(e) => setPartnerFormData({ ...partnerFormData, isMitra: e.target.value === "mitra" })}
                   >
                     <option value="mitra">Mitra Dakwah / Rekanan Kebaikan</option>
-                    <option value="target">Target Investigasi / Pantauan Syirik</option>
+                    <option value="target">Entitas untuk telaah kontekstual</option>
                   </select>
                 </div>
               </div>
