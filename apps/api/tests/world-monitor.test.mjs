@@ -12,12 +12,21 @@ const compiledRoute = ts.transpileModule(
   { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } },
 ).outputText;
 
-function createRoute(checkDatabaseHealth, baseSnapshot, observations = [], runs = [], sourceDetails = []) {
-  const runQuery = { orderBy() { return this; }, limit: async () => runs };
+function createRoute(checkDatabaseHealth, baseSnapshot, observations = [], runs = [], sourceDetails = [], sideEffects = {}) {
+  const runQuery = {
+    orderBy() { return this; },
+    limit: async () => runs,
+    insert() { sideEffects.writes = (sideEffects.writes ?? 0) + 1; return this; },
+    update() { sideEffects.writes = (sideEffects.writes ?? 0) + 1; return this; },
+    delete() { sideEffects.writes = (sideEffects.writes ?? 0) + 1; return this; },
+  };
   const observationQuery = (criteria) => {
     const query = {
       orderBy() { return this; },
       limit: async (limit) => observations.filter((item) => Object.entries(criteria).every(([key, value]) => item[key] === value)).slice(0, limit),
+      insert() { sideEffects.writes = (sideEffects.writes ?? 0) + 1; return this; },
+      update() { sideEffects.writes = (sideEffects.writes ?? 0) + 1; return this; },
+      delete() { sideEffects.writes = (sideEffects.writes ?? 0) + 1; return this; },
     };
     return query;
   };
@@ -37,6 +46,7 @@ function createRoute(checkDatabaseHealth, baseSnapshot, observations = [], runs 
     "requireTenant",
     "createYoutubeScanGate",
     "WORLD_MONITOR_PUBLIC_SUMMARY_SCHEMA",
+    "triggerManualWorldMonitorRefresh",
     `${compiledRoute}; return worldMonitorRoutes;`,
   );
   return load(
@@ -55,6 +65,7 @@ function createRoute(checkDatabaseHealth, baseSnapshot, observations = [], runs 
     async () => {},
     () => ({ acquire: () => ({ allowed: true, remaining: 4, retryAfterMs: 0, release() {} }) }),
     publicSummarySchema,
+    async () => { sideEffects.refreshes = (sideEffects.refreshes ?? 0) + 1; },
   );
 }
 
@@ -143,6 +154,30 @@ test("healthy database with no observations reports unknown data coverage, not g
   assert.equal(result.dataFreshness, "unknown");
   assert.equal(result.coverageDenominator, 0);
   assert.equal("auditLogs" in result, false);
+});
+
+test("100 concurrent public summary GETs perform no writes, source refreshes, or provider requests", async () => {
+  const sideEffects = { writes: 0, refreshes: 0, providerRequests: 0 };
+  let healthChecks = 0;
+  let handler;
+  const route = createRoute(async () => { healthChecks += 1; return { ok: true }; }, createSnapshot(), [], [], [], sideEffects);
+  await route({
+    get(path, _options, routeHandler) { if (path === "/v1/world-monitor") handler = routeHandler; },
+    post() {},
+  });
+
+  const originalFetch = globalThis.fetch;
+  globalThis.fetch = async () => { sideEffects.providerRequests += 1; throw new Error("unexpected provider request from GET"); };
+  try {
+    await Promise.all(Array.from({ length: 100 }, () => handler({}, { header() { return this; } })));
+  } finally {
+    globalThis.fetch = originalFetch;
+  }
+
+  assert.equal(healthChecks, 100);
+  assert.equal(sideEffects.writes, 0);
+  assert.equal(sideEffects.refreshes, 0);
+  assert.equal(sideEffects.providerRequests, 0);
 });
 
 test("configured sources with no ingestion history are exposed as unknown coverage", async () => {
