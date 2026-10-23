@@ -3,7 +3,7 @@ import { resolveModules, planEnabled } from "@empire/module-kit";
 import type { ModuleManifest } from "@empire/module-kit";
 import { batteriesDnaCatalog } from "@empire/batteries-dna";
 
-const moduleIds = ["kernel", "research", "scripture", "journey", "mission", "governance", "ziil", "work"];
+const moduleIds = ["kernel", "research", "scripture", "journey", "mission", "governance", "ziil", "work", "moonwitness-editorial"];
 
 async function readJson<T>(url: URL): Promise<T> {
   return JSON.parse(await readFile(url, "utf8")) as T;

@@ -45,4 +45,7 @@ export * from "./world-monitor-source-run.model.js";
 export * from "./world-monitor-aggregate.model.js";
 export * from "./youtube-sentinel-item.model.js";
 export * from "./youtube-sentinel-scan.model.js";
+export * from "./moonwitness-collection.model.js";
+export * from "./moonwitness-story.model.js";
+export * from "./moonwitness-story-tag.model.js";
 

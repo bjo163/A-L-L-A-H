@@ -41,8 +41,10 @@ import {
   YoutubeSentinelPartnerLinkModel,
   CrmOpportunityModel, CatalogItemModel, SalesQuoteModel, SalesQuoteLineModel, SalesOrderModel,
   OperationalInvoiceModel, OperationalPaymentModel, OperationalExpenseModel, CalendarActivityModel, SalesOrderLineModel,
+  MoonwitnessCollectionModel, MoonwitnessStoryModel, MoonwitnessStoryTagModel,
 } from "./models/index.js";
 import { ASMAUL_HUSNA_99 } from "./data/asmaul-husna.js";
+import { seedMoonwitnessCollections } from "./moonwitness-seed.js";
 
 const kernelModels = [
   RoleModel,
@@ -81,12 +83,14 @@ const researchModels = [
 ];
 
 const workModels = [WorkspaceModel, ProjectModel, TaskModel, DocumentModel, CommentModel, NotificationModel, NotificationOutboxModel, TagModel, TagAssignmentModel, YoutubeSentinelPartnerLinkModel, CrmOpportunityModel, CatalogItemModel, SalesQuoteModel, SalesQuoteLineModel, SalesOrderModel, SalesOrderLineModel, OperationalInvoiceModel, OperationalPaymentModel, OperationalExpenseModel, CalendarActivityModel];
+const moonwitnessEditorialModels = [MoonwitnessCollectionModel, MoonwitnessStoryModel, MoonwitnessStoryTagModel];
 
 const moduleModelRegistry: Record<string, Record<string, Array<typeof BatteriesModelClass>>> = {
   kernel: Object.fromEntries(kernelModels.map((model) => [model.tableName, [model]])),
   governance: Object.fromEntries(governanceModels.map((model) => [model.tableName, [model]])),
   research: Object.fromEntries(researchModels.map((model) => [model.tableName, [model]])),
   work: Object.fromEntries(workModels.map((model) => [model.tableName, [model]])),
+  "moonwitness-editorial": Object.fromEntries(moonwitnessEditorialModels.map((model) => [model.tableName, [model]])),
 };
 
 export interface SchemaModuleManifest {
@@ -542,6 +546,9 @@ async function syncBaseModuleUnlocked(knex: Knex, modules: readonly SchemaModule
     { id: uuidv7(), name: "Research Approval", slug: "research:approve", description: "Approve or reject research runs" },
     { id: uuidv7(), name: "Work Read", slug: "work:read", description: "Read projects, tasks, and document records in the active tenant" },
     { id: uuidv7(), name: "Work Write", slug: "work:write", description: "Manage projects, tasks, and document records in the active tenant" },
+    { id: uuidv7(), name: "MOONWITNESS Editorial Read", slug: "moonwitness:read", description: "Read editorial records in the active tenant" },
+    { id: uuidv7(), name: "MOONWITNESS Editorial Write", slug: "moonwitness:write", description: "Create and edit editorial records in the active tenant" },
+    { id: uuidv7(), name: "MOONWITNESS Editorial Publish", slug: "moonwitness:publish", description: "Approve and publish editorial records in the active tenant" },
     { id: uuidv7(), name: "Sentinel Read", slug: "sentinel:read", description: "Read YouTube Sentinel monitoring records and scheduler status" },
     { id: uuidv7(), name: "Sentinel Scan", slug: "sentinel:scan", description: "Run bounded YouTube Sentinel searches" },
     { id: uuidv7(), name: "Sentinel Review", slug: "sentinel:review", description: "Update YouTube Sentinel review decisions" },
@@ -812,6 +819,12 @@ async function syncBaseModuleUnlocked(knex: Knex, modules: readonly SchemaModule
         });
       }
     }
+  }
+
+  if (activeModuleIds.has("moonwitness-editorial")) {
+    const seedOwner = await knex("users").where({ username: "4-lah", status: "active" }).first("id");
+    if (!seedOwner) throw new Error("MOONWITNESS editorial bootstrap requires the existing local tenant owner account.");
+    await seedMoonwitnessCollections(knex, tenantId, seedOwner.id);
   }
 }
 

@@ -1,0 +1,14 @@
+{
+  "id": "moonwitness-editorial",
+  "title": "MOONWITNESS Editorial Collections & Stories",
+  "version": "0.1.0",
+  "owner": "Babydoll",
+  "state": "bootstrap_ready",
+  "dependencies": ["kernel", "work"],
+  "capabilities": ["editorial-collections", "editorial-stories", "public-story-listing"],
+  "permissions": ["moonwitness:read", "moonwitness:write", "moonwitness:publish"],
+  "models": ["moonwitness_collections", "moonwitness_stories", "moonwitness_story_tags"],
+  "upgrades": [],
+  "uiSlots": [],
+  "runMode": "first_party_allowlisted"
+}

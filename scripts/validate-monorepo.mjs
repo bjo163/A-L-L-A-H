@@ -2,11 +2,11 @@ import assert from "node:assert/strict";
 import {readFileSync} from "node:fs";
 import {resolveModules,planEnabled} from "../packages/module-kit/src/index.mjs";
 const read=p=>JSON.parse(readFileSync(new URL("../"+p,import.meta.url),"utf8"));
-const ids=["kernel","research","scripture","journey","mission","governance","ziil","work"];
+const ids=["kernel","research","scripture","journey","mission","governance","ziil","work","moonwitness-editorial"];
 const manifests=ids.map(id=>read("modules/"+id+"/manifest.json"));
 const ordered=resolveModules(manifests);
-assert.equal(manifests.length,8);
-assert.equal(new Set(ordered.map(m=>m.id)).size,8);
+assert.equal(manifests.length,9);
+assert.equal(new Set(ordered.map(m=>m.id)).size,9);
 assert.equal(ordered[0].id,"kernel");
 const config=read("config/modules.json");
 const enabled=planEnabled(manifests,config.approvedEnabled);
@@ -16,7 +16,8 @@ const expectedModels={
  kernel:["roles","permissions","users","tenants","partners","user_roles","role_permissions","audit_logs","dictionaries","legacy_dictionary_imports","lexicons","auth_sessions","tenant_memberships","module_installations","world_monitor_observations","world_monitor_source_runs","world_monitor_aggregates","youtube_sentinel_items","youtube_sentinel_scans"],
  governance:["change_requests","change_reviews","change_executions"],
  research:["research_runs","research_workflows","research_jobs","research_evidence","research_approvals"],
- work:["workspaces","projects","tasks","documents","comments","notifications","notification_outbox","tags","tag_assignments","youtube_sentinel_partner_links","crm_opportunities","catalog_items","sales_quotes","sales_quote_lines","sales_orders","sales_order_lines","operational_invoices","operational_payments","operational_expenses","calendar_activities"]
+ work:["workspaces","projects","tasks","documents","comments","notifications","notification_outbox","tags","tag_assignments","youtube_sentinel_partner_links","crm_opportunities","catalog_items","sales_quotes","sales_quote_lines","sales_orders","sales_order_lines","operational_invoices","operational_payments","operational_expenses","calendar_activities"],
+ "moonwitness-editorial":["moonwitness_collections","moonwitness_stories","moonwitness_story_tags"]
 };
 for(const module of enabled)assert.deepEqual(module.models,expectedModels[module.id],"unexpected model ownership for "+module.id);
 const work=read("package.json");
@@ -43,4 +44,4 @@ assert.ok(horizons.capabilities.find(c=>c.id==="hydrogen-pem")?.horizon==="H2");
 assert.ok(horizons.capabilities.find(c=>c.id==="phonny")?.projectStatus==="NAME_UNCONFIRMED");
 console.log("PASS: V5 horizon registry, no unfounded operational claims, quantum/proton/energy and source research segregated.");
 
-console.log("PASS: eight first-party module manifests, dependency order, enabled-module allowlist, model ownership, workspace packages.");
+console.log("PASS: nine first-party module manifests, dependency order, enabled-module allowlist, model ownership, workspace packages.");

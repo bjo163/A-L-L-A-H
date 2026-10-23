@@ -3,7 +3,7 @@ import { BatteriesModel, type FieldDefinition } from "@empire/batteries";
 /** Tenant-owned reusable label. */
 export class TagModel extends BatteriesModel {
   static override tableName = "tags";
-  static override uniqueConstraints = [["tenantId", "slug"]];
+  static override uniqueConstraints = [["tenantId", "slug"], ["tenantId", "id"]];
   static override fields: Record<string, FieldDefinition> = {
     tenantId: { type: "uuid", required: true, index: true, references: { table: "tenants", column: "id", onDelete: "CASCADE" } },
     slug: { type: "string", required: true },

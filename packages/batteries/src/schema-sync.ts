@@ -191,7 +191,7 @@ export async function preflightModels(
       blockers: [],
     };
     for (const fields of model.uniqueConstraints) {
-      if (!fields.length || new Set(fields).size !== fields.length || fields.some((field) => !(field in model.fields))) {
+      if (!fields.length || new Set(fields).size !== fields.length || fields.some((field) => field !== "id" && !(field in model.fields))) {
         entry.blockers.push("model declares an invalid composite unique constraint");
       }
     }

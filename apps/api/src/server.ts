@@ -23,6 +23,7 @@ import { enterpriseRoutes } from "./routes/enterprise.js";
 import { collaborationRoutes } from "./routes/collaboration.js";
 import { documentStorageRoutes } from "./routes/document-storage.js";
 import { tenantMembershipRoutes } from "./routes/tenant-memberships.js";
+import { moonwitnessEditorialRoutes, moonwitnessPublicStoryRoutes } from "./routes/moonwitness-editorial.js";
 import { worldMonitorRoutes } from "./routes/world-monitor.js";
 import { startWorldMonitorScheduler } from "./world-monitor-scheduler.js";
 import { startYoutubeSentinelScheduler } from "./youtube-sentinel-scheduler.js";
@@ -195,6 +196,10 @@ export async function buildServer() {
     if (enabledIds.has("work")) await app.register(enterpriseRoutes);
     if (enabledIds.has("work")) await app.register(collaborationRoutes);
     if (enabledIds.has("work")) await app.register(documentStorageRoutes);
+    if (enabledIds.has("moonwitness-editorial")) {
+      await app.register(moonwitnessEditorialRoutes);
+      await app.register(moonwitnessPublicStoryRoutes);
+    }
     await app.register(worldMonitorRoutes);
     await app.ready();
 

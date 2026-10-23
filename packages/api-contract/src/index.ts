@@ -42,6 +42,75 @@ export const API_PATHS = {
   cabSummary: "/continuum/cab/summary",
   cabRfcs: "/continuum/cab/rfcs",
   researchRuns: "/v1/research-runs",
+  moonwitnessCollections: "/v1/moonwitness/collections",
+  moonwitnessStories: "/v1/moonwitness/stories",
+  moonwitnessPublicStories: "/v1/public/moonwitness/stories",
+} as const;
+
+export type EditorialClassification = "public" | "internal" | "confidential" | "restricted";
+export type EditorialVisibility = "private" | "unlisted" | "public";
+export type CollectionStatus = "draft" | "published" | "archived";
+export type StoryEditorialState = "draft" | "in_review" | "approved" | "published" | "archived";
+export interface MoonwitnessCollectionDto {
+  id: string; tenantId: string; ownerId: string; slug: string; title: string; cover: string | null;
+  theme: string; language: "id" | "en" | "ar"; status: CollectionStatus; visibility: EditorialVisibility;
+  createdAt: string; updatedAt: string;
+}
+export interface MoonwitnessStoryDto {
+  id: string; tenantId: string; collectionId: string; authorId: string; slug: string; title: string;
+  synopsis: string | null; body: string; editorialState: StoryEditorialState; classification: EditorialClassification;
+  visibility: EditorialVisibility; revision: number; tagIds?: string[]; createdAt: string; updatedAt: string;
+}
+export interface MoonwitnessPublicStoryDto extends Pick<MoonwitnessStoryDto, "id" | "collectionId" | "slug" | "title" | "synopsis" | "body" | "createdAt" | "updatedAt"> {
+  collection: { id: string; slug: string; title: string };
+}
+
+export const MOONWITNESS_COLLECTION_CREATE_SCHEMA = {
+  type: "object", additionalProperties: false, required: ["slug", "title"],
+  properties: {
+    slug: { type: "string", minLength: 1, maxLength: 80, pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    title: { type: "string", minLength: 1, maxLength: 200 },
+    cover: { anyOf: [{ type: "string", minLength: 1, maxLength: 2048 }, { type: "null" }] },
+    theme: { type: "string", minLength: 1, maxLength: 80 },
+    language: { type: "string", enum: ["id", "en", "ar"] },
+  },
+} as const;
+
+export const MOONWITNESS_STORY_CREATE_SCHEMA = {
+  type: "object", additionalProperties: false, required: ["collectionId", "slug", "title", "body"],
+  properties: {
+    collectionId: { type: "string", format: "uuid" },
+    slug: { type: "string", minLength: 1, maxLength: 80, pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    title: { type: "string", minLength: 1, maxLength: 200 },
+    synopsis: { anyOf: [{ type: "string", minLength: 1, maxLength: 2000 }, { type: "null" }] },
+    body: { type: "string", minLength: 1, maxLength: 100000 },
+    tagIds: { type: "array", maxItems: 30, uniqueItems: true, items: { type: "string", format: "uuid" } },
+  },
+} as const;
+
+export const MOONWITNESS_STORY_PATCH_SCHEMA = {
+  type: "object", additionalProperties: false, minProperties: 1,
+  properties: {
+    title: { type: "string", minLength: 1, maxLength: 200 },
+    synopsis: { anyOf: [{ type: "string", minLength: 1, maxLength: 2000 }, { type: "null" }] },
+    body: { type: "string", minLength: 1, maxLength: 100000 },
+    editorialState: { type: "string", enum: ["draft", "in_review", "approved", "published", "archived"] },
+    classification: { type: "string", enum: ["public", "internal", "confidential", "restricted"] },
+    visibility: { type: "string", enum: ["private", "unlisted", "public"] },
+    tagIds: { type: "array", maxItems: 30, uniqueItems: true, items: { type: "string", format: "uuid" } },
+  },
+} as const;
+
+export const MOONWITNESS_COLLECTION_PATCH_SCHEMA = {
+  type: "object", additionalProperties: false, minProperties: 1,
+  properties: {
+    title: { type: "string", minLength: 1, maxLength: 200 },
+    cover: { anyOf: [{ type: "string", minLength: 1, maxLength: 2048 }, { type: "null" }] },
+    theme: { type: "string", minLength: 1, maxLength: 80 },
+    language: { type: "string", enum: ["id", "en", "ar"] },
+    status: { type: "string", enum: ["draft", "published", "archived"] },
+    visibility: { type: "string", enum: ["private", "unlisted", "public"] },
+  },
 } as const;
 
 /** Public, anonymous World Monitor summary. Keep this DTO aggregate-only: it must

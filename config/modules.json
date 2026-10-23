@@ -4,7 +4,8 @@
     "kernel",
     "governance",
     "research",
-    "work"
+    "work",
+    "moonwitness-editorial"
   ],
-  "note": "Local first-party activation: kernel, governance, research, and tenant work management. Production release gates remain separate."
+  "note": "Local first-party activation: kernel, governance, research, tenant work management, and the draft-only MOONWITNESS editorial data module. Production release gates remain separate."
 }
