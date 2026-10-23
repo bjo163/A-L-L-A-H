@@ -30,7 +30,8 @@ export class YoutubeSentinelItemModel extends BatteriesModel {
     riskLevel:          { type: "string",    required: true,  index: true },
     category:           { type: "string",    required: true,  index: true },
     sourceType:         { type: "string",    required: true,  defaultTo: "browser_automation" },
-    confidence:         { type: "float",       required: true,  defaultTo: 0.9 },
+    // Legacy column retained for existing databases. It is not returned or used as a probability.
+    confidence:         { type: "float",       required: true,  defaultTo: 0 },
     isRefutation:       { type: "boolean",   required: true,  defaultTo: false },
 
     /** JSON array of YoutubeMatchedRule objects */

@@ -238,7 +238,8 @@ export interface YoutubeMonitoredItem {
   riskLevel: YoutubeRiskLevel;
   category: YoutubeViolationCategory;
   riskScore: number;
-  confidence: number;
+  /** @deprecated Legacy persisted field; heuristic matches are not calibrated probabilities. */
+  confidence?: number;
   isRefutation: boolean;
   matchedRules: YoutubeMatchedRule[];
 

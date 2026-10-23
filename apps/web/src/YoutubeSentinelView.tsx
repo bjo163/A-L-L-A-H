@@ -249,6 +249,18 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
     notes?: string,
   ) {
     if (!permissions.review) return;
+    const requiresRationale = ["VERIFIED_SYIRIK", "REPORT_FILED", "SHARED_VIA_DAKWAH", "FALSE_POSITIVE_DISMISSED"].includes(action);
+    const rationale = requiresRationale
+      ? window.prompt("Catat konteks dan alasan telaah (minimal 20 karakter). Ini adalah penilaian reviewer, bukan putusan platform:")?.trim()
+      : undefined;
+    if (requiresRationale && (!rationale || rationale.length < 20)) {
+      notify("Tindakan dibatalkan: alasan telaah minimal 20 karakter diperlukan.");
+      return;
+    }
+    const actionReference = ["REPORT_FILED", "SHARED_VIA_DAKWAH"].includes(action)
+      ? window.prompt("Masukkan tautan atau referensi tindakan eksternal:")?.trim()
+      : undefined;
+    if (["REPORT_FILED", "SHARED_VIA_DAKWAH"].includes(action) && !actionReference) return;
     try {
       const res = await request<{
         ok: boolean;
@@ -256,7 +268,7 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
         summary: YoutubeScanSummary;
       }>(API_PATHS.worldMonitorYoutubeAction, {
         method: "POST",
-        body: { id, action, notes },
+        body: { id, action, notes, rationale, actionReference },
       });
 
       if (res.ok) {
@@ -298,7 +310,7 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
     for (const item of visibleItems.filter((i) => i.riskScore >= 40)) {
       md += `### ${item.title}\n`;
       md += `- URL: ${item.url}\n`;
-      md += `- Pelanggaran: ${item.matchedRules.map((r) => r.label).join(", ")}\n`;
+    md += `- Aturan teks yang cocok (belum diverifikasi): ${item.matchedRules.map((r) => r.label).join(", ")}\n`;
       md += `- Rujukan Dalil: ${item.tauhidGuidance.dalilRef}\n`;
       md += `- Rekomendasi: ${item.tauhidGuidance.recommendedAction}\n\n`;
     }
@@ -337,7 +349,7 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
   const riskBadgeTone = (level: YoutubeRiskLevel) => {
     switch (level) {
       case "CRITICAL_SYIRIK":
-        return "danger";
+        return "warning";
       case "HIGH_SYIRIK_RISK":
         return "warning";
       case "ADVISORY_SUPERSTITION":
@@ -352,7 +364,7 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
   const statusTone = (status: YoutubeWorkflowStatus) => {
     switch (status) {
       case "VERIFIED_SYIRIK":
-        return "danger";
+        return "info";
       case "COUNTER_DAKWAH_QUEUED":
         return "info";
       case "REPORT_FILED":
@@ -371,6 +383,18 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
         return "warning";
     }
   };
+
+  const workflowStatusLabel = (status: YoutubeWorkflowStatus) => status === "VERIFIED_SYIRIK"
+    ? "Kesimpulan teologis reviewer"
+    : status.replace(/_/g, " ");
+
+  const riskLevelLabel = (level: YoutubeRiskLevel) => ({
+    CRITICAL_SYIRIK: "Banyak kecocokan heuristik",
+    HIGH_SYIRIK_RISK: "Kecocokan heuristik sedang",
+    ADVISORY_SUPERSTITION: "Kecocokan heuristik terbatas",
+    DAKWAH_REFUTATION: "Penanda bantahan terdeteksi",
+    NOMINAL_CLEAR: "Tidak ada kecocokan heuristik",
+  })[level];
 
   const tableColumns = useMemo<DataTableColumn<YoutubeMonitoredItem>[]>(
     () => [
@@ -488,7 +512,7 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
                     isMitra: item.direction === "POSITIVE",
                     notes: item.direction === "POSITIVE"
                       ? `Mitra Dakwah / Komunitas Hikmah (${item.tradition}) dari YouTube Sentinel.`
-                      : `Target Pemantauan Dugaan Kesesatan / Pelanggaran Tauhid dari YouTube Sentinel.`,
+                      : `Kecocokan teks heuristik untuk telaah kontekstual oleh operator.`,
                   });
                   setActiveModal({ type: "partner", item });
                 }}
@@ -524,7 +548,7 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
         header: "Tingkat Risiko / Nilai",
         cell: (item: YoutubeMonitoredItem) => (
           <Badge tone={riskBadgeTone(item.riskLevel)}>
-            {item.direction === "POSITIVE" ? "NILAI LUHUR" : item.riskLevel.replace(/_/g, " ")}
+            {item.direction === "POSITIVE" ? "NILAI LUHUR" : riskLevelLabel(item.riskLevel)}
           </Badge>
         ),
       },
@@ -564,7 +588,7 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
             ) : (
               <>
                 <option value="PENDING_REVIEW">Menunggu Telaah</option>
-                <option value="VERIFIED_SYIRIK">Terverifikasi Melanggar</option>
+                <option value="VERIFIED_SYIRIK">Kesimpulan teologis reviewer</option>
                 <option value="COUNTER_DAKWAH_QUEUED">Bantahan Tauhid</option>
                 <option value="REPORT_FILED">Laporan Terkirim</option>
                 <option value="FALSE_POSITIVE_DISMISSED">Bukan Pelanggaran</option>
@@ -604,7 +628,7 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
                 <button
                   type="button"
                   className="sentinel-table-btn"
-                  title="Buat Laporan Pelanggaran"
+                  title="Ajukan laporan platform setelah telaah manusia"
                   onClick={() => setActiveModal({ type: "report", item })}
                 >
                   <IconText icon={<WarningIcon />}>Lapor</IconText>
@@ -638,6 +662,9 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
 
   return (
     <div className="youtube-sentinel-container">
+      <div role="note" className="eol-notice eol-notice--info sentinel-space-after-4">
+        Hasil adalah kecocokan aturan teks yang belum diverifikasi, bukan penilaian kebenaran agama atau temuan pelanggaran kebijakan YouTube. Konteks seperti berita, humor, kutipan, tradisi, dan bantahan perlu ditelaah manusia. Tidak ada laporan otomatis.
+      </div>
       {items.some((item) => item.sourceType === "demo_synthetic") && (
         <div role="note" className="eol-notice eol-notice--warning sentinel-space-after-4">
           Data contoh sintetis aktif untuk mode demo. Data ini bukan hasil pantauan YouTube dan tidak boleh diperlakukan sebagai bukti.
@@ -656,8 +683,8 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
         density="compact"
         items={[
           { label: "Total video dipantau", value: summary?.totalMonitored ?? items.length },
-          { label: "Kritis (syirik nyata)", value: summary?.criticalSyirikCount ?? 0, tone: "danger" },
-          { label: "Risiko tinggi (okultisme)", value: summary?.highRiskCount ?? 0, tone: "warning" },
+          { label: "Banyak kecocokan heuristik", value: summary?.criticalSyirikCount ?? 0, tone: "warning" },
+          { label: "Kecocokan heuristik sedang", value: summary?.highRiskCount ?? 0, tone: "neutral" },
           { label: "Hikmah & kebajikan", value: summary?.positiveContentCount ?? items.filter((item) => item.direction === "POSITIVE").length, tone: "success" },
           { label: "Bantahan dakwah tauhid", value: summary?.counterDakwahCount ?? 0, tone: "success" },
           { label: "Tindakan diajukan", value: summary?.actionTakenCount ?? 0 },
@@ -777,7 +804,7 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
                 label="Komposisi arah konten"
                 centerLabel="KONTEN"
                 segments={[
-                  { id: "negative", label: "Kesesatan", value: items.filter((i) => i.direction === "NEGATIVE").length, tone: "danger" },
+                  { id: "negative", label: "Kecocokan heuristik", value: items.filter((i) => i.direction === "NEGATIVE").length, tone: "warning" },
                   { id: "positive", label: "Kebajikan", value: items.filter((i) => i.direction === "POSITIVE").length, tone: "success" },
                   { id: "neutral", label: "Netral", value: items.filter((i) => i.direction === "NEUTRAL").length, tone: "info" },
                 ]}
@@ -790,7 +817,7 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
                   title="Klik untuk filter arah Negatif"
                 >
                     <span className="sentinel-legend-color sentinel-legend-color--danger" />
-                  <span><IconText icon={<WarningIcon />}>Kesesatan:</IconText> <strong>{items.filter((i) => i.direction === "NEGATIVE").length}</strong></span>
+                  <span><IconText icon={<WarningIcon />}>Kecocokan aturan:</IconText> <strong>{items.filter((i) => i.direction === "NEGATIVE").length}</strong></span>
                 </div>
                 <div
                   className="sentinel-legend-item"
@@ -947,7 +974,7 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
               className={`sentinel-direction-tab ${selectedDirection === "NEGATIVE" ? "sentinel-direction-tab--active-neg" : ""}`}
               onClick={() => setSelectedDirection("NEGATIVE")}
             >
-              <IconText icon={<WarningIcon />}>Kesesatan &amp; Khurafat ({items.filter((i) => i.direction === "NEGATIVE").length})</IconText>
+              <IconText icon={<WarningIcon />}>Kecocokan aturan untuk ditelaah ({items.filter((i) => i.direction === "NEGATIVE").length})</IconText>
             </button>
             <button
               type="button"
@@ -987,7 +1014,7 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
             onChange={(e) => setSelectedCategory(e.target.value)}
           >
             <option value="ALL">Semua Kategori ({items.length})</option>
-            <optgroup label="Arah Negatif (Kesesatan)">
+            <optgroup label="Kecocokan aturan untuk telaah">
               <option value="SIHIR_PELET">Sihir, Santet &amp; Pelet</option>
               <option value="DUKUN_RAMALAN">Dukun &amp; Ramalan Tarot</option>
               <option value="PESUGIHAN_TUMBAL">Pesugihan &amp; Tumbal</option>
@@ -1011,7 +1038,7 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
           </select>
 
           <span className="muted sentinel-filter-label sentinel-filter-label--offset">
-            Level Risiko:
+            Sinyal heuristik:
           </span>
           <select
             className="sentinel-select"
@@ -1019,11 +1046,11 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
             onChange={(e) => setSelectedRiskLevel(e.target.value)}
           >
             <option value="ALL">Semua Level Risiko</option>
-            <option value="CRITICAL_SYIRIK">Kritis (Syirik Nyata)</option>
-            <option value="HIGH_SYIRIK_RISK">Tinggi (Bahaya Okultisme)</option>
-            <option value="ADVISORY_SUPERSTITION">Peringatan (Khurafat/Takhayul)</option>
+            <option value="CRITICAL_SYIRIK">Banyak kecocokan heuristik</option>
+            <option value="HIGH_SYIRIK_RISK">Kecocokan heuristik sedang</option>
+            <option value="ADVISORY_SUPERSTITION">Kecocokan heuristik terbatas</option>
             <option value="DAKWAH_REFUTATION">Bantahan / Hikmah Positif</option>
-            <option value="NOMINAL_CLEAR">Aman</option>
+            <option value="NOMINAL_CLEAR">Tidak ada kecocokan heuristik</option>
           </select>
 
           <span className="muted sentinel-filter-label sentinel-filter-label--offset">
@@ -1036,7 +1063,7 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
           >
             <option value="ALL">Semua Status</option>
             <option value="PENDING_REVIEW">Menunggu Telaah</option>
-            <option value="VERIFIED_SYIRIK">Terverifikasi Melanggar</option>
+            <option value="VERIFIED_SYIRIK">Kesimpulan teologis reviewer</option>
             <option value="COUNTER_DAKWAH_QUEUED">Disposisi Bantahan Tauhid</option>
             <option value="REPORT_FILED">Laporan YouTube Terkirim</option>
             <option value="FALSE_POSITIVE_DISMISSED">Bukan Pelanggaran</option>
@@ -1164,14 +1191,14 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
                     <Badge tone="success"><IconText icon={<SparkIcon />}>BARU</IconText></Badge>
                   )}
                   <Badge tone={riskBadgeTone(item.riskLevel)}>
-                    {item.riskLevel.replace(/_/g, " ")}
+                    {riskLevelLabel(item.riskLevel)}
                   </Badge>
                   <Badge tone="info">{item.category.replace(/_/g, " ")}</Badge>
                   <Badge tone={statusTone(item.workflowStatus)}>
-                    {item.workflowStatus.replace(/_/g, " ")}
+                    {workflowStatusLabel(item.workflowStatus)}
                   </Badge>
                   <span className="muted sentinel-risk-score-label">
-                    Skor: {item.riskScore}/100
+                    Skor heuristik: {item.riskScore}/100 · bukan probabilitas atau keputusan platform
                   </span>
                 </div>
 
@@ -1186,8 +1213,8 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
                 {item.matchedRules.length > 0 && (
                   <div className="sentinel-rules-box">
                     <div className="sentinel-rules-title">
-                      <span>Pemicu Heuristik (Tanpa AI)</span>
-                      <span>Konfidensi: {Math.round(item.confidence * 100)}%</span>
+                      <span>Kecocokan teks heuristik (perlu telaah manusia)</span>
+                      <span>{item.matchedRules.length} aturan cocok</span>
                     </div>
                     {item.matchedRules.slice(0, 3).map((rule, idx) => (
                       <div key={idx} className="sentinel-rule-item">

@@ -31,7 +31,6 @@ export function rowToItem(row: YoutubeSentinelItemModel): YoutubeMonitoredItem {
     riskLevel: row.riskLevel as YoutubeMonitoredItem["riskLevel"],
     category: row.category as YoutubeMonitoredItem["category"],
     riskScore: row.riskScore,
-    confidence: row.confidence ?? 0.9,
     isRefutation: Boolean(row.isRefutation),
     matchedRules: (row.matchedRules ?? []) as YoutubeMonitoredItem["matchedRules"],
     tauhidGuidance: (row.tauhidGuidance ?? {
@@ -101,7 +100,6 @@ export async function persistItemsToDB(items: YoutubeMonitoredItem[], crawlerMod
           riskLevel: item.riskLevel,
           category: item.category,
           sourceType: item.sourceType,
-          confidence: item.confidence,
           isRefutation: item.isRefutation,
           matchedRules: item.matchedRules as unknown[],
           tauhidGuidance: (item.tauhidGuidance as unknown) ?? null,
@@ -132,7 +130,6 @@ export async function persistItemsToDB(items: YoutubeMonitoredItem[], crawlerMod
           riskLevel: item.riskLevel,
           category: item.category,
           sourceType: item.sourceType,
-          confidence: item.confidence,
           isRefutation: item.isRefutation,
           matchedRules: item.matchedRules as unknown[],
           tauhidGuidance: (item.tauhidGuidance as unknown) ?? null,

@@ -232,7 +232,7 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
         taxonomy: {
           directions: [
             { id: "ALL", label: "Semua Arah Deteksi" },
-            { id: "NEGATIVE", label: "Negatif (Kesesatan / Khurafat)" },
+            { id: "NEGATIVE", label: "Kecocokan aturan yang perlu ditelaah" },
             { id: "POSITIVE", label: "Positif (Kebajikan & Hikmah)" },
             { id: "NEUTRAL", label: "Netral (Edukasi / Jurnalistik)" },
           ],
@@ -269,16 +269,16 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
           ],
           riskLevels: [
             { id: "ALL", label: "Semua Level Risiko" },
-            { id: "CRITICAL_SYIRIK", label: "Kritis (Syirik Nyata)" },
-            { id: "HIGH_SYIRIK_RISK", label: "Tinggi (Bahaya Okultisme)" },
-            { id: "ADVISORY_SUPERSTITION", label: "Peringatan (Takhayul/Khurafat)" },
+            { id: "CRITICAL_SYIRIK", label: "Banyak kecocokan heuristik" },
+            { id: "HIGH_SYIRIK_RISK", label: "Kecocokan heuristik sedang" },
+            { id: "ADVISORY_SUPERSTITION", label: "Kecocokan heuristik terbatas" },
             { id: "DAKWAH_REFUTATION", label: "Bantahan Dakwah Tauhid / Hikmah" },
-            { id: "NOMINAL_CLEAR", label: "Aman" },
+            { id: "NOMINAL_CLEAR", label: "Tidak ada kecocokan heuristik" },
           ],
           statuses: [
             { id: "ALL", label: "Semua Status" },
             { id: "PENDING_REVIEW", label: "Menunggu Telaah" },
-            { id: "VERIFIED_SYIRIK", label: "Terverifikasi Melanggar" },
+            { id: "VERIFIED_SYIRIK", label: "Kesimpulan teologis reviewer (bukan temuan kebijakan platform)" },
             { id: "COUNTER_DAKWAH_QUEUED", label: "Disposisi Bantahan Tauhid" },
             { id: "REPORT_FILED", label: "Laporan YouTube Terkirim" },
             { id: "FALSE_POSITIVE_DISMISSED", label: "Bukan Pelanggaran / Edukasi" },
@@ -456,10 +456,10 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
       if (!YOUTUBE_WORKFLOW_ACTIONS.includes(body.action)) {
         return reply.status(400).send({ ok: false, message: "Unsupported workflow action" });
       }
-      const requiresReviewEvidence = ["VERIFIED_SYIRIK", "REPORT_FILED", "SHARED_VIA_DAKWAH"].includes(body.action);
+      const requiresReviewEvidence = ["VERIFIED_SYIRIK", "REPORT_FILED", "SHARED_VIA_DAKWAH", "FALSE_POSITIVE_DISMISSED"].includes(body.action);
       const requiresActionEvidence = ["REPORT_FILED", "SHARED_VIA_DAKWAH"].includes(body.action);
       if (requiresReviewEvidence && (!body.rationale || body.rationale.trim().length < 20)) {
-        return reply.status(400).send({ ok: false, message: "A factual review rationale of at least 20 characters is required" });
+        return reply.status(400).send({ ok: false, message: "A contextual review rationale of at least 20 characters is required" });
       }
       if (requiresActionEvidence && !body.actionReference?.trim()) {
         return reply.status(400).send({ ok: false, message: "A traceable external action reference is required" });

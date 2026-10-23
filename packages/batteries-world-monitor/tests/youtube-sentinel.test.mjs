@@ -29,8 +29,31 @@ test("evaluateVideoText correctly identifies critical pesugihan and commercial t
   assert.equal(result.riskLevel, "CRITICAL_SYIRIK");
   assert.ok(result.riskScore >= 75);
   assert.equal(result.isRefutation, false);
+  assert.equal("confidence" in result, false);
   assert.ok(result.matchedRules.some((r) => r.ruleId === "RULE_PESUGIHAN_UANG_GAIB"));
   assert.ok(result.matchedRules.some((r) => r.ruleId === "TRANSACTIONAL_PRACTITIONER_BOOST"));
+});
+
+test("religious tradition alone stays neutral and does not create a platform finding", () => {
+  const result = sentinel.evaluateVideoText({
+    title: "Ritual klasik di pura Bali",
+    description: "Dokumenter budaya tentang tradisi dan sejarah setempat.",
+  });
+
+  assert.equal(result.direction, "NEUTRAL");
+  assert.equal(result.riskScore, 0);
+  assert.equal(result.matchedRules.length, 0);
+});
+
+test("heuristic matches always start in human review instead of an automatic conclusion", () => {
+  const item = sentinel.buildMonitoredItem({
+    videoId: "test_review_required",
+    title: "PESUGIHAN UANG GAIB",
+    channelTitle: "Example fixture",
+    sourceType: "demo_synthetic",
+  });
+
+  assert.equal(item.workflowStatus, "PENDING_REVIEW");
 });
 
 test("evaluateVideoText classifies genuine Islamic dakwah exposing syirik as DAKWAH_REFUTATION without false positive", () => {
@@ -125,9 +148,7 @@ test("fictional sample corpus is opt-in and marked synthetic", async () => {
   }
 });
 
-test("generateBrowserAutomationSnippet produces valid crawler code string", () => {
-  const script = sentinel.generateBrowserAutomationSnippet("jimat sakti kebal");
-  assert.match(script, /Playwright/);
-  assert.match(script, /jimat sakti kebal/);
-  assert.match(script, /ytd-video-renderer/);
+test("public browser automation snippet generator remains retired", async () => {
+  const source = await readFile(new URL("../src/youtube-sentinel.ts", import.meta.url), "utf8");
+  assert.doesNotMatch(source, /generateBrowserAutomationSnippet/);
 });

@@ -24,7 +24,7 @@ test("YouTube Tauhid Sentinel routes are registered with correct contracts", asy
   assert.match(worldMonitorSource, /preHandler: \[requireSession, requirePermission\("sentinel:read"\)\]/);
   assert.match(worldMonitorSource, /preHandler: \[requireSession, requirePermission\("sentinel:scan"\)\]/);
   assert.match(worldMonitorSource, /preHandler: \[requireSession, requirePermission\("sentinel:review"\)\]/);
-  assert.match(worldMonitorSource, /factual review rationale of at least 20 characters is required/);
+  assert.match(worldMonitorSource, /contextual review rationale of at least 20 characters is required/);
   assert.match(worldMonitorSource, /traceable external action reference is required/);
   assert.match(worldMonitorSource, /where\(\{ id: row\.id, review_revision: currentRevision \}\)/);
   assert.match(worldMonitorSource, /reviewEvidence, actionEvidence, reviewRevision: currentRevision \+ 1/);

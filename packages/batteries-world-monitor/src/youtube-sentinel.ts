@@ -27,6 +27,7 @@ interface HeuristicRuleDefinition {
   label: string;
   weight: number;
   regex: RegExp;
+}
 const HEURISTIC_RULES: HeuristicRuleDefinition[] = [
   // 1. Sihir, Santet & Pelet
   {
@@ -391,7 +392,6 @@ export function evaluateVideoText(params: {
   category: YoutubeViolationCategory;
   riskLevel: YoutubeRiskLevel;
   riskScore: number;
-  confidence: number;
   isRefutation: boolean;
   matchedRules: YoutubeMatchedRule[];
   transcriptExcerpt?: string;
@@ -499,7 +499,6 @@ export function evaluateVideoText(params: {
       category: topPositiveCategory,
       riskLevel: "DAKWAH_REFUTATION",
       riskScore: 0,
-      confidence: Math.min(0.99, Number((0.75 + matchedRules.length * 0.08).toFixed(2))),
       isRefutation: false,
       matchedRules,
       positiveCategory: topPositiveCategory,
@@ -515,7 +514,6 @@ export function evaluateVideoText(params: {
       category: topPositiveCategory ?? "TAUHID_DAKWAH",
       riskLevel: "DAKWAH_REFUTATION",
       riskScore: 5,
-      confidence: 0.95,
       isRefutation: true,
       matchedRules,
       positiveCategory: topPositiveCategory ?? "TAUHID_DAKWAH",
@@ -530,7 +528,6 @@ export function evaluateVideoText(params: {
       category: "BEBAS_SYIRIK",
       riskLevel: "NOMINAL_CLEAR",
       riskScore: 0,
-      confidence: 0.85,
       isRefutation: false,
       matchedRules: [],
     };
@@ -547,7 +544,6 @@ export function evaluateVideoText(params: {
   }
 
   const calculatedScore = Math.min(100, Math.max(10, maxCatScore + transactionalBoost));
-  const confidence = Math.min(0.99, Number((0.65 + matchedRules.length * 0.08).toFixed(2)));
 
   let riskLevel: YoutubeRiskLevel = "ADVISORY_SUPERSTITION";
   if (calculatedScore >= 70 || primaryCategory === "SIHIR_PELET" || primaryCategory === "PESUGIHAN_TUMBAL") {
@@ -562,7 +558,6 @@ export function evaluateVideoText(params: {
     category: primaryCategory,
     riskLevel,
     riskScore: calculatedScore,
-    confidence,
     isRefutation: false,
     matchedRules,
   };
@@ -659,11 +654,10 @@ export function buildMonitoredItem(raw: {
     suggestedShareComment: `MasyaAllah/Praise be, tayangan yang menyejukkan hati dan menguatkan budi pekerti. Rujukan: ${wisdomGuidance.scriptureRef}.`,
   };
 
+  // Automated matches are candidates for a human, never an automatic conviction.
   const defaultWorkflowStatus: YoutubeWorkflowStatus = analysis.direction === "POSITIVE"
     ? "AMPLIFY_RECOMMENDED"
-    : analysis.riskScore >= 70
-    ? "PENDING_REVIEW"
-    : "VERIFIED_SYIRIK";
+    : "PENDING_REVIEW";
 
   return {
     id: `yt-${raw.videoId}`,
@@ -682,7 +676,6 @@ export function buildMonitoredItem(raw: {
     riskLevel: analysis.riskLevel,
     category: analysis.category,
     riskScore: analysis.riskScore,
-    confidence: analysis.confidence,
     isRefutation: analysis.isRefutation,
     matchedRules: analysis.matchedRules,
     tauhidGuidance: guidance,
