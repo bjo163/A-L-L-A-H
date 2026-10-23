@@ -4,6 +4,9 @@ import { test } from "node:test";
 import ts from "typescript";
 
 const routeSource = await readFile(new URL("../src/routes/world-monitor.ts", import.meta.url), "utf8");
+const contractSource = await readFile(new URL("../../../packages/api-contract/src/index.ts", import.meta.url), "utf8");
+const publicSummarySchemaSource = contractSource.match(/export const WORLD_MONITOR_PUBLIC_SUMMARY_SCHEMA = (\{[\s\S]*?\n\} as const);/)?.[1];
+const publicSummarySchema = Function(`return (${publicSummarySchemaSource.replace(/ as const$/, "")});`)();
 const compiledRoute = ts.transpileModule(
   routeSource.replace(/^import .*;\r?\n/gm, "").replace("export async function", "async function"),
   { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } },
@@ -25,6 +28,7 @@ function createRoute(checkDatabaseHealth, baseSnapshot, observations = [], runs 
     "requirePermission",
     "requireTenant",
     "createYoutubeScanGate",
+    "WORLD_MONITOR_PUBLIC_SUMMARY_SCHEMA",
     `${compiledRoute}; return worldMonitorRoutes;`,
   );
   return load(
@@ -35,13 +39,14 @@ function createRoute(checkDatabaseHealth, baseSnapshot, observations = [], runs 
     async () => ({ scannedCount: 0, newItemsCount: 0, items: [], summary: {} }),
     () => "",
     { query: () => ({ orderBy: () => ({ limit: async () => runs }) }) },
-    { query: () => ({ where: ({ category }) => ({ orderBy: () => ({ limit: async () => observations.filter((item) => item.category === category) }) }) }) },
+    { query: () => ({ where: (criteria) => ({ orderBy: () => ({ limit: async (limit) => observations.filter((item) => Object.entries(criteria).every(([key, value]) => item[key] === value)).slice(0, limit) }) }) }) },
     () => sourceDetails,
     () => sourceDetails.map(({ source }) => source),
     async () => {},
     () => async () => {},
     async () => {},
     () => ({ acquire: () => ({ allowed: true, remaining: 4, retryAfterMs: 0, release() {} }) }),
+    publicSummarySchema,
   );
 }
 
@@ -90,24 +95,25 @@ test("healthy database with no observations reports unknown data coverage, not g
   assert.equal(result.freshnessStatus, "unknown");
   assert.equal(result.coverageStatus, "unknown");
   assert.equal(result.hazardAlertLevel, "unknown");
-  assert.equal(result.totalMonitoredNodes, 0);
-  assert.deepEqual(result.telemetryFeeds, []);
-  assert.equal(typeof result.apiUptimeSeconds, "number");
+  assert.equal(result.observationCount, 0);
+  assert.equal(result.alertCount, 0);
+  assert.equal(result.schemaVersion, "1");
   assert.equal("auditLogs" in result, false);
 });
 
 test("configured sources with no ingestion history are exposed as unknown coverage", async () => {
   const load = new Function(
-    "exports", "checkDatabaseHealth", "getWorldMonitoringSnapshot", "youtubeSentinelRepo", "scanYoutube", "generateBrowserAutomationSnippet", "WorldMonitorSourceRunModel", "WorldMonitorObservationModel", "getActiveWorldMonitorSourceDetails", "getActiveWorldMonitorSources", "requireSession", "requirePermission", "requireTenant", "createYoutubeScanGate",
+    "exports", "checkDatabaseHealth", "getWorldMonitoringSnapshot", "youtubeSentinelRepo", "scanYoutube", "generateBrowserAutomationSnippet", "WorldMonitorSourceRunModel", "WorldMonitorObservationModel", "getActiveWorldMonitorSourceDetails", "getActiveWorldMonitorSources", "requireSession", "requirePermission", "requireTenant", "createYoutubeScanGate", "WORLD_MONITOR_PUBLIC_SUMMARY_SCHEMA",
     `${compiledRoute}; return worldMonitorRoutes;`,
   );
   let handler;
-  await load({}, async () => ({ ok: true }), createSnapshot, { getItems: () => [], getSummary: () => ({}), updateWorkflowStatus: () => null }, async () => ({ scannedCount: 0, newItemsCount: 0, items: [], summary: {} }), () => "", { query: () => ({ orderBy: () => ({ limit: async () => [] }) }) }, { query: () => ({ where: () => ({ orderBy: () => ({ limit: async () => [] }) }) }) }, () => [{ source: "source-a", category: "weather", tier: "primary" }], () => ["source-a"], async () => {}, () => async () => {}, async () => {}, () => ({ acquire: () => ({ allowed: true, remaining: 4, retryAfterMs: 0, release() {} }) }))({
+  await load({}, async () => ({ ok: true }), createSnapshot, { getItems: () => [], getSummary: () => ({}), updateWorkflowStatus: () => null }, async () => ({ scannedCount: 0, newItemsCount: 0, items: [], summary: {} }), () => "", { query: () => ({ orderBy: () => ({ limit: async () => [] }) }) }, { query: () => ({ where: () => ({ orderBy: () => ({ limit: async () => [] }) }) }) }, () => [{ source: "source-a", category: "weather", tier: "primary" }], () => ["source-a"], async () => {}, () => async () => {}, async () => {}, () => ({ acquire: () => ({ allowed: true, remaining: 4, retryAfterMs: 0, release() {} }) }), publicSummarySchema)({
     get(path, _options, fn) { if (path === "/v1/world-monitor") handler = fn; }, post() {},
   });
   const result = await handler();
   assert.doesNotMatch(routeSource, /refreshWorldMonitorSources/);
   assert.equal(result.sources[0].status, "unknown");
+  assert.equal("source" in result.sources[0], false);
   assert.equal(result.coverageStatus, "unknown");
   assert.equal(result.globalAlertLevel, "unknown");
 });
@@ -127,19 +133,13 @@ test("source health exposes actual attempt, success, freshness, coverage and fal
     { source: "open-meteo-weather-london", category: "weather", tier: "primary" },
     { source: "open-meteo-gfs-weather-london", category: "weather", tier: "fallback" },
   ]);
-  const primary = result.sources.find((source) => source.source === "open-meteo-weather-london");
-  const fallback = result.sources.find((source) => source.source === "open-meteo-gfs-weather-london");
-  assert.equal(primary.lastAttemptAt, now);
-  assert.equal(primary.lastSuccessAt, null);
-  assert.equal(primary.failureStreak, 1);
-  assert.equal(primary.parseErrors, 1);
-  assert.equal(primary.coverageStatus, "healthy");
-  assert.equal(fallback.lastSuccessAt, now);
-  assert.equal(fallback.fetchedPoints, 1);
-  assert.equal(fallback.fallbackActivated, true);
-  assert.equal(fallback.freshnessSlaSeconds, 3600);
-  assert.equal(fallback.coverageStatus, "healthy");
-  assert.equal(fallback.coverage, null);
+  const weather = result.sources.find((source) => source.category === "weather");
+  assert.equal(weather.lastAttemptAt, now);
+  assert.equal(weather.lastSuccessAt, now);
+  assert.equal(weather.recordCount, 1);
+  assert.equal(weather.fallbackActive, true);
+  assert.equal(weather.freshnessSlaSeconds, 3600);
+  assert.equal("source" in weather, false);
 });
 
 test("a successful provider response with zero records is empty, not failed or healthy coverage", async () => {
@@ -147,13 +147,12 @@ test("a successful provider response with zero records is empty, not failed or h
   const { result } = await invoke(async () => ({ ok: true }), [], [
     { source: "gdacs-global-disasters", category: "disaster", tier: "primary", status: "empty", startedAt: now, completedAt: now, recordCount: 0, durationMs: 12, metadata: { maxAgeSeconds: 86400 } },
   ], [{ source: "gdacs-global-disasters", category: "disaster", tier: "primary" }]);
-  const source = result.sources.find((item) => item.source === "gdacs-global-disasters");
+  const source = result.sources.find((item) => item.category === "disaster");
 
   assert.equal(source.status, "empty");
-  assert.equal(source.records, 0);
+  assert.equal(source.recordCount, 0);
   assert.equal(source.lastSuccessAt, now);
-  assert.equal(source.coverage, null);
-  assert.equal(source.coverageStatus, "unknown");
+  assert.equal(source.freshnessSlaSeconds, 86400);
   assert.equal(result.ingestionStatus, "healthy");
   assert.equal(result.coverageStatus, "unknown");
 });
@@ -184,10 +183,10 @@ test("a critical observation sets red global alert even when the database is hea
     confidence: 1,
     status: "available",
     normalized: { mag: 8.1 },
-  }]);
+  }], [], [{ source: "test-seismic-feed", category: "earthquake", tier: "primary" }]);
 
   assert.equal(result.databaseStatus, "available");
-  assert.equal(result.alerts.some((alert) => alert.level === "critical"), true);
+  assert.equal(result.alertCount, 1);
   assert.equal(result.globalAlertLevel, "red");
 });
 
@@ -198,22 +197,17 @@ test("repeated samples share one time-bounded event and keep critical hazard thr
     id, externalId: "quake-event-42", source: "test-seismic-feed", category: "earthquake",
     observedAt: now, fetchedAt: now, status: "available", normalized: { mag: 8.1 },
   }));
-  const { result, handler } = await invoke(async () => ({ ok: databaseAvailable }), observations);
-  assert.equal(result.alerts.filter((alert) => alert.eventId === "quake-event-42-quake").length, 1);
-  const initialEvent = result.alerts.find((alert) => alert.eventId === "quake-event-42-quake");
-  assert.equal(initialEvent.lifecycle, "initial");
-  assert.equal(initialEvent.level, "critical");
-  assert.equal(initialEvent.fetchedAt, now);
-  assert.ok(Date.parse(initialEvent.expiresAt) > Date.now());
+  const { result, handler } = await invoke(async () => ({ ok: databaseAvailable }), observations, [], [{ source: "test-seismic-feed", category: "earthquake", tier: "primary" }]);
+  assert.equal(result.alertCount, 1);
+  assert.equal("alerts" in result, false);
 
   const repeated = await handler();
-  assert.equal(repeated.alerts.filter((alert) => alert.eventId === initialEvent.eventId).length, 1);
-  assert.equal(repeated.alerts.find((alert) => alert.eventId === initialEvent.eventId).lifecycle, "active");
+  assert.equal(repeated.alertCount, 1);
 
   databaseAvailable = false;
   const degraded = await handler();
   assert.equal(degraded.databaseStatus, "unavailable");
-  assert.equal(degraded.alerts.find((alert) => alert.eventId === initialEvent.eventId).level, "critical");
+  assert.equal(degraded.alertCount, 1);
   assert.equal(degraded.globalAlertLevel, "red");
 });
 
@@ -223,15 +217,12 @@ test("a severity escalation updates the same event identity", async () => {
     id: "quake-sample", externalId: "quake-event-99", source: "test-seismic-feed", category: "earthquake",
     observedAt: now, fetchedAt: now, status: "available", normalized: { mag: 5.5 },
   };
-  const { result, handler } = await invoke(async () => ({ ok: true }), [observation]);
-  const first = result.alerts.find((alert) => alert.eventId === "quake-event-99-quake");
-  assert.equal(first.level, "advisory");
+  const { result, handler } = await invoke(async () => ({ ok: true }), [observation], [], [{ source: "test-seismic-feed", category: "earthquake", tier: "primary" }]);
+  assert.equal(result.alertCount, 1);
   observation.normalized.mag = 7.2;
   const escalated = await handler();
-  const update = escalated.alerts.find((alert) => alert.eventId === first.eventId);
-  assert.equal(update.id, first.id);
-  assert.equal(update.level, "critical");
-  assert.equal(update.lifecycle, "updated");
+  assert.equal(escalated.alertCount, 1);
+  assert.equal(escalated.hazardAlertLevel, "red");
 });
 
 test("hazards emit a resolved lifecycle after their observation-based TTL", async () => {
@@ -243,14 +234,12 @@ test("hazards emit a resolved lifecycle after their observation-based TTL", asyn
       id: "expiring-quake", externalId: "quake-expiring", source: "test-seismic-feed", category: "earthquake",
       observedAt: now, fetchedAt: now, status: "available", normalized: { mag: 7.2 },
     };
-    const { result, handler } = await invoke(async () => ({ ok: true }), [observation]);
+    const { result, handler } = await invoke(async () => ({ ok: true }), [observation], [], [{ source: "test-seismic-feed", category: "earthquake", tier: "primary" }]);
     const eventId = "quake-expiring-quake";
-    assert.equal(result.alerts.find((alert) => alert.eventId === eventId).lifecycle, "initial");
+    assert.equal(result.alertCount, 1);
     await new Promise((resolve) => setTimeout(resolve, 60));
     const expired = await handler();
-    const event = expired.alerts.find((alert) => alert.eventId === eventId);
-    assert.equal(event.lifecycle, "resolved");
-    assert.equal(typeof event.resolvedAt, "string");
+    assert.equal(expired.alertCount, 0);
     assert.equal(expired.hazardAlertLevel, "green");
   } finally {
     if (previousTtl === undefined) delete process.env.WM_HAZARD_TTL_EARTHQUAKE_SECONDS;
@@ -267,4 +256,24 @@ test("region, sensor, and activity values are not presented as live data without
   assert.match(engine, /latencyMs: null/);
   assert.match(engine, /heliogridLoadMw: null/);
   assert.match(engine, /telemetryFeeds: \[\]/);
+});
+
+test("anonymous summary is allowlisted and bounded when the database contains high volume and secret fields", async () => {
+  const now = new Date().toISOString();
+  const rows = Array.from({ length: 10_000 }, (_, index) => ({
+    id: `db-${index}`, externalId: `provider-${index}`, source: `source-${index % 6}`, category: ["weather", "atmosphere", "earthquake", "space-weather", "disaster"][index % 5],
+    observedAt: now, fetchedAt: now, status: "available", normalized: { mag: 4, privateUrl: "https://private.example", apiKey: "secret" },
+    rawPayload: { secret: true }, operatorNotes: "sensitive", tenantId: "tenant-secret", stack: "stack-secret",
+  }));
+  const { result } = await invoke(async () => ({ ok: true }), rows, [], Array.from({ length: 140 }, (_, index) => ({ source: `source-${index}`, category: "weather", tier: "primary" })));
+  assert.equal(result.schemaVersion, "1");
+  assert.equal(result.observationCount, 6);
+  assert.equal(result.sources.length <= 5, true);
+  assert.equal("observations" in result, false);
+  assert.equal("alerts" in result, false);
+  assert.equal("regions" in result, false);
+  assert.equal(JSON.stringify(result).includes("secret"), false);
+  assert.equal(JSON.stringify(result).includes("provider-"), false);
+  assert.equal(JSON.stringify(result).includes("source-0"), false);
+  assert.equal(JSON.stringify(result).includes("private.example"), false);
 });

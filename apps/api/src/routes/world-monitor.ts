@@ -9,6 +9,7 @@ import { getYoutubeSentinelSchedulerStatus, triggerManualYoutubeSweep, updateYou
 import { requirePermission, requireSession } from "./auth.js";
 import { requireTenant } from "./tenant-context.js";
 import { createYoutubeScanGate } from "../youtube-scan-gate.js";
+import { WORLD_MONITOR_PUBLIC_SUMMARY_SCHEMA, type WorldMonitorPublicSummary } from "@empire/api-contract";
 
 const youtubeScanGate = createYoutubeScanGate();
 // Keep the last known hazard events briefly in-process so a transient database or
@@ -27,6 +28,36 @@ const YOUTUBE_WORKFLOW_ACTIONS: readonly YoutubeWorkflowStatus[] = [
   "WISDOM_QUEUED", "AMPLIFY_RECOMMENDED", "SHARED_VIA_DAKWAH", "ARCHIVED_REFERENCE",
 ];
 
+const PUBLIC_MAX_OBSERVATIONS = 200;
+const PUBLIC_MAX_SOURCE_RUNS = 2000;
+const PUBLIC_MAX_SOURCES = 100;
+
+function summarizePublicSources(sources: Array<Record<string, any>>): WorldMonitorPublicSummary["sources"] {
+  const groups = new Map<string, Record<string, any>[]>();
+  for (const source of sources) groups.set(source.category, [...(groups.get(source.category) ?? []), source]);
+  return [...groups.entries()].map(([category, items]) => {
+    const records = items.reduce((total, item) => total + (Number.isFinite(item.records) ? item.records : 0), 0);
+    const rates = items.map((item) => item.errorRate).filter((value) => typeof value === "number" && Number.isFinite(value));
+    const successful = items.filter((item) => item.status === "success" || item.status === "stale" || item.status === "empty").length;
+    const freshness = items.map((item) => item.freshnessSeconds).filter((value) => typeof value === "number" && Number.isFinite(value));
+    return {
+      category,
+      status: (items.some((item) => item.status === "failed") ? successful ? "stale" : "failed" : items.some((item) => item.status === "success") ? "success" : items.some((item) => item.status === "empty") ? "empty" : "unknown") as WorldMonitorPublicSummary["sources"][number]["status"],
+      lastAttemptAt: latestTimestamp(items.map((item) => item.lastAttemptAt)),
+      lastSuccessAt: latestTimestamp(items.map((item) => item.lastSuccessAt)),
+      freshnessSeconds: freshness.length ? Math.min(...freshness) : null,
+      recordCount: items.some((item) => item.records !== null) ? records : null,
+      errorRate: rates.length ? rates.reduce((a, b) => a + b, 0) / rates.length : null,
+      freshnessSlaSeconds: items.map((item) => item.freshnessSlaSeconds).filter((value) => typeof value === "number").sort((a, b) => a - b)[0] ?? null,
+      fallbackActive: items.some((item) => item.fallbackActivated === true) ? true : items.some((item) => item.fallbackActivated === null) ? null : false,
+    };
+  });
+}
+
+function latestTimestamp(values: Array<string | null | undefined>) {
+  return values.filter((value): value is string => typeof value === "string").sort((a, b) => Date.parse(b) - Date.parse(a))[0] ?? null;
+}
+
 
 export async function worldMonitorRoutes(app: FastifyInstance) {
   // This endpoint stays public for the pre-login HUD. It returns aggregate health only;
@@ -36,11 +67,12 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
     {
       schema: {
         tags: ["System"],
-        summary: "World monitoring snapshot with explicit unavailable states for unconnected sources",
+        summary: "Aggregate public world monitoring summary",
         security: [],
+        response: { 200: WORLD_MONITOR_PUBLIC_SUMMARY_SCHEMA },
       },
     },
-    async (): Promise<WorldMonitoringSnapshot> => {
+    async (): Promise<WorldMonitorPublicSummary> => {
       let databaseStatus: WorldMonitoringSnapshot["databaseStatus"] = "unknown";
       try {
         databaseStatus = (await checkDatabaseHealth()).ok ? "available" : "unavailable";
@@ -54,18 +86,19 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
       const snapshot = getWorldMonitoringSnapshot();
       let runs: any[] = [];
       let observations: any[] = [];
-      try { runs = databaseStatus === "available" ? await WorldMonitorSourceRunModel.query().orderBy("completed_at", "desc").limit(1000) : []; } catch { runs = []; }
-      const activeSourceDetails = getActiveWorldMonitorSourceDetails();
+      try { runs = databaseStatus === "available" ? await WorldMonitorSourceRunModel.query().orderBy("completed_at", "desc").limit(PUBLIC_MAX_SOURCE_RUNS) : []; } catch { runs = []; }
+      const activeSourceDetails = getActiveWorldMonitorSourceDetails().slice(0, PUBLIC_MAX_SOURCES);
       const activeSourceIds = new Set(activeSourceDetails.map(({ source }) => source));
       runs = runs.filter((run) => activeSourceIds.has(run.source));
       if (databaseStatus === "available") {
-        const categories = ["weather", "atmosphere", "earthquake", "space-weather", "disaster"];
-        const perCategory = await Promise.all(categories.map(async (category) => {
+        const configuredSources = activeSourceDetails.slice(0, PUBLIC_MAX_SOURCES);
+        const latestPerSource = await Promise.all(configuredSources.map(async ({ source }) => {
           try {
-            return await (WorldMonitorObservationModel.query() as any).where({ category }).orderBy("observed_at", "desc").limit(40);
+            // One latest row for each configured source avoids broad category scans.
+            return await (WorldMonitorObservationModel.query() as any).where({ source }).orderBy("observed_at", "desc").limit(1);
           } catch { return []; }
         }));
-        observations = perCategory.flat().sort((left, right) => Date.parse(right.observedAt) - Date.parse(left.observedAt));
+        observations = latestPerSource.flat().slice(0, PUBLIC_MAX_OBSERVATIONS);
       }
       const sourceGroups = new Map<string, any[]>();
       for (const run of runs) sourceGroups.set(run.source, [...(sourceGroups.get(run.source) ?? []), run]);
@@ -120,7 +153,7 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
         const freshnessSeconds = Math.max(0, Math.floor((Date.now() - Date.parse(item.observedAt)) / 1000));
         const threshold = item.category === "weather" ? 3_600 : item.category === "atmosphere" ? 10_800 : item.category === "space-weather" ? 1_800 : item.category === "disaster" ? 86_400 : Number.POSITIVE_INFINITY;
         return { ...item, freshnessSeconds, status: freshnessSeconds > threshold ? "stale" : item.status };
-      });
+      }).sort((a, b) => Date.parse(b.observedAt) - Date.parse(a.observedAt)).slice(0, PUBLIC_MAX_OBSERVATIONS);
       const latestBySource = new Map<string, any>();
       for (const item of observations) if (!latestBySource.has(item.source)) latestBySource.set(item.source, item);
       const alerts = observations.filter((item) => item.category === "earthquake" || item.category === "disaster" || latestBySource.get(item.source)?.id === item.id).flatMap((item) => {
@@ -217,22 +250,25 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
               ? "unknown"
               : "green";
 
-      return {
-        ...snapshot,
+      const publicSnapshot: WorldMonitorPublicSummary = {
+        schemaVersion: "1",
         status,
         timestamp: new Date().toISOString(),
         globalAlertLevel,
-        apiUptimeSeconds: Number(process.uptime().toFixed(3)),
         databaseStatus,
         ingestionStatus,
         freshnessStatus,
         coverageStatus,
         hazardAlertLevel,
-        sources,
-        observations,
-        alerts: uniqueAlerts,
-        history: [...buckets.entries()].sort(([a], [b]) => a.localeCompare(b)).map(([bucket, value]) => ({ bucket, ...value })),
+        // The anonymous endpoint is an aggregate summary. Detailed source/event rows
+        // belong on authenticated, paginated endpoints and are never serialized here.
+        sources: summarizePublicSources(sources),
+        observationCount: observations.length,
+        alertCount: uniqueAlerts.filter((alert) => alert.lifecycle !== "resolved").length,
+        history: [...buckets.entries()].sort(([a], [b]) => a.localeCompare(b)).slice(-168).map(([bucket, value]) => ({ bucket, count: value.count })),
       };
+      // Aggregate DTO carries bounded arrays and no provider payloads or identifiers.
+      return publicSnapshot;
     },
   );
 
