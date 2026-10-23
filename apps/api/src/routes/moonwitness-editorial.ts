@@ -1,6 +1,7 @@
 import type { FastifyInstance, FastifyReply, FastifyRequest } from "fastify";
+import { createHash } from "node:crypto";
 import {
-  AuthService,
+  AuthService, AuditLogModel, MoonwitnessContentRevisionModel, MoonwitnessPublicationModel,
   MoonwitnessCollectionModel,
   MoonwitnessStoryModel,
   MoonwitnessStoryTagModel,
@@ -21,11 +22,10 @@ import { requireTenant } from "./tenant-context.js";
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const collectionTransitions: Record<string, string[]> = { draft: ["published", "archived"], published: ["archived"], archived: [] };
 const storyTransitions: Record<string, string[]> = {
-  draft: ["in_review", "archived"],
-  in_review: ["draft", "approved"],
-  approved: ["draft", "published", "archived"],
-  published: ["archived"],
-  archived: [],
+  idea: ["draft", "archived"], draft: ["in_review", "archived"],
+  in_review: ["changes_requested", "approved"], changes_requested: ["draft", "in_review", "archived"],
+  approved: ["draft", "scheduled", "published", "archived"], scheduled: ["published", "approved", "archived"],
+  published: ["approved", "archived"], archived: ["draft"],
 };
 
 export function isEditorialTransitionAllowed(kind: "collection" | "story", current: string, next: string) {
@@ -51,6 +51,26 @@ function isUniqueViolation(error: unknown) {
 
 function canPublish(request: FastifyRequest) {
   return Boolean(request.authUser && AuthService.hasPermission(request.authUser, "moonwitness:publish"));
+}
+
+function canReview(request: FastifyRequest) {
+  return Boolean(request.authUser && AuthService.hasPermission(request.authUser, "moonwitness:review"));
+}
+
+function revisionDigest(snapshot: Record<string, unknown>) {
+  return createHash("sha256").update(JSON.stringify(snapshot)).digest("hex");
+}
+
+async function appendStoryRevision(trx: any, story: any, actorId: string, reason: string, tagIds: string[]) {
+  const snapshot = {
+    storyId: story.id, collectionId: story.collectionId, slug: story.slug, title: story.title,
+    synopsis: story.synopsis ?? null, body: story.body, classification: story.classification,
+    visibility: story.visibility, tagIds: [...tagIds].sort(), revision: story.revision,
+  };
+  return (MoonwitnessContentRevisionModel.query(trx) as any).insert({
+    tenantId: story.tenantId, storyId: story.id, revision: story.revision, actorId, reason,
+    snapshot, sha256: revisionDigest(snapshot), provenance: { source: "moonwitness-editorial-api" },
+  });
 }
 
 function stringValue(value: unknown, min: number, max: number): value is string {
@@ -227,6 +247,7 @@ export async function moonwitnessEditorialRoutes(app: FastifyInstance) {
           editorialState: "draft", classification: "internal", visibility: "private", revision: 1,
         });
         if (tagIds?.length) await MoonwitnessStoryTagModel.query(trx).insert(tagIds.map((tagId) => ({ tenantId, storyId: story.id, tagId })));
+        await appendStoryRevision(trx, story, request.authUser!.id, "Initial story draft", tagIds ?? []);
         return { story };
       });
     } catch (error) {
@@ -241,20 +262,35 @@ export async function moonwitnessEditorialRoutes(app: FastifyInstance) {
   app.patch("/v1/moonwitness/stories/:id", { preHandler: requirePermission("moonwitness:write"), schema: { tags: ["MOONWITNESS"], summary: "Edit a draft or transition a tenant story", security: [{ bearerAuth: [], tenantSelection: [] }], body: MOONWITNESS_STORY_PATCH_SCHEMA } }, async (request, reply) => {
     const { id } = request.params as { id: string };
     const body = request.body as Record<string, unknown>;
-    const allowed = ["title", "synopsis", "body", "editorialState", "classification", "visibility", "tagIds"];
+    const allowed = ["title", "synopsis", "body", "editorialState", "classification", "visibility", "tagIds", "reason", "scheduledAt"];
     if (!uuidPattern.test(id) || !body || !Object.keys(body).length || Object.keys(body).some((key) => !allowed.includes(key))) return invalid(reply, "Perubahan cerita tidak valid.");
     if (body.title !== undefined && !stringValue(body.title, 1, 200) || body.synopsis != null && !stringValue(body.synopsis, 1, 2000) || body.body !== undefined && !stringValue(body.body, 1, 100000)) return invalid(reply, "Judul, ringkasan, atau isi cerita tidak valid.");
     if (body.classification !== undefined && !["public", "internal", "confidential", "restricted"].includes(body.classification as string)) return invalid(reply, "Klasifikasi tidak valid.");
     if (body.visibility !== undefined && !["private", "unlisted", "public"].includes(body.visibility as string)) return invalid(reply, "Visibilitas tidak valid.");
     if (!storyTags(body.tagIds)) return invalid(reply, "Daftar tag cerita tidak valid.");
+    if (!stringValue(body.reason, 1, 500)) return invalid(reply, "Alasan perubahan wajib diisi (1–500 karakter).");
+    if (body.scheduledAt !== undefined && (typeof body.scheduledAt !== "string" || !Number.isFinite(Date.parse(body.scheduledAt)) || Date.parse(body.scheduledAt) <= Date.now())) return invalid(reply, "Waktu jadwal harus berupa tanggal ISO di masa depan.");
     let result;
     try {
     result = await getDatabase().transaction(async (trx) => {
       const story = await MoonwitnessStoryModel.query(trx).where({ id, tenant_id: request.tenantId! }).forUpdate().first();
       if (!story) return { error: "missing" as const };
+      const contentChanged = ["title", "synopsis", "body", "classification", "visibility", "tagIds"].some((key) => body[key] !== undefined);
+      if (contentChanged && !["draft", "changes_requested"].includes(story.editorialState)) return { error: "locked" as const };
       if (body.editorialState !== undefined) {
         if (typeof body.editorialState !== "string" || !isEditorialTransitionAllowed("story", story.editorialState, body.editorialState)) return { error: "transition" as const };
-        if (["approved", "published"].includes(body.editorialState) && !canPublish(request)) return { error: "permission" as const };
+        const isReviewDecision = ["approved", "changes_requested"].includes(body.editorialState) && story.editorialState === "in_review";
+        const isUnpublish = body.editorialState === "approved" && story.editorialState === "published";
+        if (isReviewDecision && !canReview(request)) return { error: "permission" as const };
+        if (isReviewDecision && story.authorId === request.authUser!.id) return { error: "self_review" as const };
+        if (isUnpublish && !canPublish(request)) return { error: "permission" as const };
+        if (["published", "scheduled"].includes(body.editorialState) && !canPublish(request)) return { error: "permission" as const };
+        if (["published", "scheduled"].includes(body.editorialState) && story.authorId === request.authUser!.id) return { error: "self_publish" as const };
+        if (body.editorialState === "scheduled" && !body.scheduledAt) return { error: "schedule_time" as const };
+        if (body.editorialState === "published") {
+          const priorApproval = await AuditLogModel.query(trx).where({ entity: "moonwitness_story", entity_id: id, action: "MOONWITNESS_REVISION_APPROVED" }).whereRaw("payload ->> 'tenantId' = ?", [request.tenantId!]).orderBy("created_at", "desc").first();
+          if (priorApproval?.userId === request.authUser!.id) return { error: "self_review" as const };
+        }
       }
       const nextClassification = body.classification ?? story.classification;
       const nextVisibility = body.visibility ?? story.visibility;
@@ -269,7 +305,23 @@ export async function moonwitnessEditorialRoutes(app: FastifyInstance) {
       }
       const patch: Record<string, unknown> = { revision: story.revision + 1 };
       for (const key of ["title", "synopsis", "body", "editorialState", "classification", "visibility"]) if (body[key] !== undefined) patch[key] = typeof body[key] === "string" ? (body[key] as string).trim() : body[key];
-      return { story: await story.$query(trx).patchAndFetch(patch) };
+      if (body.scheduledAt !== undefined) patch.scheduledAt = body.scheduledAt;
+      // Editing after review invalidates that approval; the new immutable revision must be reviewed again.
+      if (contentChanged && story.editorialState === "changes_requested") patch.editorialState = "draft";
+      const updated = await story.$query(trx).patchAndFetch(patch);
+      const nextTagIds = tagIds ?? (await MoonwitnessStoryTagModel.query(trx).where({ tenant_id: request.tenantId!, story_id: id }).select("tag_id")).map((tag: any) => tag.tagId);
+      const revision = await appendStoryRevision(trx, updated, request.authUser!.id, body.reason as string, nextTagIds);
+      if (body.editorialState === "changes_requested" || body.editorialState === "approved" && story.editorialState === "in_review") {
+        await (AuditLogModel.query(trx) as any).insert({ userId: request.authUser!.id, action: body.editorialState === "approved" ? "MOONWITNESS_REVISION_APPROVED" : "MOONWITNESS_CHANGES_REQUESTED", entity: "moonwitness_story", entityId: id, payload: { tenantId: request.tenantId, revisionId: revision.id, revision: updated.revision, reason: body.reason }, ipAddress: request.ip });
+      }
+      if (body.editorialState === "published") {
+        await (MoonwitnessPublicationModel.query(trx) as any).insert({ tenantId: request.tenantId!, storyId: id, revisionId: revision.id, publisherId: request.authUser!.id, snapshot: revision.snapshot, sha256: revision.sha256, publishedAt: new Date() });
+        await (AuditLogModel.query(trx) as any).insert({ userId: request.authUser!.id, action: "MOONWITNESS_REVISION_PUBLISHED", entity: "moonwitness_story", entityId: id, payload: { tenantId: request.tenantId, revisionId: revision.id, revision: updated.revision, reason: body.reason }, ipAddress: request.ip });
+      }
+      if (body.editorialState === "approved" && story.editorialState === "published") {
+        await (AuditLogModel.query(trx) as any).insert({ userId: request.authUser!.id, action: "MOONWITNESS_STORY_UNPUBLISHED", entity: "moonwitness_story", entityId: id, payload: { tenantId: request.tenantId, revision: updated.revision, reason: body.reason }, ipAddress: request.ip });
+      }
+      return { story: updated };
     });
     } catch (error) {
       if (isUniqueViolation(error)) return conflict(reply, "Slug cerita sudah digunakan di koleksi ini.");
@@ -278,8 +330,52 @@ export async function moonwitnessEditorialRoutes(app: FastifyInstance) {
     if (result.error === "missing") return reply.code(404).send({ status: "not_found", message: "Cerita tidak ditemukan." });
     if (result.error === "transition") return conflict(reply, "Transisi editorial cerita tidak diizinkan.");
     if (result.error === "permission") return reply.code(403).send({ status: "forbidden", message: "Izin moonwitness:publish diperlukan." });
+    if (result.error === "self_review" || result.error === "self_publish") return reply.code(403).send({ status: "forbidden", message: "Penulis tidak boleh menyetujui atau menerbitkan revisinya sendiri." });
+    if (result.error === "locked") return conflict(reply, "Konten terkunci pada status ini; minta perubahan atau kembalikan status ke draft terlebih dahulu.");
+    if (result.error === "schedule_time") return invalid(reply, "Jadwal publikasi memerlukan scheduledAt di masa depan.");
     if (result.error === "publication") return invalid(reply, "Cerita harus berklasifikasi public dan memiliki visibilitas public sebelum diterbitkan.");
     if (result.error === "tags") return invalid(reply, "Semua tag harus aktif dan berada di tenant aktif.");
+    return result.story;
+  });
+
+  app.get("/v1/moonwitness/stories/:id/revisions", { preHandler: requirePermission("moonwitness:read") }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    if (!uuidPattern.test(id)) return invalid(reply, "ID cerita harus berupa UUID.");
+    const story = await MoonwitnessStoryModel.query().where({ id, tenant_id: request.tenantId! }).first();
+    if (!story) return reply.code(404).send({ status: "not_found", message: "Cerita tidak ditemukan." });
+    return MoonwitnessContentRevisionModel.query().where({ tenant_id: request.tenantId!, story_id: id }).orderBy("revision", "desc");
+  });
+
+  app.get("/v1/moonwitness/stories/:id/publications", { preHandler: requirePermission("moonwitness:read") }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    if (!uuidPattern.test(id)) return invalid(reply, "ID cerita harus berupa UUID.");
+    const story = await MoonwitnessStoryModel.query().where({ id, tenant_id: request.tenantId! }).first();
+    if (!story) return reply.code(404).send({ status: "not_found", message: "Cerita tidak ditemukan." });
+    return MoonwitnessPublicationModel.query().where({ tenant_id: request.tenantId!, story_id: id }).orderBy("published_at", "desc");
+  });
+
+  app.post("/v1/moonwitness/stories/:id/restore", { preHandler: requirePermission("moonwitness:write"), schema: { tags: ["MOONWITNESS"], security: [{ bearerAuth: [], tenantSelection: [] }], body: { type: "object", additionalProperties: false, required: ["revisionId", "reason"], properties: { revisionId: { type: "string", format: "uuid" }, reason: { type: "string", minLength: 1, maxLength: 500 } } } } }, async (request, reply) => {
+    const { id } = request.params as { id: string };
+    const body = request.body as { revisionId?: unknown; reason?: unknown };
+    if (!uuidPattern.test(id) || !body || typeof body.revisionId !== "string" || !uuidPattern.test(body.revisionId) || !stringValue(body.reason, 1, 500)) return invalid(reply, "ID revisi atau alasan pemulihan tidak valid.");
+    const result = await getDatabase().transaction(async (trx) => {
+      const story = await MoonwitnessStoryModel.query(trx).where({ id, tenant_id: request.tenantId! }).forUpdate().first();
+      if (!story) return { error: "missing" as const };
+      if (!["draft", "changes_requested", "archived", "approved"].includes(story.editorialState)) return { error: "locked" as const };
+      const source = await MoonwitnessContentRevisionModel.query(trx).where({ id: body.revisionId as string, tenant_id: request.tenantId!, story_id: id }).first();
+      if (!source) return { error: "revision" as const };
+      const snapshot = source.snapshot as Record<string, any>;
+      const tagIds = Array.isArray(snapshot.tagIds) ? snapshot.tagIds as string[] : [];
+      await MoonwitnessStoryTagModel.query(trx).where({ tenant_id: request.tenantId!, story_id: id }).delete();
+      if (tagIds.length) await MoonwitnessStoryTagModel.query(trx).insert(tagIds.map((tagId) => ({ tenantId: request.tenantId!, storyId: id, tagId })));
+      const restored = await story.$query(trx).patchAndFetch({ title: snapshot.title, synopsis: snapshot.synopsis ?? null, body: snapshot.body, classification: snapshot.classification, visibility: snapshot.visibility, editorialState: "draft", revision: story.revision + 1 });
+      const revision = await appendStoryRevision(trx, restored, request.authUser!.id, body.reason as string, tagIds);
+      await (AuditLogModel.query(trx) as any).insert({ userId: request.authUser!.id, action: "MOONWITNESS_REVISION_RESTORED", entity: "moonwitness_story", entityId: id, payload: { tenantId: request.tenantId, sourceRevisionId: source.id, revisionId: revision.id, reason: body.reason }, ipAddress: request.ip });
+      return { story: restored };
+    });
+    if (result.error === "missing") return reply.code(404).send({ status: "not_found", message: "Cerita tidak ditemukan." });
+    if (result.error === "revision") return reply.code(404).send({ status: "not_found", message: "Revisi tidak ditemukan di tenant aktif." });
+    if (result.error === "locked") return conflict(reply, "Story harus dihentikan atau diminta perubahannya sebelum dipulihkan.");
     return result.story;
   });
 }

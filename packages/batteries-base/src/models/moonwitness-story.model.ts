@@ -26,6 +26,7 @@ export class MoonwitnessStoryModel extends BatteriesModel {
     classification: { type: "string", required: true, defaultTo: "internal", index: true },
     visibility: { type: "string", required: true, defaultTo: "private", index: true },
     revision: { type: "integer", required: true, defaultTo: 1 },
+    scheduledAt: { type: "timestamp", nullable: true, index: true },
   };
 
   tenantId!: string;
@@ -35,8 +36,9 @@ export class MoonwitnessStoryModel extends BatteriesModel {
   title!: string;
   synopsis?: string | null;
   body!: string;
-  editorialState!: "draft" | "in_review" | "approved" | "published" | "archived";
+  editorialState!: "idea" | "draft" | "in_review" | "changes_requested" | "approved" | "scheduled" | "published" | "archived";
   classification!: "public" | "internal" | "confidential" | "restricted";
   visibility!: "private" | "unlisted" | "public";
   revision!: number;
+  scheduledAt?: Date | null;
 }

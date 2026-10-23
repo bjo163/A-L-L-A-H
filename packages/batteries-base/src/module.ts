@@ -43,7 +43,7 @@ import {
   OperationalInvoiceModel, OperationalPaymentModel, OperationalExpenseModel, CalendarActivityModel, SalesOrderLineModel,
   MoonwitnessCollectionModel, MoonwitnessStoryModel, MoonwitnessStoryTagModel,
   MoonwitnessEpisodeModel, MoonwitnessSceneModel, MoonwitnessComicPageModel,
-  MoonwitnessCharacterModel, MoonwitnessSignalModel,
+  MoonwitnessCharacterModel, MoonwitnessSignalModel, MoonwitnessContentRevisionModel, MoonwitnessPublicationModel,
 } from "./models/index.js";
 import { ASMAUL_HUSNA_99 } from "./data/asmaul-husna.js";
 import { seedMoonwitnessCollections } from "./moonwitness-seed.js";
@@ -85,7 +85,7 @@ const researchModels = [
 ];
 
 const workModels = [WorkspaceModel, ProjectModel, TaskModel, DocumentModel, CommentModel, NotificationModel, NotificationOutboxModel, TagModel, TagAssignmentModel, YoutubeSentinelPartnerLinkModel, CrmOpportunityModel, CatalogItemModel, SalesQuoteModel, SalesQuoteLineModel, SalesOrderModel, SalesOrderLineModel, OperationalInvoiceModel, OperationalPaymentModel, OperationalExpenseModel, CalendarActivityModel];
-const moonwitnessEditorialModels = [MoonwitnessCollectionModel, MoonwitnessStoryModel, MoonwitnessStoryTagModel, MoonwitnessEpisodeModel, MoonwitnessSceneModel, MoonwitnessComicPageModel, MoonwitnessCharacterModel, MoonwitnessSignalModel];
+const moonwitnessEditorialModels = [MoonwitnessCollectionModel, MoonwitnessStoryModel, MoonwitnessStoryTagModel, MoonwitnessEpisodeModel, MoonwitnessSceneModel, MoonwitnessComicPageModel, MoonwitnessCharacterModel, MoonwitnessSignalModel, MoonwitnessContentRevisionModel, MoonwitnessPublicationModel];
 
 const moduleModelRegistry: Record<string, Record<string, Array<typeof BatteriesModelClass>>> = {
   kernel: Object.fromEntries(kernelModels.map((model) => [model.tableName, [model]])),
@@ -392,6 +392,12 @@ export const ROLE_LEXICON_SEEDS = [
   { id: uuidv7(), name: "Watcher", slug: "watcher", description: "Anomaly Seraph [Atid]" },
   { id: uuidv7(), name: "Bastion", slug: "bastion", description: "Firewall Seraph [Malik]" },
   { id: uuidv7(), name: "Keymaster", slug: "keymaster", description: "Gatekeeper Seraph [Ridwan]" },
+  { id: uuidv7(), name: "MOONWITNESS Writer", slug: "moonwitness-writer", description: "Create and edit private editorial drafts" },
+  { id: uuidv7(), name: "MOONWITNESS Illustrator", slug: "moonwitness-illustrator", description: "Manage comic page assets and ordering" },
+  { id: uuidv7(), name: "MOONWITNESS Editor", slug: "moonwitness-editor", description: "Edit and submit editorial drafts for review" },
+  { id: uuidv7(), name: "MOONWITNESS Reviewer", slug: "moonwitness-reviewer", description: "Independently review and request changes or approve" },
+  { id: uuidv7(), name: "MOONWITNESS Publisher", slug: "moonwitness-publisher", description: "Schedule and publish approved revisions" },
+  { id: uuidv7(), name: "MOONWITNESS Administrator", slug: "moonwitness-admin", description: "Administer editorial content, review and publishing" },
 ];
 
 /**
@@ -551,6 +557,8 @@ async function syncBaseModuleUnlocked(knex: Knex, modules: readonly SchemaModule
     { id: uuidv7(), name: "MOONWITNESS Editorial Read", slug: "moonwitness:read", description: "Read editorial records in the active tenant" },
     { id: uuidv7(), name: "MOONWITNESS Editorial Write", slug: "moonwitness:write", description: "Create and edit editorial records in the active tenant" },
     { id: uuidv7(), name: "MOONWITNESS Editorial Publish", slug: "moonwitness:publish", description: "Approve and publish editorial records in the active tenant" },
+    { id: uuidv7(), name: "MOONWITNESS Editorial Review", slug: "moonwitness:review", description: "Request changes or approve editorial revisions in the active tenant" },
+    { id: uuidv7(), name: "MOONWITNESS Illustration", slug: "moonwitness:illustrate", description: "Create and order comic page assets in the active tenant" },
     { id: uuidv7(), name: "Sentinel Read", slug: "sentinel:read", description: "Read YouTube Sentinel monitoring records and scheduler status" },
     { id: uuidv7(), name: "Sentinel Scan", slug: "sentinel:scan", description: "Run bounded YouTube Sentinel searches" },
     { id: uuidv7(), name: "Sentinel Review", slug: "sentinel:review", description: "Update YouTube Sentinel review decisions" },
@@ -616,6 +624,12 @@ async function syncBaseModuleUnlocked(knex: Knex, modules: readonly SchemaModule
     sentinel: ["continuum:read", "research:read", "cab:read", "cab:audit", "sentinel:read", "sentinel:scan", "sentinel:review", "sentinel:schedule"],
     bastion: ["continuum:read", "research:read", "cab:read", "cab:audit"],
     reaper: ["continuum:read", "research:read", "cab:read", "cab:audit"],
+    "moonwitness-writer": ["moonwitness:read", "moonwitness:write"],
+    "moonwitness-illustrator": ["moonwitness:read", "moonwitness:illustrate"],
+    "moonwitness-editor": ["moonwitness:read", "moonwitness:write"],
+    "moonwitness-reviewer": ["moonwitness:read", "moonwitness:review"],
+    "moonwitness-publisher": ["moonwitness:read", "moonwitness:publish"],
+    "moonwitness-admin": ["moonwitness:read", "moonwitness:write", "moonwitness:illustrate", "moonwitness:review", "moonwitness:publish"],
   };
   for (const [roleSlug, slugs] of Object.entries(permissionAssignments)) {
     const roleRecord = await knex("roles").where({ slug: roleSlug }).first();

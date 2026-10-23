@@ -15,6 +15,7 @@ function compileTs(source) {
 function loadTs(source, dependencies = {}) {
   const module = { exports: {} };
   new Function("exports", "require", "module", source)(module.exports, (specifier) => {
+    if (specifier === "node:crypto") return require("node:crypto");
     assert.ok(specifier in dependencies, `Unexpected dependency: ${specifier}`);
     return dependencies[specifier];
   }, module);
@@ -28,7 +29,7 @@ const validateStoryCreate = new Ajv({ strict: false, validateFormats: false }).c
 const modelStub = class BatteriesModel {};
 
 const models = {};
-for (const file of ["moonwitness-collection.model.ts", "moonwitness-story.model.ts", "moonwitness-story-tag.model.ts", "tag.model.ts"]) {
+for (const file of ["moonwitness-collection.model.ts", "moonwitness-story.model.ts", "moonwitness-story-tag.model.ts", "moonwitness-content-revision.model.ts", "moonwitness-publication.model.ts", "tag.model.ts"]) {
   const source = await readFile(new URL(`../../../packages/batteries-base/src/models/${file}`, import.meta.url), "utf8");
   Object.assign(models, loadTs(compileTs(source), { "@empire/batteries": { BatteriesModel: modelStub } }));
 }
@@ -57,6 +58,17 @@ test("Collection, Story, author, owner, and tags have tenant-scoped database key
   assert.ok(MoonwitnessStoryModel.foreignConstraints.some((key) => key.columns.join(",") === "tenantId,authorId" && key.references.table === "tenant_memberships"));
   assert.ok(MoonwitnessStoryTagModel.foreignConstraints.every((key) => key.columns[0] === "tenantId"));
   assert.ok(TagModel.uniqueConstraints.some((fields) => fields.join(",") === "tenantId,id"));
+});
+
+test("content revisions and publications are append-oriented tenant-scoped snapshots", () => {
+  const { MoonwitnessContentRevisionModel, MoonwitnessPublicationModel } = models;
+  assert.equal(MoonwitnessContentRevisionModel.tableName, "moonwitness_content_revisions");
+  assert.ok(MoonwitnessContentRevisionModel.uniqueConstraints.some((fields) => fields.join(",") === "tenantId,storyId,revision"));
+  assert.ok(MoonwitnessContentRevisionModel.foreignConstraints.every((key) => key.columns[0] === "tenantId"));
+  for (const key of ["snapshot", "sha256", "actorId", "reason", "provenance"]) assert.ok(MoonwitnessContentRevisionModel.fields[key]);
+  assert.equal(MoonwitnessPublicationModel.tableName, "moonwitness_publications");
+  assert.ok(MoonwitnessPublicationModel.foreignConstraints.every((key) => key.columns[0] === "tenantId"));
+  for (const key of ["revisionId", "snapshot", "sha256", "publisherId", "publishedAt"]) assert.ok(MoonwitnessPublicationModel.fields[key]);
 });
 
 test("the eight universe collection seeds stay private drafts and use a tenant-scoped conflict key", async () => {
@@ -98,6 +110,12 @@ test("editorial state transitions require the reviewed forward path", async () =
   assert.equal(route.isEditorialTransitionAllowed("story", "draft", "in_review"), true);
   assert.equal(route.isEditorialTransitionAllowed("story", "draft", "published"), false);
   assert.equal(route.isEditorialTransitionAllowed("story", "published", "draft"), false);
+  assert.equal(route.isEditorialTransitionAllowed("story", "in_review", "changes_requested"), true);
+  assert.equal(route.isEditorialTransitionAllowed("story", "in_review", "approved"), true);
+  assert.equal(route.isEditorialTransitionAllowed("story", "approved", "scheduled"), true);
+  assert.equal(route.isEditorialTransitionAllowed("story", "scheduled", "published"), true);
+  assert.equal(route.isEditorialTransitionAllowed("story", "published", "approved"), true);
+  assert.equal(route.isEditorialTransitionAllowed("story", "archived", "draft"), true);
   assert.equal(route.isEditorialTransitionAllowed("collection", "draft", "published"), true);
   assert.equal(route.isEditorialTransitionAllowed("collection", "archived", "published"), false);
 });
