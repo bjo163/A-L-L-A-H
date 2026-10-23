@@ -34,7 +34,10 @@ const postgresTypes: Record<FieldDefinition["type"], string[]> = {
 };
 
 function camelToSnake(str: string): string {
-  return str.replace(/([A-Z])/g, "_$1").toLowerCase();
+  return str
+    .replace(/^([A-Z])/, (m) => m.toLowerCase())
+    .replace(/([A-Z])/g, "_$1")
+    .toLowerCase();
 }
 
 async function getIndexes(knex: Knex | Knex.Transaction, schema: string, table: string) {

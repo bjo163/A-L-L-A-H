@@ -2,7 +2,10 @@ import { QueryBuilder, type Model, type Page } from "objection";
 import type { PaginatedResult, PaginationParams, FilterValue } from "./types.js";
 
 function camelToSnake(str: string): string {
-  return str.replace(/([A-Z])/g, "_$1").toLowerCase();
+  return str
+    .replace(/^([A-Z])/, (m) => m.toLowerCase())
+    .replace(/([A-Z])/g, "_$1")
+    .toLowerCase();
 }
 
 function escapeLikePattern(term: string): string {
@@ -17,6 +20,7 @@ export class BatteriesQueryBuilder<M extends Model, R = M[]> extends QueryBuilde
 
   private _includeDeleted = false;
   private _onlyDeleted = false;
+  private _softDeleteApplied = false;
 
   /**
    * Include soft-deleted records in the query
@@ -151,6 +155,7 @@ export class BatteriesQueryBuilder<M extends Model, R = M[]> extends QueryBuilde
   }
 
   private _applySoftDeleteScoping(): void {
+    if (this._softDeleteApplied) return;
     const modelClass = this.modelClass() as unknown as {
       hasSoftDelete?: boolean;
       tableName?: string;
@@ -161,8 +166,10 @@ export class BatteriesQueryBuilder<M extends Model, R = M[]> extends QueryBuilde
 
       if (this._onlyDeleted) {
         this.whereNotNull(column);
+        this._softDeleteApplied = true;
       } else if (!this._includeDeleted) {
         this.whereNull(column);
+        this._softDeleteApplied = true;
       }
     }
   }
