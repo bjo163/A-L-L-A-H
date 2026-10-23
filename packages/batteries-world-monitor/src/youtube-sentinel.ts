@@ -27,8 +27,6 @@ interface HeuristicRuleDefinition {
   label: string;
   weight: number;
   regex: RegExp;
-}
-
 const HEURISTIC_RULES: HeuristicRuleDefinition[] = [
   // 1. Sihir, Santet & Pelet
   {
@@ -1378,59 +1376,4 @@ function parseYtInitialData(
   return results;
 }
 
-/**
- * Generates an executable browser automation script (Playwright) that an operator
- * can inspect or run standalone.
- */
-export function generateBrowserAutomationSnippet(query: string = "cek khodam"): string {
-  const queryLiteral = JSON.stringify(query)
-    .replaceAll("\u2028", "\\u2028")
-    .replaceAll("\u2029", "\\u2029");
-  return `/**
- * Empire of the Light — YouTube Tauhid Sentinel Browser Crawler
- * Runner: Playwright / Chromium Headless (Tanpa AI)
- */
-import { chromium } from "playwright";
-
-async function runSentinelCrawler() {
-  const query = ${queryLiteral};
-  const browser = await chromium.launch({ headless: true });
-  const page = await browser.newPage();
-  
-  console.log(\`[Crawler] Navigating to YouTube for query: \${query}\`);
-  await page.goto(\`https://www.youtube.com/results?search_query=\${encodeURIComponent(query)}\`, {
-    waitUntil: "domcontentloaded",
-  });
-
-  const videos = await page.evaluate(() => {
-    const elements = document.querySelectorAll("ytd-video-renderer");
-    return Array.from(elements).slice(0, 15).map((el) => {
-      const titleAnchor = el.querySelector("#video-title") as HTMLAnchorElement | null;
-      const channelEl = el.querySelector("#channel-info ytd-channel-name a") as HTMLAnchorElement | null;
-      const snippetEl = el.querySelector(".metadata-snippet-container") as HTMLElement | null;
-      return {
-        videoId: titleAnchor?.href?.split("v=")[1]?.split("&")[0] || "",
-        title: titleAnchor?.innerText?.trim() || "",
-        channelTitle: channelEl?.innerText?.trim() || "",
-        description: snippetEl?.innerText?.trim() || "",
-      };
-    }).filter((v) => v.videoId && v.title);
-  });
-
-  console.log(\`[Crawler] Extracted \${videos.length} YouTube items. Pushing to World Monitor API...\`);
-  
-  // Post directly to Empire World Monitor API
-  const response = await fetch("http://127.0.0.1:4000/v1/world-monitor/youtube/scan", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ query, items: videos }),
-  });
-  
-  console.log(\`[Crawler] Sentinel API response status: \${response.status}\`);
-  await browser.close();
-}
-
-runSentinelCrawler().catch(console.error);
-`;
-}
 

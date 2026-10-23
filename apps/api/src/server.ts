@@ -90,7 +90,6 @@ export async function buildServer() {
         "/v1/dna/registry",
         "/v1/metadata/capabilities",
         "/v1/world-monitor",
-        "/v1/world-monitor/youtube/snippet",
         "/auth/login",
         "/openapi.json",
       ]);

@@ -10,10 +10,8 @@ test("YouTube Tauhid Sentinel routes are registered with correct contracts", asy
   assert.match(worldMonitorSource, /\/v1\/world-monitor\/youtube/);
   assert.match(worldMonitorSource, /\/v1\/world-monitor\/youtube\/scan/);
   assert.match(worldMonitorSource, /\/v1\/world-monitor\/youtube\/action/);
-  assert.match(worldMonitorSource, /\/v1\/world-monitor\/youtube\/snippet/);
-
-  // Only the read-only snippet is public. Data, scanning, review, and scheduling
-  // endpoints must stay behind their runtime session and permission guards.
+  // Data, scanning, review, and scheduling endpoints stay behind runtime guards;
+  // the invalid public browser snippet endpoint has been retired.
   const publicRoutes = serverSource.match(/const publicRoutes = new Set\(\[([\s\S]*?)\]\);/)?.[1] ?? "";
   for (const route of [
     "/v1/world-monitor/youtube",
@@ -21,7 +19,8 @@ test("YouTube Tauhid Sentinel routes are registered with correct contracts", asy
     "/v1/world-monitor/youtube/action",
     "/v1/world-monitor/youtube/schedule",
   ]) assert.doesNotMatch(publicRoutes, new RegExp(`"${route.replaceAll("/", "\\/")}"`));
-  assert.match(serverSource, /"\/v1\/world-monitor\/youtube\/snippet"/);
+  assert.doesNotMatch(worldMonitorSource, /\/v1\/world-monitor\/youtube\/snippet|generateBrowserAutomationSnippet/);
+  assert.doesNotMatch(serverSource, /world-monitor\/youtube\/snippet/);
   assert.match(worldMonitorSource, /preHandler: \[requireSession, requirePermission\("sentinel:read"\)\]/);
   assert.match(worldMonitorSource, /preHandler: \[requireSession, requirePermission\("sentinel:scan"\)\]/);
   assert.match(worldMonitorSource, /preHandler: \[requireSession, requirePermission\("sentinel:review"\)\]/);
@@ -34,7 +33,6 @@ test("YouTube Tauhid Sentinel routes are registered with correct contracts", asy
   // Verify non-AI and Tauhid taxonomy presence
   assert.match(worldMonitorSource, /youtubeSentinelRepo/);
   assert.match(worldMonitorSource, /scanYoutube/);
-  assert.match(worldMonitorSource, /generateBrowserAutomationSnippet/);
   assert.match(worldMonitorSource, /SIHIR_PELET/);
   assert.match(worldMonitorSource, /DUKUN_RAMALAN/);
   assert.match(worldMonitorSource, /PESUGIHAN_TUMBAL/);

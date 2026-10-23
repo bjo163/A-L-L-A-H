@@ -1,5 +1,5 @@
 import type { FastifyInstance } from "fastify";
-import { generateBrowserAutomationSnippet, getWorldMonitoringSnapshot, scanYoutube, youtubeSentinelRepo } from "@empire/batteries-world-monitor";
+import { getWorldMonitoringSnapshot, scanYoutube, youtubeSentinelRepo } from "@empire/batteries-world-monitor";
 import type { SentinelDirection, SentinelTradition, WorldMonitoringSnapshot, YoutubeMonitoredItem, YoutubeWorkflowStatus } from "@empire/batteries-world-monitor";
 import { checkDatabaseHealth } from "../db.js";
 import { getActiveWorldMonitorSourceDetails, getActiveWorldMonitorSources } from "../world-monitor-ingest.js";
@@ -508,32 +508,6 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
         item: updated,
         persistenceMode: isDbUp ? "database" : "in_memory",
         summary: youtubeSentinelRepo.getSummary(),
-      };
-    },
-  );
-
-  app.get(
-    "/v1/world-monitor/youtube/snippet",
-    {
-      schema: {
-        tags: ["System"],
-        summary: "Retrieve browser automation crawler script snippet",
-        security: [],
-        querystring: {
-          type: "object",
-          properties: {
-            query: { type: "string" },
-          },
-        },
-      },
-    },
-    async (request) => {
-      const query = (request.query ?? {}) as { query?: string };
-      const snippet = generateBrowserAutomationSnippet(query.query || "cek khodam");
-      return {
-        ok: true,
-        query: query.query || "cek khodam",
-        script: snippet,
       };
     },
   );

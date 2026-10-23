@@ -42,9 +42,8 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
   const [viewMode, setViewMode] = useState<"table" | "grid">("table");
   const [toast, setToast] = useState<string | null>(null);
   const [activeModal, setActiveModal] = useState<{
-    type: "report" | "counter_dakwah" | "wisdom" | "snippet" | "partner";
+    type: "report" | "counter_dakwah" | "wisdom" | "partner";
     item?: YoutubeMonitoredItem;
-    snippetCode?: string;
   } | null>(null);
   const [partnerFormData, setPartnerFormData] = useState<{
     name: string;
@@ -268,20 +267,6 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
       }
     } catch (err) {
       notify(`Gagal memperbarui status: ${err instanceof Error ? err.message : "Error"}`);
-    }
-  }
-
-  // Fetch automation crawler snippet
-  async function handleOpenSnippet() {
-    try {
-      const res = await request<{ ok: boolean; script: string }>(
-        `${API_PATHS.worldMonitorYoutubeSnippet}?query=${encodeURIComponent(queryInput)}`,
-      );
-      if (res.ok) {
-        setActiveModal({ type: "snippet", snippetCode: res.script });
-      }
-    } catch {
-      notify("Gagal memuat cuplikan skrip otomasi.");
     }
   }
 
@@ -841,9 +826,6 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
             <h3>Pemindai Konten YouTube (Algoritma Heuristik Tanpa AI)</h3>
           </div>
           <div className="button-row">
-            <Button variant="secondary" onClick={handleOpenSnippet}>
-              <DocumentIcon size={14} /> Skrip Playwright / Crawler
-            </Button>
             <Button variant="secondary" onClick={() => exportLedger("markdown")}>
               <DownloadIcon size={14} /> Ekspor Markdown
             </Button>
@@ -1513,43 +1495,6 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
                 }
               >
                 <IconText icon={<SparkIcon />}>Rekomendasikan Amplifikasi</IconText>
-              </Button>
-            </div>
-          </div>
-        </div>
-      )}
-
-      {/* ── Modal: Browser Automation Script Snippet ─────────────────────────── */}
-      {activeModal?.type === "snippet" && (
-        <div className="sentinel-modal-overlay" onClick={() => setActiveModal(null)}>
-          <div className="sentinel-modal" onClick={(e) => e.stopPropagation()}>
-            <div className="sentinel-modal-head">
-              <div>
-                <span className="eyebrow">HEADLESS BROWSER CRAWLER CODE</span>
-                <h3>Skrip Browser Automation (Playwright / Chromium)</h3>
-              </div>
-              <Button variant="secondary" onClick={() => setActiveModal(null)}>
-                <IconText icon={<CloseIcon />}>Tutup</IconText>
-              </Button>
-            </div>
-
-            <p className="sentinel-modal-copy">
-              Skrip otomasi headless ini dapat dijalankan langsung di terminal lokal atau server background untuk merayapi hasil pencarian YouTube dan menyuntikkannya otomatis ke API World Monitor tanpa AI:
-            </p>
-
-            <pre className="sentinel-code-snippet">
-              <code>{activeModal.snippetCode}</code>
-            </pre>
-
-            <div className="button-row sentinel-actions-end sentinel-modal-actions">
-              <Button
-                variant="primary"
-                onClick={() => {
-                  void navigator.clipboard.writeText(activeModal.snippetCode || "");
-                  notify("Skrip browser automation disalin ke clipboard!");
-                }}
-              >
-                <IconText icon={<CopyIcon />}>Salin Skrip Otomasi</IconText>
               </Button>
             </div>
           </div>

@@ -9,7 +9,6 @@ export const API_PATHS = {
   worldMonitorYoutube: "/v1/world-monitor/youtube",
   worldMonitorYoutubeScan: "/v1/world-monitor/youtube/scan",
   worldMonitorYoutubeAction: "/v1/world-monitor/youtube/action",
-  worldMonitorYoutubeSnippet: "/v1/world-monitor/youtube/snippet",
   worldMonitorYoutubeSchedule: "/v1/world-monitor/youtube/schedule",
   worldMonitorYoutubePartner: "/v1/world-monitor/youtube/partner",
   continuum: "/continuum",
