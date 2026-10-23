@@ -2,7 +2,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { API_PATHS, ApiError, createApiClient } from "@empire/api-contract";
 import type { AuthEntity, CabRfc, CabSummary, LoginResponse, ResearchRun, WorldMonitorPublicSummary } from "@empire/api-contract";
-import { getWorldMonitoringSnapshot } from "@empire/batteries-world-monitor";
+import { getWorldMonitoringSnapshot } from "@empire/batteries-world-monitor/engine";
 import type { WorldMonitoringSnapshot } from "@empire/batteries-world-monitor";
 import { AgentIcon, ApprovalIcon, ArrowUpRightIcon, AuditIcon, AuthLayout, Badge, Breadcrumbs, MoonwitnessBrandLockup, Button, Checkbox, CommandIcon, ConfirmDialog, DirectoryIcon, DocumentIcon, ErrorState, EvidenceIcon, FieldLabel, GlobeIcon, HistoryIcon, HomeIcon, InfoIcon, KnowledgeIcon, LoadingState, LogOutIcon, MangaEffect, MangaPageIntro, NavItem, Notice, RefreshIcon, SearchField, TextField, UsersIcon, WorkspaceShell } from "@empire/ui";
 import type { ConfirmDialogTone, IconComponent } from "@empire/ui";
