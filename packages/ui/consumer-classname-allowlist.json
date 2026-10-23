@@ -2,6 +2,102 @@
   "policy": "App-specific class hooks passed to @empire/ui components are listed here with an owner and reason, and are styled only by packages/ui/src. They may compose product layout or named presentation patterns; apps may not define their CSS. Runtime classes must be listed explicitly.",
   "entries": [
     {
+      "consumer": "apps/web/src/App.tsx",
+      "component": "AuthLayout",
+      "prop": "className",
+      "classes": [
+        "shadow-login"
+      ],
+      "owner": "command-center",
+      "reason": "Selects the package-owned SHADOW login composition for the authenticated workspace entry."
+    },
+    {
+      "consumer": "apps/web/src/App.tsx",
+      "component": "DocumentIcon",
+      "prop": "className",
+      "classes": [
+        "nav-icon"
+      ],
+      "owner": "command-center",
+      "reason": "Keeps the SHADOW workspace navigation icon sizing owned by the shared command-center stylesheet."
+    },
+    {
+      "consumer": "apps/web/src/OverviewView.tsx",
+      "component": "MangaTelemetryHero",
+      "prop": "className",
+      "classes": [
+        "shadow-telemetry"
+      ],
+      "owner": "command-center",
+      "reason": "Composes the telemetry hero into the SHADOW command-center overview grid."
+    },
+    {
+      "consumer": "apps/web/src/OverviewView.tsx",
+      "component": "Panel",
+      "prop": "className",
+      "classes": [
+        "shadow-workbench"
+      ],
+      "owner": "command-center",
+      "reason": "Applies the reusable SHADOW Story Studio workbench presentation owned by the shared package."
+    },
+    {
+      "consumer": "apps/web/src/OverviewView.tsx",
+      "component": "Panel",
+      "prop": "className",
+      "classes": [
+        "shadow-workflow"
+      ],
+      "owner": "command-center",
+      "reason": "Applies the reusable SHADOW publishing workflow and poster forge presentation owned by the shared package."
+    },
+    {
+      "consumer": "apps/web/src/OverviewView.tsx",
+      "component": "Panel",
+      "prop": "className",
+      "classes": [
+        "shadow-timeline"
+      ],
+      "owner": "command-center",
+      "reason": "Applies the reusable SHADOW timeline panel presentation owned by the shared package."
+    },
+    {
+      "consumer": "apps/web/src/OverviewView.tsx",
+      "component": "Panel",
+      "prop": "className",
+      "classes": [
+        "shadow-signal-map"
+      ],
+      "owner": "command-center",
+      "reason": "Applies the reusable SHADOW signal map panel presentation owned by the shared package."
+    },
+    {
+      "consumer": "apps/web/src/OverviewView.tsx",
+      "component": "Panel",
+      "prop": "className",
+      "classes": [
+        "shadow-crew-panel"
+      ],
+      "owner": "command-center",
+      "reason": "Applies the reusable SHADOW crew registry panel presentation owned by the shared package."
+    },
+    {
+      "consumer": "apps/web/src/OverviewView.tsx",
+      "component": "Panel",
+      "prop": "className",
+      "classes": [
+        "shadow-list-panel",
+        "shadow-alerts",
+        "shadow-workbench",
+        "shadow-workflow",
+        "shadow-timeline",
+        "shadow-signal-map",
+        "shadow-crew-panel"
+      ],
+      "owner": "command-center",
+      "reason": "Applies the shared SHADOW mission queue and recent alerts panel compositions."
+    },
+    {
       "consumer": "apps/web/src/YoutubeSentinelView.tsx",
       "component": "MotionRegion",
       "prop": "className",
@@ -20,39 +116,6 @@
       ],
       "owner": "portal",
       "reason": "Carries the Container composition for apps/web/app/not-found.tsx into the public-site stylesheet owned by packages/ui."
-    },
-    {
-      "consumer": "apps/web/app/page.tsx",
-      "component": "MangaEffect",
-      "prop": "className",
-      "classes": [
-        "principle-strip"
-      ],
-      "runtimeClasses": [
-        "arsy-identity"
-      ],
-      "owner": "portal",
-      "reason": "Carries the MangaEffect composition for apps/web/app/page.tsx into the public-site stylesheet owned by packages/ui."
-    },
-    {
-      "consumer": "apps/web/app/page.tsx",
-      "component": "SectionHeading",
-      "prop": "eyebrowClassName",
-      "classes": [
-        "eyebrow"
-      ],
-      "owner": "portal",
-      "reason": "Carries the eyebrow composition for apps/web/app/page.tsx into the public-site stylesheet owned by packages/ui."
-    },
-    {
-      "consumer": "apps/web/app/page.tsx",
-      "component": "SectionHeading",
-      "prop": "asideClassName",
-      "classes": [
-        "head-aside"
-      ],
-      "owner": "portal",
-      "reason": "Carries the aside composition for apps/web/app/page.tsx into the public-site stylesheet owned by packages/ui."
     },
     {
       "consumer": "apps/web/app/roadmap/page.tsx",

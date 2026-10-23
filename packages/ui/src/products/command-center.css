@@ -17,7 +17,7 @@
 .eol-workspace-shell .shadow-telemetry h2, .eol-workspace-shell .shadow-telemetry h3 { max-width: 680px; color: #f7f1e7; font-size: clamp(28px, 4vw, 52px); line-height: .98; font-weight: 900; text-transform: uppercase; text-shadow: 4px 4px 0 #ff1493; }
 .eol-workspace-shell .shadow-telemetry p, .eol-workspace-shell .shadow-telemetry [class*="description"] { color: #f7f1e7; }
 .eol-workspace-shell .shadow-metrics, .eol-workspace-shell .shadow-feature-grid, .eol-workspace-shell .shadow-ops-grid { margin-block: 24px; }
-.eol-workspace-shell .shadow-metrics { padding: 12px 14px 16px; border: 2px solid #f7f1e7; background: #0a0a0b; box-shadow: 5px 5px 0 #087cff; }
+.eol-workspace-shell .shadow-metrics { padding: 12px 14px 16px; background: #0a0a0b; box-shadow: 5px 5px 0 #087cff; }
 .eol-workspace-shell .shadow-metrics .eol-metric-grid { gap: 10px; }
 .eol-workspace-shell .shadow-metrics .eol-metric-card { border: 1px solid #f7f1e766; border-left: 5px solid #ff1493; border-radius: 0; background: #101012; }
 .eol-workspace-shell .shadow-metrics .eol-metric-card:nth-child(even) { border-left-color: #087cff; }
@@ -31,7 +31,7 @@
 .eol-workspace-shell .shadow-feature p, .eol-workspace-shell .shadow-copy { max-width: 34ch; color: #c8c3bc; font-size: var(--eol-font-size-sm); line-height: 1.55; }
 .eol-workspace-shell .shadow-feature-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; color: #f7f1e7; font: 700 9px var(--eol-font-mono); letter-spacing: .08em; }
 .eol-workspace-shell .shadow-feature-meta span { padding: 5px 7px; border: 1px solid #f7f1e755; }
-.eol-workspace-shell .shadow-link { margin-top: 16px; padding: 0; border: 0; color: #ff64bd; background: transparent; font: 800 11px var(--eol-font-mono); text-transform: uppercase; cursor: pointer; }
+.eol-workspace-shell .shadow-link { margin-top: 16px; color: #ff64bd; background: transparent; font: 800 11px var(--eol-font-mono); text-transform: uppercase; }
 .eol-workspace-shell .shadow-link:hover { color: #ffe500; }
 .eol-workspace-shell .shadow-steps { display: grid; gap: 9px; margin: 18px 0 0; padding: 0; list-style: none; color: #f7f1e7; font-size: var(--eol-font-size-xs); }
 .eol-workspace-shell .shadow-steps li { display: flex; gap: 10px; align-items: center; padding-bottom: 8px; border-bottom: 1px dashed #f7f1e755; }
@@ -1349,6 +1349,7 @@
 .eol-workspace-shell .shadow-studio-tabs { display:flex; flex-direction:column; gap:0; border-right:1px solid #f7f1e744; }
 .eol-workspace-shell .shadow-studio-tabs span { padding:11px 6px; border-bottom:1px solid #f7f1e722; color:#c8c3bc; font:700 8px var(--eol-font-mono); }
 .eol-workspace-shell .shadow-studio-tabs span:first-child { color:#050505; background:#ff168f; }
+.eol-workspace-shell { --mw-contact-sheet:url('/images/moonwitness-story-crew-contact-sheet.png'); }
 .eol-workspace-shell .shadow-story-canvas { position:relative; display:flex; min-height:285px; align-items:flex-end; overflow:hidden; border:2px solid #f7f1e7; background:linear-gradient(90deg,#030405e8 0%,#03040592 50%,#03040510 100%),var(--mw-contact-sheet) 0 0/300% 200%; }
 .eol-workspace-shell .shadow-canvas-art { position:absolute; inset:0; background:linear-gradient(0deg,#030405cc,transparent 70%),var(--mw-contact-sheet) 100% 100%/300% 200%; opacity:.55; mix-blend-mode:screen; }
 .eol-workspace-shell .shadow-canvas-title { position:relative; z-index:1; padding:18px; color:#f7f1e7; }
@@ -1385,9 +1386,6 @@
 .eol-workspace-shell .shadow-crew-thumbs { display:grid; grid-template-columns:repeat(3,1fr); gap:5px; }.eol-workspace-shell .shadow-crew-thumbs span { min-height:88px; border:1px solid #f7f1e7; background:var(--mw-contact-sheet) 50% 0/300% 200%; }.eol-workspace-shell .shadow-crew-thumbs span:nth-child(2) { background-position:100% 0; }.eol-workspace-shell .shadow-crew-thumbs span:nth-child(3) { background-position:50% 100%; }
 .eol-workspace-shell .shadow-dashboard-grid+.shadow-dashboard-lower { margin-top:12px; }
 .eol-auth-layout.shadow-login { position:relative; display:grid; min-height:100svh; place-items:center start; overflow:hidden; padding:104px 7vw 58px 12vw; background:#030304 linear-gradient(90deg,#030304 0%,#030304f5 36%,#0303049c 57%,#03030412 100%) no-repeat, url('/images/moonwitness-hero.png') center right/cover no-repeat; }
-.eol-public-shell:has(.shadow-login)>.eol-public-shell__header { display:none!important; }
-.eol-public-shell:has(.shadow-login)>main { min-height:100svh; padding:0; }
-.eol-public-shell:has(.shadow-login) { min-height:100svh; background:#030304; }
 .eol-auth-layout.shadow-login::before { position:absolute; top:14px; left:clamp(18px,3vw,48px); z-index:2; color:#f7f1e7; content:"♛  MOONWITNESS"; font:italic 1000 clamp(25px,3.6vw,50px)/1 Impact,"Arial Black",sans-serif; letter-spacing:-.045em; text-shadow:3px 3px 0 #ff168f; }
 .eol-auth-layout.shadow-login::after { position:absolute; right:28px; bottom:12px; z-index:2; color:#f7f1e7; content:"MOONWITNESS   //   CREATE · CURATE · PUBLISH"; font:700 10px var(--eol-font-mono); letter-spacing:.12em; }
 .eol-auth-layout.shadow-login .eol-auth-card { position:relative; z-index:1; width:min(100%,540px); gap:16px; padding:clamp(24px,3vw,44px); border:2px solid #f7f1e7; border-radius:0; background:#050506ed; box-shadow:8px 8px 0 #ff168f; }
@@ -1402,8 +1400,8 @@
 .eol-auth-layout.shadow-login .form-grid { gap:12px; }
 .eol-auth-layout.shadow-login .form-grid label { color:#f7f1e7; font-size:13px; }
 .eol-auth-layout.shadow-login .form-grid input:not([type=checkbox]) { min-height:48px; border:1px solid #64758a; border-radius:4px; color:#f7f1e7; background:#0b0d10; }
-.eol-auth-layout.shadow-login .auth-login-identifier input { padding-left:42px; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23f7f1e7' stroke-width='1.8'%3E%3Crect x='3' y='5' width='18' height='14' rx='2'/%3E%3Cpath d='m3 7 9 7 9-7'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:13px center; }
-.eol-auth-layout.shadow-login .auth-login-password input { padding-left:42px; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23f7f1e7' stroke-width='1.8'%3E%3Crect x='4' y='10' width='16' height='11' rx='2'/%3E%3Cpath d='M8 10V7a4 4 0 0 1 8 0v3m-4 4v3'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:13px center; }
+.eol-auth-layout.shadow-login .form-grid>label:first-child input { padding-left:42px; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23f7f1e7' stroke-width='1.8'%3E%3Crect x='3' y='5' width='18' height='14' rx='2'/%3E%3Cpath d='m3 7 9 7 9-7'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:13px center; }
+.eol-auth-layout.shadow-login .form-grid>label:nth-child(2) input { padding-left:42px; background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='20' height='20' viewBox='0 0 24 24' fill='none' stroke='%23f7f1e7' stroke-width='1.8'%3E%3Crect x='4' y='10' width='16' height='11' rx='2'/%3E%3Cpath d='M8 10V7a4 4 0 0 1 8 0v3m-4 4v3'/%3E%3C/svg%3E"); background-repeat:no-repeat; background-position:13px center; }
 .eol-auth-layout.shadow-login .auth-login-options { display:flex; align-items:center; justify-content:space-between; gap:12px; }
 .eol-auth-layout.shadow-login .auth-login-options>span { color:#9db9d4; font-size:12px; text-decoration:underline; text-underline-offset:3px; }
 .eol-auth-layout.shadow-login .remember-me { color:#f7f1e7; }

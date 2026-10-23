@@ -24,5 +24,3 @@
 .eol-moonwitness-brand-lockup__text { display:grid; gap:2px; }
 .eol-moonwitness-brand-lockup__text strong { color:#f7f1e7; font:italic 1000 clamp(19px,2.2vw,34px)/.95 Impact,"Arial Black",sans-serif; letter-spacing:-.045em; text-shadow:2px 2px 0 #ff168f; }
 .eol-moonwitness-brand-lockup__text small { color:#c8c3bc; font:8px var(--eol-font-mono); letter-spacing:.12em; }
-.eol-moonwitness-brand-lockup--compact>svg { width:27px; height:22px; }
-.eol-moonwitness-brand-lockup--compact .eol-moonwitness-brand-lockup__text strong { font-size:15px; }

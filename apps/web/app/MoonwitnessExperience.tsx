@@ -1,6 +1,6 @@
 import Link from "next/link";
 import type { WebLanguage } from "../lib/i18n";
-import type { CSSProperties, ReactNode } from "react";
+import type { ReactNode } from "react";
 import { MoonwitnessCrown as Crown } from "@empire/ui";
 import moonwitnessStoryCrewSheet from "@empire/ui/assets/moonwitness-story-crew-contact-sheet.png";
 
@@ -20,7 +20,7 @@ function Badge({ children, tone = "pink" }: { children: ReactNode; tone?: string
 }
 
 export function MoonwitnessExperience({ language: _language }: { language: WebLanguage }) {
-  return <div className="mw-site" style={{ "--mw-contact-sheet": `url(${moonwitnessStoryCrewSheet.src})` } as CSSProperties}>
+  return <div className="mw-site">
     <section className="mw-hero" aria-labelledby="mw-title">
       <div className="mw-hero-art" role="img" aria-label="A hooded witness looking over a city toward a bright blue moon" />
       <div className="mw-hero-splatter" aria-hidden="true">✳</div>
