@@ -9,7 +9,6 @@ import {
   preflightBaseModule,
   syncBaseModule,
 } from "@empire/batteries-base";
-import { env } from "../env.js";
 import { loadModulePlan } from "../module-runtime.js";
 
 function assertDisposableSyncDatabase() {
@@ -40,6 +39,7 @@ class SyncProbeModel extends BatteriesModel {
 
 async function main() {
   assertDisposableSyncDatabase();
+  const { env } = await import("../env.js");
   const admin = knexFactory({ client: "pg", connection: env.DATABASE_URL, pool: { min: 1, max: 2 } });
   const schema = `batteries_smoke_${randomUUID().replaceAll("-", "")}`;
   let scoped: ReturnType<typeof knexFactory> | undefined;
