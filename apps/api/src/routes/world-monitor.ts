@@ -11,6 +11,10 @@ import { requireTenant } from "./tenant-context.js";
 import { createYoutubeScanGate } from "../youtube-scan-gate.js";
 
 const youtubeScanGate = createYoutubeScanGate();
+const YOUTUBE_WORKFLOW_ACTIONS: readonly YoutubeWorkflowStatus[] = [
+  "PENDING_REVIEW", "VERIFIED_SYIRIK", "COUNTER_DAKWAH_QUEUED", "REPORT_FILED", "FALSE_POSITIVE_DISMISSED",
+  "WISDOM_QUEUED", "AMPLIFY_RECOMMENDED", "SHARED_VIA_DAKWAH", "ARCHIVED_REFERENCE",
+];
 
 
 export async function worldMonitorRoutes(app: FastifyInstance) {
@@ -443,29 +447,35 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
         notes?: string;
       };
 
-      // Update in-memory repo first (fast)
-      const updated = youtubeSentinelRepo.updateWorkflowStatus(body.id, body.action, body.notes);
-      if (!updated) {
-        return reply.status(404).send({ ok: false, message: "Item not found" });
+      if (!YOUTUBE_WORKFLOW_ACTIONS.includes(body.action)) {
+        return reply.status(400).send({ ok: false, message: "Unsupported workflow action" });
       }
 
-      // Persist the workflow status change to DB (non-blocking)
       const isDbUp = await dbAvailable();
-      if (isDbUp) {
-        try {
-          const isUUID = typeof body.id === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(body.id);
-          const row = isUUID
-            ? await YoutubeSentinelItemModel.query().where({ id: body.id }).orWhere({ video_id: body.id }).first()
-            : await YoutubeSentinelItemModel.query().where({ video_id: body.id }).first();
-          if (row) {
-            await YoutubeSentinelItemModel.query().patchAndFetchById(row.id, {
-              workflowStatus: body.action,
-              operatorNotes: body.notes ?? row.operatorNotes ?? null,
-              lastActionAt: new Date().toISOString(),
-            });
-          }
-        } catch { /* DB update failure is non-fatal */ }
+      if (!isDbUp) {
+        return reply.status(503).send({ ok: false, message: "Sentinel review storage is unavailable; action was not applied" });
       }
+      const isUUID = typeof body.id === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(body.id);
+      let row;
+      try {
+        row = isUUID
+          ? await YoutubeSentinelItemModel.query().where({ id: body.id }).orWhere({ video_id: body.id }).first()
+          : await YoutubeSentinelItemModel.query().where({ video_id: body.id }).first();
+      } catch {
+        return reply.status(503).send({ ok: false, message: "Sentinel review storage could not be read; action was not applied" });
+      }
+      if (!row) return reply.status(404).send({ ok: false, message: "Item not found" });
+      try {
+        await YoutubeSentinelItemModel.query().patchAndFetchById(row.id, {
+          workflowStatus: body.action,
+          operatorNotes: body.notes ?? row.operatorNotes ?? null,
+          lastActionAt: new Date().toISOString(),
+        });
+      } catch {
+        return reply.status(503).send({ ok: false, message: "Sentinel review action could not be saved; action was not applied" });
+      }
+      const updated = youtubeSentinelRepo.updateWorkflowStatus(body.id, body.action, body.notes);
+      if (!updated) return reply.status(409).send({ ok: false, message: "Action was saved but the in-memory view is stale; refresh before continuing" });
 
       return {
         ok: true,
