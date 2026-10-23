@@ -38,6 +38,7 @@ export async function closeDatabase(): Promise<void> {
   if (knexInstance) {
     await knexInstance.destroy();
     knexInstance = null;
+    Model.knex(null as unknown as Knex);
   }
 }
 

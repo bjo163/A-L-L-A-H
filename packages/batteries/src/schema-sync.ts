@@ -518,12 +518,23 @@ async function resolveDeclaredUniqueConflicts(
   knex: Knex | Knex.Transaction,
   models: Array<typeof BatteriesModel>,
 ): Promise<void> {
+  const schemaRow = await knex.raw("SELECT current_schema() AS schema_name");
+  const schemaName = schemaRow.rows[0]?.schema_name as string | undefined;
+
   for (const model of models) {
     const tableName = model.tableName;
     if (!tableName || !(await knex.schema.hasTable(tableName))) continue;
     for (const resolution of model.uniqueConflictResolutions) {
       const columns = resolution.columns.map(camelToSnake);
-      const existingIndexes = await getIndexes(knex, (await knex.raw("SELECT current_schema() AS schema_name")).rows[0].schema_name, tableName);
+      if (schemaName) {
+        const tableCols = await knex("information_schema.columns")
+          .select("column_name")
+          .where({ table_name: tableName, table_schema: schemaName });
+        const existingColNames = new Set(tableCols.map((c: { column_name: string }) => c.column_name));
+        if (columns.some((col) => !existingColNames.has(col))) continue;
+      }
+
+      const existingIndexes = await getIndexes(knex, schemaName ?? "public", tableName);
       if (existingIndexes.some((index) => index.unique && index.columns.length === columns.length && index.columns.every((column, index) => column === columns[index]))) continue;
 
       const duplicateQuery = knex(tableName)

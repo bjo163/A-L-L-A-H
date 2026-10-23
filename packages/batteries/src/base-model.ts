@@ -71,21 +71,26 @@ export abstract class BatteriesModel extends Model {
    * Mark record as soft deleted
    */
   async softDelete(): Promise<this> {
-    return (this.$query() as unknown as BatteriesQueryBuilder<this>).patchAndFetchById(this.id, {
-      deletedAt: new Date().toISOString(),
+    const deletedAt = new Date().toISOString();
+    await (this.$query() as unknown as BatteriesQueryBuilder<this>).patch({
+      deletedAt,
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    } as any) as unknown as Promise<this>;
+    } as any);
+    this.deletedAt = deletedAt;
+    return this;
   }
 
   /**
    * Restore a soft deleted record
    */
   async restore(): Promise<this> {
-    return (this.$query() as unknown as BatteriesQueryBuilder<this>)
+    await (this.$query() as unknown as BatteriesQueryBuilder<this>)
       .withDeleted()
-      .patchAndFetchById(this.id, {
+      .patch({
         deletedAt: null,
         // eslint-disable-next-line @typescript-eslint/no-explicit-any
-      } as any) as unknown as Promise<this>;
+      } as any);
+    this.deletedAt = null;
+    return this;
   }
 }

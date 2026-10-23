@@ -1,6 +1,14 @@
 import { QueryBuilder, type Model, type Page } from "objection";
 import type { PaginatedResult, PaginationParams, FilterValue } from "./types.js";
 
+function camelToSnake(str: string): string {
+  return str.replace(/([A-Z])/g, "_$1").toLowerCase();
+}
+
+function escapeLikePattern(term: string): string {
+  return term.replace(/[%_\\]/g, "\\$&");
+}
+
 export class BatteriesQueryBuilder<M extends Model, R = M[]> extends QueryBuilder<M, R> {
   declare ArrayQueryBuilderType: BatteriesQueryBuilder<M, M[]>;
   declare SingleQueryBuilderType: BatteriesQueryBuilder<M, M>;
@@ -34,7 +42,7 @@ export class BatteriesQueryBuilder<M extends Model, R = M[]> extends QueryBuilde
     const limit = Math.max(1, Math.min(100, Number(params?.limit) || 20));
 
     const result = await this.page(page - 1, limit);
-    const totalPages = Math.ceil(result.total / limit);
+    const totalPages = result.total === 0 ? 0 : Math.ceil(result.total / limit);
 
     return {
       data: result.results as unknown as M[],
@@ -44,7 +52,7 @@ export class BatteriesQueryBuilder<M extends Model, R = M[]> extends QueryBuilde
         total: result.total,
         totalPages,
         hasNextPage: page < totalPages,
-        hasPrevPage: page > 1,
+        hasPrevPage: result.total > 0 && page > 1,
       },
     };
   }
@@ -53,22 +61,41 @@ export class BatteriesQueryBuilder<M extends Model, R = M[]> extends QueryBuilde
    * Smart dynamic filtering from query parameters
    */
   filter(filters: Record<string, FilterValue | undefined>): this {
-    for (const [column, rawValue] of Object.entries(filters)) {
+    for (const [rawColumn, rawValue] of Object.entries(filters)) {
       if (rawValue === undefined || rawValue === null || rawValue === "") {
         continue;
       }
 
+      const column = rawColumn.includes(".")
+        ? rawColumn
+            .split(".")
+            .map((part, index) => (index === 0 ? part : camelToSnake(part)))
+            .join(".")
+        : camelToSnake(rawColumn);
+
       if (typeof rawValue === "object" && !Array.isArray(rawValue)) {
-        if ("eq" in rawValue && rawValue.eq !== undefined) this.where(column, "=", rawValue.eq);
-        if ("ne" in rawValue && rawValue.ne !== undefined) this.where(column, "!=", rawValue.ne);
+        if ("eq" in rawValue) {
+          if (rawValue.eq === null) this.whereNull(column);
+          else if (rawValue.eq !== undefined) this.where(column, "=", rawValue.eq);
+        }
+        if ("ne" in rawValue) {
+          if (rawValue.ne === null) this.whereNotNull(column);
+          else if (rawValue.ne !== undefined) this.where(column, "!=", rawValue.ne);
+        }
         if ("like" in rawValue && rawValue.like) this.whereLike(column, `%${rawValue.like}%`);
         if ("ilike" in rawValue && rawValue.ilike) this.whereILike(column, `%${rawValue.ilike}%`);
         if ("gt" in rawValue && rawValue.gt !== undefined) this.where(column, ">", rawValue.gt);
         if ("gte" in rawValue && rawValue.gte !== undefined) this.where(column, ">=", rawValue.gte);
         if ("lt" in rawValue && rawValue.lt !== undefined) this.where(column, "<", rawValue.lt);
         if ("lte" in rawValue && rawValue.lte !== undefined) this.where(column, "<=", rawValue.lte);
-        if ("isNull" in rawValue && rawValue.isNull) this.whereNull(column);
-        if ("isNotNull" in rawValue && rawValue.isNotNull) this.whereNotNull(column);
+        if ("isNull" in rawValue) {
+          if (rawValue.isNull) this.whereNull(column);
+          else this.whereNotNull(column);
+        }
+        if ("isNotNull" in rawValue) {
+          if (rawValue.isNotNull) this.whereNotNull(column);
+          else this.whereNull(column);
+        }
 
         if ("in" in rawValue && rawValue.in) {
           const list = Array.isArray(rawValue.in)
@@ -76,7 +103,7 @@ export class BatteriesQueryBuilder<M extends Model, R = M[]> extends QueryBuilde
             : String(rawValue.in)
                 .split(",")
                 .map((s) => s.trim());
-          this.whereIn(column, list);
+          if (list.length > 0) this.whereIn(column, list);
         }
 
         if ("nin" in rawValue && rawValue.nin) {
@@ -85,7 +112,7 @@ export class BatteriesQueryBuilder<M extends Model, R = M[]> extends QueryBuilde
             : String(rawValue.nin)
                 .split(",")
                 .map((s) => s.trim());
-          this.whereNotIn(column, list);
+          if (list.length > 0) this.whereNotIn(column, list);
         }
       } else {
         this.where(column, "=", rawValue);
@@ -103,23 +130,27 @@ export class BatteriesQueryBuilder<M extends Model, R = M[]> extends QueryBuilde
 
     const trimmed = term.trim();
     if (!trimmed) return this;
+    const escaped = escapeLikePattern(trimmed);
 
     return this.where((builder) => {
-      columns.forEach((col, idx) => {
+      columns.forEach((rawCol, idx) => {
+        const col = rawCol.includes(".")
+          ? rawCol
+              .split(".")
+              .map((part, index) => (index === 0 ? part : camelToSnake(part)))
+              .join(".")
+          : camelToSnake(rawCol);
+
         if (idx === 0) {
-          builder.whereILike(col, `%${trimmed}%`);
+          builder.whereILike(col, `%${escaped}%`);
         } else {
-          builder.orWhereILike(col, `%${trimmed}%`);
+          builder.orWhereILike(col, `%${escaped}%`);
         }
       });
     });
   }
 
-  /**
-   * Hook executed before query run to apply soft-delete scoping
-   */
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  override execute(): any {
+  private _applySoftDeleteScoping(): void {
     const modelClass = this.modelClass() as unknown as {
       hasSoftDelete?: boolean;
       tableName?: string;
@@ -134,7 +165,17 @@ export class BatteriesQueryBuilder<M extends Model, R = M[]> extends QueryBuilde
         this.whereNull(column);
       }
     }
+  }
 
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  override toKnexQuery(): any {
+    this._applySoftDeleteScoping();
+    return super.toKnexQuery();
+  }
+
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  override execute(): any {
+    this._applySoftDeleteScoping();
     return super.execute();
   }
 }
