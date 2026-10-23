@@ -1,7 +1,7 @@
 name: Security
 on:
   push:
-    branches: [main]
+    branches: [dev, main]
   pull_request:
     branches: [main]
   schedule:
@@ -31,7 +31,7 @@ jobs:
       - uses: github/codeql-action/analyze@793b778da9c9275a0f276522b27cb5fc14bba279 # v4
   dependencies:
     name: Dependency audit
-    if: github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
+    if: github.event_name == 'push' || github.event_name == 'schedule' || github.event_name == 'workflow_dispatch'
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:

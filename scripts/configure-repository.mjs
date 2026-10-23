@@ -20,8 +20,8 @@ const changes = [
   }],
   ['PUT', `repos/${repository}/branches/main/protection`, {
     ...common,
-    required_status_checks: { strict: false, contexts: ['Branch policy', 'Quality checks'] },
-    required_pull_request_reviews: { required_approving_review_count: 1, dismiss_stale_reviews: true },
+    required_status_checks: { strict: false, contexts: ['Branch policy', 'PostgreSQL auth and tenant integration', 'PostgreSQL schema upgrade and rollback integration', 'Quality checks', 'CodeQL', 'Dependency audit'] },
+    required_pull_request_reviews: { required_approving_review_count: 0, dismiss_stale_reviews: false },
   }],
   ['PUT', `repos/${repository}/branches/dev/protection`, {
     ...common, required_status_checks: null, required_pull_request_reviews: null,
@@ -47,13 +47,13 @@ if (process.argv.includes('--dry-run')) {
   for (const branch of ['main', 'dev']) {
     const protection = JSON.parse(execFileSync('gh', ['api', `repos/${repository}/branches/${branch}/protection`], { encoding: 'utf8' }));
     const needsReview = branch === 'main'
-      && (protection.required_pull_request_reviews?.required_approving_review_count ?? 0) < 1;
+      && (protection.required_pull_request_reviews?.required_approving_review_count ?? 0) !== 0;
     if (!protection.enforce_admins.enabled || protection.allow_force_pushes.enabled || protection.allow_deletions.enabled || needsReview) {
       throw new Error(`Unexpected protection state on ${branch}`);
     }
     if (branch === 'main') {
       const required = protection.required_status_checks?.contexts ?? [];
-      if (!['Branch policy', 'Quality checks'].every((name) => required.includes(name))) {
+      if (!['Branch policy', 'PostgreSQL auth and tenant integration', 'PostgreSQL schema upgrade and rollback integration', 'Quality checks', 'CodeQL', 'Dependency audit'].every((name) => required.includes(name))) {
         throw new Error('Required main checks are missing.');
       }
     }

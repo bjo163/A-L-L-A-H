@@ -142,3 +142,102 @@ jobs:
       - name: Test release planner
         run: pnpm exec node --test scripts/release-planner.test.mjs
       - run: pnpm run build
+
+  synchronize-dev:
+    name: Synchronize dev after main promotion
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [branch-policy, auth-postgres-integration, schema-sync-postgres-integration, quality]
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    concurrency:
+      group: synchronize-dev
+      cancel-in-progress: false
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - name: Merge main back into dev
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git fetch origin dev main
+          git switch dev
+          git merge --no-edit origin/main
+          git push origin dev
+
+  promote-dev:
+    name: Promote dev to main
+    if: github.event_name == 'push' && github.ref == 'refs/heads/dev'
+    needs: [branch-policy, auth-postgres-integration, schema-sync-postgres-integration, quality]
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    permissions:
+      actions: read
+      contents: read
+      pull-requests: write
+    steps:
+      - name: Wait for successful Security checks on this commit
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          TARGET_SHA: ${{ github.sha }}
+          CI_RUN_ID: ${{ github.run_id }}
+          CI_RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          for attempt in $(seq 1 90); do
+            gh run list --repo "$REPOSITORY" --commit "$TARGET_SHA" --workflow Security --json databaseId,headSha,event,status,conclusion --limit 20 > "$RUNNER_TEMP/security-runs.json"
+            result=$(node --input-type=module <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          const sha = process.env.TARGET_SHA;
+          const runs = JSON.parse(await readFile(`${process.env.RUNNER_TEMP}/security-runs.json`, 'utf8'))
+            .filter((run) => run.headSha === sha && run.event === 'push')
+            .sort((a, b) => b.databaseId - a.databaseId);
+          const security = runs[0];
+          if (!security || security.status !== 'completed') { console.log('WAIT'); process.exit(0); }
+          if (security.conclusion !== 'success') throw new Error(`Security checks failed: ${security.conclusion}`);
+          await writeFile(`${process.env.RUNNER_TEMP}/verified-run.json`, JSON.stringify({
+            runId: process.env.CI_RUN_ID,
+            runUrl: process.env.CI_RUN_URL,
+            commit: sha,
+            outcomes: { 'Branch policy': 'success', 'PostgreSQL auth and tenant integration': 'success', 'PostgreSQL schema upgrade and rollback integration': 'success', 'Quality checks': 'success', CodeQL: 'success', 'Dependency audit': 'success' },
+          }));
+          console.log('READY');
+          NODE
+            ) || exit 1
+            if [[ "$result" == *READY* ]]; then
+              echo "CI and Security succeeded for $TARGET_SHA."
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "Security did not complete for $TARGET_SHA within 15 minutes."
+          exit 1
+      - name: Open or update promotion pull request
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          existing=$(gh pr list --repo "$REPOSITORY" --base main --head dev --state open --json number --jq '.[0].number')
+          if [[ -z "$existing" ]]; then
+            gh pr create --repo "$REPOSITORY" --base main --head dev \
+              --title "chore(release): promote dev to main" \
+              --body "Automated promotion of dev after successful CI and Security checks on the exact head commit. GitHub auto-merges after all required status checks pass."
+          else
+            echo "Promotion PR #$existing already tracks dev → main."
+          fi
+      - name: Enable merge-commit auto-merge
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        run: gh pr merge --repo "$REPOSITORY" dev --merge --auto
+
+  stable-release:
+    name: Stable release
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [branch-policy, auth-postgres-integration, schema-sync-postgres-integration, quality]
+    permissions:
+      actions: read
+      contents: write
+    uses: ./.github/workflows/release.yml

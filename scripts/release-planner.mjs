@@ -75,26 +75,55 @@ function git(args) {
   return execFileSync('git', args, { encoding: 'utf8', stdio: ['ignore', 'pipe', 'pipe'] }).trim();
 }
 
-export function readLocalReleaseContext() {
-  const branch = git(['branch', '--show-current']);
+export function readReleaseContext({ branch = git(['branch', '--show-current']), head = git(['rev-parse', 'HEAD']), remoteMain = git(['rev-parse', 'origin/main']), allTags, fetchTags = false } = {}) {
   if (branch !== 'main') throw new Error(`Release planning requires the main branch; current branch is ${branch || '(detached)'}.`);
-  const head = git(['rev-parse', 'HEAD']);
-  const remoteMain = git(['rev-parse', 'origin/main']);
   if (head !== remoteMain) throw new Error('Release planning requires HEAD to match the locally fetched origin/main ref.');
-
-  const allTags = git(['tag', '--list', 'v*']).split(/\r?\n/).filter(Boolean);
-  const previousTag = selectLatestStableTag(allTags);
-  if (!previousTag) throw new Error('No stable tag exists; an owner must select and document the initial release baseline.');
-  const previousCommit = git(['rev-parse', `${previousTag}^{commit}`]);
-  git(['merge-base', '--is-ancestor', previousCommit, head]);
+  allTags ??= git(['tag', '--list', 'v*']).split(/\r?\n/).filter(Boolean);
+  if (fetchTags) {
+    execFileSync('git', ['fetch', '--tags', 'origin'], { stdio: 'inherit' });
+    allTags = git(['tag', '--list', 'v*']).split(/\r?\n/).filter(Boolean);
+  }
+  const latestTag = selectLatestStableTag(allTags);
+  if (!latestTag) throw new Error('No stable tag exists; an owner must select and document the initial release baseline.');
+  const latestCommit = git(['rev-parse', `${latestTag}^{commit}`]);
+  let previousTag = latestTag;
+  let releaseTagExists = false;
+  let previousCommit = latestCommit;
+  if (latestCommit === head) {
+    const olderStableTags = allTags
+      .filter((tag) => /^v\d+\.\d+\.\d+$/.test(tag) && tag !== latestTag)
+      .filter((tag) => git(['rev-parse', `${tag}^{commit}`]) !== head)
+      .sort((a, b) => compareStableVersions(b.slice(1), a.slice(1)));
+    previousTag = olderStableTags.find((tag) => git(['merge-base', git(['rev-parse', `${tag}^{commit}`]), head]) === git(['rev-parse', `${tag}^{commit}`]));
+    if (!previousTag) throw new Error(`Stable tag ${latestTag} points to main, but no earlier stable baseline exists.`);
+    previousCommit = git(['rev-parse', `${previousTag}^{commit}`]);
+    releaseTagExists = true;
+  }
+  if (git(['merge-base', previousCommit, head]) !== previousCommit) {
+    throw new Error(`Latest stable tag ${previousTag} does not point to an ancestor of main.`);
+  }
   const hashes = git(['rev-list', '--no-merges', `${previousTag}..HEAD`]).split(/\r?\n/).filter(Boolean);
   const commits = hashes.map((hash) => ({
     hash,
     message: git(['show', '-s', '--format=%B', hash]),
     parents: git(['rev-list', '--parents', '-n', '1', hash]).split(' ').slice(1),
   }));
-  const plan = planRelease(previousTag.slice(1), commits, allTags);
-  return { branch, targetCommit: head, previousTag, plan };
+  const tagsForPlanning = releaseTagExists ? allTags.filter((tag) => tag !== latestTag) : allTags;
+  const plan = planRelease(previousTag.slice(1), commits, tagsForPlanning);
+  if (releaseTagExists && plan.tag !== latestTag) throw new Error(`Existing tag ${latestTag} does not match the release candidate ${plan.tag}.`);
+  return { branch, targetCommit: head, previousTag, plan, releaseTagExists };
+}
+
+export function readLocalReleaseContext() {
+  return readReleaseContext();
+}
+
+export function planReleaseForCommit({ branch, targetCommit, previousTag, commits, existingTags }) {
+  if (branch !== 'main') throw new Error(`Release planning requires main; received ${branch || '(detached)'}.`);
+  if (!/^[a-f0-9]{40}$/.test(targetCommit)) throw new Error('Release target must be a full commit SHA.');
+  if (!previousTag) throw new Error('No stable release baseline is configured.');
+  if (!/^v\d+\.\d+\.\d+$/.test(previousTag)) throw new Error(`Invalid stable release baseline: ${previousTag}`);
+  return { branch, targetCommit, previousTag, plan: planRelease(previousTag.slice(1), commits, existingTags) };
 }
 
 function main() {

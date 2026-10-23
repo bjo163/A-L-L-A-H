@@ -2,8 +2,9 @@
 
 ## Branch and review flow
 
-Work on `dev` and propose changes through a pull request from `dev` to `main`.
-Use a merge commit after required checks and review; do not push directly to `main`,
+Work on `dev`; pushing a commit runs checks and opens or updates the promotion PR
+automatically. GitHub merges it with a merge commit after required CI and Security
+checks pass. Manual approval is not required. Do not push directly to `main`,
 force-push, squash, rebase, or bypass branch rules. See [automation and versioning](docs/AUTOMATION.md).
 
 ## Local checks

@@ -1,0 +1,179 @@
+name: Stable release
+
+on:
+  workflow_call:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: stable-release-main
+  cancel-in-progress: false
+
+jobs:
+  release:
+    name: Plan and publish stable release
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+      actions: read
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          fetch-depth: 0
+      - uses: pnpm/action-setup@d9184bf108216479bc5a137cc391f4d7b14c870b # v6.1.0
+        with:
+          run_install: false
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Wait for successful Security checks on this commit
+        id: checks
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          TARGET_SHA: ${{ github.sha }}
+        run: |
+          for attempt in $(seq 1 90); do
+            gh run list --repo "$REPOSITORY" --commit "$TARGET_SHA" --workflow Security --json databaseId,headSha,event,status,conclusion,url --limit 20 > "$RUNNER_TEMP/security-runs.json"
+            result=$(node --input-type=module <<'NODE'
+          import { readFile, writeFile } from 'node:fs/promises';
+          const sha = process.env.TARGET_SHA;
+          const runs = JSON.parse(await readFile(`${process.env.RUNNER_TEMP}/security-runs.json`, 'utf8'))
+            .filter((run) => run.headSha === sha && run.event === 'push')
+            .sort((a, b) => b.databaseId - a.databaseId);
+          const security = runs[0];
+          if (!security || security.status !== 'completed') { console.log('WAIT'); process.exit(0); }
+          if (security.conclusion !== 'success') throw new Error(`Security checks failed: ${security.conclusion}`);
+          await writeFile(`${process.env.RUNNER_TEMP}/verified-run.json`, JSON.stringify({
+            runId: process.env.GITHUB_RUN_ID,
+            runUrl: `${process.env.GITHUB_SERVER_URL}/${process.env.GITHUB_REPOSITORY}/actions/runs/${process.env.GITHUB_RUN_ID}`,
+            commit: sha,
+            outcomes: { 'Branch policy': 'success', 'PostgreSQL auth and tenant integration': 'success', 'PostgreSQL schema upgrade and rollback integration': 'success', 'Quality checks': 'success', CodeQL: 'success', 'Dependency audit': 'success' },
+          }));
+          console.log('READY');
+          NODE
+            ) || exit 1
+            if [[ "$result" == *READY* ]]; then
+              echo "ready=true" >> "$GITHUB_OUTPUT"
+              exit 0
+            fi
+            sleep 10
+          done
+          echo "Security did not complete for $TARGET_SHA within 15 minutes."
+          exit 1
+      - name: Calculate stable release
+        id: plan
+        if: steps.checks.outputs.ready == 'true'
+        env:
+          TARGET_SHA: ${{ github.sha }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          node --input-type=module <<'NODE'
+          import { execFileSync } from 'node:child_process';
+          import { appendFile } from 'node:fs/promises';
+          import { readReleaseContext } from './scripts/release-planner.mjs';
+          const { plan, targetCommit, releaseTagExists } = readReleaseContext({ branch: 'main', head: process.env.TARGET_SHA, remoteMain: process.env.TARGET_SHA, fetchTags: true });
+          if (targetCommit !== process.env.TARGET_SHA) throw new Error('Planner SHA differs from workflow SHA.');
+          if (!plan.release) {
+            await appendFile(process.env.GITHUB_OUTPUT, 'release=false\n', { flag: 'a' });
+            process.exit(0);
+          }
+          const tags = execFileSync('git', ['ls-remote', '--tags', 'origin', `refs/tags/${plan.tag}`, `refs/tags/${plan.tag}^{}`], { encoding: 'utf8' }).trim();
+          let tagExists = releaseTagExists;
+          if (tags) {
+            const peeled = tags.split(/\r?\n/).find((line) => line.endsWith(`refs/tags/${plan.tag}^{}`))?.split(/\s+/)[0];
+            const direct = tags.split(/\r?\n/).find((line) => line.endsWith(`refs/tags/${plan.tag}`))?.split(/\s+/)[0];
+            const target = peeled ?? direct;
+            if (target !== targetCommit) throw new Error(`Existing release tag ${plan.tag} points to ${target}, expected ${targetCommit}.`);
+            tagExists = true;
+          }
+          let releaseExists = false;
+          try {
+            execFileSync('gh', ['release', 'view', plan.tag, '--repo', process.env.REPOSITORY, '--json', 'assets'], { stdio: ['ignore', 'pipe', 'pipe'] });
+            releaseExists = true;
+          } catch {}
+          await appendFile(process.env.GITHUB_OUTPUT, `release=true\ntag=${plan.tag}\nversion=${plan.version}\ntag_exists=${tagExists}\nrelease_exists=${releaseExists}\n`, { flag: 'a' });
+          NODE
+      - name: Prepare release bundle
+        if: steps.checks.outputs.ready == 'true' && steps.plan.outputs.release == 'true'
+        env:
+          RELEASE_TARGET_SHA: ${{ github.sha }}
+        run: pnpm release:prepare --checks-file "$RUNNER_TEMP/verified-run.json"
+      - name: Verify checksums and archive contents
+        id: verify
+        if: steps.checks.outputs.ready == 'true' && steps.plan.outputs.release == 'true'
+        shell: bash
+        run: |
+          cd ".artifacts/releases/${{ steps.plan.outputs.version }}"
+          sha256sum --check SHA256SUMS.txt
+          mkdir unpacked
+          tar -xzf "A-L-L-A-H-${{ steps.plan.outputs.version }}.tar.gz" -C unpacked
+          test -f "unpacked/A-L-L-A-H-${{ steps.plan.outputs.version }}/release.json"
+      - name: Create annotated tag
+        if: steps.checks.outputs.ready == 'true' && steps.plan.outputs.release == 'true' && steps.plan.outputs.tag_exists != 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          git config user.name github-actions[bot]
+          git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+          git tag -a "${{ steps.plan.outputs.tag }}" "${{ github.sha }}" -m "${{ steps.plan.outputs.tag }}"
+          git push origin "${{ steps.plan.outputs.tag }}"
+      - name: Publish GitHub Release and assets
+        if: steps.checks.outputs.ready == 'true' && steps.plan.outputs.release == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+        run: |
+          dir=".artifacts/releases/${{ steps.plan.outputs.version }}"
+          if [[ "${{ steps.plan.outputs.release_exists }}" == "true" ]]; then
+            gh release edit "${{ steps.plan.outputs.tag }}" --repo "$REPOSITORY" \
+              --title "${{ steps.plan.outputs.tag }}" --notes-file "$dir/CHANGELOG.md"
+            gh release upload "${{ steps.plan.outputs.tag }}" --repo "$REPOSITORY" --clobber \
+              "$dir/A-L-L-A-H-${{ steps.plan.outputs.version }}.tar.gz" \
+              "$dir/release.json" "$dir/CHANGELOG.md" "$dir/SHA256SUMS.txt"
+          else
+            gh release create "${{ steps.plan.outputs.tag }}" \
+              "$dir/A-L-L-A-H-${{ steps.plan.outputs.version }}.tar.gz" \
+              "$dir/release.json" "$dir/CHANGELOG.md" "$dir/SHA256SUMS.txt" \
+              --repo "$REPOSITORY" --title "${{ steps.plan.outputs.tag }}" \
+              --notes-file "$dir/CHANGELOG.md"
+          fi
+      - name: Create automated recovery pull request if publication failed
+        if: failure() && steps.checks.outputs.ready == 'true' && steps.plan.outputs.release == 'true' && steps.verify.outcome == 'success'
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPOSITORY: ${{ github.repository }}
+          TAG: ${{ steps.plan.outputs.tag }}
+          TARGET_SHA: ${{ github.sha }}
+        run: |
+          tag_sha=$(git ls-remote origin "refs/tags/$TAG^{}" | awk '{print $1}')
+          if [[ -z "$tag_sha" ]]; then
+            tag_sha=$(git ls-remote origin "refs/tags/$TAG" | awk '{print $1}')
+          fi
+          if [[ -n "$tag_sha" && "$tag_sha" != "$TARGET_SHA" ]]; then
+            echo "Existing tag $TAG points to $tag_sha instead of $TARGET_SHA; refusing to move it."
+            exit 1
+          fi
+          if [[ -z "$tag_sha" ]]; then
+            git config user.name github-actions[bot]
+            git config user.email 41898282+github-actions[bot]@users.noreply.github.com
+            git tag -a "$TAG" "$TARGET_SHA" -m "$TAG"
+            git push origin "$TAG"
+          fi
+          dir=".artifacts/releases/${{ steps.plan.outputs.version }}"
+          if gh release view "$TAG" --repo "$REPOSITORY" >/dev/null 2>&1; then
+            gh release edit "$TAG" --repo "$REPOSITORY" --title "$TAG" --notes-file "$dir/CHANGELOG.md"
+            gh release upload "$TAG" --repo "$REPOSITORY" --clobber \
+              "$dir/A-L-L-A-H-${{ steps.plan.outputs.version }}.tar.gz" \
+              "$dir/release.json" "$dir/CHANGELOG.md" "$dir/SHA256SUMS.txt"
+          else
+            gh release create "$TAG" \
+              "$dir/A-L-L-A-H-${{ steps.plan.outputs.version }}.tar.gz" \
+              "$dir/release.json" "$dir/CHANGELOG.md" "$dir/SHA256SUMS.txt" \
+              --repo "$REPOSITORY" --title "$TAG" --notes-file "$dir/CHANGELOG.md"
+          fi

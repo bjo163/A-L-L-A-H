@@ -15,18 +15,18 @@ git commit -m "feat(web): describe the change"
 git push origin dev
 ```
 
-When the `dev` checks pass, open a [promotion pull request](https://github.com/bjo163/A-L-L-A-H/compare/main...dev?expand=1).
-Wait for `Branch policy` and `Quality checks`, then merge it using GitHub's **Create a merge commit** option.
-GitHub Actions checks and builds the change; it does not create or merge pull requests.
+After a push to `dev`, `.github/workflows/promote.yml` waits for successful CI and
+Security runs on that exact commit, opens or reuses one `dev → main` pull request,
+and enables merge-commit auto-merge. Main branch protection requires all CI and
+Security checks and zero manual approvals, so healthy pushes promote unattended.
+After merge, CI synchronizes `main` back into `dev`. The stable release workflow
+waits until CI and Security both succeed for that exact `main` SHA, then publishes
+a stable release when eligible Conventional Commits exist.
 
-After merging, update `dev` from `main`:
-
-```sh
-git fetch origin
-git switch dev
-git merge --no-edit origin/main
-git push origin dev
-```
+One-time GitHub setup: enable auto-merge, allow Actions to create pull requests,
+allow workflow token read/write permissions, and apply merge-only branch protection
+from `node scripts/configure-repository.mjs`. These settings require a repository
+administrator; workflows do not weaken protection or bypass checks.
 
 ## Required checks
 
@@ -37,11 +37,12 @@ branch into `main`. Two separate disposable PostgreSQL integration jobs run in
 parallel with Quality checks. New runs replace older quality runs for the same branch
 or pull request.
 
-CodeQL and dependency auditing stay in the separate `Security` workflow. The
-repository setup script requires one approving review plus `Branch policy` and
-`Quality checks`; CodeQL reports on pull requests and security scans also run weekly
-or manually. Rerun the setup script as an admin if GitHub shows unexpected required
-checks.
+CodeQL and dependency auditing stay in the separate `Security` workflow and run on
+both long-lived branches. Main requires the four CI contexts (`Branch policy`, both
+PostgreSQL jobs, `Quality checks`) plus `CodeQL` and `Dependency audit`. It still
+requires a PR, while manual approvals are set to zero for unattended promotion.
+Security scans also run weekly or manually.
+Rerun the setup script as an admin if GitHub shows unexpected required checks.
 
 Run the same checks locally with:
 
@@ -62,14 +63,17 @@ the blocker; do not infer success from source inspection or CI.
 
 ## Releases
 
-Releases remain manual. The annotated stable Git tag and its GitHub Release are the
-version ledger; do not add version-bump commits to `dev` or `main`. The root
+Stable releases are prepared and published by `.github/workflows/release.yml` after
+CI and Security complete successfully for the merge to `main`. The annotated stable Git tag
+and its GitHub Release are the version ledger; do not add version-bump commits to
+`dev` or `main`. The root
 `package.json` version (`0.2.0`) is historical package metadata, not the current
 release version. The package is marked private and has no package publication
 workflow; the GitHub repository itself is public.
 
 Before proposing a release, inspect the commits since the latest stable tag and
-prepare release notes from the actual changes. Apply Conventional Commit intent
+prepare release notes from the actual changes. The workflow then calculates these
+notes automatically from Conventional Commit messages. Apply Conventional Commit intent
 conservatively: `fix:` or `perf:` suggests PATCH, `feat:` suggests MINOR, and `!`
 or a `BREAKING CHANGE:` footer suggests MAJOR. For `0.x`, treat breaking changes as
 MINOR because public compatibility has not reached `1.0`; `feat:` is PATCH unless
@@ -101,9 +105,13 @@ git log --format='%H %s%n%b' v0.2.5..origin/main
 git tag --list 'v[0-9]*' --sort=-version:refname
 ```
 
-After owner approval and required checks, create the annotated tag and publish the
-release using the GitHub UI or authenticated `gh` commands. This repository's local
-workflow does not publish tags or releases. A read-only planner checks the current
+The release workflow checks CI and Security runs for the exact main SHA, calculates a stable
+version, refuses malformed history or a duplicate remote tag, prepares the bundle,
+verifies checksums and archive contents, then creates one annotated tag and one
+GitHub Release with assets. It retries partial publication on the same verified tag
+and replaces assets only for that tag. Its write permission is scoped to that job. Stable
+publication is automated; prerelease publication remains manual and owner-directed.
+A read-only planner checks the current
 local `main` against `origin/main` and calculates a candidate from commits since the
 latest stable tag:
 
@@ -116,27 +124,25 @@ or when commit history is ambiguous. It does not query GitHub check results; con
 required checks for the exact candidate SHA before manual publication. Planning
 creates no tag or remote release.
 
-After a successful GitHub run for the candidate SHA, an operator may save the
-verified run details as JSON and prepare a local-only bundle:
+For a local preview, after a successful GitHub run for the candidate SHA, an
+operator may save the verified run details as JSON and prepare a local-only bundle:
 
 ```sh
 pnpm release:prepare --checks-file .artifacts/verified-run.json
 ```
 
 The evidence file must contain the candidate `commit`, numeric `runId`, matching
-GitHub Actions `runUrl`, and successful `Branch policy` and `Quality checks`
-outcomes. Preparation requires `main` to match the locally fetched `origin/main`,
+GitHub Actions `runUrl`, and successful required checks. Preparation requires `main` to match the locally fetched `origin/main`,
 then writes `release.json`, `CHANGELOG.md`, a versioned source archive, and
 `SHA256SUMS.txt` under `.artifacts/releases/<version>/`. The manifest records the
 same commit and evidence. Existing output directories are never overwritten.
 This command makes no tag, GitHub Release, package publication, or deployment.
-The owner still reviews the bundle and publishes the annotated tag and GitHub
-Release manually after approval. If release history contains prereleases (such as
+If release history contains prereleases (such as
 `v0.2.6-dev.386`), those are historical outputs; the checked-in workflow does not
 automate prerelease publication.
-Production deployment is not triggered here because this repository has no configured
-production target or deployment credentials. Connect a verified hosting target before
-adding that step; a GitHub Release alone does not claim a production deployment.
+Production deployment is not triggered because this repository has no configured
+production target. Connect a verified hosting target and its deployment credential
+before adding that step; a GitHub Release alone does not claim a production deployment.
 
 ## Verification and recovery
 
@@ -175,9 +181,9 @@ node scripts/configure-repository.mjs --dry-run
 node scripts/configure-repository.mjs
 ```
 
-Keep `main` as the default branch, allow merge commits only, require one approving
-review plus `Branch policy` and `Quality checks` on `main`, and block deletion and
-force-push on both branches. The setup script's dry-run prints the proposed settings;
+Keep `main` as the default branch, allow merge commits only, require a PR with zero
+approvals plus all four CI and both Security contexts on `main`, and block deletion and force-push on both
+branches. The setup script's dry-run prints the proposed settings;
 its write mode changes remote repository configuration and must be run only by an
 authorized administrator. Verify the persisted rules after applying them.
 

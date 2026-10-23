@@ -4,9 +4,9 @@ import { mkdtemp, mkdir, readFile, realpath, rm, stat, writeFile } from 'node:fs
 import os from 'node:os';
 import { isAbsolute, relative, resolve, sep } from 'node:path';
 import { pathToFileURL } from 'node:url';
-import { readLocalReleaseContext } from './release-planner.mjs';
+import { readLocalReleaseContext, readReleaseContext } from './release-planner.mjs';
 
-const requiredChecks = ['Branch policy', 'Quality checks'];
+const requiredChecks = ['Branch policy', 'PostgreSQL auth and tenant integration', 'PostgreSQL schema upgrade and rollback integration', 'Quality checks', 'CodeQL', 'Dependency audit'];
 
 export function buildReleaseManifest({ plan, targetCommit, repository, createdAt, checkEvidence }) {
   if (!plan?.release) throw new Error('There are no eligible changes to release.');
@@ -73,7 +73,10 @@ function parseArgs(args) {
 
 async function prepare() {
   const args = parseArgs(process.argv.slice(2));
-  const { targetCommit, previousTag, plan } = readLocalReleaseContext();
+  const releaseContext = process.env.RELEASE_TARGET_SHA
+    ? readReleaseContext({ branch: 'main', head: process.env.RELEASE_TARGET_SHA, remoteMain: process.env.RELEASE_TARGET_SHA, fetchTags: true })
+    : readLocalReleaseContext();
+  const { targetCommit, previousTag, plan } = releaseContext;
   if (!plan.release) throw new Error('No eligible Conventional Commits since the previous stable tag.');
   const checkPath = resolve(args['--checks-file']);
   const evidence = JSON.parse(await readFile(checkPath, 'utf8'));

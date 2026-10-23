@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import { compareStableVersions, parseStableVersion, planRelease, selectLatestStableTag } from './release-planner.mjs';
+import { compareStableVersions, parseStableVersion, planRelease, planReleaseForCommit, readReleaseContext, selectLatestStableTag } from './release-planner.mjs';
 import { buildReleaseManifest, formatReleaseNotes } from './prepare-release.mjs';
 
 const commit = (message, parents = ['parent']) => ({ message, parents });
@@ -48,6 +48,13 @@ test('ambiguous messages and duplicate tags stop planning', () => {
   assert.throws(() => planRelease('0.2.5', [commit('fix(api): patch')], ['v0.2.6']), /already exists/);
 });
 
+test('release planning is main-only and requires a current full SHA and stable baseline', () => {
+  assert.throws(() => planReleaseForCommit({ branch: 'dev', targetCommit: 'a'.repeat(40), previousTag: 'v1.2.3', commits: [], existingTags: [] }), /requires main/);
+  assert.throws(() => planReleaseForCommit({ branch: 'main', targetCommit: 'abc', previousTag: 'v1.2.3', commits: [], existingTags: [] }), /full commit SHA/);
+  assert.throws(() => planReleaseForCommit({ branch: 'main', targetCommit: 'a'.repeat(40), previousTag: null, commits: [], existingTags: [] }), /baseline/);
+  assert.throws(() => readReleaseContext({ branch: 'main', head: 'a'.repeat(40), remoteMain: 'b'.repeat(40), allTags: ['v1.2.3'] }), /match.*origin\/main/);
+});
+
 test('builds a versioned manifest from evidence for the exact candidate commit', () => {
   const targetCommit = 'a'.repeat(40);
   const plan = planRelease('0.2.5', [{ ...commit('fix(api): reject invalid tenant'), hash: 'd'.repeat(40) }]);
@@ -60,7 +67,7 @@ test('builds a versioned manifest from evidence for the exact candidate commit',
       runId: 123456,
       runUrl: 'https://github.com/bjo163/A-L-L-A-H/actions/runs/123456',
       commit: targetCommit,
-      outcomes: { 'Branch policy': 'success', 'Quality checks': 'success' },
+      outcomes: { 'Branch policy': 'success', 'PostgreSQL auth and tenant integration': 'success', 'PostgreSQL schema upgrade and rollback integration': 'success', 'Quality checks': 'success', CodeQL: 'success', 'Dependency audit': 'success' },
     },
   });
   assert.deepEqual({ schemaVersion: manifest.schemaVersion, version: manifest.version, tag: manifest.tag, commit: manifest.commit, previousTag: manifest.previousTag }, {
@@ -73,9 +80,29 @@ test('builds a versioned manifest from evidence for the exact candidate commit',
 test('release manifest refuses failed checks, mismatched SHA, and non-UTC timestamps', () => {
   const targetCommit = 'b'.repeat(40);
   const plan = planRelease('1.0.0', [{ ...commit('feat(api): add bounded export'), hash: 'e'.repeat(40) }]);
-  const evidence = { runId: 9, runUrl: 'https://github.com/bjo163/A-L-L-A-H/actions/runs/9', commit: targetCommit, outcomes: { 'Branch policy': 'success', 'Quality checks': 'success' } };
+  const evidence = { runId: 9, runUrl: 'https://github.com/bjo163/A-L-L-A-H/actions/runs/9', commit: targetCommit, outcomes: { 'Branch policy': 'success', 'PostgreSQL auth and tenant integration': 'success', 'PostgreSQL schema upgrade and rollback integration': 'success', 'Quality checks': 'success', CodeQL: 'success' } };
   const input = { plan, targetCommit, repository: 'bjo163/A-L-L-A-H', createdAt: '2026-10-23T03:00:00.000Z', checkEvidence: evidence };
   assert.throws(() => buildReleaseManifest({ ...input, checkEvidence: { ...evidence, outcomes: { ...evidence.outcomes, 'Quality checks': 'failure' } } }), /Required check did not pass/);
   assert.throws(() => buildReleaseManifest({ ...input, checkEvidence: { ...evidence, commit: 'c'.repeat(40) } }), /exact target commit/);
   assert.throws(() => buildReleaseManifest({ ...input, createdAt: '2026-10-23T03:00:00+07:00' }), /UTC ISO timestamp/);
+});
+
+test('release manifest requires every promotion CI integration check', () => {
+  const targetCommit = 'f'.repeat(40);
+  const plan = planRelease('1.0.0', [{ ...commit('fix(api): prevent duplicate poll'), hash: '1'.repeat(40) }]);
+  const outcomes = {
+    'Branch policy': 'success',
+    'PostgreSQL auth and tenant integration': 'success',
+    'PostgreSQL schema upgrade and rollback integration': 'success',
+    'Quality checks': 'success',
+    CodeQL: 'success',
+    'Dependency audit': 'success',
+  };
+  const input = {
+    plan, targetCommit, repository: 'bjo163/A-L-L-A-H', createdAt: '2026-10-23T03:00:00.000Z',
+    checkEvidence: { runId: 42, runUrl: 'https://github.com/bjo163/A-L-L-A-H/actions/runs/42', commit: targetCommit, outcomes },
+  };
+  assert.equal(buildReleaseManifest(input).observedChecks.outcomes['PostgreSQL auth and tenant integration'], 'success');
+  assert.throws(() => buildReleaseManifest({ ...input, checkEvidence: { ...input.checkEvidence, outcomes: { ...outcomes, 'PostgreSQL auth and tenant integration': 'failure' } } }), /Required check did not pass/);
+  assert.throws(() => buildReleaseManifest({ ...input, checkEvidence: { ...input.checkEvidence, outcomes: { ...outcomes, 'Dependency audit': 'failure' } } }), /Required check did not pass/);
 });
