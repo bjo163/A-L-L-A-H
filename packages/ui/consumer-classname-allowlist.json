@@ -12,16 +12,6 @@
       "reason": "Selects the package-owned SHADOW login composition for the authenticated workspace entry."
     },
     {
-      "consumer": "apps/web/src/App.tsx",
-      "component": "DocumentIcon",
-      "prop": "className",
-      "classes": [
-        "nav-icon"
-      ],
-      "owner": "command-center",
-      "reason": "Keeps the SHADOW workspace navigation icon sizing owned by the shared command-center stylesheet."
-    },
-    {
       "consumer": "apps/web/src/OverviewView.tsx",
       "component": "MangaTelemetryHero",
       "prop": "className",
