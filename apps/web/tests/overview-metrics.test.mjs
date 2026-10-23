@@ -22,6 +22,7 @@ test("overview metrics retain truthful sources, zero values, and permission stat
   assert.match(overview, /System-wide active CAB items/);
   assert.match(overview, /global summary/);
   assert.match(app, /canReadCab=\{can\(entity, "cab:read"\)\}/);
+  assert.doesNotMatch(app, />Poster Forge<|key="poster-forge"/);
   assert.match(overview, /permitted: canReadResearch/);
   assert.match(overview, /permitted: canReadCab/);
   assert.match(overview, /Your operator role does not include permission to read recent activity/);
