@@ -20,3 +20,18 @@ test("100CENTER renders API health, module data, and World Monitor without demo 
  assert.match(monitor,/World Monitor/);
  assert.doesNotMatch(app+overview,/BELIEF-TRUTH ALIGNMENT ANALYSIS|98\.7%|8,142/);
 });
+
+test("World Monitor shows public source aggregates faithfully and labels reference-only regions",async()=>{
+ const app=await readFile(new URL("../src/App.tsx",import.meta.url),"utf8");
+ const monitor=await readFile(new URL("../src/WorldMonitorView.tsx",import.meta.url),"utf8");
+ assert.match(app,/publicSources: summary\.sources/);
+ assert.match(monitor,/snapshot\.publicSources\.map/);
+ for (const field of ["lastAttemptAt","lastSuccessAt","freshnessSeconds","freshnessSlaSeconds","recordCount","configuredSourceCount","sourcesWithRecordsCount","fallbackActive","errorRate"]) {
+  assert.match(monitor,new RegExp(`source\\.${field}`));
+ }
+ assert.match(monitor,/Provider-level attribution is not included in this public category summary/);
+ assert.match(monitor,/Unknown; no configured-source denominator/);
+ assert.match(monitor,/No live regional nodes are connected/);
+ assert.match(monitor,/Reference locations only; no live regional nodes connected/);
+ assert.doesNotMatch(monitor,/Verified regional nodes/);
+});

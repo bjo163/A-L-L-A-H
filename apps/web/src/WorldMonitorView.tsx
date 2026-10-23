@@ -7,7 +7,7 @@ const WorldGlobeMap = lazy(async () => ({ default: (await import("./WorldGlobeMa
 const YoutubeSentinelView = lazy(async () => ({ default: (await import("./YoutubeSentinelView")).YoutubeSentinelView }));
 
 interface WorldMonitorViewProps {
-  snapshot: WorldMonitoringSnapshot & Pick<WorldMonitorPublicSummary, "apiHealth" | "databaseHealth" | "coverageNumerator" | "coverageDenominator" | "observationCount" | "alertCount">;
+  snapshot: WorldMonitoringSnapshot & Pick<WorldMonitorPublicSummary, "apiHealth" | "databaseHealth" | "coverageNumerator" | "coverageDenominator" | "observationCount" | "alertCount"> & { publicSources: WorldMonitorPublicSummary["sources"] };
   search: string;
   sentinelToken: string | null;
   sentinelPermissions: { read: boolean; scan: boolean; review: boolean; schedule: boolean };
@@ -60,9 +60,10 @@ export function WorldMonitorView({ snapshot, search, sentinelToken, sentinelPerm
     unavailable: "neutral" as const, unknown: "neutral" as const,
   })[state];
   const formatDate = (value: string | null) => value ? new Date(value).toLocaleString() : "No successful fetch recorded";
-  const formatAttempt = (value: string | null) => value ? new Date(value).toLocaleString() : "Unknown";
+  const formatAttempt = (value: string | null) => value ? new Date(value).toLocaleString() : "No attempt recorded";
   const numberWithUnit = (value: number | null, unit: string) => value === null ? "Unknown" : `${value}${unit}`;
-  const sourceTone = (state: typeof snapshot.ingestionStatus) => state === "healthy" ? "success" as const : state === "degraded" ? "warning" as const : "neutral" as const;
+  const sourceStatusLabel = (status: string) => ({ success: "Success", stale: "Stale", empty: "No records", failed: "Failed", unknown: "Unknown" })[status] ?? "Unknown";
+  const sourceTone = (status: string) => status === "success" ? "success" as const : status === "stale" || status === "failed" ? "warning" as const : "neutral" as const;
 
   return (
     <Tabs
@@ -92,21 +93,22 @@ export function WorldMonitorView({ snapshot, search, sentinelToken, sentinelPerm
           { label: "Database", value: snapshot.databaseHealth.toUpperCase(), tone: snapshot.databaseHealth === "healthy" ? "success" : snapshot.databaseHealth === "unavailable" ? "warning" : "neutral", detail: "Database health probe" },
           { label: "Ingestion", value: stateLabel(snapshot.ingestionStatus), tone: stateTone(snapshot.ingestionStatus), detail: "Provider run status" },
           { label: "Freshness", value: stateLabel(snapshot.freshnessStatus), tone: stateTone(snapshot.freshnessStatus), detail: `${snapshot.observationCount} aggregate observations` },
-          { label: "Coverage", value: stateLabel(snapshot.coverageStatus), tone: stateTone(snapshot.coverageStatus), detail: `${snapshot.coverageNumerator} of ${snapshot.coverageDenominator} configured active sources returned records` },
+          { label: "Coverage", value: stateLabel(snapshot.coverageStatus), tone: stateTone(snapshot.coverageStatus), detail: snapshot.coverageDenominator > 0 ? `${snapshot.coverageNumerator} of ${snapshot.coverageDenominator} configured active sources returned records` : "Unknown; no configured-source denominator" },
           { label: "Hazard level", value: snapshot.hazardAlertLevel.toUpperCase(), tone: snapshot.hazardAlertLevel === "red" ? "danger" : snapshot.hazardAlertLevel === "yellow" ? "warning" : snapshot.hazardAlertLevel === "green" ? "success" : "neutral", detail: `${snapshot.alertCount} active alerts; unknown is not clear` },
         ]} />
-        {snapshot.sources.length ? <div className="knowledge-grid" aria-label="Provider source status">
-          {snapshot.sources.map((source) => {
-            const providerFreshness = source.freshnessSeconds === null || source.freshnessSlaSeconds === null
-              ? "unknown"
-              : source.freshnessSeconds > source.freshnessSlaSeconds ? "degraded" : source.status === "success" ? "healthy" : "degraded";
-            return <SensorDisclosure key={source.source} name={source.source} identity={<>{source.category} · {source.tier}</>} status={`${stateLabel(providerFreshness)} · ${source.status}`} tone={sourceTone(providerFreshness)}>
+        {snapshot.publicSources.length ? <div className="knowledge-grid" aria-label="Provider category status">
+          {snapshot.publicSources.map((source) => {
+            const coverage = source.configuredSourceCount > 0
+              ? `${source.sourcesWithRecordsCount} of ${source.configuredSourceCount} configured sources returned records`
+              : "Unknown; no configured-source denominator";
+            return <SensorDisclosure key={source.category} name={source.category} identity="Aggregate category summary" status={sourceStatusLabel(source.status)} tone={sourceTone(source.status)}>
             <p><strong>Last attempt:</strong> {formatAttempt(source.lastAttemptAt)} · <strong>Last successful fetch:</strong> {formatDate(source.lastSuccessAt)}</p>
-            <p><strong>Freshness:</strong> {numberWithUnit(source.freshnessSeconds, " s")} · <strong>Freshness target:</strong> {numberWithUnit(source.freshnessSlaSeconds, " s")} · <strong>Latest fetch duration:</strong> {numberWithUnit(source.durationMs, " ms")}</p>
-            <p><strong>Records in latest run:</strong> {numberWithUnit(source.records, "")} · <strong>Fetched points:</strong> {numberWithUnit(source.fetchedPoints, "")}</p>
-            <p><strong>Coverage:</strong> {source.coverage === null ? stateLabel(source.coverageStatus) : `${(source.coverage * 100).toFixed(1)}% (${stateLabel(source.coverageStatus)})`}</p>
-            <p><strong>Recent failure rate:</strong> {source.errorRate === null ? "Unknown" : `${(source.errorRate * 100).toFixed(1)}%`} · <strong>Failure streak:</strong> {numberWithUnit(source.failureStreak, "")} · <strong>Parse errors:</strong> {numberWithUnit(source.parseErrors, "")}</p>
-            <p><strong>Fallback activated:</strong> {source.fallbackActivated === null ? "Unknown" : source.fallbackActivated ? "Yes" : "No"}</p>
+            <p><strong>Freshness:</strong> {numberWithUnit(source.freshnessSeconds, " s")} · <strong>Freshness target:</strong> {numberWithUnit(source.freshnessSlaSeconds, " s")}</p>
+            <p><strong>Records:</strong> {numberWithUnit(source.recordCount, "")}</p>
+            <p><strong>Coverage:</strong> {coverage}</p>
+            <p><strong>Recent failure rate:</strong> {source.errorRate === null ? "Unknown" : `${(source.errorRate * 100).toFixed(1)}%`}</p>
+            <p><strong>Fallback in use:</strong> {source.fallbackActive === null ? "Unknown" : source.fallbackActive ? "Yes" : "No"}</p>
+            <p className="muted">Provider-level attribution is not included in this public category summary.</p>
           </SensorDisclosure>;
           })}
         </div> : <EmptyState title="Provider status unknown" description="No active provider inventory is available in this snapshot." />}
@@ -157,7 +159,7 @@ export function WorldMonitorView({ snapshot, search, sentinelToken, sentinelPerm
         <SectionHeading layout="compact" title="Global System Metrics" />
         <MetricGrid columns={4} density="compact" items={[
           { label: "API / database status", value: snapshot.status.toUpperCase(), tone: systemState === "ok" ? "success" : systemState === "unavailable" ? "neutral" : "warning" },
-          { label: "Verified regional nodes", value: snapshot.totalMonitoredNodes },
+          { label: "Live regional nodes", value: snapshot.totalMonitoredNodes, detail: "No live regional nodes are connected" },
           { label: "Measured global latency", value: metric(snapshot.averageGlobalLatencyMs, " ms") },
           { label: "Heliogrid load", value: totalHeliogrid },
         ]} />
@@ -165,7 +167,7 @@ export function WorldMonitorView({ snapshot, search, sentinelToken, sentinelPerm
 
       {/* ── Regional Nodes ───────────────────────────────────────────────────── */}
       <section>
-        <SectionHeading layout="compact" eyebrow="DISTRIBUTED TOPOLOGY" title={<>Regional Reference Locations <span className="count-chip">{visibleRegions.length}</span></>} aside={<span className="muted">Reference locations; live regional data unavailable</span>} />
+        <SectionHeading layout="compact" eyebrow="DISTRIBUTED TOPOLOGY" title={<>Regional Reference Locations <span className="count-chip">{visibleRegions.length}</span></>} aside={<span className="muted">Reference locations only; no live regional nodes connected</span>} />
         <Grid minItemWidth="lg">
           {visibleRegions.map((region) => (
             <RegionSelectCard

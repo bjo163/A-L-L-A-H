@@ -31,7 +31,7 @@ type ConfirmationRequest = ResearchConfirmationRequest;
 const API_ORIGIN = process.env.NEXT_PUBLIC_API_ORIGIN || "/api";
 const api = createApiClient(API_ORIGIN);
 const initialSnapshot: Snapshot = { health: "checking", readiness: "checking", modules: [], capabilities: [] };
-type WorldMonitorDisplaySnapshot = WorldMonitoringSnapshot & Pick<WorldMonitorPublicSummary, "apiHealth" | "databaseHealth" | "coverageNumerator" | "coverageDenominator" | "observationCount" | "alertCount">;
+type WorldMonitorDisplaySnapshot = WorldMonitoringSnapshot & Pick<WorldMonitorPublicSummary, "apiHealth" | "databaseHealth" | "coverageNumerator" | "coverageDenominator" | "observationCount" | "alertCount"> & { publicSources: WorldMonitorPublicSummary["sources"] };
 function toWorldMonitoringSnapshot(summary: WorldMonitorPublicSummary): WorldMonitorDisplaySnapshot {
   const reference = getWorldMonitoringSnapshot();
   return {
@@ -44,6 +44,7 @@ function toWorldMonitoringSnapshot(summary: WorldMonitorPublicSummary): WorldMon
     coverageDenominator: summary.coverageDenominator,
     observationCount: summary.observationCount,
     alertCount: summary.alertCount,
+    publicSources: summary.sources,
     globalAlertLevel: summary.globalAlertLevel,
     databaseStatus: summary.databaseStatus,
     ingestionStatus: summary.ingestionStatus,
