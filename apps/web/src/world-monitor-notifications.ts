@@ -19,6 +19,52 @@ export const DEFAULT_WORLD_MONITOR_NOTIFICATION_PREFERENCES: WorldMonitorNotific
   quietHours: { enabled: false, start: "22:00", end: "07:00" },
 };
 
+export interface WorldMonitorAlertPollerOptions {
+  fetchAlerts: () => Promise<WorldMonitorAlertNotification[]>;
+  getPermission: () => NotificationPermission;
+  getPreferences: () => WorldMonitorNotificationPreferences;
+  notify: (title: string, body: string) => void;
+  now?: () => Date;
+}
+
+export function createWorldMonitorAlertPoller(options: WorldMonitorAlertPollerOptions) {
+  let active = true;
+  let baseline: string | undefined;
+  let previous: WorldMonitorAlertNotification[] | null = null;
+  const knownLevels = new Map<string, string>();
+  const now = options.now ?? (() => new Date());
+
+  return {
+    async poll() {
+      if (!active) return;
+      try {
+        const current = await options.fetchAlerts();
+        if (!active) return;
+        if (previous === null) {
+          previous = current;
+          baseline = now().toISOString();
+          for (const alert of current) knownLevels.set(alert.id, alert.level);
+          return;
+        }
+        notifyNewWorldMonitorAlerts(
+          previous,
+          current,
+          options.getPermission(),
+          options.notify,
+          baseline,
+          options.getPreferences(),
+          now(),
+          knownLevels,
+        );
+        previous = current;
+      } catch {
+        // Keep the last successful comparison baseline through transient failures.
+      }
+    },
+    stop() { active = false; },
+  };
+}
+
 function minuteOfDay(value: string): number | null {
   const match = /^(\d{2}):(\d{2})$/.exec(value);
   if (!match) return null;

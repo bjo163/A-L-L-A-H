@@ -19,8 +19,8 @@ import { CollaborationView } from "./CollaborationView";
 import { EnterpriseView } from "./EnterpriseView";
 import type { ApiRequestOptions } from "@empire/api-contract";
 import moonwitnessStoryCrewSheet from "@empire/ui/assets/moonwitness-story-crew-contact-sheet.png";
-import { DEFAULT_WORLD_MONITOR_NOTIFICATION_PREFERENCES, notifyNewWorldMonitorAlerts } from "./world-monitor-notifications";
-import type { WorldMonitorAlertNotification, WorldMonitorNotificationPreferences } from "./world-monitor-notifications";
+import { createWorldMonitorAlertPoller, DEFAULT_WORLD_MONITOR_NOTIFICATION_PREFERENCES } from "./world-monitor-notifications";
+import type { WorldMonitorNotificationPreferences } from "./world-monitor-notifications";
 
 type Signal = "checking" | "ok" | "degraded" | "unavailable";
 type Module = { id: string; title: string; version: string; state: string; enabled: boolean };
@@ -119,9 +119,6 @@ export function App() {
   const [worldNotificationPreferences, setWorldNotificationPreferences] = useState(loadWorldMonitorNotificationPreferences);
   const worldNotificationPreferencesRef = useRef(worldNotificationPreferences);
   const worldNotificationPermissionRef = useRef<NotificationPermission | "unsupported">(typeof Notification === "undefined" ? "unsupported" : Notification.permission);
-  const worldAlertBaselineRef = useRef<string | undefined>(undefined);
-  const worldAlertSnapshotRef = useRef<WorldMonitorAlertNotification[] | null>(null);
-  const worldAlertLevelsRef = useRef(new Map<string, string>());
   const [worldLoading, setWorldLoading] = useState(false);
   const [worldError, setWorldError] = useState("");
   const [worldNextRefreshIn, setWorldNextRefreshIn] = useState(30);
@@ -299,17 +296,12 @@ export function App() {
   // React snapshot or permission value.
   useEffect(() => {
     if (!token && !cookieSession || !can(entity, "world-monitor:read")) {
-      worldAlertSnapshotRef.current = null;
-      worldAlertBaselineRef.current = undefined;
-      worldAlertLevelsRef.current.clear();
       return;
     }
-    let active = true;
-    const pollAlerts = async () => {
-      try {
+    const poller = createWorldMonitorAlertPoller({
+      fetchAlerts: async () => {
         const page = await client.request<{ items: Array<{ category: string; source: string; kind: string; level: string; observedAt: string; value: string }> }>("/v1/world-monitor/alerts?limit=100");
-        if (!active) return;
-        const current: WorldMonitorAlertNotification[] = page.items.map((item) => ({
+        return page.items.map((item) => ({
           id: `${item.category}:${item.source}:${item.kind}:${item.observedAt}`,
           category: item.category,
           level: item.level,
@@ -317,30 +309,14 @@ export function App() {
           detail: item.value,
           observedAt: item.observedAt,
         }));
-        if (worldAlertSnapshotRef.current === null) {
-          worldAlertSnapshotRef.current = current;
-          worldAlertBaselineRef.current = new Date().toISOString();
-          for (const alert of current) worldAlertLevelsRef.current.set(alert.id, alert.level);
-          return;
-        }
-        notifyNewWorldMonitorAlerts(
-          worldAlertSnapshotRef.current,
-          current,
-          worldNotificationPermissionRef.current === "granted" ? "granted" : "denied",
-          (title, body) => new Notification(title, { body, tag: "world-monitor" }),
-          worldAlertBaselineRef.current,
-          worldNotificationPreferencesRef.current,
-          new Date(),
-          worldAlertLevelsRef.current,
-        );
-        worldAlertSnapshotRef.current = current;
-      } catch {
-        // A permission or temporary API failure must not erase the last comparison baseline.
-      }
-    };
-    void pollAlerts();
-    const timer = window.setInterval(() => void pollAlerts(), 30000);
-    return () => { active = false; window.clearInterval(timer); };
+      },
+      getPermission: () => worldNotificationPermissionRef.current === "granted" ? "granted" : "denied",
+      getPreferences: () => worldNotificationPreferencesRef.current,
+      notify: (title, body) => new Notification(title, { body, tag: "world-monitor" }),
+    });
+    void poller.poll();
+    const timer = window.setInterval(() => void poller.poll(), 30000);
+    return () => { poller.stop(); window.clearInterval(timer); };
   }, [token, cookieSession, entity, client]);
   useEffect(() => {
     if (!token && !cookieSession) return;

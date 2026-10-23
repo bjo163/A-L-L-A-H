@@ -5,12 +5,36 @@ import ts from "typescript";
 
 const source = await readFile(new URL("../src/world-monitor-notifications.ts", import.meta.url), "utf8");
 const compiled = ts.transpileModule(source, { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText;
-const load = new Function("exports", `${compiled}; return { notifyNewWorldMonitorAlerts, isWorldMonitorQuietNow };`);
-const { notifyNewWorldMonitorAlerts: notifyAlerts, isWorldMonitorQuietNow } = load({});
+const load = new Function("exports", `${compiled}; return { notifyNewWorldMonitorAlerts, isWorldMonitorQuietNow, createWorldMonitorAlertPoller };`);
+const { notifyNewWorldMonitorAlerts: notifyAlerts, isWorldMonitorQuietNow, createWorldMonitorAlertPoller } = load({});
 const defaults = {
   categories: { atmosphere: true, "space-weather": true, earthquake: true, disaster: true },
   quietHours: { enabled: false, start: "22:00", end: "07:00" },
 };
+
+test("production notification poller establishes a baseline, deduplicates, and reports escalation", async () => {
+  const notifications = [];
+  let current = [{ id: "earthquake:USGS:earthquake:sample-1", category: "earthquake", level: "advisory", title: "Earthquake", detail: "M5", observedAt: "2026-10-23T10:01:00Z" }];
+  const poller = createWorldMonitorAlertPoller({
+    fetchAlerts: async () => current,
+    getPermission: () => "granted",
+    getPreferences: () => defaults,
+    notify: (title, body) => notifications.push({ title, body }),
+    now: () => new Date("2026-10-23T10:00:00Z"),
+  });
+  await poller.poll();
+  assert.equal(notifications.length, 0, "first poll establishes the comparison baseline without notifying");
+  await poller.poll();
+  assert.equal(notifications.length, 0, "repeated identical poll is deduplicated");
+  current = [{ ...current[0], level: "critical", detail: "M7" }];
+  await poller.poll();
+  assert.equal(notifications.length, 1, "severity escalation sends exactly one notification");
+  await poller.poll();
+  assert.equal(notifications.length, 1, "unchanged critical poll remains deduplicated");
+  poller.stop();
+  await poller.poll();
+  assert.equal(notifications.length, 1, "stopped polling cannot send after effect cleanup");
+});
 
 test("notifications send once for unseen alerts and prefer critical", () => {
   const sent = [];
