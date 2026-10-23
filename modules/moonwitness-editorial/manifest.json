@@ -5,9 +5,9 @@
   "owner": "Babydoll",
   "state": "bootstrap_ready",
   "dependencies": ["kernel", "work"],
-  "capabilities": ["editorial-collections", "editorial-stories", "public-story-listing"],
+  "capabilities": ["editorial-collections", "editorial-stories", "public-story-listing", "append-only-publication-snapshots"],
   "permissions": ["moonwitness:read", "moonwitness:write", "moonwitness:publish"],
-  "models": ["moonwitness_collections", "moonwitness_stories", "moonwitness_story_tags"],
+  "models": ["moonwitness_collections", "moonwitness_stories", "moonwitness_story_tags", "moonwitness_episodes", "moonwitness_scenes", "moonwitness_comic_pages", "moonwitness_characters", "moonwitness_signals", "moonwitness_content_revisions", "moonwitness_publications"],
   "upgrades": [],
   "uiSlots": [],
   "runMode": "first_party_allowlisted"

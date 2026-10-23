@@ -47,6 +47,7 @@ import {
 } from "./models/index.js";
 import { ASMAUL_HUSNA_99 } from "./data/asmaul-husna.js";
 import { seedMoonwitnessCollections } from "./moonwitness-seed.js";
+import { installMoonwitnessAppendOnlyGuards } from "./migrations/moonwitness-append-only.js";
 
 const kernelModels = [
   RoleModel,
@@ -413,6 +414,7 @@ async function syncBaseModuleUnlocked(knex: Knex, modules: readonly SchemaModule
   console.info("[Batteries Schema Sync]", JSON.stringify(schemaChanges));
 
   if (!activeModuleIds.has("kernel")) throw new Error("The kernel module must be enabled.");
+  if (activeModuleIds.has("moonwitness-editorial")) await installMoonwitnessAppendOnlyGuards(knex);
 
   for (const { rules } of pendingUpgrades) {
     for (const rule of rules) {
