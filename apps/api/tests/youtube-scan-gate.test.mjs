@@ -52,6 +52,21 @@ test("YouTube scan gate bounds per-operator and global concurrent crawls", () =>
   next.release();
 });
 
+test("YouTube scan gate shares capacity between operator requests and scheduled sweeps", () => {
+  const gate = createYoutubeScanGate({ maxRequests: 5, windowMs: 60_000, maxConcurrent: 3 });
+  const manual = gate.acquire("operator-a");
+  const scheduled = gate.acquire("scheduler", "scheduled");
+  assert.equal(manual.allowed, true);
+  assert.equal(scheduled.allowed, true);
+  const secondManual = gate.acquire("operator-b");
+  assert.equal(secondManual.allowed, true);
+  assert.equal(gate.acquire("scheduler-2", "scheduled").reason, "operator_concurrency");
+  assert.equal(gate.acquire("operator-c").reason, "global_concurrency");
+  manual.release();
+  secondManual.release();
+  scheduled.release();
+});
+
 test("YouTube scan gate prunes expired identities and fails closed for missing identity", () => {
   let now = 0;
   const gate = createYoutubeScanGate({ maxRequests: 1, windowMs: 1_000, maxTrackedOperators: 1, now: () => now });

@@ -157,7 +157,7 @@ export async function triggerManualYoutubeSweep(queries?: string[], limitPerQuer
       status: getYoutubeSentinelSchedulerStatus(),
     };
   }
-  const lease = youtubeScanGate.acquire("youtube-scheduler");
+  const lease = youtubeScanGate.acquire("youtube-scheduler", "scheduled");
   if (!lease.allowed) {
     return {
       ok: false,
@@ -200,7 +200,7 @@ export function updateYoutubeSentinelSchedulerInterval(newIntervalHours: number)
 
 const runSweep = async () => {
   if (isSweepInProgress) return;
-  const lease = youtubeScanGate.acquire("youtube-scheduler");
+  const lease = youtubeScanGate.acquire("youtube-scheduler", "scheduled");
   if (!lease.allowed) {
     console.warn("[YouTube Sentinel Scheduler] Skipping sweep: shared scan capacity is full.");
     return;

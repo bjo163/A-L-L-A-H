@@ -6,6 +6,8 @@ export interface YoutubeScanGateOptions {
   now?: () => number;
 }
 
+export type YoutubeScanCategory = "operator" | "scheduled";
+
 export interface YoutubeScanLease {
   allowed: boolean;
   reason?: "rate_limit" | "operator_concurrency" | "global_concurrency" | "identity_unavailable";
@@ -26,6 +28,7 @@ export function createYoutubeScanGate(options: YoutubeScanGateOptions = {}) {
   const now = options.now ?? Date.now;
   const requests = new Map<string, number[]>();
   const activeOperators = new Set<string>();
+  const activeCategories = new Set<YoutubeScanCategory>();
   let activeScans = 0;
 
   function pruneExpired(at: number) {
@@ -46,9 +49,10 @@ export function createYoutubeScanGate(options: YoutubeScanGateOptions = {}) {
   }
 
   return {
-    acquire(operatorId: string): YoutubeScanLease {
+    acquire(operatorId: string, category: YoutubeScanCategory = "operator"): YoutubeScanLease {
       const operator = operatorId.trim();
       if (!operator) return denied("identity_unavailable", windowMs);
+      if (category !== "operator" && category !== "scheduled") return denied("identity_unavailable", windowMs);
 
       const at = now();
       pruneExpired(at);
@@ -56,6 +60,7 @@ export function createYoutubeScanGate(options: YoutubeScanGateOptions = {}) {
 
       const remaining = Math.max(0, maxRequests - timestamps.length);
       if (activeOperators.has(operator)) return denied("operator_concurrency", 1_000, remaining);
+      if (category === "scheduled" && activeCategories.has("scheduled")) return denied("operator_concurrency", 1_000, remaining);
       if (activeScans >= maxConcurrent) return denied("global_concurrency", 5_000, remaining);
       if (timestamps.length >= maxRequests) return denied("rate_limit", timestamps[0]! + windowMs - at);
 
@@ -65,6 +70,7 @@ export function createYoutubeScanGate(options: YoutubeScanGateOptions = {}) {
       timestamps.push(at);
       requests.set(operator, timestamps);
       activeOperators.add(operator);
+      if (category === "scheduled") activeCategories.add(category);
       activeScans += 1;
 
       let released = false;
@@ -76,6 +82,7 @@ export function createYoutubeScanGate(options: YoutubeScanGateOptions = {}) {
           if (released) return;
           released = true;
           activeOperators.delete(operator);
+          if (category === "scheduled") activeCategories.delete(category);
           activeScans = Math.max(0, activeScans - 1);
         },
       };
