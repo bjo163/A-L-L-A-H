@@ -12,6 +12,8 @@ test("YouTube Sentinel 12-hour scheduler is registered and configured with prope
   assert.match(schedulerSource, /executeScheduledYoutubeSweep/);
   assert.match(schedulerSource, /sortBy:\s*"upload_date"/);
   assert.match(schedulerSource, /triggeredBy:\s*"scheduler_12h"/);
+  assert.match(schedulerSource, /youtubeScanGate\.acquire\("youtube-scheduler"\)/);
+  assert.match(schedulerSource, /lease\.release\(\)/);
 
   // Verify server startup hooks
   assert.match(serverSource, /startYoutubeSentinelScheduler/);

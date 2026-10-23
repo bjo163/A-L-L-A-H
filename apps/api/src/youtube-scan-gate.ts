@@ -84,3 +84,6 @@ export function createYoutubeScanGate(options: YoutubeScanGateOptions = {}) {
     get trackedOperatorCount() { return requests.size; },
   };
 }
+
+/** One process-wide gate shared by operator requests and scheduled sweeps. */
+export const youtubeScanGate = createYoutubeScanGate();

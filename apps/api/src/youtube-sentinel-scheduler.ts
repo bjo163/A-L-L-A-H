@@ -1,6 +1,7 @@
 import { scanYoutube } from "@empire/batteries-world-monitor";
 import { YoutubeSentinelScanModel } from "@empire/batteries-base";
 import { dbAvailable, persistItemsToDB } from "./youtube-sentinel-storage.js";
+import { youtubeScanGate } from "./youtube-scan-gate.js";
 
 /**
  * Default periodic surveillance queries targeting syirik, occultism,
@@ -125,6 +126,14 @@ export async function triggerManualYoutubeSweep(queries?: string[], limitPerQuer
       status: getYoutubeSentinelSchedulerStatus(),
     };
   }
+  const lease = youtubeScanGate.acquire("youtube-scheduler");
+  if (!lease.allowed) {
+    return {
+      ok: false,
+      message: "Kapasitas pemindaian YouTube sedang penuh; coba kembali setelah jeda.",
+      status: getYoutubeSentinelSchedulerStatus(),
+    };
+  }
   isSweepInProgress = true;
   lastSweepStartedAt = new Date().toISOString();
   try {
@@ -140,6 +149,7 @@ export async function triggerManualYoutubeSweep(queries?: string[], limitPerQuer
     };
   } finally {
     isSweepInProgress = false;
+    lease.release();
   }
 }
 
@@ -159,6 +169,11 @@ export function updateYoutubeSentinelSchedulerInterval(newIntervalHours: number)
 
 const runSweep = async () => {
   if (isSweepInProgress) return;
+  const lease = youtubeScanGate.acquire("youtube-scheduler");
+  if (!lease.allowed) {
+    console.warn("[YouTube Sentinel Scheduler] Skipping sweep: shared scan capacity is full.");
+    return;
+  }
   isSweepInProgress = true;
   lastSweepStartedAt = new Date().toISOString();
   try {
@@ -170,6 +185,7 @@ const runSweep = async () => {
     console.error("[YouTube Sentinel Scheduler] Sweep error:", err);
   } finally {
     isSweepInProgress = false;
+    lease.release();
   }
 };
 

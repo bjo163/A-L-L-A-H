@@ -9,10 +9,9 @@ import { getYoutubeSentinelSchedulerStatus, triggerManualYoutubeSweep, updateYou
 import { triggerManualWorldMonitorRefresh } from "../world-monitor-scheduler.js";
 import { requirePermission, requireSession } from "./auth.js";
 import { requireTenant } from "./tenant-context.js";
-import { createYoutubeScanGate } from "../youtube-scan-gate.js";
+import { youtubeScanGate } from "../youtube-scan-gate.js";
 import { WORLD_MONITOR_PUBLIC_SUMMARY_SCHEMA, type WorldMonitorPublicSummary } from "@empire/api-contract";
 
-const youtubeScanGate = createYoutubeScanGate();
 // Keep the last known hazard events briefly in-process so a transient database or
 // ingestion outage does not erase a credible critical alert from the public HUD.
 const worldMonitorHazardEvents = new Map<string, any>();
