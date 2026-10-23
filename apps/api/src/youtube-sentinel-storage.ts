@@ -1,6 +1,43 @@
 import { checkDatabaseHealth } from "./db.js";
 import { YoutubeSentinelItemModel } from "@empire/batteries-base";
-import type { YoutubeMonitoredItem } from "@empire/batteries-world-monitor";
+import type { YoutubeMonitoredItem, YoutubeWorkflowEvidenceEvent, YoutubeWorkflowStatus } from "@empire/batteries-world-monitor";
+
+const workflowStatuses: ReadonlySet<string> = new Set([
+  "PENDING_REVIEW", "VERIFIED_SYIRIK", "COUNTER_DAKWAH_QUEUED", "REPORT_FILED", "REPORT_RETRACTED", "FALSE_POSITIVE_DISMISSED", "REVIEW_RETRACTED",
+  "WISDOM_QUEUED", "AMPLIFY_RECOMMENDED", "SHARED_VIA_DAKWAH", "ARCHIVED_REFERENCE",
+]);
+
+const isRecord = (value: unknown): value is Record<string, unknown> => typeof value === "object" && value !== null && !Array.isArray(value);
+const isWorkflowStatus = (value: unknown): value is YoutubeWorkflowStatus => typeof value === "string" && workflowStatuses.has(value);
+
+/** Allowlist and validate persisted evidence history before exposing it to route/UI DTOs. */
+export function normalizeWorkflowActionEvidence(value: unknown): YoutubeMonitoredItem["actionEvidence"] {
+  if (!isRecord(value)) return null;
+  const history: YoutubeWorkflowEvidenceEvent[] = [];
+  if (Array.isArray(value.history)) {
+    for (const candidate of value.history) {
+      if (!isRecord(candidate) || !isWorkflowStatus(candidate.action) || !isWorkflowStatus(candidate.previousStatus)) continue;
+      if (typeof candidate.actorId !== "string" || typeof candidate.occurredAt !== "string") continue;
+      history.push({
+        action: candidate.action,
+        previousStatus: candidate.previousStatus,
+        actorId: candidate.actorId,
+        occurredAt: candidate.occurredAt,
+        ...(typeof candidate.rationale === "string" ? { rationale: candidate.rationale } : {}),
+        ...(typeof candidate.reviewReference === "string" ? { reviewReference: candidate.reviewReference } : {}),
+        ...(typeof candidate.externalActionReference === "string" ? { externalActionReference: candidate.externalActionReference } : {}),
+        ...(typeof candidate.externalActionAttested === "boolean" ? { externalActionAttested: candidate.externalActionAttested } : {}),
+      });
+    }
+  }
+  const evidence = {
+    ...(typeof value.reference === "string" ? { reference: value.reference } : {}),
+    ...(typeof value.attestedBy === "string" ? { attestedBy: value.attestedBy } : {}),
+    ...(typeof value.attestedAt === "string" ? { attestedAt: value.attestedAt } : {}),
+    history,
+  };
+  return history.length || evidence.reference || evidence.attestedBy || evidence.attestedAt ? evidence : null;
+}
 
 export async function dbAvailable(): Promise<boolean> {
   try {
@@ -61,7 +98,7 @@ export function rowToItem(row: YoutubeSentinelItemModel): YoutubeMonitoredItem {
     wisdomBrief: (row.wisdomBrief as YoutubeMonitoredItem["wisdomBrief"]) ?? undefined,
     workflowStatus: row.workflowStatus as YoutubeMonitoredItem["workflowStatus"],
     reviewEvidence: row.reviewEvidence ?? null,
-    actionEvidence: row.actionEvidence ?? null,
+    actionEvidence: normalizeWorkflowActionEvidence(row.actionEvidence),
     reviewRevision: row.reviewRevision ?? 0,
     operatorNotes: row.operatorNotes ?? undefined,
     scannedAt: row.scannedAt ?? row.createdAt,

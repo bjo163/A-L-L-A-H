@@ -13,6 +13,14 @@ const compiledRoute = ts.transpileModule(
 ).outputText;
 
 function createRoute(checkDatabaseHealth, baseSnapshot, observations = [], runs = [], sourceDetails = []) {
+  const runQuery = { orderBy() { return this; }, limit: async () => runs };
+  const observationQuery = (criteria) => {
+    const query = {
+      orderBy() { return this; },
+      limit: async (limit) => observations.filter((item) => Object.entries(criteria).every(([key, value]) => item[key] === value)).slice(0, limit),
+    };
+    return query;
+  };
   const load = new Function(
     "exports",
     "checkDatabaseHealth",
@@ -38,8 +46,8 @@ function createRoute(checkDatabaseHealth, baseSnapshot, observations = [], runs 
     { getItems: () => [], getSummary: () => ({}), updateWorkflowStatus: () => null },
     async () => ({ scannedCount: 0, newItemsCount: 0, items: [], summary: {} }),
     () => "",
-    { query: () => ({ orderBy: () => ({ limit: async () => runs }) }) },
-    { query: () => ({ where: (criteria) => ({ orderBy: () => ({ limit: async (limit) => observations.filter((item) => Object.entries(criteria).every(([key, value]) => item[key] === value)).slice(0, limit) }) }) }) },
+    { query: () => runQuery },
+    { query: () => ({ where: observationQuery }) },
     () => sourceDetails,
     () => sourceDetails.map(({ source }) => source),
     async () => {},
@@ -72,6 +80,7 @@ function createSnapshot() {
 async function invoke(checkDatabaseHealth, observations = [], runs = [], sourceDetails = []) {
   let options;
   let handler;
+  const responseHeaders = {};
   await createRoute(checkDatabaseHealth, createSnapshot(), observations, runs, sourceDetails)({
     get(path, routeOptions, routeHandler) {
       if (path === "/v1/world-monitor") {
@@ -81,17 +90,24 @@ async function invoke(checkDatabaseHealth, observations = [], runs = [], sourceD
     },
     post() {},
   });
-  return { options, result: await handler(), handler };
+  const call = () => handler({}, { header(name, value) { responseHeaders[name.toLowerCase()] = value; return this; } });
+  return { options, result: await call(), handler: call, responseHeaders };
 }
 
 
 test("healthy database with no observations reports unknown data coverage, not green", async () => {
-  const { options, result } = await invoke(async () => ({ ok: true }));
+  const { options, result, responseHeaders } = await invoke(async () => ({ ok: true }));
   assert.match(routeSource, /app\.post\(\s*"\/v1\/world-monitor\/refresh"/);
   assert.match(routeSource, /preHandler: \[requireSession, requirePermission\("sentinel:schedule"\)\]/);
   const publicGetRoute = routeSource.slice(routeSource.indexOf('"/v1/world-monitor"'), routeSource.indexOf('"/v1/world-monitor/youtube"'));
   assert.doesNotMatch(publicGetRoute, /triggerManualWorldMonitorRefresh|refreshWorldMonitorSources/);
   assert.deepEqual(options.schema.security, []);
+  assert.equal(options.config.rateLimit.max, 120);
+  assert.equal(options.config.rateLimit.timeWindow, "1 minute");
+  assert.match(routeSource, /keyGenerator: \(request\) => request\.ip/);
+  assert.equal(options.schema.response[200], publicSummarySchema);
+  assert.equal(responseHeaders["cache-control"], "public, max-age=15, stale-while-revalidate=30");
+  assert.match(routeSource, /PUBLIC_SUMMARY_MAX_JSON_BYTES = 16 \* 1024/);
   assert.equal(result.status, "operational");
   assert.equal(result.databaseStatus, "available");
   assert.equal(result.globalAlertLevel, "unknown");
@@ -117,10 +133,12 @@ test("configured sources with no ingestion history are exposed as unknown covera
     `${compiledRoute}; return worldMonitorRoutes;`,
   );
   let handler;
-  await load({}, async () => ({ ok: true }), createSnapshot, { getItems: () => [], getSummary: () => ({}), updateWorkflowStatus: () => null }, async () => ({ scannedCount: 0, newItemsCount: 0, items: [], summary: {} }), () => "", { query: () => ({ orderBy: () => ({ limit: async () => [] }) }) }, { query: () => ({ where: () => ({ orderBy: () => ({ limit: async () => [] }) }) }) }, () => [{ source: "source-a", category: "weather", tier: "primary" }], () => ["source-a"], async () => {}, () => async () => {}, async () => {}, () => ({ acquire: () => ({ allowed: true, remaining: 4, retryAfterMs: 0, release() {} }) }), publicSummarySchema)({
+  const runQuery = { orderBy() { return this; }, limit: async () => [] };
+  const observationQuery = { orderBy() { return this; }, limit: async () => [] };
+  await load({}, async () => ({ ok: true }), createSnapshot, { getItems: () => [], getSummary: () => ({}), updateWorkflowStatus: () => null }, async () => ({ scannedCount: 0, newItemsCount: 0, items: [], summary: {} }), () => "", { query: () => runQuery }, { query: () => ({ where: () => observationQuery }) }, () => [{ source: "source-a", category: "weather", tier: "primary" }], () => ["source-a"], async () => {}, () => async () => {}, async () => {}, () => ({ acquire: () => ({ allowed: true, remaining: 4, retryAfterMs: 0, release() {} }) }), publicSummarySchema)({
     get(path, _options, fn) { if (path === "/v1/world-monitor") handler = fn; }, post() {},
   });
-  const result = await handler();
+  const result = await handler({}, { header() { return this; } });
   assert.doesNotMatch(routeSource, /refreshWorldMonitorSources/);
   assert.equal(result.sources[0].status, "unknown");
   assert.equal("source" in result.sources[0], false);
@@ -326,4 +344,19 @@ test("anonymous summary is allowlisted and bounded when the database contains hi
   assert.equal(JSON.stringify(result).includes("provider-"), false);
   assert.equal(JSON.stringify(result).includes("source-0"), false);
   assert.equal(JSON.stringify(result).includes("private.example"), false);
+});
+
+test("public summary has short cache headers and stays under the JSON byte ceiling for large source registries", async () => {
+  const sourceDetails = Array.from({ length: 500 }, (_, index) => ({
+    source: `source-${index}`,
+    category: `category-${String(index).padStart(3, "0")}-${"x".repeat(54)}`,
+    tier: "primary",
+  }));
+  const first = await invoke(async () => ({ ok: true }), [], [], sourceDetails);
+  const second = await invoke(async () => ({ ok: true }), [], [], sourceDetails.slice().reverse());
+  assert.equal(first.responseHeaders["cache-control"], "public, max-age=15, stale-while-revalidate=30");
+  assert.ok(Buffer.byteLength(JSON.stringify(first.result), "utf8") <= 16 * 1024);
+  assert.ok(first.result.sources.length < 100, "oversized aggregate should deterministically trim source summaries");
+  assert.ok(first.result.history.length <= 168);
+  assert.deepEqual(first.result.sources, second.result.sources, "large registry output should be stable across repeated reads");
 });

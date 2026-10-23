@@ -4,7 +4,7 @@ import type { SentinelDirection, SentinelTradition, WorldMonitoringSnapshot, You
 import { checkDatabaseHealth } from "../db.js";
 import { getActiveWorldMonitorSourceDetails, getActiveWorldMonitorSources } from "../world-monitor-ingest.js";
 import { PartnerModel, WorldMonitorObservationModel, WorldMonitorSourceRunModel, YoutubeSentinelItemModel, YoutubeSentinelScanModel, YoutubeSentinelPartnerLinkModel } from "@empire/batteries-base";
-import { dbAvailable, rowToItem, persistItemsToDB } from "../youtube-sentinel-storage.js";
+import { dbAvailable, rowToItem, persistItemsToDB, normalizeWorkflowActionEvidence } from "../youtube-sentinel-storage.js";
 import { getYoutubeSentinelSchedulerStatus, triggerManualYoutubeSweep, updateYoutubeSentinelSchedulerInterval } from "../youtube-sentinel-scheduler.js";
 import { triggerManualWorldMonitorRefresh } from "../world-monitor-scheduler.js";
 import { requirePermission, requireSession } from "./auth.js";
@@ -32,10 +32,16 @@ const YOUTUBE_WORKFLOW_ACTIONS: readonly YoutubeWorkflowStatus[] = [
 const PUBLIC_MAX_OBSERVATIONS = 200;
 const PUBLIC_MAX_SOURCE_RUNS = 2000;
 const PUBLIC_MAX_SOURCES = 100;
+/** Hard ceiling for the anonymous summary JSON body; keep comfortably below gateway limits. */
+export const PUBLIC_SUMMARY_MAX_JSON_BYTES = 16 * 1024;
+const PUBLIC_SUMMARY_CACHE_CONTROL = "public, max-age=15, stale-while-revalidate=30";
 
 function summarizePublicSources(sources: Array<Record<string, any>>): WorldMonitorPublicSummary["sources"] {
   const groups = new Map<string, Record<string, any>[]>();
-  for (const source of sources) groups.set(source.category, [...(groups.get(source.category) ?? []), source]);
+  for (const source of sources) {
+    const category = String(source.category ?? "unknown").slice(0, 64);
+    groups.set(category, [...(groups.get(category) ?? []), source]);
+  }
   return [...groups.entries()].map(([category, items]) => {
     const records = items.reduce((total, item) => total + (Number.isFinite(item.records) ? item.records : 0), 0);
     const rates = items.map((item) => item.errorRate).filter((value) => typeof value === "number" && Number.isFinite(value));
@@ -60,6 +66,24 @@ function summarizePublicSources(sources: Array<Record<string, any>>): WorldMonit
 
 function latestTimestamp(values: Array<string | null | undefined>) {
   return values.filter((value): value is string => typeof value === "string").sort((a, b) => Date.parse(b) - Date.parse(a))[0] ?? null;
+}
+
+function boundPublicSummaryBytes(summary: WorldMonitorPublicSummary): WorldMonitorPublicSummary {
+  const bounded = { ...summary, sources: summary.sources.slice(0, PUBLIC_MAX_SOURCES), history: summary.history.slice(-168) };
+  const size = () => Buffer.byteLength(JSON.stringify(bounded), "utf8");
+  while (size() > PUBLIC_SUMMARY_MAX_JSON_BYTES && bounded.history.length > 0) {
+    bounded.history = bounded.history.slice(Math.ceil(bounded.history.length / 2));
+  }
+  while (size() > PUBLIC_SUMMARY_MAX_JSON_BYTES && bounded.sources.length > 0) {
+    bounded.sources = bounded.sources.slice(0, Math.floor(bounded.sources.length / 2));
+  }
+  // The fixed fields are far smaller than the ceiling. If that ever changes,
+  // fail closed with an empty bounded aggregate while preserving health states.
+  if (size() > PUBLIC_SUMMARY_MAX_JSON_BYTES) {
+    bounded.sources = [];
+    bounded.history = [];
+  }
+  return bounded;
 }
 
 
@@ -97,8 +121,10 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
         security: [],
         response: { 200: WORLD_MONITOR_PUBLIC_SUMMARY_SCHEMA },
       },
+      config: { rateLimit: { max: 120, timeWindow: "1 minute", keyGenerator: (request) => request.ip } },
     },
-    async (): Promise<WorldMonitorPublicSummary> => {
+    async (_request, reply): Promise<WorldMonitorPublicSummary> => {
+      reply.header("cache-control", PUBLIC_SUMMARY_CACHE_CONTROL);
       let databaseStatus: WorldMonitoringSnapshot["databaseStatus"] = "unknown";
       try {
         databaseStatus = (await checkDatabaseHealth()).ok ? "available" : "unavailable";
@@ -112,8 +138,8 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
       const snapshot = getWorldMonitoringSnapshot();
       let runs: any[] = [];
       let observations: any[] = [];
-      try { runs = databaseStatus === "available" ? await WorldMonitorSourceRunModel.query().orderBy("completed_at", "desc").limit(PUBLIC_MAX_SOURCE_RUNS) : []; } catch { runs = []; }
-      const activeSourceDetails = getActiveWorldMonitorSourceDetails().slice(0, PUBLIC_MAX_SOURCES);
+      try { runs = databaseStatus === "available" ? await WorldMonitorSourceRunModel.query().orderBy("completed_at", "desc").orderBy("id", "desc").limit(PUBLIC_MAX_SOURCE_RUNS) : []; } catch { runs = []; }
+      const activeSourceDetails = getActiveWorldMonitorSourceDetails().slice().sort((a, b) => a.source.localeCompare(b.source)).slice(0, PUBLIC_MAX_SOURCES);
       const activeSourceIds = new Set(activeSourceDetails.map(({ source }) => source));
       runs = runs.filter((run) => activeSourceIds.has(run.source));
       if (databaseStatus === "available") {
@@ -121,7 +147,7 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
         const latestPerSource = await Promise.all(configuredSources.map(async ({ source }) => {
           try {
             // One latest row for each configured source avoids broad category scans.
-            return await (WorldMonitorObservationModel.query() as any).where({ source }).orderBy("observed_at", "desc").limit(1);
+            return await (WorldMonitorObservationModel.query() as any).where({ source }).orderBy("observed_at", "desc").orderBy("id", "desc").limit(1);
           } catch { return []; }
         }));
         observations = latestPerSource.flat().slice(0, PUBLIC_MAX_OBSERVATIONS);
@@ -305,7 +331,7 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
         history: [...buckets.entries()].sort(([a], [b]) => a.localeCompare(b)).slice(-168).map(([bucket, value]) => ({ bucket, count: value.count })),
       };
       // Aggregate DTO carries bounded arrays and no provider payloads or identifiers.
-      return publicSnapshot;
+      return boundPublicSummaryBytes(publicSnapshot);
     },
   );
 
@@ -672,7 +698,7 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
       }
       const actorId = String((request as any).authUser?.id ?? "");
       if (!actorId) return reply.status(401).send({ ok: false, message: "Reviewer identity is unavailable" });
-      const priorActionEvidence: NonNullable<YoutubeMonitoredItem["actionEvidence"]> = row.actionEvidence && typeof row.actionEvidence === "object" ? row.actionEvidence : {};
+      const priorActionEvidence: NonNullable<YoutubeMonitoredItem["actionEvidence"]> = normalizeWorkflowActionEvidence(row.actionEvidence) ?? { history: [] };
       const history = Array.isArray(priorActionEvidence.history) ? priorActionEvidence.history : [];
       const previousStatus = row.workflowStatus as YoutubeWorkflowStatus;
       const lastEvent = history.at(-1);
