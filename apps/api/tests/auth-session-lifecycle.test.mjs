@@ -13,6 +13,7 @@ const rawToken = "valid-session-token";
 const hash = (token) => createHash("sha256").update(token).digest("hex");
 let sessions = [];
 let user = { id: "operator-1", status: "active", roles: [] };
+let grantedPermissions = new Set();
 const queryTrace = [];
 
 function sessionQuery() {
@@ -45,7 +46,7 @@ const dependencies = {
     TenantMembershipModel: {},
     TenantModel: {},
     UserModel: { query: () => ({ findById() { return this; }, withGraphFetched() { return this; }, first: async () => user }) },
-    AuthService: { hasPermission: () => false, isSovereignAntiBypass: () => false },
+    AuthService: { hasPermission: (_user, permission) => grantedPermissions.has(permission), isSovereignAntiBypass: () => false },
   },
   "../env.js": { env: { NODE_ENV: "test", CORS_ORIGIN: "http://localhost" } },
 };
@@ -110,4 +111,27 @@ test("an expired remember cookie is cleared when its session is rejected", async
   await authExports.requireSession({ method: "GET", headers: { cookie: `empire_remember=${rawToken}` } }, response);
   assert.equal(response.statusCode, 401);
   assert.equal(response.headers["set-cookie"], "empire_remember=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0");
+});
+
+test("permission guard denies absent, anonymous, and unrelated grants", async () => {
+  grantedPermissions = new Set();
+  const guard = authExports.requirePermission("work:write");
+
+  let response = reply();
+  await guard({ authUser: null }, response);
+  assert.equal(response.statusCode, 403);
+
+  response = reply();
+  await guard({ authUser: { id: "operator-1" } }, response);
+  assert.equal(response.statusCode, 403, "an authenticated user without grants must be denied");
+
+  grantedPermissions = new Set(["work:read"]);
+  response = reply();
+  await guard({ authUser: { id: "operator-1" } }, response);
+  assert.equal(response.statusCode, 403, "a different permission must not satisfy the requested permission");
+
+  grantedPermissions = new Set(["work:write"]);
+  response = reply();
+  await guard({ authUser: { id: "operator-1" } }, response);
+  assert.equal(response.statusCode, 200, "the exact required permission may proceed");
 });
