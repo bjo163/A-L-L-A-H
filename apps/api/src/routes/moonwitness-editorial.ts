@@ -4,6 +4,7 @@ import {
   MoonwitnessCollectionModel,
   MoonwitnessStoryModel,
   MoonwitnessStoryTagModel,
+  MoonwitnessEpisodeModel, MoonwitnessSceneModel, MoonwitnessComicPageModel,
   TagModel,
 } from "@empire/batteries-base";
 import { getDatabase } from "@empire/batteries";
@@ -12,6 +13,7 @@ import {
   MOONWITNESS_COLLECTION_PATCH_SCHEMA,
   MOONWITNESS_STORY_CREATE_SCHEMA,
   MOONWITNESS_STORY_PATCH_SCHEMA,
+  MOONWITNESS_EPISODE_CREATE_SCHEMA, MOONWITNESS_SCENE_CREATE_SCHEMA, MOONWITNESS_COMIC_PAGE_CREATE_SCHEMA, MOONWITNESS_PAGE_ORDER_SCHEMA,
 } from "@empire/api-contract";
 import { requirePermission, requireSession } from "./auth.js";
 import { requireTenant } from "./tenant-context.js";
@@ -62,6 +64,80 @@ function storyTags(value: unknown): value is string[] {
 export async function moonwitnessEditorialRoutes(app: FastifyInstance) {
   app.addHook("preHandler", requireSession);
   app.addHook("preHandler", requireTenant);
+
+  // All episode/scene/page reads and writes are scoped to the active tenant. Drafts
+  // remain private behind the existing session + moonwitness permissions.
+  app.get("/v1/moonwitness/stories/:storyId/episodes", { preHandler: requirePermission("moonwitness:read") }, async (request, reply) => {
+    const { storyId } = request.params as { storyId: string };
+    if (!uuidPattern.test(storyId)) return invalid(reply, "ID cerita harus berupa UUID.");
+    const story = await MoonwitnessStoryModel.query().where({ id: storyId, tenant_id: request.tenantId! }).first();
+    if (!story) return reply.code(404).send({ status: "not_found", message: "Cerita tidak ditemukan." });
+    return MoonwitnessEpisodeModel.query().where({ tenant_id: request.tenantId!, story_id: storyId }).orderBy("sequence", "asc");
+  });
+  app.post("/v1/moonwitness/stories/:storyId/episodes", { preHandler: requirePermission("moonwitness:write"), schema: { tags: ["MOONWITNESS"], security: [{ bearerAuth: [], tenantSelection: [] }], body: MOONWITNESS_EPISODE_CREATE_SCHEMA } }, async (request, reply) => {
+    const { storyId } = request.params as { storyId: string }; const body = request.body as Record<string, unknown>;
+    if (!uuidPattern.test(storyId) || !body || !stringValue(body.slug, 1, 80) || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(body.slug) || !stringValue(body.title, 1, 200) || body.synopsis != null && !stringValue(body.synopsis, 1, 2000)) return invalid(reply, "Data episode tidak valid.");
+    const created = await getDatabase().transaction(async (trx) => {
+      const story = await MoonwitnessStoryModel.query(trx).where({ id: storyId, tenant_id: request.tenantId! }).forUpdate().first();
+      if (!story) return null;
+      const last = await trx("moonwitness_episodes").where({ tenant_id: request.tenantId!, story_id: storyId }).max({ sequence: "sequence" }).first();
+      return (MoonwitnessEpisodeModel.query(trx) as any).insert({ tenantId: request.tenantId!, storyId, slug: (body.slug as string).trim(), title: (body.title as string).trim(), synopsis: (body.synopsis as string | null | undefined) ?? null, sequence: Number(last?.sequence ?? 0) + 1, status: "draft" });
+    });
+    if (!created) return reply.code(404).send({ status: "not_found", message: "Cerita tidak ditemukan di tenant aktif." });
+    return reply.code(201).send(created);
+  });
+
+  app.get("/v1/moonwitness/episodes/:episodeId/scenes", { preHandler: requirePermission("moonwitness:read") }, async (request, reply) => {
+    const { episodeId } = request.params as { episodeId: string }; if (!uuidPattern.test(episodeId)) return invalid(reply, "ID episode harus berupa UUID.");
+    const episode = await MoonwitnessEpisodeModel.query().where({ id: episodeId, tenant_id: request.tenantId! }).first();
+    if (!episode) return reply.code(404).send({ status: "not_found", message: "Episode tidak ditemukan." });
+    return MoonwitnessSceneModel.query().where({ tenant_id: request.tenantId!, episode_id: episodeId }).orderBy("sequence", "asc");
+  });
+  app.post("/v1/moonwitness/episodes/:episodeId/scenes", { preHandler: requirePermission("moonwitness:write"), schema: { tags: ["MOONWITNESS"], security: [{ bearerAuth: [], tenantSelection: [] }], body: MOONWITNESS_SCENE_CREATE_SCHEMA } }, async (request, reply) => {
+    const { episodeId } = request.params as { episodeId: string }; const body = request.body as Record<string, unknown>;
+    if (!uuidPattern.test(episodeId) || !body || !stringValue(body.slug, 1, 80) || !/^[a-z0-9]+(?:-[a-z0-9]+)*$/.test(body.slug) || !stringValue(body.title, 1, 200)) return invalid(reply, "Data scene tidak valid.");
+    const created = await getDatabase().transaction(async (trx) => {
+      const episode = await MoonwitnessEpisodeModel.query(trx).where({ id: episodeId, tenant_id: request.tenantId! }).forUpdate().first(); if (!episode) return null;
+      const last = await trx("moonwitness_scenes").where({ tenant_id: request.tenantId!, episode_id: episodeId }).max({ sequence: "sequence" }).first();
+      return (MoonwitnessSceneModel.query(trx) as any).insert({ tenantId: request.tenantId!, episodeId, slug: (body.slug as string).trim(), title: (body.title as string).trim(), sequence: Number(last?.sequence ?? 0) + 1, status: "draft" });
+    });
+    if (!created) return reply.code(404).send({ status: "not_found", message: "Episode tidak ditemukan di tenant aktif." }); return reply.code(201).send(created);
+  });
+
+  app.get("/v1/moonwitness/scenes/:sceneId/pages", { preHandler: requirePermission("moonwitness:read") }, async (request, reply) => {
+    const { sceneId } = request.params as { sceneId: string }; if (!uuidPattern.test(sceneId)) return invalid(reply, "ID scene harus berupa UUID.");
+    const scene = await MoonwitnessSceneModel.query().where({ id: sceneId, tenant_id: request.tenantId! }).first();
+    if (!scene) return reply.code(404).send({ status: "not_found", message: "Scene tidak ditemukan." });
+    return MoonwitnessComicPageModel.query().where({ tenant_id: request.tenantId!, scene_id: sceneId }).orderBy("sequence", "asc");
+  });
+  app.post("/v1/moonwitness/scenes/:sceneId/pages", { preHandler: requirePermission("moonwitness:write"), schema: { tags: ["MOONWITNESS"], security: [{ bearerAuth: [], tenantSelection: [] }], body: MOONWITNESS_COMIC_PAGE_CREATE_SCHEMA } }, async (request, reply) => {
+    const { sceneId } = request.params as { sceneId: string }; const body = request.body as Record<string, unknown>;
+    if (!uuidPattern.test(sceneId) || !body || !stringValue(body.assetUrl, 1, 2048) || !/^(https:\/\/|\/)[^\s]+$/i.test(body.assetUrl) || !stringValue(body.altText, 1, 1000)) return invalid(reply, "Aset harus berupa URL HTTPS/path lokal dan alt text wajib diisi.");
+    const created = await getDatabase().transaction(async (trx) => {
+      const scene = await MoonwitnessSceneModel.query(trx).where({ id: sceneId, tenant_id: request.tenantId! }).forUpdate().first(); if (!scene) return null;
+      const last = await trx("moonwitness_comic_pages").where({ tenant_id: request.tenantId!, scene_id: sceneId }).max({ sequence: "sequence" }).first();
+      return (MoonwitnessComicPageModel.query(trx) as any).insert({ tenantId: request.tenantId!, sceneId, sequence: Number(last?.sequence ?? 0) + 1, assetUrl: (body.assetUrl as string).trim(), altText: (body.altText as string).trim(), status: "draft" });
+    });
+    if (!created) return reply.code(404).send({ status: "not_found", message: "Scene tidak ditemukan di tenant aktif." }); return reply.code(201).send(created);
+  });
+  app.patch("/v1/moonwitness/scenes/:sceneId/pages/order", { preHandler: requirePermission("moonwitness:write"), schema: { tags: ["MOONWITNESS"], security: [{ bearerAuth: [], tenantSelection: [] }], body: MOONWITNESS_PAGE_ORDER_SCHEMA } }, async (request, reply) => {
+    const { sceneId } = request.params as { sceneId: string }; const body = request.body as { orderedIds?: unknown };
+    if (!uuidPattern.test(sceneId) || !body || !Array.isArray(body.orderedIds) || !body.orderedIds.length || body.orderedIds.length > 500 || !body.orderedIds.every((id) => typeof id === "string" && uuidPattern.test(id)) || new Set(body.orderedIds).size !== body.orderedIds.length) return invalid(reply, "Urutan halaman tidak valid.");
+    const orderedIds = body.orderedIds as string[];
+    const result = await getDatabase().transaction(async (trx) => {
+      const scene = await MoonwitnessSceneModel.query(trx).where({ id: sceneId, tenant_id: request.tenantId! }).forUpdate().first(); if (!scene) return "missing" as const;
+      const pages = await MoonwitnessComicPageModel.query(trx).where({ tenant_id: request.tenantId!, scene_id: sceneId }).select("id");
+      const ids = pages.map((page: { id: string }) => page.id); if (ids.length !== orderedIds.length || ids.some((id: string) => !orderedIds.includes(id))) return "mismatch" as const;
+      // Move to a disjoint negative range first so unique (tenant, scene, sequence)
+      // constraints remain satisfied even when positions are swapped.
+      for (let index = 0; index < ids.length; index++) await MoonwitnessComicPageModel.query(trx).where({ tenant_id: request.tenantId!, scene_id: sceneId, id: orderedIds[index] }).patch({ sequence: -(index + 1) });
+      for (let index = 0; index < orderedIds.length; index++) await MoonwitnessComicPageModel.query(trx).where({ tenant_id: request.tenantId!, scene_id: sceneId, id: orderedIds[index] }).patch({ sequence: index + 1 });
+      return "ok" as const;
+    });
+    if (result === "missing") return reply.code(404).send({ status: "not_found", message: "Scene tidak ditemukan." });
+    if (result === "mismatch") return invalid(reply, "Urutan harus memuat semua halaman scene ini tepat satu kali.");
+    return MoonwitnessComicPageModel.query().where({ tenant_id: request.tenantId!, scene_id: sceneId }).orderBy("sequence", "asc");
+  });
 
   app.get("/v1/moonwitness/collections", { preHandler: requirePermission("moonwitness:read") }, async (request) => {
     const query = request.query as { page?: string; limit?: string };

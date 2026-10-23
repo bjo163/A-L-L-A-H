@@ -48,4 +48,7 @@ export * from "./youtube-sentinel-scan.model.js";
 export * from "./moonwitness-collection.model.js";
 export * from "./moonwitness-story.model.js";
 export * from "./moonwitness-story-tag.model.js";
+export * from "./moonwitness-episode.model.js";
+export * from "./moonwitness-scene.model.js";
+export * from "./moonwitness-comic-page.model.js";
 

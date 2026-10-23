@@ -42,6 +42,7 @@ import {
   CrmOpportunityModel, CatalogItemModel, SalesQuoteModel, SalesQuoteLineModel, SalesOrderModel,
   OperationalInvoiceModel, OperationalPaymentModel, OperationalExpenseModel, CalendarActivityModel, SalesOrderLineModel,
   MoonwitnessCollectionModel, MoonwitnessStoryModel, MoonwitnessStoryTagModel,
+  MoonwitnessEpisodeModel, MoonwitnessSceneModel, MoonwitnessComicPageModel,
 } from "./models/index.js";
 import { ASMAUL_HUSNA_99 } from "./data/asmaul-husna.js";
 import { seedMoonwitnessCollections } from "./moonwitness-seed.js";
@@ -83,7 +84,7 @@ const researchModels = [
 ];
 
 const workModels = [WorkspaceModel, ProjectModel, TaskModel, DocumentModel, CommentModel, NotificationModel, NotificationOutboxModel, TagModel, TagAssignmentModel, YoutubeSentinelPartnerLinkModel, CrmOpportunityModel, CatalogItemModel, SalesQuoteModel, SalesQuoteLineModel, SalesOrderModel, SalesOrderLineModel, OperationalInvoiceModel, OperationalPaymentModel, OperationalExpenseModel, CalendarActivityModel];
-const moonwitnessEditorialModels = [MoonwitnessCollectionModel, MoonwitnessStoryModel, MoonwitnessStoryTagModel];
+const moonwitnessEditorialModels = [MoonwitnessCollectionModel, MoonwitnessStoryModel, MoonwitnessStoryTagModel, MoonwitnessEpisodeModel, MoonwitnessSceneModel, MoonwitnessComicPageModel];
 
 const moduleModelRegistry: Record<string, Record<string, Array<typeof BatteriesModelClass>>> = {
   kernel: Object.fromEntries(kernelModels.map((model) => [model.tableName, [model]])),

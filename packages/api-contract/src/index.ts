@@ -44,6 +44,9 @@ export const API_PATHS = {
   researchRuns: "/v1/research-runs",
   moonwitnessCollections: "/v1/moonwitness/collections",
   moonwitnessStories: "/v1/moonwitness/stories",
+  moonwitnessEpisodes: "/v1/moonwitness/stories/{storyId}/episodes",
+  moonwitnessScenes: "/v1/moonwitness/episodes/{episodeId}/scenes",
+  moonwitnessComicPages: "/v1/moonwitness/scenes/{sceneId}/pages",
   moonwitnessPublicStories: "/v1/public/moonwitness/stories",
 } as const;
 
@@ -64,6 +67,13 @@ export interface MoonwitnessStoryDto {
 export interface MoonwitnessPublicStoryDto extends Pick<MoonwitnessStoryDto, "id" | "collectionId" | "slug" | "title" | "synopsis" | "body" | "createdAt" | "updatedAt"> {
   collection: { id: string; slug: string; title: string };
 }
+export interface MoonwitnessEpisodeDto { id: string; storyId: string; slug: string; title: string; synopsis: string | null; sequence: number; status: "draft" | "published" | "archived" }
+export interface MoonwitnessSceneDto { id: string; episodeId: string; slug: string; title: string; sequence: number; status: "draft" | "published" | "archived" }
+export interface MoonwitnessComicPageDto { id: string; sceneId: string; sequence: number; assetUrl: string; altText: string; status: "draft" | "published" | "archived" }
+export const MOONWITNESS_EPISODE_CREATE_SCHEMA = { type: "object", additionalProperties: false, required: ["slug", "title"], properties: { slug: { type: "string", minLength: 1, maxLength: 80, pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$" }, title: { type: "string", minLength: 1, maxLength: 200 }, synopsis: { anyOf: [{ type: "string", minLength: 1, maxLength: 2000 }, { type: "null" }] } } } as const;
+export const MOONWITNESS_SCENE_CREATE_SCHEMA = { type: "object", additionalProperties: false, required: ["slug", "title"], properties: { slug: { type: "string", minLength: 1, maxLength: 80, pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$" }, title: { type: "string", minLength: 1, maxLength: 200 } } } as const;
+export const MOONWITNESS_COMIC_PAGE_CREATE_SCHEMA = { type: "object", additionalProperties: false, required: ["assetUrl", "altText"], properties: { assetUrl: { type: "string", minLength: 1, maxLength: 2048 }, altText: { type: "string", minLength: 1, maxLength: 1000 } } } as const;
+export const MOONWITNESS_PAGE_ORDER_SCHEMA = { type: "object", additionalProperties: false, required: ["orderedIds"], properties: { orderedIds: { type: "array", minItems: 1, maxItems: 500, uniqueItems: true, items: { type: "string", format: "uuid" } } } } as const;
 
 export const MOONWITNESS_COLLECTION_CREATE_SCHEMA = {
   type: "object", additionalProperties: false, required: ["slug", "title"],
