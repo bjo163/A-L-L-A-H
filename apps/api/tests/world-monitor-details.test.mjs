@@ -122,7 +122,9 @@ test("alerts derive only bounded severity data and history pages aggregate hourl
   assert.equal(JSON.stringify(alerts).includes("private"), false);
   const history = await routeDefs.get("/v1/world-monitor/history").handler({ query: { limit: 1 } }, reply());
   assert.equal(history.items.length, 1);
-  assert.equal(history.items[0].count, 1);
+  assert.equal(history.items[0].metric, "observation_samples");
+  assert.equal(history.items[0].observationCount, 1);
+  assert.equal("eventCount" in history.items[0], false);
   assert.ok(history.nextCursor);
 });
 

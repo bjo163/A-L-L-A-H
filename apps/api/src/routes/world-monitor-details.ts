@@ -227,7 +227,11 @@ export async function worldMonitorDetailsRoutes(app: FastifyInstance) {
       const rows = await query.limit(limit + 1) as HistoryRow[];
       const hasMore = rows.length > limit;
       const selected = rows.slice(0, limit);
-      const items: WorldMonitorHistoryPageItem[] = selected.map((row) => ({ bucket: iso(row.bucket), count: Math.max(0, Number(row.count) || 0) }));
+      // This table stores time-series observations, including sources whose IDs
+      // are synthetic hashes. Label the aggregate as samples; it is not an event count.
+      const items: WorldMonitorHistoryPageItem[] = selected.map((row) => ({
+        bucket: iso(row.bucket), metric: "observation_samples", observationCount: Math.max(0, Number(row.count) || 0),
+      }));
       const last = selected.at(-1);
       const next = hasMore && last ? sealCursor({ v: 1, feed: "history", filters, bucket: iso(last.bucket) }) : null;
       return sendPage(reply, items, next);

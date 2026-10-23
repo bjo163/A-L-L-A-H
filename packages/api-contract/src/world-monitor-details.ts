@@ -35,8 +35,12 @@ const alert = {
 
 const history = {
   type: "object", additionalProperties: false,
-  required: ["bucket", "count"],
-  properties: { bucket: { type: "string", format: "date-time" }, count: { type: "integer", minimum: 0 } },
+  required: ["bucket", "metric", "observationCount"],
+  properties: {
+    bucket: { type: "string", format: "date-time" },
+    metric: { type: "string", const: "observation_samples" },
+    observationCount: { type: "integer", minimum: 0 },
+  },
 } as const;
 
 export const WORLD_MONITOR_OBSERVATION_PAGE_SCHEMA = {
@@ -57,5 +61,5 @@ export interface WorldMonitorAlertPageItem {
   category: string; source: string; kind: "pm25" | "geomagnetic" | "earthquake" | "disaster";
   level: "advisory" | "critical"; observedAt: string; value: string;
 }
-export interface WorldMonitorHistoryPageItem { bucket: string; count: number }
+export interface WorldMonitorHistoryPageItem { bucket: string; metric: "observation_samples"; observationCount: number }
 export interface WorldMonitorPage<T> { schemaVersion: "1"; items: T[]; nextCursor: string | null }
