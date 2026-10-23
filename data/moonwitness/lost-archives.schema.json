@@ -1,0 +1,92 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://moonwitness.example/schemas/lost-archives-manifest-1.0.0.json",
+  "title": "MoonWitness Lost Archives source manifest",
+  "type": "object",
+  "required": ["schemaVersion", "manifestId", "asOf", "policy", "collections", "artifacts", "unresolved"],
+  "properties": {
+    "schemaVersion": { "const": "1.0.0" },
+    "manifestId": { "const": "moonwitness-lost-archives" },
+    "asOf": { "type": "string", "format": "date" },
+    "policy": {
+      "type": "object",
+      "required": ["sourceStates", "privateSourceRule", "unknownValues"],
+      "properties": {
+        "sourceStates": { "type": "array", "items": { "enum": ["REPO_PRESENT", "USER_FILE_LOCATED", "CONVERSATION_REFERENCE", "EXTERNAL_VERIFIED", "UNLOCATED", "INFERRED_DRAFT"] }, "uniqueItems": true },
+        "privateSourceRule": { "type": "string", "minLength": 1 },
+        "unknownValues": { "type": "string", "minLength": 1 }
+      },
+      "additionalProperties": false
+    },
+    "collections": { "type": "array", "items": { "$ref": "#/$defs/collection" } },
+    "artifacts": { "type": "array", "items": { "$ref": "#/$defs/artifact" } },
+    "unresolved": { "type": "array", "items": { "type": "string", "minLength": 1 } }
+  },
+  "$defs": {
+    "coverage": {
+      "type": "object",
+      "required": ["sourcesDiscovered", "bytesCaptured", "textReviewed", "approved", "mediaPaired", "published"],
+      "properties": {
+        "sourcesDiscovered": { "type": "integer", "minimum": 0 },
+        "bytesCaptured": { "type": "integer", "minimum": 0 },
+        "textReviewed": { "type": "integer", "minimum": 0 },
+        "approved": { "type": "integer", "minimum": 0 },
+        "mediaPaired": { "type": "integer", "minimum": 0 },
+        "published": { "type": "integer", "minimum": 0 }
+      },
+      "additionalProperties": false
+    },
+    "collection": {
+      "type": "object",
+      "required": ["id", "title", "evidence", "sourceState", "coverage"],
+      "properties": {
+        "id": { "type": "string", "minLength": 1 },
+        "title": { "type": "string", "minLength": 1 },
+        "evidence": { "type": "string", "format": "uri" },
+        "sourceState": { "enum": ["REPO_PRESENT", "USER_FILE_LOCATED", "CONVERSATION_REFERENCE", "EXTERNAL_VERIFIED", "UNLOCATED", "INFERRED_DRAFT"] },
+        "coverage": { "$ref": "#/$defs/coverage" }
+      },
+      "additionalProperties": false
+    },
+    "artifact": {
+      "type": "object",
+      "required": ["artifactId", "collectionId", "title", "aliases", "sourceState", "sourceLocator", "version", "sha256", "bytes", "derivedFrom", "author", "assetType", "privacy", "rights", "attribution", "language", "chronology", "contentClassification", "completeness", "textReviewed", "mediaPaired", "editorialApproved", "published"],
+      "properties": {
+        "artifactId": { "type": "string", "minLength": 1 },
+        "collectionId": { "type": ["string", "null"] },
+        "title": { "type": "string", "minLength": 1 },
+        "aliases": { "type": "array", "items": { "type": "string" }, "uniqueItems": true },
+        "sourceState": { "enum": ["REPO_PRESENT", "USER_FILE_LOCATED", "CONVERSATION_REFERENCE", "EXTERNAL_VERIFIED", "UNLOCATED", "INFERRED_DRAFT"] },
+        "sourceLocator": { "type": "string", "minLength": 1 },
+        "version": { "type": ["string", "null"] },
+        "sha256": { "type": ["string", "null"], "pattern": "^[a-fA-F0-9]{64}$" },
+        "bytes": { "type": ["integer", "null"], "minimum": 0 },
+        "derivedFrom": { "type": ["string", "null"] },
+        "author": { "type": ["string", "null"] },
+        "assetType": { "type": "string", "minLength": 1 },
+        "privacy": { "type": "string", "minLength": 1 },
+        "rights": { "type": "string", "minLength": 1 },
+        "attribution": { "type": ["string", "null"] },
+        "language": { "type": "string", "minLength": 1 },
+        "chronology": {
+          "type": "object",
+          "required": ["eventDate", "draftDate", "publishedDate"],
+          "properties": {
+            "eventDate": { "type": ["string", "null"] },
+            "draftDate": { "type": ["string", "null"] },
+            "publishedDate": { "type": ["string", "null"] }
+          },
+          "additionalProperties": false
+        },
+        "contentClassification": { "type": "string", "minLength": 1 },
+        "completeness": { "type": "string", "minLength": 1 },
+        "textReviewed": { "type": "boolean" },
+        "mediaPaired": { "type": "boolean" },
+        "editorialApproved": { "type": "boolean" },
+        "published": { "type": "boolean" }
+      },
+      "additionalProperties": false
+    }
+  },
+  "additionalProperties": false
+}
