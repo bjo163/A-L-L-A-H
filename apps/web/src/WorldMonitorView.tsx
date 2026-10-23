@@ -1,12 +1,13 @@
 import { lazy, Suspense, useState } from "react";
 import type { WorldMonitoringSnapshot } from "@empire/batteries-world-monitor";
+import type { WorldMonitorPublicSummary } from "@empire/api-contract";
 import { Badge, Button, EmptyState, Grid, LoadingState, MangaTelemetryHero, MapFrame, MetricGrid, RegionSelectCard, RegionSummary, SectionHeading, SensorDisclosure, StatusIndicator, Tabs, TelemetryEventList, GlobeIcon, ClockIcon, SparkIcon, CommandIcon, RefreshIcon, ActivityIcon } from "@empire/ui";
 
 const WorldGlobeMap = lazy(async () => ({ default: (await import("./WorldGlobeMap")).WorldGlobeMap }));
 const YoutubeSentinelView = lazy(async () => ({ default: (await import("./YoutubeSentinelView")).YoutubeSentinelView }));
 
 interface WorldMonitorViewProps {
-  snapshot: WorldMonitoringSnapshot;
+  snapshot: WorldMonitoringSnapshot & Pick<WorldMonitorPublicSummary, "apiHealth" | "databaseHealth" | "coverageNumerator" | "coverageDenominator" | "observationCount" | "alertCount">;
   search: string;
   sentinelToken: string | null;
   sentinelPermissions: { read: boolean; scan: boolean; review: boolean; schedule: boolean };
@@ -74,7 +75,7 @@ export function WorldMonitorView({ snapshot, search, sentinelToken, sentinelPerm
       items={[
         { value: "systems", label: <><GlobeIcon size={14} /> World Systems</>, content: <>
       <MangaTelemetryHero
-        eyebrow={<>SERVICE STATUS <StatusIndicator tone={systemState === "ok" ? "success" : systemState === "unavailable" ? "neutral" : "warning"}>{snapshot.globalAlertLevel === "unknown" ? "STATUS UNKNOWN" : `ALERT LEVEL ${snapshot.globalAlertLevel.toUpperCase()}`}</StatusIndicator></>}
+        eyebrow={<>SERVICE HEALTH <StatusIndicator tone={systemState === "ok" ? "success" : systemState === "unavailable" ? "neutral" : "warning"}>SERVICE {snapshot.status.toUpperCase()}</StatusIndicator> <StatusIndicator tone={snapshot.hazardAlertLevel === "red" ? "danger" : snapshot.hazardAlertLevel === "yellow" ? "warning" : "neutral"}>HAZARD {snapshot.hazardAlertLevel.toUpperCase()}</StatusIndicator></>}
         title="System and regional monitoring"
         description="API and database health are checked live. Provider freshness and coverage below reflect recorded source runs and observations. Regional reference locations, energy, and DNA sensor mappings are not live-connected nodes."
         metadata={<><span><ClockIcon size={13}/> Snapshot {new Date(snapshot.timestamp).toLocaleString()}</span><span><GlobeIcon size={13}/> {snapshot.regions.length} Reference Regions</span><span><SparkIcon size={13}/> {totalHeliogrid} Heliogrid Load</span><span><CommandIcon size={13}/> {snapshot.dnaSensors.length} DNA Mappings</span></>}
@@ -84,13 +85,15 @@ export function WorldMonitorView({ snapshot, search, sentinelToken, sentinelPerm
       {refreshError && <p role="alert" className="eol-notice eol-notice--warning">Refresh failed: {refreshError} Showing the last successful snapshot.</p>}
 {notificationPermission === "default" && <div className="world-notification-prompt"><span>Enable browser notifications for new World Monitor alerts.</span><Button variant="secondary" onClick={onEnableNotifications}>Enable notifications</Button></div>}
 
-      <section aria-label="Provider data health">
+      <section aria-label="Service and provider data health">
         <SectionHeading layout="compact" eyebrow="PROVIDER DATA" title="Freshness and coverage" aside={<span className="muted">Snapshot time: {new Date(snapshot.timestamp).toLocaleString()}</span>} />
-        <MetricGrid columns={4} density="compact" items={[
+        <MetricGrid columns={6} density="compact" aria-label="Current World Monitor health states" items={[
+          { label: "API service", value: snapshot.apiHealth.toUpperCase(), tone: snapshot.apiHealth === "healthy" ? "success" : snapshot.apiHealth === "unavailable" ? "neutral" : "warning", detail: "HTTP service liveness" },
+          { label: "Database", value: snapshot.databaseHealth.toUpperCase(), tone: snapshot.databaseHealth === "healthy" ? "success" : snapshot.databaseHealth === "unavailable" ? "warning" : "neutral", detail: "Database health probe" },
           { label: "Ingestion", value: stateLabel(snapshot.ingestionStatus), tone: stateTone(snapshot.ingestionStatus), detail: "Provider run status" },
-          { label: "Freshness", value: stateLabel(snapshot.freshnessStatus), tone: stateTone(snapshot.freshnessStatus), detail: `${snapshot.observations.length} returned observations` },
-          { label: "Coverage", value: stateLabel(snapshot.coverageStatus), tone: stateTone(snapshot.coverageStatus), detail: `${snapshot.sources.filter((source) => source.status === "success" && source.records !== null && source.records > 0).length} of ${snapshot.sources.length} active sources returned records` },
-          { label: "Hazard level", value: snapshot.hazardAlertLevel.toUpperCase(), tone: snapshot.hazardAlertLevel === "red" ? "danger" : snapshot.hazardAlertLevel === "yellow" ? "warning" : snapshot.hazardAlertLevel === "green" ? "success" : "neutral", detail: "Based on available observations; unknown is not clear" },
+          { label: "Freshness", value: stateLabel(snapshot.freshnessStatus), tone: stateTone(snapshot.freshnessStatus), detail: `${snapshot.observationCount} aggregate observations` },
+          { label: "Coverage", value: stateLabel(snapshot.coverageStatus), tone: stateTone(snapshot.coverageStatus), detail: `${snapshot.coverageNumerator} of ${snapshot.coverageDenominator} configured active sources returned records` },
+          { label: "Hazard level", value: snapshot.hazardAlertLevel.toUpperCase(), tone: snapshot.hazardAlertLevel === "red" ? "danger" : snapshot.hazardAlertLevel === "yellow" ? "warning" : snapshot.hazardAlertLevel === "green" ? "success" : "neutral", detail: `${snapshot.alertCount} active alerts; unknown is not clear` },
         ]} />
         {snapshot.sources.length ? <div className="knowledge-grid" aria-label="Provider source status">
           {snapshot.sources.map((source) => {

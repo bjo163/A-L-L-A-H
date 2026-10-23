@@ -40,8 +40,11 @@ function summarizePublicSources(sources: Array<Record<string, any>>): WorldMonit
     const rates = items.map((item) => item.errorRate).filter((value) => typeof value === "number" && Number.isFinite(value));
     const successful = items.filter((item) => item.status === "success" || item.status === "stale" || item.status === "empty").length;
     const freshness = items.map((item) => item.freshnessSeconds).filter((value) => typeof value === "number" && Number.isFinite(value));
+    const withRecords = items.filter((item) => item.status === "success" && Number.isFinite(item.records) && item.records > 0).length;
     return {
       category,
+      configuredSourceCount: items.length,
+      sourcesWithRecordsCount: withRecords,
       status: (items.some((item) => item.status === "failed") ? successful ? "stale" : "failed" : items.some((item) => item.status === "success") ? "success" : items.some((item) => item.status === "empty") ? "empty" : "unknown") as WorldMonitorPublicSummary["sources"][number]["status"],
       lastAttemptAt: latestTimestamp(items.map((item) => item.lastAttemptAt)),
       lastSuccessAt: latestTimestamp(items.map((item) => item.lastSuccessAt)),
@@ -233,14 +236,17 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
         : sourceCoverage === 1 ? "healthy" : sourceCoverage > 0 ? "degraded" : "unavailable";
       const freshnessStatus: WorldMonitoringSnapshot["freshnessStatus"] = observations.length === 0
         ? "unknown"
-        : observations.some((item) => item.status === "available") ? "healthy" : "degraded";
+        : observations.every((item) => item.status === "available") ? "healthy" : "degraded";
       const ingestionStatus: WorldMonitoringSnapshot["ingestionStatus"] = sources.length === 0
         ? "unknown"
         : sources.every((source) => source.status === "unknown")
           ? "unknown"
           : sources.some((source) => source.status === "success" || source.status === "empty")
-            ? sources.some((source) => source.status === "failed") ? "degraded" : "healthy"
+            ? sources.some((source) => source.status === "failed" || source.status === "unknown") ? "degraded" : "healthy"
             : sources.some((source) => source.status === "failed") ? "unavailable" : "unknown";
+      const coverageNumerator = sources.filter((source) => source.status === "success" && source.records !== null && source.records > 0).length;
+      const coverageDenominator = sources.length;
+      const databaseHealth = databaseStatus === "available" ? "healthy" : databaseStatus === "unavailable" ? "unavailable" : "unknown";
       const globalAlertLevel = databaseStatus === "unknown"
         ? "unknown"
         : hazardAlertLevel === "red" ? "red"
@@ -251,9 +257,17 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
               : "green";
 
       const publicSnapshot: WorldMonitorPublicSummary = {
-        schemaVersion: "1",
+        schemaVersion: "2",
         status,
         timestamp: new Date().toISOString(),
+        // Reaching this handler establishes API liveness; dependency health remains separate.
+        apiHealth: "healthy",
+        databaseHealth,
+        ingestionHealth: ingestionStatus,
+        coverageHealth: coverageStatus,
+        dataFreshness: freshnessStatus,
+        coverageNumerator,
+        coverageDenominator,
         globalAlertLevel,
         databaseStatus,
         ingestionStatus,

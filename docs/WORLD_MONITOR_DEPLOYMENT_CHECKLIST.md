@@ -11,9 +11,18 @@
 ## Health and runtime verification
 
 - [ ] Check `/v1/health` and `/v1/readiness`.
-- [ ] Check `/v1/world-monitor` and confirm `sources`, `observations`, `history`, `alerts`, and `databaseStatus`.
+- [ ] Check `/v1/world-monitor` and confirm `schemaVersion: "2"`, `apiHealth`, `databaseHealth`, `ingestionHealth`, `coverageHealth`, `dataFreshness`, `hazardAlertLevel`, and source coverage numerator/denominator.
 - [ ] Confirm scheduler logs show a successful ingest and that source runs have latency and record counts.
 - [ ] Confirm `world_monitor_observations`, `world_monitor_source_runs`, and `world_monitor_aggregates` contain recent rows.
+
+The anonymous `/v1/world-monitor` response is an aggregate-only DTO. Schema
+version 2 separates API and database health from ingestion, configured-source
+coverage, freshness, and hazard severity. `coverageNumerator` counts configured
+sources that returned records in their latest successful run;
+`coverageDenominator` counts active configured sources. A zero denominator or
+unknown health state is not a green/no-hazard assertion. `globalAlertLevel` is
+a combined summary; use `hazardAlertLevel` to read hazard severity independent
+of service health.
 
 ## YouTube Sentinel scan contract
 

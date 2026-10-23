@@ -172,6 +172,8 @@ export const MOONWITNESS_COLLECTION_PATCH_SCHEMA = {
  * never contain database identifiers, raw payloads, private links, or operator data. */
 export interface WorldMonitorPublicSourceSummary {
   category: string;
+  configuredSourceCount: number;
+  sourcesWithRecordsCount: number;
   status: "success" | "stale" | "empty" | "failed" | "unknown";
   lastAttemptAt: string | null;
   lastSuccessAt: string | null;
@@ -183,9 +185,16 @@ export interface WorldMonitorPublicSourceSummary {
 }
 
 export interface WorldMonitorPublicSummary {
-  schemaVersion: "1";
+  schemaVersion: "2";
   status: "operational" | "degraded" | "critical" | "unavailable";
   timestamp: string;
+  apiHealth: "healthy" | "degraded" | "unavailable" | "unknown";
+  databaseHealth: "healthy" | "degraded" | "unavailable" | "unknown";
+  ingestionHealth: "healthy" | "degraded" | "unavailable" | "unknown";
+  coverageHealth: "healthy" | "degraded" | "unavailable" | "unknown";
+  dataFreshness: "healthy" | "degraded" | "unavailable" | "unknown";
+  coverageNumerator: number;
+  coverageDenominator: number;
   databaseStatus: "available" | "unavailable" | "unknown";
   ingestionStatus: "healthy" | "degraded" | "unavailable" | "unknown";
   freshnessStatus: "healthy" | "degraded" | "unavailable" | "unknown";
@@ -202,11 +211,18 @@ export interface WorldMonitorPublicSummary {
 export const WORLD_MONITOR_PUBLIC_SUMMARY_SCHEMA = {
   type: "object",
   additionalProperties: false,
-  required: ["schemaVersion", "status", "timestamp", "databaseStatus", "ingestionStatus", "freshnessStatus", "coverageStatus", "globalAlertLevel", "hazardAlertLevel", "sources", "observationCount", "alertCount", "history"],
+  required: ["schemaVersion", "status", "timestamp", "apiHealth", "databaseHealth", "ingestionHealth", "coverageHealth", "dataFreshness", "coverageNumerator", "coverageDenominator", "databaseStatus", "ingestionStatus", "freshnessStatus", "coverageStatus", "globalAlertLevel", "hazardAlertLevel", "sources", "observationCount", "alertCount", "history"],
   properties: {
-    schemaVersion: { type: "string", const: "1" },
+    schemaVersion: { type: "string", const: "2" },
     status: { type: "string", enum: ["operational", "degraded", "critical", "unavailable"] },
     timestamp: { type: "string", format: "date-time" },
+    apiHealth: { type: "string", enum: ["healthy", "degraded", "unavailable", "unknown"] },
+    databaseHealth: { type: "string", enum: ["healthy", "degraded", "unavailable", "unknown"] },
+    ingestionHealth: { type: "string", enum: ["healthy", "degraded", "unavailable", "unknown"] },
+    coverageHealth: { type: "string", enum: ["healthy", "degraded", "unavailable", "unknown"] },
+    dataFreshness: { type: "string", enum: ["healthy", "degraded", "unavailable", "unknown"] },
+    coverageNumerator: { type: "integer", minimum: 0 },
+    coverageDenominator: { type: "integer", minimum: 0 },
     databaseStatus: { type: "string", enum: ["available", "unavailable", "unknown"] },
     ingestionStatus: { type: "string", enum: ["healthy", "degraded", "unavailable", "unknown"] },
     freshnessStatus: { type: "string", enum: ["healthy", "degraded", "unavailable", "unknown"] },
@@ -217,9 +233,11 @@ export const WORLD_MONITOR_PUBLIC_SUMMARY_SCHEMA = {
       type: "array", maxItems: 100,
       items: {
         type: "object", additionalProperties: false,
-        required: ["category", "status", "lastAttemptAt", "lastSuccessAt", "freshnessSeconds", "freshnessSlaSeconds", "recordCount", "errorRate", "fallbackActive"],
+        required: ["category", "configuredSourceCount", "sourcesWithRecordsCount", "status", "lastAttemptAt", "lastSuccessAt", "freshnessSeconds", "freshnessSlaSeconds", "recordCount", "errorRate", "fallbackActive"],
         properties: {
           category: { type: "string", maxLength: 64 },
+          configuredSourceCount: { type: "integer", minimum: 0 },
+          sourcesWithRecordsCount: { type: "integer", minimum: 0 },
           status: { type: "string", enum: ["success", "stale", "empty", "failed", "unknown"] },
           lastAttemptAt: { anyOf: [{ type: "string", format: "date-time" }, { type: "null" }] },
           lastSuccessAt: { anyOf: [{ type: "string", format: "date-time" }, { type: "null" }] },

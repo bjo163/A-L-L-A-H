@@ -1,9 +1,9 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import type { FormEvent } from "react";
 import { API_PATHS, ApiError, createApiClient } from "@empire/api-contract";
-import type { AuthEntity, CabRfc, CabSummary, LoginResponse, ResearchRun } from "@empire/api-contract";
+import type { AuthEntity, CabRfc, CabSummary, LoginResponse, ResearchRun, WorldMonitorPublicSummary } from "@empire/api-contract";
+import { getWorldMonitoringSnapshot } from "@empire/batteries-world-monitor";
 import type { WorldMonitoringSnapshot } from "@empire/batteries-world-monitor";
-import { notifyNewWorldMonitorAlerts } from "./world-monitor-notifications";
 import { AgentIcon, ApprovalIcon, ArrowUpRightIcon, AuditIcon, AuthLayout, Badge, Breadcrumbs, MoonwitnessBrandLockup, Button, Checkbox, CommandIcon, ConfirmDialog, DirectoryIcon, DocumentIcon, ErrorState, EvidenceIcon, FieldLabel, GlobeIcon, HistoryIcon, HomeIcon, InfoIcon, KnowledgeIcon, LoadingState, LogOutIcon, MangaEffect, MangaPageIntro, NavItem, Notice, RefreshIcon, SearchField, TextField, UsersIcon, WorkspaceShell } from "@empire/ui";
 import type { ConfirmDialogTone, IconComponent } from "@empire/ui";
 import { WorldMonitorView } from "./WorldMonitorView";
@@ -31,6 +31,50 @@ type ConfirmationRequest = ResearchConfirmationRequest;
 const API_ORIGIN = process.env.NEXT_PUBLIC_API_ORIGIN || "/api";
 const api = createApiClient(API_ORIGIN);
 const initialSnapshot: Snapshot = { health: "checking", readiness: "checking", modules: [], capabilities: [] };
+type WorldMonitorDisplaySnapshot = WorldMonitoringSnapshot & Pick<WorldMonitorPublicSummary, "apiHealth" | "databaseHealth" | "coverageNumerator" | "coverageDenominator" | "observationCount" | "alertCount">;
+function toWorldMonitoringSnapshot(summary: WorldMonitorPublicSummary): WorldMonitorDisplaySnapshot {
+  const reference = getWorldMonitoringSnapshot();
+  return {
+    ...reference,
+    status: summary.status,
+    timestamp: summary.timestamp,
+    apiHealth: summary.apiHealth,
+    databaseHealth: summary.databaseHealth,
+    coverageNumerator: summary.coverageNumerator,
+    coverageDenominator: summary.coverageDenominator,
+    observationCount: summary.observationCount,
+    alertCount: summary.alertCount,
+    globalAlertLevel: summary.globalAlertLevel,
+    databaseStatus: summary.databaseStatus,
+    ingestionStatus: summary.ingestionStatus,
+    freshnessStatus: summary.freshnessStatus,
+    coverageStatus: summary.coverageStatus,
+    hazardAlertLevel: summary.hazardAlertLevel,
+    sources: summary.sources.map((source) => ({
+      source: source.category,
+      category: source.category,
+      tier: "aggregate",
+      status: source.status,
+      lastAttemptAt: source.lastAttemptAt,
+      lastSuccessAt: source.lastSuccessAt,
+      lastFetchedAt: source.lastSuccessAt,
+      records: source.recordCount,
+      fetchedPoints: source.recordCount,
+      durationMs: null,
+      errorRate: source.errorRate,
+      failureStreak: null,
+      parseErrors: null,
+      fallbackActivated: source.fallbackActive,
+      freshnessSlaSeconds: source.freshnessSlaSeconds,
+      freshnessSeconds: source.freshnessSeconds,
+      coverageStatus: summary.coverageStatus,
+      coverage: null,
+    })),
+    observations: [],
+    alerts: [],
+    history: summary.history.map((item) => ({ ...item, categories: {} })),
+  };
+}
 const initialRfc: CabDraft = { title: "", tier: "standard", riskLevel: "moderate", summary: "", justification: "", executionPlan: "", rollbackPlan: "", targetService: "", scheduledWindowStart: "", scheduledWindowEnd: "" };
 const initialRun: ResearchDraft = { title: "", question: "", scope: "self" };
 const can = (entity: AuthEntity | null, permission: string) => Boolean(entity?.sovereign || entity?.permissions.includes("*") || entity?.permissions.includes(permission));
@@ -57,8 +101,8 @@ export function App() {
     try { return JSON.parse(sessionStorage.getItem("empire.entity") ?? "null") as AuthEntity | null; } catch { return null; }
   });
   const [snapshot, setSnapshot] = useState(initialSnapshot);
-  const [worldSnapshot, setWorldSnapshot] = useState<WorldMonitoringSnapshot | null>(null);
-  const worldSnapshotRef = useRef<WorldMonitoringSnapshot | null>(null);
+  const [worldSnapshot, setWorldSnapshot] = useState<WorldMonitorDisplaySnapshot | null>(null);
+  const worldSnapshotRef = useRef<WorldMonitorDisplaySnapshot | null>(null);
   const [worldLoading, setWorldLoading] = useState(false);
   const [worldError, setWorldError] = useState("");
   const [worldNextRefreshIn, setWorldNextRefreshIn] = useState(30);
@@ -102,12 +146,9 @@ export function App() {
     setWorldLoading(true);
     setWorldNextRefreshIn(30);
     try {
-      const nextSnapshot = await api.request<WorldMonitoringSnapshot>(API_PATHS.worldMonitor);
+      const summary = await api.request<WorldMonitorPublicSummary>(API_PATHS.worldMonitor);
+      const nextSnapshot = toWorldMonitoringSnapshot(summary);
       if (worldRequestRef.current === requestId) {
-        const previousSnapshot = worldSnapshotRef.current;
-        if (previousSnapshot && typeof Notification !== "undefined") {
-          notifyNewWorldMonitorAlerts(previousSnapshot.alerts, nextSnapshot.alerts, Notification.permission, (title, body) => { new Notification(title, { body }); }, previousSnapshot.timestamp);
-        }
         worldSnapshotRef.current = nextSnapshot;
         setWorldSnapshot(nextSnapshot);
         setWorldError("");

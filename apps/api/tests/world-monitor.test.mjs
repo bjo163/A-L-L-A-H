@@ -97,7 +97,13 @@ test("healthy database with no observations reports unknown data coverage, not g
   assert.equal(result.hazardAlertLevel, "unknown");
   assert.equal(result.observationCount, 0);
   assert.equal(result.alertCount, 0);
-  assert.equal(result.schemaVersion, "1");
+  assert.equal(result.schemaVersion, "2");
+  assert.equal(result.apiHealth, "healthy");
+  assert.equal(result.databaseHealth, "healthy");
+  assert.equal(result.ingestionHealth, "unknown");
+  assert.equal(result.coverageHealth, "unknown");
+  assert.equal(result.dataFreshness, "unknown");
+  assert.equal(result.coverageDenominator, 0);
   assert.equal("auditLogs" in result, false);
 });
 
@@ -138,8 +144,48 @@ test("source health exposes actual attempt, success, freshness, coverage and fal
   assert.equal(weather.lastSuccessAt, now);
   assert.equal(weather.recordCount, 1);
   assert.equal(weather.fallbackActive, true);
+  assert.equal(weather.configuredSourceCount, 2);
+  assert.equal(weather.sourcesWithRecordsCount, 1);
+  assert.equal(result.coverageNumerator, 1);
+  assert.equal(result.coverageDenominator, 2);
   assert.equal(weather.freshnessSlaSeconds, 3600);
   assert.equal("source" in weather, false);
+});
+
+test("all configured providers failed: API and database remain healthy while ingestion is unavailable", async () => {
+  const now = new Date().toISOString();
+  const { result } = await invoke(async () => ({ ok: true }), [], [
+    { source: "feed-a", category: "weather", tier: "primary", status: "failed", startedAt: now, completedAt: now, recordCount: 0, metadata: {} },
+    { source: "feed-b", category: "weather", tier: "primary", status: "failed", startedAt: now, completedAt: now, recordCount: 0, metadata: {} },
+  ], [
+    { source: "feed-a", category: "weather", tier: "primary" },
+    { source: "feed-b", category: "weather", tier: "primary" },
+  ]);
+  assert.equal(result.apiHealth, "healthy");
+  assert.equal(result.databaseHealth, "healthy");
+  assert.equal(result.ingestionHealth, "unavailable");
+  assert.equal(result.coverageHealth, "unavailable");
+  assert.equal(result.globalAlertLevel, "yellow");
+  assert.equal(result.coverageNumerator, 0);
+  assert.equal(result.coverageDenominator, 2);
+});
+
+test("mixed fresh and stale observations make freshness degraded and publish source denominator", async () => {
+  const now = Date.now();
+  const { result } = await invoke(async () => ({ ok: true }), [
+    { id: "fresh", source: "feed-a", category: "weather", observedAt: new Date(now).toISOString(), status: "available" },
+    { id: "stale", source: "feed-b", category: "weather", observedAt: new Date(now - 4_000_000).toISOString(), status: "available" },
+  ], [
+    { source: "feed-a", category: "weather", tier: "primary", status: "success", startedAt: new Date(now).toISOString(), completedAt: new Date(now).toISOString(), recordCount: 1, metadata: {} },
+    { source: "feed-b", category: "weather", tier: "primary", status: "success", startedAt: new Date(now).toISOString(), completedAt: new Date(now).toISOString(), recordCount: 1, metadata: {} },
+  ], [
+    { source: "feed-a", category: "weather", tier: "primary" },
+    { source: "feed-b", category: "weather", tier: "primary" },
+  ]);
+  assert.equal(result.dataFreshness, "degraded");
+  assert.equal(result.coverageNumerator, 2);
+  assert.equal(result.coverageDenominator, 2);
+  assert.equal(result.sources[0].configuredSourceCount, 2);
 });
 
 test("a successful provider response with zero records is empty, not failed or healthy coverage", async () => {
@@ -266,7 +312,7 @@ test("anonymous summary is allowlisted and bounded when the database contains hi
     rawPayload: { secret: true }, operatorNotes: "sensitive", tenantId: "tenant-secret", stack: "stack-secret",
   }));
   const { result } = await invoke(async () => ({ ok: true }), rows, [], Array.from({ length: 140 }, (_, index) => ({ source: `source-${index}`, category: "weather", tier: "primary" })));
-  assert.equal(result.schemaVersion, "1");
+  assert.equal(result.schemaVersion, "2");
   assert.equal(result.observationCount, 6);
   assert.equal(result.sources.length <= 5, true);
   assert.equal("observations" in result, false);
