@@ -1,10 +1,10 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import type { FormEvent } from "react";
+import type { CSSProperties, FormEvent } from "react";
 import { API_PATHS, ApiError, createApiClient } from "@empire/api-contract";
 import type { AuthEntity, CabRfc, CabSummary, LoginResponse, ResearchRun } from "@empire/api-contract";
 import type { WorldMonitoringSnapshot } from "@empire/batteries-world-monitor";
 import { notifyNewWorldMonitorAlerts } from "./world-monitor-notifications";
-import { AgentIcon, ApprovalIcon, ArrowUpRightIcon, AuditIcon, AuthLayout, Badge, Breadcrumbs, BrandLockup, Button, Checkbox, CommandIcon, ConfirmDialog, DirectoryIcon, DocumentIcon, ErrorState, EvidenceIcon, FieldLabel, GlobeIcon, HistoryIcon, HomeIcon, InfoIcon, KnowledgeIcon, LoadingState, LogOutIcon, MangaEffect, MangaPageIntro, NavItem, Notice, RefreshIcon, SearchField, TextField, UsersIcon, WorkspaceShell } from "@empire/ui";
+import { AgentIcon, ApprovalIcon, ArrowUpRightIcon, AuditIcon, AuthLayout, Badge, Breadcrumbs, MoonwitnessBrandLockup, Button, Checkbox, CommandIcon, ConfirmDialog, DirectoryIcon, DocumentIcon, ErrorState, EvidenceIcon, FieldLabel, GlobeIcon, HistoryIcon, HomeIcon, InfoIcon, KnowledgeIcon, LoadingState, LogOutIcon, MangaEffect, MangaPageIntro, NavItem, Notice, RefreshIcon, SearchField, TextField, UsersIcon, WorkspaceShell } from "@empire/ui";
 import type { ConfirmDialogTone, IconComponent } from "@empire/ui";
 import { WorldMonitorView } from "./WorldMonitorView";
 import type { ResearchConfirmationRequest } from "./ResearchCard";
@@ -18,6 +18,7 @@ import { OverviewView } from "./OverviewView";
 import { CollaborationView } from "./CollaborationView";
 import { EnterpriseView } from "./EnterpriseView";
 import type { ApiRequestOptions } from "@empire/api-contract";
+import moonwitnessStoryCrewSheet from "@empire/ui/assets/moonwitness-story-crew-contact-sheet.png";
 
 type Signal = "checking" | "ok" | "degraded" | "unavailable";
 type Module = { id: string; title: string; version: string; state: string; enabled: boolean };
@@ -304,11 +305,12 @@ export function App() {
     await perform(async () => { await client.request(API_PATHS.researchRuns, { method: "POST", body: createRun }); setCreateRun(initialRun); }, "Research run dikirim untuk persetujuan.");
   }
 
-  if (!entity && restoringSession) return <AuthLayout brandName="100CENTER" brandDescriptor="OPERATOR WORKSPACE" title="Memulihkan sesi" description="Memeriksa sesi operator yang tersimpan." />;
-  if (!entity) return <AuthLayout brandName="100CENTER" brandDescriptor="OPERATOR WORKSPACE" title="Masuk 100CENTER" description="Gunakan akun operator lokal yang telah diprovisikan oleh administrator.">
+  if (!entity) return <AuthLayout className="shadow-login" brandName="MOONWITNESS" brandDescriptor="EMPIRE OF THE LIGHT · A-L-L-A-H" title={<>Enter <em>SHADOW</em></>} description="Private Command Center for stories, research, posters, and publishing.">
+    {restoringSession&&<p className="auth-login-message" role="status">Checking your operator session…</p>}
     {error && <Notice tone="danger">{error}</Notice>}
-    <form className="form-grid" onSubmit={signIn}><FieldLabel>Username<TextField autoComplete="username" value={login.username} onChange={e=>setLogin({...login,username:e.target.value})} required/></FieldLabel><FieldLabel>Password<TextField type="password" autoComplete="current-password" value={login.password} onChange={e=>setLogin({...login,password:e.target.value})} required/></FieldLabel><Checkbox className="remember-me" label="Ingat saya di perangkat ini selama 30 hari" checked={rememberMe} onChange={event=>setRememberMe(event.target.checked)}/><Button type="submit" disabled={busy}>{busy?"Memeriksa…":"Masuk"}</Button></form>
-    <div className="login-health"><span>API {snapshot.health}</span><span>Database {snapshot.readiness}</span><Button variant="secondary" disabled={loading} onClick={()=>void refresh()}>Refresh</Button></div>
+    <form className="form-grid" onSubmit={signIn}><FieldLabel className="auth-login-identifier">Email or Username<TextField autoComplete="username" placeholder="Enter your email or username" value={login.username} onChange={e=>setLogin({...login,username:e.target.value})} required/></FieldLabel><FieldLabel className="auth-login-password">Password<TextField type="password" autoComplete="current-password" placeholder="Enter your password" value={login.password} onChange={e=>setLogin({...login,password:e.target.value})} required/></FieldLabel><div className="auth-login-options"><Checkbox className="remember-me" label="Remember me" checked={rememberMe} onChange={event=>setRememberMe(event.target.checked)}/><span title="Password recovery is not configured; contact your administrator.">Forgot password?</span></div><Button type="submit" disabled={busy}>{busy?"CONNECTING…":"ENTER THE SHADOW  →"}</Button></form>
+    <p className="auth-login-authorized">♛ &nbsp; AUTHORIZED CREW ONLY</p>
+    <div className="login-health"><span>API {snapshot.health}</span><span>DATABASE {snapshot.readiness}</span><Button variant="secondary" disabled={loading} onClick={()=>void refresh()}>REFRESH</Button></div>
   </AuthLayout>;
 
   const canCab = can(entity, "cab:read");
@@ -329,7 +331,7 @@ export function App() {
     || (key === "collaboration" && can(entity, "work:read"));
     const allowedPage = (key: Page) => pageAllowed(key) || (key === "business" && can(entity, "work:read"));
   const activePage = pageItems.find(({ key }) => key === tab)!;
-  return <WorkspaceShell navigation={<aside className="sidebar"><a className="brand" href="#overview" onClick={e=>{e.preventDefault();setTab("overview");}}><BrandLockup name="MOONWITNESS" descriptor="SHADOW COMMAND CENTER" /></a>
+  return <div className="shadow-contact-root" style={{ "--mw-contact-sheet": `url(${moonwitnessStoryCrewSheet.src})` } as CSSProperties}><WorkspaceShell navigation={<aside className="sidebar"><a className="brand" href="#overview" onClick={e=>{e.preventDefault();setTab("overview");}}><MoonwitnessBrandLockup descriptor="SHADOW COMMAND CENTER" /></a>
     <div className="operator-card"><span className="avatar">{entity.displayName.slice(0,1).toUpperCase()}</span><span className="operator-meta"><strong>{entity.displayName}</strong><small>{entity.role} · {entity.username}</small></span><span className="online-dot" title="Sesi aktif"/></div>
       <p className="nav-caption">OPERATIONS</p><div className="view-switcher" role="navigation" aria-label="SHADOW sections">{pageItems.filter(({key})=>allowedPage(key)).map(({key,label})=>{const PageIcon=pageIcons[key];return <NavItem key={key} className={`nav-item ${tab===key?"is-active":""}`} current={tab===key} icon={<PageIcon className="nav-icon" size={18}/>} badge={key==="cab"&&summary?.active?summary.active:key==="research"?runs.filter(run=>run.status==="pending_approval").length||undefined:undefined} onClick={()=>setTab(key)}>{label}</NavItem>})}{pageAllowed("continuum")&&<NavItem key="poster-forge" className="nav-item" current={false} icon={<DocumentIcon className="nav-icon" size={18}/>} onClick={()=>setTab("continuum")}>Poster Forge</NavItem>}</div>
     <div className="sidebar-bottom"><div className="connection-card"><span className="online-dot" data-state={snapshot.readiness} aria-hidden="true"/><span><strong>Shadow local node</strong><small>PostgreSQL · API :4000</small></span><Badge tone={snapshot.readiness==="ok"?"success":snapshot.readiness==="unavailable"?"danger":"warning"}>{snapshot.readiness}</Badge></div><MangaEffect as="button" action type="button" className="logout-button" onClick={()=>void perform(async()=>{await client.request(API_PATHS.logout,{method:"POST"});clearSession();},"Sesi ditutup.")}><LogOutIcon size={16}/><span>Keluar dari sesi</span></MangaEffect><small className="build-label">SHADOW · 100CENTER · ARSY</small></div></aside>} header={<header className="topbar"><Breadcrumbs className="breadcrumb" label="Current location" items={[{label:"SHADOW"},{label:activePage.title,current:true}]}/><div className="top-actions">{tenants.length>1&&<label className="tenant-picker"><span className="eol-visually-hidden">Tenant aktif</span><select aria-label="Tenant aktif" value={selectedTenantId} onChange={event=>{setSelectedTenantId(event.target.value);if(event.target.value)sessionStorage.setItem("empire.tenant",event.target.value);else sessionStorage.removeItem("empire.tenant");}}><option value="">Pilih tenant…</option>{tenants.map(item=><option value={item.id} key={item.id}>{item.displayName}</option>)}</select></label>}<SearchField className="global-search" id="global-search" value={search} onChange={event=>setSearch(event.target.value)} placeholder="Scan this view…" aria-label="Search current view" shortcutHint="/" onClear={()=>setSearch("")}/><span className="last-check">{snapshot.checkedAt?`Updated ${new Date(snapshot.checkedAt).toLocaleTimeString()}`:"Connecting…"}</span><Button variant="secondary" disabled={loading} onClick={()=>void refresh()}>{loading ? "Syncing…" : (<span><RefreshIcon size={14}/>Sync</span>)}</Button><a className="api-link" href={`${API_ORIGIN}${API_PATHS.openapi}`} target="_blank" rel="noreferrer" aria-label="Open API contract"><DocumentIcon size={16}/></a></div></header>}>
@@ -407,7 +409,7 @@ export function App() {
         onOpenChange={(open) => { if (!open && !busy) setConfirmation(null); }}
       />
       <footer>ONE VOCABULARY · HUMAN APPROVAL · EVERY JOURNEY MATTERS</footer>
-    </WorkspaceShell>;
+    </WorkspaceShell></div>;
 }
 
 

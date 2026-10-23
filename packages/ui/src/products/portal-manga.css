@@ -340,6 +340,52 @@ html[data-theme="dark"] :where(.eol-public-shell) .roadmap-teaser {
     transform: none;
   }
 }
+
+/* Reusable six-panel Moonwitness contact sheet for editorial cards and crew portraits. */
+.mw-story-card,
+.mw-crew-person {
+  isolation: isolate;
+  background: #050505;
+}
+.mw-story-card::before,
+.mw-crew-person::before {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  content: "";
+  background-image: var(--mw-contact-sheet);
+  background-repeat: no-repeat;
+  background-size: 300% 200%;
+}
+.mw-story-card::after,
+.mw-crew-person::after {
+  position: absolute;
+  z-index: -1;
+  inset: 0;
+  content: "";
+  background: linear-gradient(0deg, #050505 0%, #050505d9 22%, transparent 70%);
+}
+.mw-story-card { --mw-panel-y: 0%; min-height: 176px; }
+.mw-story-card:nth-child(1) { --mw-panel-x: 0%; }
+.mw-story-card:nth-child(2) { --mw-panel-x: 50%; }
+.mw-story-card:nth-child(3) { --mw-panel-x: 100%; }
+.mw-story-card:nth-child(4) { --mw-panel-x: 0%; --mw-panel-y: 100%; }
+.mw-story-card::before,
+.mw-crew-person::before { background-position: var(--mw-panel-x) var(--mw-panel-y); }
+.mw-story-image { display: none; }
+.mw-story-card--pink { box-shadow: 3px 3px 0 var(--mw-pink); }
+.mw-story-card--blue { box-shadow: 3px 3px 0 var(--mw-blue); }
+.mw-story-card--violet { box-shadow: 3px 3px 0 #b48aff; }
+.mw-story-card--yellow { box-shadow: 3px 3px 0 var(--mw-yellow); }
+.mw-crew-person { position: relative; min-height: 145px; overflow: hidden; padding: 10px; border: 2px solid var(--mw-paper); }
+.mw-crew-person--market { --mw-panel-x: 0%; --mw-panel-y: 100%; }
+.mw-crew-person--signal { --mw-panel-x: 50%; --mw-panel-y: 100%; }
+.mw-crew-person--city { --mw-panel-x: 100%; --mw-panel-y: 100%; }
+.mw-crew-person small { position:relative; z-index:1; }
+@media(max-width:570px) {
+  .mw-story-card { min-height:154px; }
+  .mw-crew-person { min-height:125px; }
+}
 @media (max-width: 570px) {
   :where(.eol-public-shell) .hero-copy > .eyebrow {
     max-width: 100%;
@@ -357,3 +403,14 @@ html[data-theme="dark"] :where(.eol-public-shell) .roadmap-teaser {
     box-shadow: 3px 3px 0 var(--eol-manga-ink);
   }
 }
+
+/* Selected reference refinement: readable story strips and illustrated archive/signal cards. */
+.mw-site { grid-template-columns:1.35fr 1fr .85fr; }
+.mw-story-card strong { font-size:clamp(12px,1.1vw,16px); }
+.mw-signal-board>a { background-image:linear-gradient(0deg,#050505e6,transparent 75%),var(--mw-contact-sheet); background-size:100% 100%,300% 200%; }
+.mw-signal-board>a:nth-of-type(1) { background-position:0 0,50% 0; }
+.mw-signal-board>a:nth-of-type(2) { background-position:0 0,100% 0; }
+.mw-signal-board>a:nth-of-type(3) { background-position:0 0,50% 100%; }
+.mw-archive-grid a { background-image:linear-gradient(0deg,#050505e8,#05050525),var(--mw-contact-sheet); background-size:100% 100%,300% 200%; background-position:0 0,0 0; }
+.mw-archive-grid a:nth-child(2) { background-image:linear-gradient(0deg,#050505e8,#05050525),var(--mw-contact-sheet); background-size:100% 100%,300% 200%; background-position:0 0,100% 100%; }
+@media(max-width:570px) { .mw-site { grid-template-columns:1fr; }.mw-story-card strong { font-size:clamp(12px,3.5vw,15px); } }

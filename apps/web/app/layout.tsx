@@ -4,7 +4,7 @@ import Link from "next/link";
 import { ThemeBootstrap } from "@empire/ui";
 import { getWebLanguage, text } from "../lib/i18n";
 import { PrimaryNavigation } from "../components/PrimaryNavigation";
-import { BrandLockup, IconText, PublicShell, ArrowUpRightIcon, ExternalLinkIcon } from "@empire/ui";
+import { MoonwitnessBrandLockup, IconText, PublicShell, ArrowUpRightIcon, ExternalLinkIcon } from "@empire/ui";
 import "@empire/ui/ui.css";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -27,10 +27,10 @@ export default async function CommandCenterLayout({ children }: { children: Reac
     <PublicShell
       skipLabel={text(language,"Lewati ke konten utama","Skip to main content")}
       footerLabel={text(language,"Navigasi footer","Footer navigation")}
-      brand={<Link className="brand" href="/" aria-label={text(language,"Beranda Moonwitness","Moonwitness home")}><BrandLockup name="MOONWITNESS" descriptor="REAL PEOPLE · SAME SKY" /></Link>}
+      brand={<Link className="brand" href="/" aria-label="Moonwitness home"><MoonwitnessBrandLockup /></Link>}
       navigation={<PrimaryNavigation language={language} />}
-      action={<Link className="header-cta" href="/workspace"><IconText icon={<ArrowUpRightIcon />}>{text(language,"GABUNG BERSAMA KAMI","JOIN THE CREW")}</IconText></Link>}
-      footerBrand={<BrandLockup size="compact" tone="subtle" name="MOONWITNESS · EMPIRE OF THE LIGHT" descriptor={text(language,"Orang berbeda. Langit yang sama.","Different people. Same sky.")} />}
+      action={<Link className="header-cta" href="/workspace"><IconText icon={<ArrowUpRightIcon />}>JOIN THE CREW</IconText></Link>}
+      footerBrand={<MoonwitnessBrandLockup className="eol-moonwitness-brand-lockup--compact" descriptor={text(language,"Orang berbeda. Langit yang sama.","Different people. Same sky.")} />}
       footerContent={<><span>GENESIS v5.0 · {text(language,"HUB RISET & OPERASI","RESEARCH & OPERATIONS HUB")}</span><span>{text(language,"Diawasi manusia · Sumber jelas","Human-governed · Source-grounded")}</span><Link href="/#identitas">A-L-L-A-H</Link><Link href="/#ekosistem">{text(language,"Ekosistem","Ecosystem")}</Link><Link href="/systems">{text(language,"Atlas sistem","System atlas")}</Link><Link href="/roadmap">{text(language,"Peta jalan & kesiapan","Roadmap & readiness")}</Link><Link href="/">100CENTER</Link><a href="https://github.com/bjo163/empire-of-the-light" target="_blank" rel="noopener noreferrer"><IconText icon={<ExternalLinkIcon />}>GitHub</IconText></a></>}
     >{children}</PublicShell>
   </body></html>;

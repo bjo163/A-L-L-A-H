@@ -7,7 +7,8 @@
     ".": "./src/index.ts",
     "./client": "./src/client.ts",
     "./ui.css": "./src/ui.css",
-    "./brand-assets": "./src/brand/BrandAssets.generated.ts"
+    "./brand-assets": "./src/brand/BrandAssets.generated.ts",
+    "./assets/moonwitness-story-crew-contact-sheet.png": "./src/assets/moonwitness-story-crew-contact-sheet.png"
   },
   "scripts": {
     "build": "tsc --noEmit",

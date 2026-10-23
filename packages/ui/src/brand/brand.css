@@ -18,3 +18,11 @@
 .eol-brand-lockup--stacked .eol-brand-lockup__mark { width: 44px; height: 44px; }
 .eol-brand-lockup--stacked .eol-brand-lockup__text { gap: 3px; }
 .eol-brand-lockup--subtle .eol-brand-lockup__name { color: var(--eol-color-text-subtle); }
+
+.eol-moonwitness-brand-lockup { display:inline-flex; min-width:0; align-items:center; gap:8px; color:#f7f1e7; }
+.eol-moonwitness-brand-lockup>svg { width:32px; height:27px; flex:none; color:#0787ff; }
+.eol-moonwitness-brand-lockup__text { display:grid; gap:2px; }
+.eol-moonwitness-brand-lockup__text strong { color:#f7f1e7; font:italic 1000 clamp(19px,2.2vw,34px)/.95 Impact,"Arial Black",sans-serif; letter-spacing:-.045em; text-shadow:2px 2px 0 #ff168f; }
+.eol-moonwitness-brand-lockup__text small { color:#c8c3bc; font:8px var(--eol-font-mono); letter-spacing:.12em; }
+.eol-moonwitness-brand-lockup--compact>svg { width:27px; height:22px; }
+.eol-moonwitness-brand-lockup--compact .eol-moonwitness-brand-lockup__text strong { font-size:15px; }

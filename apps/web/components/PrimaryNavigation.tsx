@@ -8,7 +8,7 @@ import { SunIcon, MoonIcon } from "@empire/ui";
 import type { WebLanguage } from "../lib/i18n";
 
 const labels = {
-  id: { home: "Cerita", ecosystem: "Kru", systems: "Semesta", roadmap: "Sinyal", workspace: "Arsip", github: "Tentang", navigation: "Navigasi utama Moonwitness", open: "Buka menu", close: "Tutup menu", language: "Pilih bahasa", loading: "Mengganti bahasa", theme: "Tema tampilan", light: "Terang", dark: "Gelap" },
+  id: { home: "Stories", ecosystem: "Crew", systems: "Universe", roadmap: "Signal", workspace: "Archive", github: "About", navigation: "Moonwitness navigation", open: "Open menu", close: "Close menu", language: "Choose language", loading: "Changing language", theme: "Appearance theme", light: "Light", dark: "Dark" },
   en: { home: "Stories", ecosystem: "Crew", systems: "Universe", roadmap: "Signal", workspace: "Archive", github: "About", navigation: "Moonwitness navigation", open: "Open menu", close: "Close menu", language: "Choose language", loading: "Changing language", theme: "Appearance theme", light: "Light", dark: "Dark" },
 } as const;
 

@@ -1,7 +1,8 @@
 import Link from "next/link";
 import type { WebLanguage } from "../lib/i18n";
-import type { ReactNode } from "react";
+import type { CSSProperties, ReactNode } from "react";
 import { MoonwitnessCrown as Crown } from "@empire/ui";
+import moonwitnessStoryCrewSheet from "@empire/ui/assets/moonwitness-story-crew-contact-sheet.png";
 
 const stories = [
   { id: "jakarta", title: "A SMALL TOWN STILL LOOKS UP", place: "JAKARTA, IDN", tone: "pink" },
@@ -19,7 +20,7 @@ function Badge({ children, tone = "pink" }: { children: ReactNode; tone?: string
 }
 
 export function MoonwitnessExperience({ language: _language }: { language: WebLanguage }) {
-  return <div className="mw-site">
+  return <div className="mw-site" style={{ "--mw-contact-sheet": `url(${moonwitnessStoryCrewSheet.src})` } as CSSProperties}>
     <section className="mw-hero" aria-labelledby="mw-title">
       <div className="mw-hero-art" role="img" aria-label="A hooded witness looking over a city toward a bright blue moon" />
       <div className="mw-hero-splatter" aria-hidden="true">✳</div>
@@ -37,11 +38,11 @@ export function MoonwitnessExperience({ language: _language }: { language: WebLa
 
     <section className="mw-section mw-stories" id="stories">
       <header className="mw-section-head"><div><span className="mw-number">01</span><h2>STORIES</h2><small>REAL PEOPLE. UNFILTERED WORLDS.</small></div><Link href="/workspace">→</Link></header>
-      <div className="mw-story-grid">{stories.map((story, index) => <Link className={`mw-story-card mw-story-card--${story.tone}`} href="/workspace" key={story.id}><span className="mw-story-index">STORY / 0{index + 1}</span><span className="mw-story-silhouette" aria-hidden="true">{index % 2 ? "◉" : "◒"}</span><strong>{story.title}</strong><small><i/> {story.place}</small></Link>)}</div>
+      <div className="mw-story-grid">{stories.map((story, index) => <Link className={`mw-story-card mw-story-card--${story.tone}`} href="/workspace" key={story.id}><span className="mw-story-index">STORY / 0{index + 1}</span><span className="mw-story-image" aria-hidden="true"/><strong>{story.title}</strong><small><i/> {story.place}</small></Link>)}</div>
     </section>
 
     <div className="mw-mid-grid">
-      <section className="mw-section mw-crew" id="crew"><header className="mw-section-head"><div><span className="mw-number">02</span><h2>CREW</h2><Crown/><small>A GLOBAL CREW OF CURIOUS HUMANS</small></div><Link href="/workspace">→</Link></header><div className="mw-crew-wall"><div className="mw-crew-person">◉<small>DIFFERENT<br/>PLACES</small></div><div className="mw-crew-person">◒<small>SAME<br/>CURIOSITY</small></div><div className="mw-crew-person">◉<small>PEOPLE<br/>MAKE SIGNAL</small></div></div><Link className="mw-button mw-button--paper" href="/workspace">MEET THE CREW <span>→</span></Link></section>
+      <section className="mw-section mw-crew" id="crew"><header className="mw-section-head"><div><span className="mw-number">02</span><h2>CREW</h2><Crown/><small>A GLOBAL CREW OF CURIOUS HUMANS</small></div><Link href="/workspace">→</Link></header><div className="mw-crew-wall"><div className="mw-crew-person mw-crew-person--market" role="img" aria-label="A crew member exploring a night market"><small>DIFFERENT<br/>PLACES</small></div><div className="mw-crew-person mw-crew-person--signal" role="img" aria-label="A crew gathered under the same moon"><small>SAME<br/>CURIOSITY</small></div><div className="mw-crew-person mw-crew-person--city" role="img" aria-label="Witnesses looking out over the city"><small>PEOPLE<br/>MAKE THE SIGNAL.</small></div></div><Link className="mw-button mw-button--paper" href="/workspace">MEET THE CREW <span>→</span></Link></section>
       <section className="mw-section mw-universe" id="universe"><header className="mw-section-head"><div><span className="mw-number">03</span><h2>UNIVERSE</h2><small>MORE THAN STORIES. A LIVING ARCHIVE.</small></div><Link href="/systems">→</Link></header><div className="mw-universe-map"><div className="mw-planet"/><span className="mw-orbit-label mw-orbit-label--one">● STORIES</span><span className="mw-orbit-label mw-orbit-label--two">● CREW</span><span className="mw-orbit-label mw-orbit-label--three">● SIGNAL</span><span className="mw-orbit-label mw-orbit-label--four">● ARCHIVE</span><Crown/></div><p>ONE PLATFORM.<br/>MANY ORBITS.<br/>A BRIGHTER TOMORROW.</p></section>
     </div>
 
