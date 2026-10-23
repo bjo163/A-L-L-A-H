@@ -20,6 +20,9 @@ function signature(tenantId: string, documentId: string, expires: string, key: s
   return createHmac("sha256", env.FILE_STORAGE_SIGNING_SECRET).update(`${tenantId}:${documentId}:${expires}:${key}:${classification}`).digest("hex");
 }
 const uuid = (value: unknown): value is string => typeof value === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
+function tenantScopedStorageKey(tenantId: string, key: string) {
+  return uuid(tenantId) && key.startsWith(`${tenantId}/`) && uuid(key.slice(tenantId.length + 1));
+}
 
 export async function documentStorageRoutes(app: FastifyInstance) {
   app.post<{ Params: { id: string } }>("/v1/documents/:id/content", {
@@ -60,7 +63,7 @@ export async function documentStorageRoutes(app: FastifyInstance) {
     const doc = await DocumentModel.query().where({ id: request.params.id, tenant_id: request.tenantId!, status: "active" }).first();
     if (!doc) return reply.code(404).send({ status: "not_found", message: "Dokumen tidak ditemukan." });
     if (doc.classification === "restricted" && !request.authUser!.sovereign) return reply.code(403).send({ status: "forbidden", message: "Hanya administrator tenant yang dapat membuat tautan dokumen terbatas." });
-    if (doc.storageProvider !== "local-private" || !doc.storageKey) return reply.code(409).send({ status: "storage_unavailable", message: "Berkas ini belum tersimpan pada provider privat yang didukung." });
+    if (doc.storageProvider !== "local-private" || !doc.storageKey || !tenantScopedStorageKey(doc.tenantId!, doc.storageKey)) return reply.code(409).send({ status: "storage_unavailable", message: "Berkas ini belum tersimpan pada provider privat yang didukung." });
     const expires = String(Math.floor(Date.now() / 1000) + 10 * 60);
     const sig = signature(doc.tenantId!, doc.id, expires, doc.storageKey, doc.classification);
     return { url: `/v1/documents/${encodeURIComponent(doc.id)}/content?expires=${expires}&signature=${sig}`, expiresAt: new Date(Number(expires) * 1000).toISOString() };
@@ -73,7 +76,7 @@ export async function documentStorageRoutes(app: FastifyInstance) {
     const { expires, signature: supplied } = request.query;
     if (env.FILE_STORAGE_SIGNING_SECRET.length < 32 || !expires || !/^\d{10}$/.test(expires) || Number(expires) < Math.floor(Date.now() / 1000) || !supplied || !/^[a-f0-9]{64}$/.test(supplied)) return reply.code(401).send({ status: "unauthorized", message: "Tautan unduh tidak valid atau kedaluwarsa." });
     const doc = uuid(request.params.id) ? await DocumentModel.query().where({ id: request.params.id, status: "active", storage_provider: "local-private" }).first() : null;
-    if (!doc?.storageKey || !doc.tenantId) return reply.code(404).send({ status: "not_found", message: "Dokumen tidak ditemukan." });
+    if (!doc?.storageKey || !doc.tenantId || !tenantScopedStorageKey(doc.tenantId, doc.storageKey)) return reply.code(404).send({ status: "not_found", message: "Dokumen tidak ditemukan." });
     const expected = Buffer.from(signature(doc.tenantId, doc.id, expires, doc.storageKey, doc.classification), "hex");
     const actual = Buffer.from(supplied, "hex");
     if (expected.length !== actual.length || !timingSafeEqual(expected, actual)) return reply.code(401).send({ status: "unauthorized", message: "Tautan unduh tidak valid atau kedaluwarsa." });
