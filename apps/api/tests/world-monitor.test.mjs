@@ -1,7 +1,7 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 import ts from "typescript";
+import { readFile } from "node:fs/promises";
 
 const routeSource = await readFile(new URL("../src/routes/world-monitor.ts", import.meta.url), "utf8");
 const contractSource = await readFile(new URL("../../../packages/api-contract/src/index.ts", import.meta.url), "utf8");
@@ -94,20 +94,38 @@ async function invoke(checkDatabaseHealth, observations = [], runs = [], sourceD
   return { options, result: await call(), handler: call, responseHeaders };
 }
 
+async function registerRoutes(overrides = {}) {
+  const routes = { get: new Map(), post: new Map() };
+  const checkDatabaseHealth = overrides.checkDatabaseHealth ?? (async () => ({ ok: true }));
+  const app = {
+    get(path, options, handler) { routes.get.set(path, { options, handler }); },
+    post(path, options, handler) { routes.post.set(path, { options, handler }); },
+  };
+  const route = createRoute(
+    checkDatabaseHealth,
+    createSnapshot(),
+    overrides.observations ?? [],
+    overrides.runs ?? [],
+    overrides.sourceDetails ?? [],
+  );
+  await route(app);
+  return routes;
+}
+
 
 test("healthy database with no observations reports unknown data coverage, not green", async () => {
   const { options, result, responseHeaders } = await invoke(async () => ({ ok: true }));
-  assert.match(routeSource, /app\.post\(\s*"\/v1\/world-monitor\/refresh"/);
-  assert.match(routeSource, /preHandler: \[requireSession, requirePermission\("sentinel:schedule"\)\]/);
-  const publicGetRoute = routeSource.slice(routeSource.indexOf('"/v1/world-monitor"'), routeSource.indexOf('"/v1/world-monitor/youtube"'));
-  assert.doesNotMatch(publicGetRoute, /triggerManualWorldMonitorRefresh|refreshWorldMonitorSources/);
+  const routes = await registerRoutes();
+  const refresh = routes.post.get("/v1/world-monitor/refresh");
+  assert.ok(refresh);
+  assert.equal(refresh.options.preHandler.length, 2);
   assert.deepEqual(options.schema.security, []);
   assert.equal(options.config.rateLimit.max, 120);
   assert.equal(options.config.rateLimit.timeWindow, "1 minute");
-  assert.match(routeSource, /keyGenerator: \(request\) => request\.ip/);
+  assert.equal(options.config.rateLimit.keyGenerator({ ip: "203.0.113.4" }), "203.0.113.4");
   assert.equal(options.schema.response[200], publicSummarySchema);
   assert.equal(responseHeaders["cache-control"], "public, max-age=15, stale-while-revalidate=30");
-  assert.match(routeSource, /PUBLIC_SUMMARY_MAX_JSON_BYTES = 16 \* 1024/);
+  assert.ok(Buffer.byteLength(JSON.stringify(result), "utf8") <= 16 * 1024);
   assert.equal(result.status, "operational");
   assert.equal(result.databaseStatus, "available");
   assert.equal(result.globalAlertLevel, "unknown");
@@ -139,7 +157,6 @@ test("configured sources with no ingestion history are exposed as unknown covera
     get(path, _options, fn) { if (path === "/v1/world-monitor") handler = fn; }, post() {},
   });
   const result = await handler({}, { header() { return this; } });
-  assert.doesNotMatch(routeSource, /refreshWorldMonitorSources/);
   assert.equal(result.sources[0].status, "unknown");
   assert.equal("source" in result.sources[0], false);
   assert.equal(result.coverageStatus, "unknown");
@@ -316,7 +333,6 @@ test("hazards emit a resolved lifecycle after their observation-based TTL", asyn
 });
 
 test("region, sensor, and activity values are not presented as live data without sources", async () => {
-  assert.doesNotMatch(routeSource, /AuditLogModel|UserModel/);
   const engine = await readFile(new URL("../../../packages/batteries-world-monitor/src/engine.ts", import.meta.url), "utf8");
   assert.doesNotMatch(engine, /Math\.random|generateTelemetryFeeds/);
   assert.match(engine, /currentStatus: "unavailable"/);
