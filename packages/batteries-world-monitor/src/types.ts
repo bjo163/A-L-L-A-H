@@ -261,6 +261,9 @@ export interface YoutubeMonitoredItem {
   wisdomBrief?: WisdomBrief;
 
   workflowStatus: YoutubeWorkflowStatus;
+  reviewEvidence?: { reviewerId: string; rationale: string; reviewedAt: string; secondReviewerId?: string | null } | null;
+  actionEvidence?: { reference: string; attestedBy: string; attestedAt: string } | null;
+  reviewRevision?: number;
   operatorNotes?: string;
   scannedAt: string;
   lastActionAt?: string;

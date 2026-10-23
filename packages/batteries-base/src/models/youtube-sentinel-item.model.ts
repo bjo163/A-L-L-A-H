@@ -56,6 +56,9 @@ export class YoutubeSentinelItemModel extends BatteriesModel {
 
     // ── Operator workflow ─────────────────────────────────────────
     workflowStatus:     { type: "string",    required: true,  defaultTo: "PENDING_REVIEW", index: true },
+    reviewEvidence:     { type: "jsonb",     nullable: true },
+    actionEvidence:     { type: "jsonb",     nullable: true },
+    reviewRevision:     { type: "integer",   required: true,  defaultTo: 0 },
     operatorNotes:      { type: "text",      nullable: true },
     lastActionAt:       { type: "timestamp", nullable: true },
 
@@ -109,6 +112,9 @@ export class YoutubeSentinelItemModel extends BatteriesModel {
   wisdomBrief?: unknown | null;
 
   workflowStatus!: string;
+  reviewEvidence?: { reviewerId: string; rationale: string; reviewedAt: string; secondReviewerId?: string | null } | null;
+  actionEvidence?: { reference: string; attestedBy: string; attestedAt: string } | null;
+  reviewRevision!: number;
   operatorNotes?: string | null;
   lastActionAt?: string | null;
   partnerId?: string | null;

@@ -435,6 +435,9 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
               ],
             },
             notes: { type: "string" },
+            rationale: { type: "string", minLength: 20, maxLength: 2000 },
+            actionReference: { type: "string", minLength: 1, maxLength: 500 },
+            expectedReviewRevision: { type: "integer", minimum: 0 },
           },
         },
       },
@@ -445,10 +448,21 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
         id: string;
         action: YoutubeWorkflowStatus;
         notes?: string;
+        rationale?: string;
+        actionReference?: string;
+        expectedReviewRevision?: number;
       };
 
       if (!YOUTUBE_WORKFLOW_ACTIONS.includes(body.action)) {
         return reply.status(400).send({ ok: false, message: "Unsupported workflow action" });
+      }
+      const requiresReviewEvidence = ["VERIFIED_SYIRIK", "REPORT_FILED", "SHARED_VIA_DAKWAH"].includes(body.action);
+      const requiresActionEvidence = ["REPORT_FILED", "SHARED_VIA_DAKWAH"].includes(body.action);
+      if (requiresReviewEvidence && (!body.rationale || body.rationale.trim().length < 20)) {
+        return reply.status(400).send({ ok: false, message: "A factual review rationale of at least 20 characters is required" });
+      }
+      if (requiresActionEvidence && !body.actionReference?.trim()) {
+        return reply.status(400).send({ ok: false, message: "A traceable external action reference is required" });
       }
 
       const isDbUp = await dbAvailable();
@@ -465,18 +479,30 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
         return reply.status(503).send({ ok: false, message: "Sentinel review storage could not be read; action was not applied" });
       }
       if (!row) return reply.status(404).send({ ok: false, message: "Item not found" });
+      const currentRevision = Number(row.reviewRevision ?? 0);
+      if (body.expectedReviewRevision !== undefined && body.expectedReviewRevision !== currentRevision) {
+        return reply.status(409).send({ ok: false, message: "Review changed concurrently; reload the item before applying this action" });
+      }
+      const actorId = String((request as any).authUser?.id ?? "");
+      if (!actorId) return reply.status(401).send({ ok: false, message: "Reviewer identity is unavailable" });
+      const now = new Date().toISOString();
+      const reviewEvidence = requiresReviewEvidence
+        ? { reviewerId: actorId, rationale: body.rationale!.trim(), reviewedAt: now, secondReviewerId: row.reviewEvidence?.reviewerId && row.reviewEvidence.reviewerId !== actorId ? row.reviewEvidence.reviewerId : null }
+        : null;
+      const actionEvidence = requiresActionEvidence
+        ? { reference: body.actionReference!.trim(), attestedBy: actorId, attestedAt: now }
+        : null;
+      let updated;
       try {
-        await YoutubeSentinelItemModel.query().patchAndFetchById(row.id, {
-          workflowStatus: body.action,
-          operatorNotes: body.notes ?? row.operatorNotes ?? null,
-          lastActionAt: new Date().toISOString(),
-        });
+        const updatedRows = await YoutubeSentinelItemModel.query()
+          .patch({ workflowStatus: body.action, operatorNotes: body.notes ?? row.operatorNotes ?? null, lastActionAt: now, reviewEvidence, actionEvidence, reviewRevision: currentRevision + 1 } as any)
+          .where({ id: row.id, review_revision: currentRevision });
+        if (updatedRows !== 1) return reply.status(409).send({ ok: false, message: "Review changed concurrently; reload the item before applying this action" });
+        updated = youtubeSentinelRepo.updateWorkflowStatus(body.id, body.action, body.notes);
+        if (!updated) return reply.status(404).send({ ok: false, message: "Item not found" });
       } catch {
         return reply.status(503).send({ ok: false, message: "Sentinel review action could not be saved; action was not applied" });
       }
-      const updated = youtubeSentinelRepo.updateWorkflowStatus(body.id, body.action, body.notes);
-      if (!updated) return reply.status(409).send({ ok: false, message: "Action was saved but the in-memory view is stale; refresh before continuing" });
-
       return {
         ok: true,
         item: updated,
