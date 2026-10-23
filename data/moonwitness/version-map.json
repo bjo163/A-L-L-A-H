@@ -1,0 +1,82 @@
+{
+  "schemaVersion": "0.1",
+  "status": "PROPOSED_UNREVIEWED",
+  "authorityPolicy": "docs/content-recovery/VERSION_POLICY.md",
+  "sourceBoundary": "Issue text supplies locators and descriptions only. No personal Library bytes, original story text, poster source files, or export metadata were available in the repository review. Do not treat these records as recovered content.",
+  "preferredForEditorialDraft": null,
+  "entries": [
+    {
+      "artifactId": "mw-tick-tock-temporal-reference",
+      "collection": "MOONWITNESS / Tick-Tock on the Clock",
+      "sourceStatus": "CONVERSATION_REFERENCE",
+      "sourceLocator": "GitHub issue #40 acceptance example; issue #70 version-reconciliation request",
+      "assetType": "temporal-reference",
+      "author": "UNKNOWN",
+      "version": "UNKNOWN",
+      "sha256": null,
+      "derivedFrom": [],
+      "privacy": "UNKNOWN",
+      "rights": "UNKNOWN",
+      "language": "UNKNOWN",
+      "completeness": "LOCATOR_ONLY",
+      "timeClaims": [
+        {
+          "value": "2026-07-11",
+          "dimension": "UNKNOWN",
+          "classification": "NARRATED_TESTIMONY_EXAMPLE",
+          "source": "Issue #40 states July 11 vs October 6, 2026 are to be treated as narrated testimony; it supplies no original source artifact or mapping of date to time dimension."
+        },
+        {
+          "value": "2026-10-06",
+          "dimension": "UNKNOWN",
+          "classification": "NARRATED_TESTIMONY_EXAMPLE",
+          "source": "Issue #40 states July 11 vs October 6, 2026 are to be treated as narrated testimony; it supplies no original source artifact or mapping of date to time dimension."
+        }
+      ],
+      "conflictStatus": "CONFLICT",
+      "preferredForEditorialDraft": false,
+      "editorialDecision": null,
+      "notes": "Do not infer event time, publication time, export time, year semantics beyond the dates explicitly given, or which date is correct."
+    },
+    {
+      "artifactId": "mw-xii-divine-grace-report-locator",
+      "collection": "MOONWITNESS XII",
+      "sourceStatus": "USER_FILE_LOCATED",
+      "sourceLocator": "Filename listed by GitHub issue #69: Moonwitness XII: Divine Grace Report.png; version conflict described in issue #70 as MoonWitness XII V4.",
+      "assetType": "poster-or-image-unknown",
+      "author": "UNKNOWN",
+      "version": "V4 is a conversation-referenced label only; file-version correspondence UNKNOWN",
+      "sha256": null,
+      "derivedFrom": [],
+      "privacy": "UNKNOWN",
+      "rights": "UNKNOWN",
+      "language": "UNKNOWN",
+      "completeness": "LOCATOR_ONLY",
+      "timeClaims": [],
+      "conflictStatus": "UNKNOWN",
+      "preferredForEditorialDraft": false,
+      "editorialDecision": null,
+      "notes": "The filename is not mounted content. No V4 bytes, alternate versions, associated text, edit rationale, author, or dates were available for comparison."
+    },
+    {
+      "artifactId": "npd-team-naming-and-typos-reference",
+      "collection": "NPD TEAM / related arc UNKNOWN",
+      "sourceStatus": "CONVERSATION_REFERENCE",
+      "sourceLocator": "GitHub issue #70 requests an example involving NPD TEAM naming/typos; issue #69 lists the locator Neon Rain Dance Team Comic.png.",
+      "assetType": "text-and-image-versions-unknown",
+      "author": "UNKNOWN",
+      "version": "UNKNOWN",
+      "sha256": null,
+      "derivedFrom": [],
+      "privacy": "UNKNOWN",
+      "rights": "UNKNOWN",
+      "language": "UNKNOWN",
+      "completeness": "LOCATOR_ONLY",
+      "timeClaims": [],
+      "conflictStatus": "UNKNOWN",
+      "preferredForEditorialDraft": false,
+      "editorialDecision": null,
+      "notes": "Do not infer that NPD TEAM and Neon Rain Dance Team are the same title/entity or decide which spelling is canonical. No source bytes or approved crosswalk were provided."
+    }
+  ]
+}
