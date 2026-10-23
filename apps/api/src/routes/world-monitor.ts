@@ -825,8 +825,14 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
           properties: {
             action: { type: "string", enum: ["trigger", "update_interval"] },
             intervalHours: { type: "number" },
-            queries: { type: "array", items: { type: "string" } },
-            limitPerQuery: { type: "number" },
+            queries: {
+              type: "array",
+              minItems: 1,
+              maxItems: 6,
+              uniqueItems: true,
+              items: { type: "string", minLength: 1, maxLength: 200 },
+            },
+            limitPerQuery: { type: "integer", minimum: 1, maximum: 10 },
           },
         },
       },

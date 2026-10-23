@@ -17,6 +17,9 @@ export const YOUTUBE_SENTINEL_DEFAULT_SCHEDULED_QUERIES = [
 ];
 
 export const TWELVE_HOURS_MS = 12 * 60 * 60 * 1000;
+export const MAX_SCHEDULED_YOUTUBE_QUERIES = 6;
+export const MAX_SCHEDULED_YOUTUBE_RESULTS_PER_QUERY = 10;
+export const MAX_SCHEDULED_YOUTUBE_QUERY_LENGTH = 200;
 
 export interface ScheduledRunResult {
   totalScanned: number;
@@ -25,14 +28,39 @@ export interface ScheduledRunResult {
   queriesRun: number;
 }
 
+export function validateScheduledYoutubeSweepInput(
+  queries: string[] = YOUTUBE_SENTINEL_DEFAULT_SCHEDULED_QUERIES,
+  limitPerQuery = MAX_SCHEDULED_YOUTUBE_RESULTS_PER_QUERY,
+) {
+  if (!Array.isArray(queries) || queries.length < 1 || queries.length > MAX_SCHEDULED_YOUTUBE_QUERIES) {
+    throw new RangeError(`A scheduled YouTube sweep must contain 1-${MAX_SCHEDULED_YOUTUBE_QUERIES} queries.`);
+  }
+  const normalizedQueries = queries.map((query) => {
+    if (typeof query !== "string") throw new TypeError("Scheduled YouTube queries must be strings.");
+    const normalized = query.normalize("NFC").trim().replace(/\s+/gu, " ");
+    if (!normalized || normalized.length > MAX_SCHEDULED_YOUTUBE_QUERY_LENGTH) {
+      throw new RangeError(`Scheduled YouTube queries must contain 1-${MAX_SCHEDULED_YOUTUBE_QUERY_LENGTH} characters.`);
+    }
+    return normalized;
+  });
+  if (new Set(normalizedQueries.map((query) => query.toLocaleLowerCase("en-US"))).size !== normalizedQueries.length) {
+    throw new RangeError("Scheduled YouTube queries must be unique.");
+  }
+  if (!Number.isInteger(limitPerQuery) || limitPerQuery < 1 || limitPerQuery > MAX_SCHEDULED_YOUTUBE_RESULTS_PER_QUERY) {
+    throw new RangeError(`Scheduled YouTube result limits must be 1-${MAX_SCHEDULED_YOUTUBE_RESULTS_PER_QUERY} per query.`);
+  }
+  return { queries: normalizedQueries, limitPerQuery };
+}
+
 /**
  * Executes one complete sweep across all scheduled queries.
  * Always searches by `upload_date` (urutan video terbaru).
  */
 export async function executeScheduledYoutubeSweep(
   queries: string[] = YOUTUBE_SENTINEL_DEFAULT_SCHEDULED_QUERIES,
-  limitPerQuery: number = 10,
+  limitPerQuery: number = MAX_SCHEDULED_YOUTUBE_RESULTS_PER_QUERY,
 ): Promise<ScheduledRunResult> {
+  ({ queries, limitPerQuery } = validateScheduledYoutubeSweepInput(queries, limitPerQuery));
   const startedAt = new Date().toISOString();
   const t0 = Date.now();
   let totalScanned = 0;
@@ -51,14 +79,17 @@ export async function executeScheduledYoutubeSweep(
       });
 
       queriesRun++;
-      totalScanned += scanResult.scannedCount;
-      totalNew += scanResult.newItemsCount;
+      const boundedItems = scanResult.items.slice(0, limitPerQuery);
+      const boundedScannedCount = Math.min(scanResult.scannedCount, limitPerQuery);
+      const boundedNewItemsCount = Math.min(scanResult.newItemsCount, boundedScannedCount);
+      totalScanned += boundedScannedCount;
+      totalNew += boundedNewItemsCount;
 
       const isDbUp = await dbAvailable();
       if (isDbUp) {
-        if (scanResult.scannedCount > 0 && scanResult.items.length > 0) {
+        if (boundedScannedCount > 0 && boundedItems.length > 0) {
           try {
-            await persistItemsToDB(scanResult.items, scanResult.crawlerMode ?? "auto");
+            await persistItemsToDB(boundedItems, scanResult.crawlerMode ?? "auto");
           } catch (dbErr) {
             console.warn("[YouTube Sentinel Scheduler] DB persist warning:", dbErr);
           }
@@ -69,8 +100,8 @@ export async function executeScheduledYoutubeSweep(
             query,
             engine: "auto",
             crawlerMode: scanResult.crawlerMode ?? null,
-            scannedCount: scanResult.scannedCount,
-            newCount: scanResult.newItemsCount,
+            scannedCount: boundedScannedCount,
+            newCount: boundedNewItemsCount,
             durationMs: Date.now() - t0,
             diagnosticMessage: scanResult.diagnosticMessage ?? null,
             startedAt,
