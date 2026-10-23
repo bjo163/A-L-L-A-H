@@ -35,9 +35,9 @@ row below; the summary rows here define coverage and are not themselves proof.
 
 | Check | Result / evidence |
 | --- | --- |
-| UI boundary validator | Passed locally; 36 consumer files, no inline style props |
-| Shared CSS selector scope | Passed locally; 1,818 scoped selectors |
-| Theme contrast audit | Repository token audit passes; attach command output and SHA |
+| UI boundary validator | `pnpm run validate` passed on `bc315e7595c6705b89c2a20494127d58621334cc`; 36 consumer files, no inline style props |
+| Shared CSS selector scope | `pnpm run validate` passed on `bc315e7595c6705b89c2a20494127d58621334cc`; 1,814 scoped selectors |
+| Theme contrast audit | `pnpm run validate` passed on `bc315e7595c6705b89c2a20494127d58621334cc`; repository token audit passes |
 | Keyboard navigation and focus visibility | Pending browser verification |
 | Forced-colors mode | Pending browser verification |
 | Reduced motion | Static motion audit passes; browser verification pending |
