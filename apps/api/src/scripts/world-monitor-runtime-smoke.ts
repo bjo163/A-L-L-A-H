@@ -12,10 +12,10 @@ const readFixture = async (name: string) => JSON.parse(await readFile(new URL(`.
 const freshFixture = (body: any, url: string) => {
   const value = structuredClone(body);
   const current = new Date().toISOString();
-  if (url.includes("open-meteo")) value.current.time = current.slice(0, 19);
-  else if (url.includes("earthquake.usgs.gov")) value.features[0].properties.time = 1792644360000;
-  else if (url.includes("swpc.noaa.gov")) value[0].time_tag = current.slice(0, 19);
-  else if (url.includes("gdacs.org")) value.features[0].properties.fromdate = current;
+  if (url.includes("open-meteo") && Number.isFinite(Date.parse(value.current?.time))) value.current.time = current.slice(0, 19);
+  else if (url.includes("earthquake.usgs.gov") && Array.isArray(value.features?.[0]?.geometry?.coordinates) && value.features[0].geometry.coordinates.length >= 3) value.features[0].properties.time = 1792644360000;
+  else if (url.includes("swpc.noaa.gov") && Array.isArray(value) && value[0]?.time_tag) value[0].time_tag = current.slice(0, 19);
+  else if (url.includes("gdacs.org") && value.features?.[0]?.properties?.fromdate) value.features[0].properties.fromdate = current;
   return value;
 };
 
