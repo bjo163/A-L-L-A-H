@@ -3,11 +3,12 @@ import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 import ts from "typescript";
+import { WorldMonitorObservationModel } from "@empire/batteries-base";
 
 const source = await readFile(new URL("../src/world-monitor-ingest.ts", import.meta.url), "utf8");
 const compiled = ts.transpileModule(source.replace(/^import .*;\r?\n/gm, ""), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText;
-const loadParsers = new Function("exports", "require", `${compiled}; return { parseOpenMeteo, parseQuakes, parseKp, parseDisasters, parseObservedAt, worldMonitorObservationIdentity };`);
-const parsers = loadParsers({}, (name) => name === "node:crypto" ? { createHash } : {});
+const loadParsers = new Function("exports", "require", "getDatabase", `const createHash = require("node:crypto").createHash;\n${compiled}; return { parseOpenMeteo, parseQuakes, parseKp, parseDisasters, parseObservedAt, worldMonitorObservationIdentity };`);
+const parsers = loadParsers({}, (name) => name === "node:crypto" ? { createHash } : {}, () => ({ transaction: (callback) => callback({ raw: async () => {} }) }));
 
 test("ingest parsers reject empty and malformed payloads without creating records", () => {
   assert.match(source, /Array\.isArray\(body\?\.features\)/);
@@ -53,6 +54,14 @@ test("observation identities are stable across repeated provider polls", () => {
   assert.deepEqual(first, repeated);
   assert.deepEqual(anonymousA, anonymousB);
   assert.equal(anonymousA.externalId.length, 64);
+});
+
+test("refresh uses a PostgreSQL advisory transaction lock and atomic identity upsert", () => {
+  assert.match(source, /pg_advisory_lock\(hashtext\(\?\)\)/);
+  assert.match(source, /pg_advisory_unlock\(hashtext\(\?\)\)/);
+  assert.match(source, /onConflict\(\["source", "externalId", "observedAt"\]\)\.merge/);
+  assert.match(source, /WorldMonitorObservationModel\.query\(\) as any\)\.insert\(observation\)\.onConflict/);
+  assert.deepEqual(WorldMonitorObservationModel.uniqueConstraints, [["source", "externalId", "observedAt"]]);
 });
 
 test("retention removes old observations, runs, and aggregates", () => {

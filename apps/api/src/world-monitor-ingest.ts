@@ -1,4 +1,5 @@
 import { WorldMonitorAggregateModel, WorldMonitorObservationModel, WorldMonitorSourceRunModel } from "@empire/batteries-base";
+import { getDatabase } from "./db.js";
 import { createHash } from "node:crypto";
 
 type SourceSpec = { source: string; tier: "primary" | "fallback"; category: string; url: string; parse: (body: any) => Array<{ externalId?: string; observedAt: string; normalized: Record<string, unknown> }> };
@@ -70,6 +71,23 @@ export const getActiveWorldMonitorSourceDetails = () => specs().map(({ source, c
 export const getActiveWorldMonitorSources = () => getActiveWorldMonitorSourceDetails().map(({ source }) => source);
 
 export async function refreshWorldMonitorSources(): Promise<void> {
+  const database = getDatabase();
+  const connection = await database.client.acquireConnection();
+  try {
+    const lockQuery = database.raw("SELECT pg_advisory_lock(hashtext(?))", ["empire:world-monitor:ingestion"]).connection(connection);
+    await database.client.runner(lockQuery).run();
+    await refreshWorldMonitorSourcesUnlocked();
+  } finally {
+    try {
+      const unlockQuery = database.raw("SELECT pg_advisory_unlock(hashtext(?))", ["empire:world-monitor:ingestion"]).connection(connection);
+      await database.client.runner(unlockQuery).run();
+    } finally {
+      await database.client.releaseConnection(connection);
+    }
+  }
+}
+
+async function refreshWorldMonitorSourcesUnlocked(): Promise<void> {
   const grouped = new Map<string, SourceSpec[]>();
   for (const spec of specs()) {
     const point = spec.source.match(/-(london|new-york|tokyo|nairobi|sao-paulo|delhi|sydney|reykjavik)$/)?.[1] ?? "global";
@@ -92,10 +110,8 @@ export async function refreshWorldMonitorSources(): Promise<void> {
         for (const record of records) {
           const age = Math.max(0, Math.floor((Date.now() - Date.parse(record.observedAt)) / 1000));
           const identity = worldMonitorObservationIdentity(spec.source, record);
-          const existing = await (WorldMonitorObservationModel.query() as any).where(identity).first();
           const observation = { source: spec.source, sourceTier: spec.tier, category: spec.category, externalId: identity.externalId, observedAt: record.observedAt, fetchedAt: now(), freshnessSeconds: age, confidence: spec.tier === "primary" ? 0.95 : 0.7, status: age > maxAgeSeconds ? "stale" : "available", normalized: record.normalized, payload: body };
-          if (existing) await (WorldMonitorObservationModel.query() as any).patch(observation).where({ id: existing.id });
-          else await (WorldMonitorObservationModel.query() as any).insert(observation);
+          await (WorldMonitorObservationModel.query() as any).insert(observation).onConflict(["source", "externalId", "observedAt"]).merge(observation);
         }
         await (WorldMonitorSourceRunModel.query() as any).insert({ source: spec.source, category: spec.category, tier: spec.tier, startedAt, completedAt: now(), status: stale ? "stale" : "success", recordCount: records.length, durationMs: Date.now() - startedMs, metadata: { url: spec.url, maxAgeSeconds, freshestAgeSeconds } });
         const bucketStart = new Date(Math.floor(Date.now() / 3_600_000) * 3_600_000).toISOString();
