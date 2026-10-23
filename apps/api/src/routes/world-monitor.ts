@@ -3,7 +3,8 @@ import { getWorldMonitoringSnapshot, scanYoutube, youtubeSentinelRepo } from "@e
 import type { SentinelDirection, SentinelTradition, WorldMonitoringSnapshot, YoutubeMonitoredItem, YoutubeWorkflowStatus } from "@empire/batteries-world-monitor";
 import { checkDatabaseHealth } from "../db.js";
 import { getActiveWorldMonitorSourceDetails, getActiveWorldMonitorSources } from "../world-monitor-ingest.js";
-import { PartnerModel, WorldMonitorObservationModel, WorldMonitorSourceRunModel, YoutubeSentinelItemModel, YoutubeSentinelScanModel, YoutubeSentinelPartnerLinkModel } from "@empire/batteries-base";
+import { AuditLogModel, PartnerModel, WorldMonitorObservationModel, WorldMonitorSourceRunModel, YoutubeSentinelItemModel, YoutubeSentinelScanModel, YoutubeSentinelPartnerLinkModel } from "@empire/batteries-base";
+import { getDatabase } from "@empire/batteries";
 import { dbAvailable, rowToItem, persistItemsToDB, normalizeWorkflowActionEvidence } from "../youtube-sentinel-storage.js";
 import { getYoutubeSentinelSchedulerStatus, triggerManualYoutubeSweep, updateYoutubeSentinelSchedulerInterval } from "../youtube-sentinel-scheduler.js";
 import { triggerManualWorldMonitorRefresh } from "../world-monitor-scheduler.js";
@@ -756,9 +757,21 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
       };
       let updatedRows: number;
       try {
-        updatedRows = await YoutubeSentinelItemModel.query()
-          .patch({ workflowStatus: effectiveStatus, operatorNotes: body.notes ?? row.operatorNotes ?? null, lastActionAt: now, reviewEvidence, actionEvidence, reviewRevision: currentRevision + 1 } as any)
-          .where({ id: row.id, review_revision: currentRevision });
+        updatedRows = await getDatabase().transaction(async (trx) => {
+          const changed = await YoutubeSentinelItemModel.query(trx)
+            .patch({ workflowStatus: effectiveStatus, operatorNotes: body.notes ?? row.operatorNotes ?? null, lastActionAt: now, reviewEvidence, actionEvidence, reviewRevision: currentRevision + 1 } as any)
+            .where({ id: row.id, review_revision: currentRevision });
+          if (changed !== 1) return changed;
+          await (AuditLogModel.query(trx) as any).insert({
+            userId: actorId,
+            action: `YOUTUBE_SENTINEL_${body.action}`,
+            entity: "youtube_sentinel_item",
+            entityId: row.id,
+            payload: { previousStatus, workflowStatus: effectiveStatus, reviewRevision: currentRevision + 1, rationale: body.rationale?.trim() || null, reviewReference: body.reviewReference?.trim() || null, externalActionReference: requiresActionEvidence ? body.actionReference!.trim() : null, externalActionAttested: requiresActionEvidence, occurredAt: now },
+            ipAddress: request.ip,
+          });
+          return changed;
+        });
       } catch {
         return reply.status(503).send({ ok: false, message: "Sentinel review action could not be saved; action was not applied" });
       }

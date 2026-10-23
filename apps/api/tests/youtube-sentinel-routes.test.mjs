@@ -39,6 +39,10 @@ test("YouTube Tauhid Sentinel routes are registered with correct contracts", asy
   assert.match(worldMonitorSource, /body\.action === "SHARED_VIA_DAKWAH" && row\.direction !== "POSITIVE"/);
   assert.match(worldMonitorSource, /where\(\{ id: row\.id, review_revision: currentRevision \}\)/);
   assert.match(worldMonitorSource, /reviewEvidence, actionEvidence, reviewRevision: currentRevision \+ 1/);
+  assert.match(worldMonitorSource, /getDatabase\(\)\.transaction\(async \(trx\) => \{/);
+  assert.match(worldMonitorSource, /AuditLogModel\.query\(trx\).*insert/);
+  assert.match(worldMonitorSource, /YOUTUBE_SENTINEL_\$\{body\.action\}/);
+  assert.ok(worldMonitorSource.indexOf("AuditLogModel.query(trx)") < worldMonitorSource.indexOf("youtubeSentinelRepo.updateWorkflowStatus(row.id"));
   assert.match(worldMonitorSource, /where\(\{ id: body\.id \}\)\.first\(\)/);
   assert.doesNotMatch(worldMonitorSource, /where\(\{ id: body\.id \}\)\.orWhere\(\{ video_id: body\.id \}\)/);
   assert.match(worldMonitorSource, /ALLOWED_YOUTUBE_WORKFLOW_ACTIONS\[previousStatus\]\?\.includes\(body\.action\)/);
