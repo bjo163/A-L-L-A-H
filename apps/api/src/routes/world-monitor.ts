@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { generateBrowserAutomationSnippet, getWorldMonitoringSnapshot, scanYoutube, youtubeSentinelRepo } from "@empire/batteries-world-monitor";
 import type { SentinelDirection, SentinelTradition, WorldMonitoringSnapshot, YoutubeMonitoredItem, YoutubeWorkflowStatus } from "@empire/batteries-world-monitor";
 import { checkDatabaseHealth } from "../db.js";
-import { getActiveWorldMonitorSourceDetails, getActiveWorldMonitorSources, refreshWorldMonitorSources } from "../world-monitor-ingest.js";
+import { getActiveWorldMonitorSourceDetails, getActiveWorldMonitorSources } from "../world-monitor-ingest.js";
 import { PartnerModel, WorldMonitorObservationModel, WorldMonitorSourceRunModel, YoutubeSentinelItemModel, YoutubeSentinelScanModel, YoutubeSentinelPartnerLinkModel } from "@empire/batteries-base";
 import { dbAvailable, rowToItem, persistItemsToDB } from "../youtube-sentinel-storage.js";
 import { getYoutubeSentinelSchedulerStatus, triggerManualYoutubeSweep, updateYoutubeSentinelSchedulerInterval } from "../youtube-sentinel-scheduler.js";
@@ -10,7 +10,6 @@ import { requirePermission, requireSession } from "./auth.js";
 import { requireTenant } from "./tenant-context.js";
 import { createYoutubeScanGate } from "../youtube-scan-gate.js";
 
-let lastRefreshAt = 0;
 const youtubeScanGate = createYoutubeScanGate();
 
 
@@ -38,10 +37,6 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
         ? "operational"
         : databaseStatus === "unavailable" ? "degraded" : "unavailable";
       const snapshot = getWorldMonitoringSnapshot();
-      if (databaseStatus === "available" && Date.now() - lastRefreshAt > 60_000) {
-        lastRefreshAt = Date.now();
-        try { void refreshWorldMonitorSources().catch(() => undefined); } catch { /* test or degraded runtime without ingest module */ }
-      }
       let runs: any[] = [];
       let observations: any[] = [];
       try { runs = databaseStatus === "available" ? await WorldMonitorSourceRunModel.query().orderBy("completed_at", "desc").limit(1000) : []; } catch { runs = []; }

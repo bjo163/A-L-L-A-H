@@ -17,7 +17,6 @@ function createRoute(checkDatabaseHealth, baseSnapshot, observations = []) {
     "youtubeSentinelRepo",
     "scanYoutube",
     "generateBrowserAutomationSnippet",
-    "refreshWorldMonitorSources",
     "WorldMonitorSourceRunModel",
     "WorldMonitorObservationModel",
     "getActiveWorldMonitorSourceDetails",
@@ -35,7 +34,6 @@ function createRoute(checkDatabaseHealth, baseSnapshot, observations = []) {
     { getItems: () => [], getSummary: () => ({}), updateWorkflowStatus: () => null },
     async () => ({ scannedCount: 0, newItemsCount: 0, items: [], summary: {} }),
     () => "",
-    async () => {},
     { query: () => ({ orderBy: () => ({ limit: async () => [] }) }) },
     { query: () => ({ where: ({ category }) => ({ orderBy: () => ({ limit: async () => observations.filter((item) => item.category === category) }) }) }) },
     () => [],
@@ -100,14 +98,15 @@ test("healthy database with no observations reports unknown data coverage, not g
 
 test("configured sources with no ingestion history are exposed as unknown coverage", async () => {
   const load = new Function(
-    "exports", "checkDatabaseHealth", "getWorldMonitoringSnapshot", "youtubeSentinelRepo", "scanYoutube", "generateBrowserAutomationSnippet", "refreshWorldMonitorSources", "WorldMonitorSourceRunModel", "WorldMonitorObservationModel", "getActiveWorldMonitorSourceDetails", "getActiveWorldMonitorSources", "requireSession", "requirePermission", "requireTenant", "createYoutubeScanGate",
+    "exports", "checkDatabaseHealth", "getWorldMonitoringSnapshot", "youtubeSentinelRepo", "scanYoutube", "generateBrowserAutomationSnippet", "WorldMonitorSourceRunModel", "WorldMonitorObservationModel", "getActiveWorldMonitorSourceDetails", "getActiveWorldMonitorSources", "requireSession", "requirePermission", "requireTenant", "createYoutubeScanGate",
     `${compiledRoute}; return worldMonitorRoutes;`,
   );
   let handler;
-  await load({}, async () => ({ ok: true }), createSnapshot, { getItems: () => [], getSummary: () => ({}), updateWorkflowStatus: () => null }, async () => ({ scannedCount: 0, newItemsCount: 0, items: [], summary: {} }), () => "", async () => {}, { query: () => ({ orderBy: () => ({ limit: async () => [] }) }) }, { query: () => ({ where: () => ({ orderBy: () => ({ limit: async () => [] }) }) }) }, () => ["source-a"], () => [{ source: "source-a", category: "weather", tier: "primary" }], async () => {}, () => async () => {}, async () => {}, () => ({ acquire: () => ({ allowed: true, remaining: 4, retryAfterMs: 0, release() {} }) }))({
+  await load({}, async () => ({ ok: true }), createSnapshot, { getItems: () => [], getSummary: () => ({}), updateWorkflowStatus: () => null }, async () => ({ scannedCount: 0, newItemsCount: 0, items: [], summary: {} }), () => "", { query: () => ({ orderBy: () => ({ limit: async () => [] }) }) }, { query: () => ({ where: () => ({ orderBy: () => ({ limit: async () => [] }) }) }) }, () => ["source-a"], () => [{ source: "source-a", category: "weather", tier: "primary" }], async () => {}, () => async () => {}, async () => {}, () => ({ acquire: () => ({ allowed: true, remaining: 4, retryAfterMs: 0, release() {} }) }))({
     get(path, _options, fn) { if (path === "/v1/world-monitor") handler = fn; }, post() {},
   });
   const result = await handler();
+  assert.doesNotMatch(routeSource, /refreshWorldMonitorSources/);
   assert.equal(result.sources[0].status, "unknown");
   assert.equal(result.coverageStatus, "unavailable");
   assert.equal(result.globalAlertLevel, "yellow");
