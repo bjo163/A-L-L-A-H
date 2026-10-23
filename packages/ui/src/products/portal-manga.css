@@ -212,6 +212,10 @@ html[data-theme="dark"] :where(.eol-public-shell) .stat-band { background: var(-
 :where(.eol-public-shell) .mw-hero-copy { width:min(61%,900px); }
 :where(.eol-public-shell) .mw-site { display:grid; grid-template-columns:1.15fr 1fr .9fr; align-items:stretch; gap:10px; }
 :where(.eol-public-shell) .mw-hero,:where(.eol-public-shell) .mw-join,:where(.eol-public-shell) .mw-footer { grid-column:1/-1; }
+
+@media (min-width:571px) and (max-width:800px) {
+  :where(.eol-public-shell) .mw-hero-sticker { top:8%; right:4%; bottom:auto; }
+}
 :where(.eol-public-shell) .mw-stories { grid-column:1; }
 :where(.eol-public-shell) .mw-mid-grid,:where(.eol-public-shell) .mw-lower-grid { display:contents; }
 :where(.eol-public-shell) .mw-crew { grid-column:2; }
