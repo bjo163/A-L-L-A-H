@@ -18,13 +18,16 @@ const main = async () => {
     aggregates: await db("world_monitor_aggregates").count<{ count: string }>("id as count").first(),
   };
   const categories = await db("world_monitor_observations").select("category").count<{ category: string; count: string }[]>({ count: "id" }).groupBy("category");
-  console.log(JSON.stringify({ counts, categories }));
+  const categoryRuns = await db("world_monitor_source_runs").select("category", "status", "record_count").orderBy("completed_at", "desc");
+  console.log(JSON.stringify({ counts, categories, latestCategoryRuns: categoryRuns.slice(0, 30) }));
   if (Number(counts.observations?.count ?? 0) < 1 || Number(counts.sourceRuns?.count ?? 0) < 1 || Number(counts.aggregates?.count ?? 0) < 1) {
     throw new Error("World Monitor runtime smoke test did not produce all expected records");
   }
   const categoryCounts = new Map(categories.map((row) => [row.category, Number(row.count)]));
   for (const category of ["weather", "atmosphere", "earthquake", "space-weather", "disaster"]) {
-    if (!categoryCounts.get(category)) throw new Error(`World Monitor runtime smoke test produced no ${category} observations`);
+    const hasObservations = Boolean(categoryCounts.get(category));
+    const hasSuccessfulOrEmptyRun = categoryRuns.some((run) => run.category === category && ["success", "stale", "empty"].includes(run.status));
+    if (!hasObservations && !hasSuccessfulOrEmptyRun) throw new Error(`World Monitor runtime smoke test produced neither observations nor a valid empty provider run for ${category}`);
   }
   await closeDatabase();
 };

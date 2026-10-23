@@ -67,7 +67,7 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
         const configured = activeSourceDetails.find((item) => item.source === source);
         const observationHistory = observations.filter((item) => item.source === source);
         const latestObservation = observationHistory[0];
-        const latestSuccess = history.find((run) => run.status === "success" || run.status === "stale");
+        const latestSuccess = history.find((run) => run.status === "success" || run.status === "stale" || run.status === "empty");
         const counterpart = source.startsWith("open-meteo-gfs-weather-")
           ? source.replace("open-meteo-gfs-weather-", "open-meteo-weather-")
           : source === "usgs-fdsn-earthquakes" ? "usgs-earthquakes"
@@ -100,7 +100,7 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
           fallbackActivated,
           freshnessSlaSeconds,
           freshnessSeconds,
-          coverageStatus: (databaseStatus !== "available" || !hasHistory ? "unknown" : latestObservation && fresh ? "healthy" : "degraded") as WorldMonitoringSnapshot["coverageStatus"],
+          coverageStatus: (databaseStatus !== "available" || !hasHistory || latest?.status === "empty" ? "unknown" : latestObservation && fresh ? "healthy" : "degraded") as WorldMonitoringSnapshot["coverageStatus"],
           // No expected-point denominator exists in the source contract; keep quantitative coverage unknown.
           coverage: null,
         };
@@ -142,7 +142,7 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
         ? "red"
         : uniqueAlerts.some((alert) => alert.level === "advisory") ? "yellow" : observations.length ? "green" : "unknown";
       const sourceCoverage = sources.length ? sources.filter((source) => source.status === "success" && source.records !== null && source.records > 0).length / sources.length : 0;
-      const coverageStatus: WorldMonitoringSnapshot["coverageStatus"] = sources.length === 0
+      const coverageStatus: WorldMonitoringSnapshot["coverageStatus"] = sources.length === 0 || sources.every((source) => source.status === "unknown" || source.status === "empty")
         ? "unknown"
         : sourceCoverage === 1 ? "healthy" : sourceCoverage > 0 ? "degraded" : "unavailable";
       const freshnessStatus: WorldMonitoringSnapshot["freshnessStatus"] = observations.length === 0
@@ -152,7 +152,7 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
         ? "unknown"
         : sources.every((source) => source.status === "unknown")
           ? "unknown"
-          : sources.some((source) => source.status === "success")
+          : sources.some((source) => source.status === "success" || source.status === "empty")
             ? sources.some((source) => source.status === "failed") ? "degraded" : "healthy"
             : sources.some((source) => source.status === "failed") ? "unavailable" : "unknown";
       const globalAlertLevel = databaseStatus === "unknown"

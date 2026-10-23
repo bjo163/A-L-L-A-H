@@ -108,8 +108,8 @@ test("configured sources with no ingestion history are exposed as unknown covera
   const result = await handler();
   assert.doesNotMatch(routeSource, /refreshWorldMonitorSources/);
   assert.equal(result.sources[0].status, "unknown");
-  assert.equal(result.coverageStatus, "unavailable");
-  assert.equal(result.globalAlertLevel, "yellow");
+  assert.equal(result.coverageStatus, "unknown");
+  assert.equal(result.globalAlertLevel, "unknown");
 });
 
 test("source health exposes actual attempt, success, freshness, coverage and fallback states", async () => {
@@ -140,6 +140,22 @@ test("source health exposes actual attempt, success, freshness, coverage and fal
   assert.equal(fallback.freshnessSlaSeconds, 3600);
   assert.equal(fallback.coverageStatus, "healthy");
   assert.equal(fallback.coverage, null);
+});
+
+test("a successful provider response with zero records is empty, not failed or healthy coverage", async () => {
+  const now = new Date().toISOString();
+  const { result } = await invoke(async () => ({ ok: true }), [], [
+    { source: "gdacs-global-disasters", category: "disaster", tier: "primary", status: "empty", startedAt: now, completedAt: now, recordCount: 0, durationMs: 12, metadata: { maxAgeSeconds: 86400 } },
+  ], [{ source: "gdacs-global-disasters", category: "disaster", tier: "primary" }]);
+  const source = result.sources.find((item) => item.source === "gdacs-global-disasters");
+
+  assert.equal(source.status, "empty");
+  assert.equal(source.records, 0);
+  assert.equal(source.lastSuccessAt, now);
+  assert.equal(source.coverage, null);
+  assert.equal(source.coverageStatus, "unknown");
+  assert.equal(result.ingestionStatus, "healthy");
+  assert.equal(result.coverageStatus, "unknown");
 });
 
 test("an unhealthy database degrades status; a failed health check stays unknown", async () => {

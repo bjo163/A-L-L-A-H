@@ -110,11 +110,10 @@ async function refreshWorldMonitorSourcesUnlocked(): Promise<void> {
           throw error;
         }
         const records = parsedRecords.filter((record) => record.normalized && Object.keys(record.normalized).length > 0);
-        if (records.length === 0) { failureKind = "parse"; throw new Error("Source returned no usable records"); }
         const maxAgeSeconds = spec.category === "weather" ? 3_600 : spec.category === "atmosphere" ? 10_800 : spec.category === "space-weather" ? 1_800 : spec.category === "disaster" ? 86_400 : Number.POSITIVE_INFINITY;
         let freshestAgeSeconds = Number.POSITIVE_INFINITY;
         for (const record of records) freshestAgeSeconds = Math.min(freshestAgeSeconds, Math.max(0, Math.floor((Date.now() - Date.parse(record.observedAt)) / 1000)));
-        const stale = freshestAgeSeconds > maxAgeSeconds;
+        const stale = records.length > 0 && freshestAgeSeconds > maxAgeSeconds;
         for (const record of records) {
           const age = Math.max(0, Math.floor((Date.now() - Date.parse(record.observedAt)) / 1000));
           const identity = worldMonitorObservationIdentity(spec.source, record);
@@ -122,7 +121,7 @@ async function refreshWorldMonitorSourcesUnlocked(): Promise<void> {
           // Knex conflict targets are physical PostgreSQL column names; model attribute names are camelCase.
           await (WorldMonitorObservationModel.query() as any).insert(observation).onConflict(["source", "external_id", "observed_at"]).merge(observation);
         }
-        await (WorldMonitorSourceRunModel.query() as any).insert({ source: spec.source, category: spec.category, tier: spec.tier, startedAt, completedAt: now(), status: stale ? "stale" : "success", recordCount: records.length, durationMs: Date.now() - startedMs, metadata: { url: spec.url, maxAgeSeconds, freshestAgeSeconds } });
+        await (WorldMonitorSourceRunModel.query() as any).insert({ source: spec.source, category: spec.category, tier: spec.tier, startedAt, completedAt: now(), status: records.length === 0 ? "empty" : stale ? "stale" : "success", recordCount: records.length, durationMs: Date.now() - startedMs, metadata: { url: spec.url, maxAgeSeconds, freshestAgeSeconds: records.length > 0 ? freshestAgeSeconds : null } });
         const bucketStart = new Date(Math.floor(Date.now() / 3_600_000) * 3_600_000).toISOString();
         await (WorldMonitorAggregateModel.query() as any).insert({ bucketStart, category: spec.category, source: spec.source, recordCount: records.length, summary: { tier: spec.tier } });
         if (!stale) { succeeded = true; break; }

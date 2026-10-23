@@ -46,6 +46,13 @@ test("provider contracts reject missing timestamps and malformed values", () => 
   assert.equal(parsers.parseQuakes({ features: [{ id: "quake-1", properties: { time: 1792644360000, mag: 4.2 }, geometry: { coordinates: [106.8, -6.2, 10] } }] })[0].observedAt, "2026-10-22T04:46:00.000Z");
 });
 
+test("valid empty provider feeds remain an empty result, not a parse error", () => {
+  assert.deepEqual(parsers.parseQuakes({ features: [] }), []);
+  assert.deepEqual(parsers.parseDisasters({ events: [] }), []);
+  assert.doesNotMatch(source, /Source returned no usable records/);
+  assert.match(source, /status: records\.length === 0 \? "empty"/);
+});
+
 test("observation identities are stable across repeated provider polls", () => {
   const first = parsers.worldMonitorObservationIdentity("usgs-earthquakes", { externalId: "usgs-1", observedAt: "2026-10-22T04:46:00.000Z", normalized: { mag: 4.2 } });
   const repeated = parsers.worldMonitorObservationIdentity("usgs-earthquakes", { externalId: "usgs-1", observedAt: "2026-10-22T04:46:00.000Z", normalized: { mag: 4.2 } });
