@@ -397,7 +397,9 @@ export function evaluateVideoText(params: {
   transcriptExcerpt?: string;
   positiveCategory?: YoutubePositiveCategory;
 } {
-  const corpus = `${params.title} ${params.description ?? ""} ${params.channelTitle ?? ""} ${params.transcript ?? ""}`.trim();
+  // Channel names identify the publisher, not the video's claims. Keep them out
+  // of rule matching so an unrelated channel name cannot taint every upload.
+  const corpus = `${params.title} ${params.description ?? ""} ${params.transcript ?? ""}`.trim();
   const matchedRules: YoutubeMatchedRule[] = [];
   const categoryScores: Partial<Record<YoutubeViolationCategory, number>> = {};
 

@@ -45,6 +45,18 @@ test("religious tradition alone stays neutral and does not create a platform fin
   assert.equal(result.matchedRules.length, 0);
 });
 
+test("channel name alone does not influence video heuristic labels", () => {
+  const result = sentinel.evaluateVideoText({
+    title: "A documentary about local history",
+    description: "An interview on regional culture.",
+    channelTitle: "Dukun Sakti Official",
+  });
+
+  assert.equal(result.direction, "NEUTRAL");
+  assert.equal(result.riskScore, 0);
+  assert.equal(result.matchedRules.length, 0);
+});
+
 test("heuristic matches always start in human review instead of an automatic conclusion", () => {
   const item = sentinel.buildMonitoredItem({
     videoId: "test_review_required",
