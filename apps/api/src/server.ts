@@ -64,6 +64,10 @@ export async function buildServer() {
         level: env.NODE_ENV === "production" ? "info" : "debug",
       },
     });
+    await app.register(rateLimit, {
+      max: 600,
+      timeWindow: "1 minute",
+    });
     app.addHook("onSend", async (request, reply, payload) => {
       reply.header("x-request-id", request.id);
       return payload;
@@ -126,10 +130,6 @@ export async function buildServer() {
       origin: env.CORS_ORIGIN.split(",").map((origin) => origin.trim()),
       credentials: true,
       exposedHeaders: ["x-request-id"],
-    });
-    await app.register(rateLimit, {
-      max: 600,
-      timeWindow: "1 minute",
     });
     await app.register(swagger, {
       openapi: {
