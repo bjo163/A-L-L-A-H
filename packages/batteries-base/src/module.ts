@@ -133,6 +133,7 @@ function moduleSchemaHash(models: Array<typeof BatteriesModelClass>): string {
       table: model.tableName,
       fields: Object.fromEntries(Object.entries(model.fields).sort(([left], [right]) => left.localeCompare(right))),
       uniqueConstraints: model.uniqueConstraints,
+      ...(model.foreignConstraints.length ? { foreignConstraints: model.foreignConstraints } : {}),
       softDelete: model.hasSoftDelete,
     }))
     .sort((left, right) => left.table.localeCompare(right.table));
@@ -319,12 +320,15 @@ export function resolveModuleModels(modules: readonly SchemaModuleManifest[]) {
     for (const dependency of manifest.dependencies) visit(dependency);
 
     for (const model of models) {
-      for (const field of Object.values(model.fields)) {
-        if (!field.references) continue;
-        const owner = ownerByTable.get(field.references.table);
+      const referencedTables = [
+        ...Object.values(model.fields).flatMap((field) => field.references ? [field.references.table] : []),
+        ...model.foreignConstraints.map((constraint) => constraint.references.table),
+      ];
+      for (const referencedTable of referencedTables) {
+        const owner = ownerByTable.get(referencedTable);
         if (!owner || !allowedOwners.has(owner)) {
           throw new Error(
-            `Module ${moduleId} model ${model.tableName} references ${field.references.table}, which is not owned by it or one of its dependencies.`,
+            `Module ${moduleId} model ${model.tableName} references ${referencedTable}, which is not owned by it or one of its dependencies.`,
           );
         }
       }

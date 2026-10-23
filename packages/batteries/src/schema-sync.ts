@@ -6,7 +6,7 @@ export interface SchemaSyncResult {
   createdTables: string[];
   addedColumns: Array<{ table: string; column: string }>;
   createdIndexes: Array<{ table: string; columns: string[]; unique: boolean }>;
-  createdForeignKeys: Array<{ table: string; column: string; referencedTable: string; referencedColumn: string }>;
+  createdForeignKeys: Array<{ table: string; columns: string[]; referencedTable: string; referencedColumns: string[] }>;
   unchangedTables: string[];
 }
 
@@ -55,24 +55,29 @@ async function getIndexes(knex: Knex | Knex.Transaction, schema: string, table: 
 
 async function getForeignKeys(knex: Knex | Knex.Transaction, schema: string, table: string) {
   const result = await knex.raw(
-    `SELECT source_att.attname AS source_column,
+    `SELECT con.conname AS constraint_name,
+            source.relname AS source_table,
             target.relname AS referenced_table,
-            target_att.attname AS referenced_column,
+            array_agg(source_att.attname::text ORDER BY key.ordinality) AS source_columns,
+            array_agg(target_att.attname::text ORDER BY key.ordinality) AS referenced_columns,
             con.confdeltype::text AS delete_action
      FROM pg_catalog.pg_constraint con
      JOIN pg_catalog.pg_class source ON source.oid = con.conrelid
      JOIN pg_catalog.pg_namespace source_ns ON source_ns.oid = source.relnamespace
-     JOIN pg_catalog.pg_attribute source_att ON source_att.attrelid = source.oid AND source_att.attnum = con.conkey[1]
      JOIN pg_catalog.pg_class target ON target.oid = con.confrelid
-     JOIN pg_catalog.pg_attribute target_att ON target_att.attrelid = target.oid AND target_att.attnum = con.confkey[1]
-     WHERE con.contype = 'f' AND array_length(con.conkey, 1) = 1
-       AND source_ns.nspname = ? AND source.relname = ?`,
+     CROSS JOIN LATERAL unnest(con.conkey, con.confkey) WITH ORDINALITY AS key(source_attnum, target_attnum, ordinality)
+     JOIN pg_catalog.pg_attribute source_att ON source_att.attrelid = source.oid AND source_att.attnum = key.source_attnum
+     JOIN pg_catalog.pg_attribute target_att ON target_att.attrelid = target.oid AND target_att.attnum = key.target_attnum
+     WHERE con.contype = 'f' AND source_ns.nspname = ? AND source.relname = ?
+     GROUP BY con.oid, source.relname, target.relname, con.confdeltype`,
     [schema, table],
   );
   return result.rows as Array<{
-    source_column: string;
+    constraint_name: string;
+    source_table: string;
+    source_columns: string[];
     referenced_table: string;
-    referenced_column: string;
+    referenced_columns: string[];
     delete_action: string;
   }>;
 }
@@ -98,6 +103,38 @@ function requiredIndexes(model: typeof BatteriesModel) {
     requirements.set(columns.join(","), { columns, unique: true });
   }
   return [...requirements.values()];
+}
+
+export function declaredForeignKeys(model: typeof BatteriesModel) {
+  const singleColumn = Object.entries(model.fields).flatMap(([fieldName, field]) => field.references ? [{
+    columns: [camelToSnake(fieldName)],
+    referencedTable: field.references.table,
+    referencedColumns: [field.references.column],
+    onDelete: field.references.onDelete,
+  }] : []);
+  const composite = model.foreignConstraints.map((constraint) => ({
+    columns: constraint.columns.map(camelToSnake),
+    referencedTable: constraint.references.table,
+    referencedColumns: constraint.references.columns.map(camelToSnake),
+    onDelete: constraint.references.onDelete,
+  }));
+  return [...singleColumn, ...composite];
+}
+
+export function addDeclaredForeignKeys(
+  table: Knex.CreateTableBuilder | Knex.AlterTableBuilder,
+  foreignKeys: ReturnType<typeof declaredForeignKeys>,
+) {
+  for (const foreignKey of foreignKeys) {
+    const foreign = table.foreign(foreignKey.columns)
+      .references(foreignKey.referencedColumns)
+      .inTable(foreignKey.referencedTable);
+    if (foreignKey.onDelete) foreign.onDelete(foreignKey.onDelete);
+  }
+}
+
+function isSameColumns(left: string[], right: string[]) {
+  return left.length === right.length && left.every((column, index) => column === right[index]);
 }
 
 function applyColumnType(
@@ -146,6 +183,7 @@ export async function preflightModels(
   const schemaResult = await knex.raw("SELECT current_schema() AS schema_name");
   const schemaName = schemaResult.rows[0]?.schema_name as string | undefined;
   if (!schemaName) throw new Error("Unable to determine the active PostgreSQL schema for Batteries preflight.");
+  const modelByTable = new Map(models.filter((model) => model.tableName).map((model) => [model.tableName, model]));
 
   for (const model of models) {
     const table = model.tableName;
@@ -159,6 +197,14 @@ export async function preflightModels(
     for (const fields of model.uniqueConstraints) {
       if (!fields.length || new Set(fields).size !== fields.length || fields.some((field) => !(field in model.fields))) {
         entry.blockers.push("model declares an invalid composite unique constraint");
+      }
+    }
+    for (const constraint of model.foreignConstraints) {
+      if (!constraint.columns.length || constraint.columns.length !== constraint.references.columns.length ||
+        new Set(constraint.columns).size !== constraint.columns.length ||
+        constraint.columns.some((field) => !(field in model.fields)) ||
+        !constraint.references.table || constraint.references.columns.some((column) => !column)) {
+        entry.blockers.push("model declares an invalid composite foreign key");
       }
     }
     if (!(await knex.schema.hasTable(table))) {
@@ -237,33 +283,44 @@ export async function preflightModels(
       entry.operations.push(`${requirement.unique ? "create_unique_index" : "create_index"}:${requirement.columns.join(",")}`);
     }
     const foreignKeys = await getForeignKeys(knex, schemaName, table);
-    for (const [fieldName, field] of Object.entries(model.fields)) {
-      const reference = field.references;
-      if (!reference) continue;
-      const sourceColumn = camelToSnake(fieldName);
-      if (!columns.has(sourceColumn)) continue;
-      const targetExists = await knex.schema.hasTable(reference.table);
+    for (const reference of declaredForeignKeys(model)) {
+      if (reference.columns.some((column) => !columns.has(column))) continue;
+      const targetExists = await knex.schema.hasTable(reference.referencedTable);
       if (!targetExists) {
-        entry.blockers.push(`${sourceColumn} references missing table ${reference.table}`);
+        entry.blockers.push(`${reference.columns.join(", ")} references missing table ${reference.referencedTable}`);
         continue;
       }
-      const matching = foreignKeys.find((key) => key.source_column === sourceColumn);
+      const targetIndexes = await getIndexes(knex, schemaName, reference.referencedTable);
+      const targetModel = modelByTable.get(reference.referencedTable);
+      const targetUniqueWillExist = targetModel && requiredIndexes(targetModel).some((index) =>
+        index.unique && isSameColumns(index.columns, reference.referencedColumns));
+      const targetPrimaryKeyWillExist = isSameColumns(reference.referencedColumns, ["id"]);
+      if (!targetIndexes.some((index) => index.unique && isSameColumns(index.columns, reference.referencedColumns)) &&
+        !targetUniqueWillExist && !targetPrimaryKeyWillExist) {
+        entry.blockers.push(`${reference.referencedTable} must have a unique key on (${reference.referencedColumns.join(", ")}) before it can be referenced`);
+        continue;
+      }
+      const matching = foreignKeys.find((key) => isSameColumns(key.source_columns, reference.columns));
       const expectedDelete = postgresDeleteAction(reference.onDelete);
       if (matching) {
-        if (matching.referenced_table !== reference.table || matching.referenced_column !== reference.column || matching.delete_action !== expectedDelete) {
-          entry.blockers.push(`${sourceColumn} has a foreign key that conflicts with its declared reference`);
+        if (matching.referenced_table !== reference.referencedTable || !isSameColumns(matching.referenced_columns, reference.referencedColumns) || matching.delete_action !== expectedDelete) {
+          entry.blockers.push(`(${reference.columns.join(", ")}) has a foreign key that conflicts with its declared reference`);
         }
         continue;
       }
-      const orphan = await knex({ source: table })
-        .leftJoin({ target: reference.table }, `source.${sourceColumn}`, `target.${reference.column}`)
-        .whereNotNull(`source.${sourceColumn}`)
-        .whereNull(`target.${reference.column}`)
-        .first(`source.${sourceColumn}`);
+      const orphanQuery = knex({ source: table }).leftJoin({ target: reference.referencedTable }, (join) => {
+        for (let index = 0; index < reference.columns.length; index += 1) {
+          join.on(`source.${reference.columns[index]}`, `target.${reference.referencedColumns[index]}`);
+        }
+      });
+      for (let index = 0; index < reference.columns.length; index += 1) {
+        orphanQuery.whereNotNull(`source.${reference.columns[index]}`);
+      }
+      const orphan = await orphanQuery.whereNull(`target.${reference.referencedColumns[0]}`).first(`source.${reference.columns[0]}`);
       if (orphan) {
-        entry.blockers.push(`${sourceColumn} contains values with no match in ${reference.table}.${reference.column}`);
+        entry.blockers.push(`(${reference.columns.join(", ")}) contains values with no match in ${reference.referencedTable}(${reference.referencedColumns.join(", ")})`);
       } else {
-        entry.operations.push(`create_foreign_key:${sourceColumn}->${reference.table}.${reference.column}`);
+        entry.operations.push(`create_foreign_key:(${reference.columns.join(", ")})->${reference.referencedTable}(${reference.referencedColumns.join(", ")})`);
       }
     }
     for (const [column, nullable] of [["created_at", false], ["updated_at", false], ...(model.hasSoftDelete ? [["deleted_at", true]] : [])] as Array<[string, boolean]>) {
@@ -318,6 +375,7 @@ async function syncModelsUnlocked(
           applyColumnType(table, camelToSnake(fieldName), fieldDef, { allowNotNull: true });
         }
         for (const fields of model.uniqueConstraints) table.unique(fields.map(camelToSnake));
+        addDeclaredForeignKeys(table, declaredForeignKeys(model));
         table.timestamp("created_at", { useTz: true }).notNullable().defaultTo(knex.fn.now());
         table.timestamp("updated_at", { useTz: true }).notNullable().defaultTo(knex.fn.now());
         if (model.hasSoftDelete) {
@@ -417,19 +475,16 @@ async function syncModelsUnlocked(
     }
 
     const foreignKeys = await getForeignKeys(knex, schemaName!, tableName);
-    for (const [fieldName, field] of Object.entries(model.fields)) {
-      if (!field.references) continue;
-      const sourceColumn = camelToSnake(fieldName);
-      if (foreignKeys.some((key) => key.source_column === sourceColumn)) continue;
+    for (const reference of declaredForeignKeys(model)) {
+      if (foreignKeys.some((key) => isSameColumns(key.source_columns, reference.columns))) continue;
       await knex.schema.alterTable(tableName, (table) => {
-        const foreign = table.foreign(sourceColumn).references(field.references!.column).inTable(field.references!.table);
-        if (field.references!.onDelete) foreign.onDelete(field.references!.onDelete);
+        addDeclaredForeignKeys(table, [reference]);
       });
       result.createdForeignKeys.push({
         table: tableName,
-        column: sourceColumn,
-        referencedTable: field.references.table,
-        referencedColumn: field.references.column,
+        columns: reference.columns,
+        referencedTable: reference.referencedTable,
+        referencedColumns: reference.referencedColumns,
       });
     }
     const changeCount = result.addedColumns.length + result.createdIndexes.length + result.createdForeignKeys.length;

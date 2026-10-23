@@ -25,6 +25,12 @@ export abstract class BatteriesModel extends Model {
   /** Declarative multi-column uniqueness; fields use camelCase model names. */
   static uniqueConstraints: string[][] = [];
 
+  /** Declarative multi-column foreign keys; both sides use model field names in camelCase. */
+  static foreignConstraints: Array<{
+    columns: string[];
+    references: { table: string; columns: string[]; onDelete?: "CASCADE" | "SET NULL" | "RESTRICT" };
+  }> = [];
+
   static override get jsonAttributes(): string[] {
     return Object.entries(this.fields)
       .filter(([_, def]) => def.type === "jsonb")
