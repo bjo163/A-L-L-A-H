@@ -39,7 +39,7 @@
         "shadow-workbench"
       ],
       "owner": "command-center",
-      "reason": "Applies the reusable SHADOW Story Studio workbench presentation owned by the shared package."
+      "reason": "Applies the reusable SHADOW Continuum API status panel owned by the shared package."
     },
     {
       "consumer": "apps/web/src/OverviewView.tsx",
@@ -49,17 +49,7 @@
         "shadow-workflow"
       ],
       "owner": "command-center",
-      "reason": "Applies the reusable SHADOW publishing workflow and poster forge presentation owned by the shared package."
-    },
-    {
-      "consumer": "apps/web/src/OverviewView.tsx",
-      "component": "Panel",
-      "prop": "className",
-      "classes": [
-        "shadow-timeline"
-      ],
-      "owner": "command-center",
-      "reason": "Applies the reusable SHADOW timeline panel presentation owned by the shared package."
+      "reason": "Applies the SHADOW research activity panel presentation owned by the shared package."
     },
     {
       "consumer": "apps/web/src/OverviewView.tsx",
@@ -69,17 +59,7 @@
         "shadow-signal-map"
       ],
       "owner": "command-center",
-      "reason": "Applies the reusable SHADOW signal map panel presentation owned by the shared package."
-    },
-    {
-      "consumer": "apps/web/src/OverviewView.tsx",
-      "component": "Panel",
-      "prop": "className",
-      "classes": [
-        "shadow-crew-panel"
-      ],
-      "owner": "command-center",
-      "reason": "Applies the reusable SHADOW crew registry panel presentation owned by the shared package."
+      "reason": "Applies the SHADOW API capability list presentation owned by the shared package."
     },
     {
       "consumer": "apps/web/src/OverviewView.tsx",
@@ -90,9 +70,7 @@
         "shadow-alerts",
         "shadow-workbench",
         "shadow-workflow",
-        "shadow-timeline",
-        "shadow-signal-map",
-        "shadow-crew-panel"
+        "shadow-signal-map"
       ],
       "owner": "command-center",
       "reason": "Applies the shared SHADOW mission queue and recent alerts panel compositions."

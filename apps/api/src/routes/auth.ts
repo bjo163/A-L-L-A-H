@@ -112,6 +112,7 @@ interface LoginBody {
 export async function authRoutes(app: FastifyInstance) {
   // Sessions are opaque and revocable; operators can opt into a 30-day remembered session.
   app.post("/auth/login", {
+    config: { rateLimit: { max: 5, timeWindow: "1 minute" } },
     schema: {
       tags: ["Auth"],
       summary: "Create a local operator session",
@@ -145,19 +146,19 @@ export async function authRoutes(app: FastifyInstance) {
     if (!user) {
       return reply.status(401).send({
         status: "unauthorized",
-        message: "Entitas tidak dikenali dalam kontinuum.",
+        message: "Username atau password tidak valid.",
       });
     }
 
     if (user.status !== "active") {
-      return reply.status(401).send({ status: "unauthorized", message: "Entitas tidak aktif." });
+      return reply.status(401).send({ status: "unauthorized", message: "Username atau password tidak valid." });
     }
 
     const isValid = await AuthService.verifyPassword(password, user.passwordHash);
     if (!isValid) {
       return reply.status(401).send({
         status: "unauthorized",
-        message: "Kredensial tidak selaras dengan frekuensi kontinuum.",
+        message: "Username atau password tidak valid.",
       });
     }
 

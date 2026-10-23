@@ -31,7 +31,7 @@ git push origin dev
 ## Required checks
 
 The `CI` workflow runs one fast path: install the locked dependencies, run repository
-validation, run workspace tests, and build the apps. It also rejects pull requests
+validation, typecheck, run workspace tests, and build the apps. It also rejects pull requests
 unless they come from this repository's `dev` branch into `main`. New runs replace
 older runs for the same branch or pull request.
 
@@ -48,6 +48,13 @@ pnpm validate
 pnpm exec turbo run test
 pnpm build
 ```
+
+For reproducible release evidence, capture the full commit SHA and the successful
+CI run URL; a local pass does not substitute for a required GitHub check. Keep
+production-only evidence (browser captures, deployed image and health checks,
+backup/restore, and rollback) in the per-SHA release record. If a preview or
+production environment is unavailable, leave those entries pending and record
+the blocker; do not infer success from source inspection or CI.
 
 ## Releases
 
@@ -67,3 +74,12 @@ node scripts/configure-repository.mjs
 
 Keep `main` as the default branch, allow merge commits only, require `Branch policy`
 and `Quality checks` on `main`, and block deletion and force-push on both branches.
+
+## Per-SHA release record
+
+Before promotion, record the candidate SHA, reviewers, risks, rollback plan, and
+evidence for validation, typecheck, tests, build, UI screenshots, negative
+authentication and tenant tests, deployment health, backup/restore, and rollback.
+Every result must refer to that exact candidate SHA. Do not merge while required
+checks are red or treat missing production evidence as a pass. The record template
+is in OPERATIONS_RELEASE_GATES.md.

@@ -63,5 +63,6 @@ jobs:
             build-${{ runner.os }}-${{ hashFiles('.node-version', 'pnpm-lock.yaml', 'turbo.json') }}-
       - run: pnpm install --frozen-lockfile
       - run: pnpm run validate
+      - run: pnpm run typecheck
       - run: pnpm exec turbo run test
       - run: pnpm run build

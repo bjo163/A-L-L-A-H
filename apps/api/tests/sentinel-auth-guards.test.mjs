@@ -73,3 +73,41 @@ test("Sentinel runtime guards reject anonymous, invalid, and unauthorized reques
   await authExports.requirePermission("sentinel:scan")(request, allowedReply);
   assert.equal(allowedReply.statusCode, 200);
 });
+
+test("login applies a dedicated attempt limit and returns the same credential error", async () => {
+  assert.match(source, /\/auth\/login",\s*\{\s*config:\s*\{\s*rateLimit:\s*\{\s*max:\s*5,\s*timeWindow:\s*"1 minute"/);
+  const credentialFailures = source.match(/Username atau password tidak valid\./g) ?? [];
+  assert.equal(credentialFailures.length, 3);
+  assert.doesNotMatch(source, /Entitas tidak dikenali dalam kontinuum|Kredensial tidak selaras/);
+});
+
+test("cookie-authenticated writes require the configured origin while reads remain available", async () => {
+  sessionAvailable = true;
+  const missingOrigin = reply();
+  await authExports.requireSession({
+    method: "POST",
+    headers: { cookie: "empire_remember=valid-token" },
+  }, missingOrigin);
+  assert.equal(missingOrigin.statusCode, 403);
+
+  const foreignOrigin = reply();
+  await authExports.requireSession({
+    method: "POST",
+    headers: { cookie: "empire_remember=valid-token", origin: "https://attacker.example" },
+  }, foreignOrigin);
+  assert.equal(foreignOrigin.statusCode, 403);
+
+  const allowedWrite = reply();
+  await authExports.requireSession({
+    method: "POST",
+    headers: { cookie: "empire_remember=valid-token", origin: "http://localhost" },
+  }, allowedWrite);
+  assert.equal(allowedWrite.statusCode, 200);
+
+  const readWithoutOrigin = reply();
+  await authExports.requireSession({
+    method: "GET",
+    headers: { cookie: "empire_remember=valid-token" },
+  }, readWithoutOrigin);
+  assert.equal(readWithoutOrigin.statusCode, 200);
+});

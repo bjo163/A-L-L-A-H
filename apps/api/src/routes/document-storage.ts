@@ -19,7 +19,7 @@ function filePath(key: string) {
 function signature(tenantId: string, documentId: string, expires: string, key: string, classification: string) {
   return createHmac("sha256", env.FILE_STORAGE_SIGNING_SECRET).update(`${tenantId}:${documentId}:${expires}:${key}:${classification}`).digest("hex");
 }
-const uuid = (value: unknown): value is string => typeof value === "string" && /^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(value);
+const uuid = (value: unknown): value is string => typeof value === "string" && /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(value);
 
 export async function documentStorageRoutes(app: FastifyInstance) {
   app.post<{ Params: { id: string } }>("/v1/documents/:id/content", {

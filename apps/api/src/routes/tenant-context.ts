@@ -13,7 +13,7 @@ export async function resolveRequestTenant(request: FastifyRequest, trx?: Knex.T
   const rawHeader = request.headers["x-tenant-id"];
   if (Array.isArray(rawHeader) && rawHeader.length !== 1) return { error: "invalid" };
   const selected = Array.isArray(rawHeader) ? rawHeader[0] : rawHeader;
-  if (selected !== undefined && !/^[0-9a-f]{8}-[0-9a-f-]{27}$/i.test(selected)) return { error: "invalid" };
+  if (selected !== undefined && !/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(selected)) return { error: "invalid" };
   let memberships = TenantMembershipModel.query(trx)
     .where({ user_id: userId, status: "active" })
     .select("tenant_id")

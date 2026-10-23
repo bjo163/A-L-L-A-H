@@ -37,7 +37,7 @@ const can = (entity: AuthEntity | null, permission: string) => Boolean(entity?.s
 const pageItems: Array<{ key: Page; label: string; title: string; workspaceTitle: string; description: string }> = [
   { key: "overview", label: "Command Center", title: "Shadow Command Center", workspaceTitle: "Command Center", description: "Stories observed. People amplified. Worlds connected." },
   { key: "world", label: "Signal Ledger", title: "Signal Ledger", workspaceTitle: "Signal Ledger", description: "Ideas, voices, movements. Capture the signals shaping the Moonwitness universe." },
-  { key: "continuum", label: "Story Studio", title: "Story Studio", workspaceTitle: "Story Studio", description: "Write, curate, amplify. Turn real people and real places into living stories." },
+  { key: "continuum", label: "Continuum", title: "Continuum", workspaceTitle: "Continuum", description: "Review Continuum agents, available knowledge, and permitted invocations." },
   { key: "directory", label: "Crew Registry", title: "Crew Registry", workspaceTitle: "Crew Registry", description: "People power the map. Manage the global crew of curious humans." },
   { key: "knowledge", label: "Archive", title: "Archive", workspaceTitle: "Archive", description: "Our living memory: field reports, photo archives, video archives, and audio stories." },
   { key: "audit", label: "System Logs", title: "System Logs", workspaceTitle: "System Logs", description: "Review every signal, story, and action recorded across the network." },
@@ -68,6 +68,7 @@ export function App() {
   const [rfcs, setRfcs] = useState<CabRfc[]>([]);
   const [selected, setSelected] = useState<CabRfc | null>(null);
   const [runs, setRuns] = useState<ResearchRun[]>([]);
+  const [researchRunTotal, setResearchRunTotal] = useState<number | null>(null);
   const [continuum, setContinuum] = useState<Record<string, unknown> | null>(null);
   const [agents, setAgents] = useState<ContinuumAgent[]>([]);
   const [lexicon, setLexicon] = useState<KnowledgeEntry[]>([]);
@@ -124,7 +125,7 @@ export function App() {
   function clearSession() {
     sessionStorage.removeItem("empire.session"); sessionStorage.removeItem("empire.entity");
     sessionStorage.removeItem("empire.tenant"); sessionStorage.removeItem("empire.tenants");
-    setToken(""); setCookieSession(false); setEntity(null); setSummary(null); setRfcs([]); setSelected(null); setRuns([]);
+    setToken(""); setCookieSession(false); setEntity(null); setSummary(null); setRfcs([]); setSelected(null); setRuns([]); setResearchRunTotal(null);
     setSelectedTenantId(""); setTenants([]);
     setContinuum(null); setAgents([]); setLexicon([]); setChronicles([]); setDirectory([]);
   }
@@ -149,7 +150,7 @@ export function App() {
         if (selectedTenantId && !session.tenants?.some((item) => item.id === selectedTenantId)) { setSelectedTenantId(""); sessionStorage.removeItem("empire.tenant"); }
         if (token) sessionStorage.setItem("empire.entity", JSON.stringify(session.entity));
         if (!can(session.entity, "cab:read")) { setSummary(null); setRfcs([]); setSelected(null); }
-        if (!can(session.entity, "research:read")) setRuns([]);
+        if (!can(session.entity, "research:read")) { setRuns([]); setResearchRunTotal(null); }
         if (!can(session.entity, "continuum:read")) { setContinuum(null); setAgents([]); setLexicon([]); setChronicles([]); }
         if (!can(session.entity, "users:manage")) setDirectory([]);
         if (can(session.entity, "cab:read")) {
@@ -158,8 +159,10 @@ export function App() {
           if (selected) setSelected(await client.request<CabRfc>(`${API_PATHS.cabRfcs}/${selected.id}`));
         }
         if (can(session.entity, "research:read")) {
-          const research = await client.request<{ data?: ResearchRun[]; items?: ResearchRun[] }>(API_PATHS.researchRuns);
-          setRuns(research.items ?? research.data ?? []);
+          const research = await client.request<{ data?: ResearchRun[]; items?: ResearchRun[]; meta?: { total?: number } }>(API_PATHS.researchRuns);
+          const researchItems = research.items ?? research.data ?? [];
+          setRuns(researchItems);
+          setResearchRunTotal(typeof research.meta?.total === "number" ? research.meta.total : researchItems.length);
         }
         if (can(session.entity, "continuum:read")) {
           const results = await Promise.allSettled([
@@ -342,11 +345,14 @@ export function App() {
         health={snapshot.health}
         readiness={snapshot.readiness}
         checkedAt={snapshot.checkedAt}
-        continuumStatus={String(continuum?.status ?? "pending")}
+        continuumStatus={can(entity, "continuum:read") ? String(continuum?.status ?? (loading ? "loading" : "unavailable")) : "access needed"}
         capabilities={snapshot.capabilities}
         summary={summary}
-        researchRunCount={runs.length}
+        researchRunCount={researchRunTotal}
+        canReadResearch={can(entity, "research:read")}
+        canReadContinuum={can(entity, "continuum:read")}
         modules={visibleModules}
+        moduleInventory={snapshot.modules}
         workspaces={pageItems.filter(({key})=>key!=="overview"&&allowedPage(key)).map(({key,workspaceTitle,description})=>({key,title:workspaceTitle,description,icon:pageIcons[key]}))}
         events={chronicles.slice(0,5).map(event=>({id:event.id,timestamp:new Date(event.createdAt).toLocaleString(),actor:event.user?.displayName??event.user?.username??"System",action:event.action.replaceAll("_"," "),details:event.entityId?`${event.entity} · ${event.entityId}`:event.entity}))}
         loading={loading}
