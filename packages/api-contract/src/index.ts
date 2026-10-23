@@ -44,6 +44,81 @@ export const API_PATHS = {
   researchRuns: "/v1/research-runs",
 } as const;
 
+/** Public, anonymous World Monitor summary. Keep this DTO aggregate-only: it must
+ * never contain database identifiers, raw payloads, private links, or operator data. */
+export interface WorldMonitorPublicSourceSummary {
+  category: string;
+  status: "success" | "stale" | "empty" | "failed" | "unknown";
+  lastAttemptAt: string | null;
+  lastSuccessAt: string | null;
+  freshnessSeconds: number | null;
+  freshnessSlaSeconds: number | null;
+  recordCount: number | null;
+  errorRate: number | null;
+  fallbackActive: boolean | null;
+}
+
+export interface WorldMonitorPublicSummary {
+  schemaVersion: "1";
+  status: "operational" | "degraded" | "critical" | "unavailable";
+  timestamp: string;
+  databaseStatus: "available" | "unavailable" | "unknown";
+  ingestionStatus: "healthy" | "degraded" | "unavailable" | "unknown";
+  freshnessStatus: "healthy" | "degraded" | "unavailable" | "unknown";
+  coverageStatus: "healthy" | "degraded" | "unavailable" | "unknown";
+  globalAlertLevel: "green" | "yellow" | "orange" | "red" | "unknown";
+  hazardAlertLevel: "green" | "yellow" | "orange" | "red" | "unknown";
+  sources: WorldMonitorPublicSourceSummary[];
+  observationCount: number;
+  alertCount: number;
+  history: Array<{ bucket: string; count: number }>;
+}
+
+/** OpenAPI-compatible allowlist schema for the anonymous summary response. */
+export const WORLD_MONITOR_PUBLIC_SUMMARY_SCHEMA = {
+  type: "object",
+  additionalProperties: false,
+  required: ["schemaVersion", "status", "timestamp", "databaseStatus", "ingestionStatus", "freshnessStatus", "coverageStatus", "globalAlertLevel", "hazardAlertLevel", "sources", "observationCount", "alertCount", "history"],
+  properties: {
+    schemaVersion: { type: "string", const: "1" },
+    status: { type: "string", enum: ["operational", "degraded", "critical", "unavailable"] },
+    timestamp: { type: "string", format: "date-time" },
+    databaseStatus: { type: "string", enum: ["available", "unavailable", "unknown"] },
+    ingestionStatus: { type: "string", enum: ["healthy", "degraded", "unavailable", "unknown"] },
+    freshnessStatus: { type: "string", enum: ["healthy", "degraded", "unavailable", "unknown"] },
+    coverageStatus: { type: "string", enum: ["healthy", "degraded", "unavailable", "unknown"] },
+    globalAlertLevel: { type: "string", enum: ["green", "yellow", "orange", "red", "unknown"] },
+    hazardAlertLevel: { type: "string", enum: ["green", "yellow", "orange", "red", "unknown"] },
+    sources: {
+      type: "array", maxItems: 100,
+      items: {
+        type: "object", additionalProperties: false,
+        required: ["category", "status", "lastAttemptAt", "lastSuccessAt", "freshnessSeconds", "freshnessSlaSeconds", "recordCount", "errorRate", "fallbackActive"],
+        properties: {
+          category: { type: "string", maxLength: 64 },
+          status: { type: "string", enum: ["success", "stale", "empty", "failed", "unknown"] },
+          lastAttemptAt: { anyOf: [{ type: "string", format: "date-time" }, { type: "null" }] },
+          lastSuccessAt: { anyOf: [{ type: "string", format: "date-time" }, { type: "null" }] },
+          freshnessSeconds: { anyOf: [{ type: "integer", minimum: 0 }, { type: "null" }] },
+          freshnessSlaSeconds: { anyOf: [{ type: "integer", minimum: 0 }, { type: "null" }] },
+          recordCount: { anyOf: [{ type: "integer", minimum: 0 }, { type: "null" }] },
+          errorRate: { anyOf: [{ type: "number", minimum: 0, maximum: 1 }, { type: "null" }] },
+          fallbackActive: { anyOf: [{ type: "boolean" }, { type: "null" }] },
+        },
+      },
+    },
+    observationCount: { type: "integer", minimum: 0 },
+    alertCount: { type: "integer", minimum: 0 },
+    history: {
+      type: "array", maxItems: 168,
+      items: {
+        type: "object", additionalProperties: false, required: ["bucket", "count"],
+        properties: { bucket: { type: "string", format: "date-time" }, count: { type: "integer", minimum: 0 } },
+      },
+    },
+  },
+} as const;
+
 export type CrmStage = "qualified" | "proposal" | "negotiation" | "won" | "lost";
 export interface CrmOpportunity { id: string; tenantId: string; partnerId: string; title: string; stage: CrmStage; amount: string | number; currency: string; probability: number; expectedCloseAt?: string | null; ownerId: string }
 export interface CatalogItem { id: string; tenantId: string; sku: string; name: string; kind: "product" | "service"; unit: string; unitPrice: string | number; currency: string; taxRate: string | number; active: boolean }
