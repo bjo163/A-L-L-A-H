@@ -7,7 +7,7 @@ import { WorldMonitorObservationModel } from "@empire/batteries-base";
 
 const source = await readFile(new URL("../src/world-monitor-ingest.ts", import.meta.url), "utf8");
 const compiled = ts.transpileModule(source.replace(/^import .*;\r?\n/gm, ""), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText;
-const loadParsers = new Function("exports", "require", "getDatabase", `const createHash = require("node:crypto").createHash;\n${compiled}; return { parseOpenMeteo, parseQuakes, parseKp, parseDisasters, parseObservedAt, worldMonitorObservationIdentity, tryAcquireWorldMonitorIngestionLease, releaseWorldMonitorIngestionLease };`);
+const loadParsers = new Function("exports", "require", "getDatabase", `const createHash = require("node:crypto").createHash;\n${compiled}; return { parseOpenMeteo: exports.parseOpenMeteo, parseQuakes: exports.parseQuakes, parseKp: exports.parseKp, parseDisasters: exports.parseDisasters, parseObservedAt: exports.parseObservedAt, worldMonitorObservationIdentity: exports.worldMonitorObservationIdentity, boundedWorldMonitorRawPayload: exports.boundedWorldMonitorRawPayload, WORLD_MONITOR_RAW_PAYLOAD_MAX_BYTES: exports.WORLD_MONITOR_RAW_PAYLOAD_MAX_BYTES, tryAcquireWorldMonitorIngestionLease: exports.tryAcquireWorldMonitorIngestionLease, releaseWorldMonitorIngestionLease: exports.releaseWorldMonitorIngestionLease };`);
 const parsers = loadParsers({}, (name) => name === "node:crypto" ? { createHash } : {}, () => ({ transaction: (callback) => callback({ raw: async () => {} }) }));
 const fixture = async (name) => JSON.parse(await readFile(new URL(`./fixtures/world-monitor/${name}.json`, import.meta.url), "utf8"));
 
@@ -87,6 +87,19 @@ test("observation identities are stable across repeated provider polls", () => {
   assert.deepEqual(first, repeated);
   assert.deepEqual(anonymousA, anonymousB);
   assert.equal(anonymousA.externalId.length, 64);
+});
+
+test("raw provider samples are redacted, bounded, and suitable for one source-run record", () => {
+  const sample = parsers.boundedWorldMonitorRawPayload({ api_key: "secret", nested: { authorization: "Bearer x", email: "person@example.com", value: 7 } });
+  assert.equal(sample.retained, true);
+  assert.equal(sample.payload.api_key, "[redacted]");
+  assert.equal(sample.payload.nested.authorization, "[redacted]");
+  assert.equal(sample.payload.nested.email, "[redacted]");
+  assert.equal(JSON.stringify(sample).includes("secret"), false);
+  const oversized = parsers.boundedWorldMonitorRawPayload({ data: "x".repeat(parsers.WORLD_MONITOR_RAW_PAYLOAD_MAX_BYTES + 1) });
+  assert.equal(oversized.retained, false);
+  assert.equal(oversized.reason, "size_limit");
+  assert.equal("payload" in oversized, false);
 });
 
 test("observation model declares the database identity used by repeated provider polls", () => {

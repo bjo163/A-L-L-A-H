@@ -106,15 +106,18 @@ const main = async () => {
       ["usgs-earthquakes", "failed"], ["usgs-fdsn-earthquakes", "success"],
       ["noaa-swpc-kp-1m", "failed"], ["noaa-swpc-kp-final-fallback", "success"],
     ]) if (!hasRun(source, status)) throw new Error(`Fixture runtime smoke missed expected ${status} run for ${source}`);
-    const fallbackObservations = await (WorldMonitorObservationModel.query() as any).whereIn("source", ["open-meteo-gfs-weather-london", "usgs-fdsn-earthquakes", "noaa-swpc-kp-final-fallback"]);
-    if (fallbackObservations.length < 3 || fallbackObservations.some((item: any) => !item.sourceTier || !item.payload)) throw new Error("Fixture runtime smoke did not persist fallback provenance and payloads");
+    const fallbackSources = ["open-meteo-gfs-weather-london", "usgs-fdsn-earthquakes", "noaa-swpc-kp-final-fallback"];
+    const fallbackObservations = await (WorldMonitorObservationModel.query() as any).whereIn("source", fallbackSources);
+    if (fallbackObservations.length < 3 || fallbackObservations.some((item: any) => !item.sourceTier || item.payload !== null)) throw new Error("Fixture runtime smoke did not keep observation payloads absent with fallback provenance intact");
+    const fallbackRuns = await (WorldMonitorSourceRunModel.query() as any).whereIn("source", fallbackSources).where({ status: "success" });
+    if (fallbackRuns.length < 3 || fallbackRuns.some((run: any) => run.metadata?.rawPayloadRetention?.retained !== true || !run.metadata?.rawPayloadRetention?.payload)) throw new Error("Fixture runtime smoke did not retain one bounded sanitized sample per successful fallback run");
     const quakeIdentityCount = await db("world_monitor_observations").where({ source: "usgs-fdsn-earthquakes", external_id: "fixture-usgs-001" }).count<{ count: string }>("id as count").first();
     if (Number(quakeIdentityCount?.count) !== 1) throw new Error("Repeated fixture polling did not upsert the stable USGS observation identity");
     const retainedObservations = await db("world_monitor_observations").where({ source: retentionSource }).count<{ count: string }>("id as count").first();
     const retainedRuns = await db("world_monitor_source_runs").where({ source: retentionSource }).count<{ count: string }>("id as count").first();
     const retainedAggregates = await db("world_monitor_aggregates").where({ source: retentionSource }).count<{ count: string }>("id as count").first();
     if (Number(retainedObservations?.count) + Number(retainedRuns?.count) + Number(retainedAggregates?.count) !== 0) throw new Error("Fixture runtime smoke did not prune the aged retention sentinels");
-    console.log(JSON.stringify({ fixtureMode: true, fakeProviderRequests: fixtureFetch.requestCount(), firstPollObservationCount: firstPollCounts.observations, replayObservationCount: Number(counts.observations?.count), firstPollSourceRunCount: firstPollCounts.sourceRuns, replaySourceRunCount: Number(counts.sourceRuns?.count), fallbackProvenanceCount: fallbackObservations.length, stableObservationUpserts: Number(quakeIdentityCount?.count), retentionSentinelsRemoved: true }));
+    console.log(JSON.stringify({ fixtureMode: true, fakeProviderRequests: fixtureFetch.requestCount(), firstPollObservationCount: firstPollCounts.observations, replayObservationCount: Number(counts.observations?.count), firstPollSourceRunCount: firstPollCounts.sourceRuns, replaySourceRunCount: Number(counts.sourceRuns?.count), fallbackProvenanceCount: fallbackObservations.length, boundedRunPayloads: fallbackRuns.length, stableObservationUpserts: Number(quakeIdentityCount?.count), retentionSentinelsRemoved: true }));
   }
   await closeDatabase();
 };

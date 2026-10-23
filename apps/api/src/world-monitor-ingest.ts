@@ -12,6 +12,42 @@ const json = async (url: string): Promise<any> => {
 };
 
 const now = () => new Date().toISOString();
+/** Keep a single sanitized provider sample on its source-run row, never duplicate
+ * the full response across every observation. Oversized or structurally hostile
+ * payloads are omitted; normalized observation values remain independently stored. */
+export const WORLD_MONITOR_RAW_PAYLOAD_MAX_BYTES = 64 * 1024;
+const SENSITIVE_PAYLOAD_KEY = /(authorization|cookie|password|secret|token|api[_-]?key|e-?mail)/i;
+const EMAIL_VALUE = /\b[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}\b/gi;
+export function boundedWorldMonitorRawPayload(body: unknown) {
+  let nodes = 0;
+  const redact = (value: unknown, depth: number): unknown => {
+    nodes += 1;
+    if (nodes > 20_000 || depth > 20) throw new Error("payload_shape_limit");
+    if (typeof value === "string") return value.replace(EMAIL_VALUE, "[redacted-email]");
+    if (Array.isArray(value)) return value.slice(0, 2_000).map((item) => redact(item, depth + 1));
+    if (value && typeof value === "object") {
+      const result: Record<string, unknown> = {};
+      for (const [key, item] of Object.entries(value as Record<string, unknown>).slice(0, 2_000)) {
+        result[key] = SENSITIVE_PAYLOAD_KEY.test(key) ? "[redacted]" : redact(item, depth + 1);
+      }
+      return result;
+    }
+    return value;
+  };
+  const original = JSON.stringify(body);
+  const originalBytes = Buffer.byteLength(original ?? "null", "utf8");
+  const sha256 = createHash("sha256").update(original ?? "null").digest("hex");
+  try {
+    const sanitized = redact(body, 0);
+    const serialized = JSON.stringify(sanitized);
+    const retainedBytes = Buffer.byteLength(serialized ?? "null", "utf8");
+    if (retainedBytes > WORLD_MONITOR_RAW_PAYLOAD_MAX_BYTES) return { retained: false, reason: "size_limit", originalBytes, sha256 };
+    return { retained: true, originalBytes, retainedBytes, sha256, payload: sanitized };
+  } catch (error) {
+    return { retained: false, reason: error instanceof Error ? error.message : "payload_shape_limit", originalBytes, sha256 };
+  }
+}
+
 export const parseObservedAt = (value: unknown) => {
   if (typeof value !== "string" || !value.trim()) throw new Error("Source observation timestamp is missing");
   const input = value.trim();
@@ -163,6 +199,7 @@ async function refreshWorldMonitorSourcesUnlocked(jobId: string): Promise<void> 
           throw error;
         }
         const records = parsedRecords.filter((record) => record.normalized && Object.keys(record.normalized).length > 0);
+        const rawPayloadRetention = boundedWorldMonitorRawPayload(body);
         const maxAgeSeconds = spec.category === "weather" ? 3_600 : spec.category === "atmosphere" ? 10_800 : spec.category === "space-weather" ? 1_800 : spec.category === "disaster" ? 86_400 : Number.POSITIVE_INFINITY;
         let freshestAgeSeconds = Number.POSITIVE_INFINITY;
         for (const record of records) freshestAgeSeconds = Math.min(freshestAgeSeconds, Math.max(0, Math.floor((Date.now() - Date.parse(record.observedAt)) / 1000)));
@@ -170,11 +207,11 @@ async function refreshWorldMonitorSourcesUnlocked(jobId: string): Promise<void> 
         for (const record of records) {
           const age = Math.max(0, Math.floor((Date.now() - Date.parse(record.observedAt)) / 1000));
           const identity = worldMonitorObservationIdentity(spec.source, record);
-          const observation = { source: spec.source, sourceTier: spec.tier, category: spec.category, externalId: identity.externalId, observedAt: record.observedAt, fetchedAt: now(), freshnessSeconds: age, confidence: spec.tier === "primary" ? 0.95 : 0.7, status: age > maxAgeSeconds ? "stale" : "available", normalized: record.normalized, payload: body };
+          const observation = { source: spec.source, sourceTier: spec.tier, category: spec.category, externalId: identity.externalId, observedAt: record.observedAt, fetchedAt: now(), freshnessSeconds: age, confidence: spec.tier === "primary" ? 0.95 : 0.7, status: age > maxAgeSeconds ? "stale" : "available", normalized: record.normalized, payload: null };
           // Knex conflict targets are physical PostgreSQL column names; model attribute names are camelCase.
           await (WorldMonitorObservationModel.query() as any).insert(observation).onConflict(["source", "external_id", "observed_at"]).merge(observation);
         }
-        await (WorldMonitorSourceRunModel.query() as any).insert({ source: spec.source, category: spec.category, tier: spec.tier, startedAt, completedAt: now(), status: records.length === 0 ? "empty" : stale ? "stale" : "success", recordCount: records.length, durationMs: Date.now() - startedMs, metadata: { jobId, url: spec.url, maxAgeSeconds, freshestAgeSeconds: records.length > 0 ? freshestAgeSeconds : null } });
+        await (WorldMonitorSourceRunModel.query() as any).insert({ source: spec.source, category: spec.category, tier: spec.tier, startedAt, completedAt: now(), status: records.length === 0 ? "empty" : stale ? "stale" : "success", recordCount: records.length, durationMs: Date.now() - startedMs, metadata: { jobId, url: spec.url, maxAgeSeconds, freshestAgeSeconds: records.length > 0 ? freshestAgeSeconds : null, rawPayloadRetention } });
         const bucketStart = new Date(Math.floor(Date.now() / 3_600_000) * 3_600_000).toISOString();
         await (WorldMonitorAggregateModel.query() as any).insert({ bucketStart, category: spec.category, source: spec.source, recordCount: records.length, summary: { tier: spec.tier } });
         if (!stale) { succeeded = true; break; }
