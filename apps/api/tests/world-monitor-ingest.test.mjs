@@ -6,8 +6,8 @@ import ts from "typescript";
 
 const source = await readFile(new URL("../src/world-monitor-ingest.ts", import.meta.url), "utf8");
 const compiled = ts.transpileModule(source.replace(/^import .*;\r?\n/gm, ""), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText;
-const loadParsers = new Function("exports", "require", `const createHash = require("node:crypto").createHash;\n${compiled}; return { parseOpenMeteo, parseQuakes, parseKp, parseDisasters, parseObservedAt, worldMonitorObservationIdentity };`);
-const parsers = loadParsers({}, () => ({ createHash }));
+const loadParsers = new Function("exports", "require", `${compiled}; return { parseOpenMeteo, parseQuakes, parseKp, parseDisasters, parseObservedAt, worldMonitorObservationIdentity };`);
+const parsers = loadParsers({}, (name) => name === "node:crypto" ? { createHash } : {});
 
 test("ingest parsers reject empty and malformed payloads without creating records", () => {
   assert.match(source, /Array\.isArray\(body\?\.features\)/);
