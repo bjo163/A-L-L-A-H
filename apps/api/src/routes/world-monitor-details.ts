@@ -131,14 +131,19 @@ function eventAlerts(row: ObservationRow): WorldMonitorAlertPageItem[] {
     });
   };
   const number = (key: string) => typeof value[key] === "number" ? value[key] as number : Number.NaN;
-  add("pm25", "atmosphere", number("pm2_5"), Number(process.env.WM_PM25_ADVISORY ?? 55), Number(process.env.WM_PM25_CRITICAL ?? 150), " µg/m³");
-  add("geomagnetic", "space-weather", number("kp"), Number(process.env.WM_KP_ADVISORY ?? 5), Number(process.env.WM_KP_CRITICAL ?? 7), " Kp");
-  add("earthquake", "earthquake", number("mag"), Number(process.env.WM_QUAKE_ADVISORY ?? 5), Number(process.env.WM_QUAKE_CRITICAL ?? 7), " Mw");
-  const alertlevel = typeof value.alertlevel === "string" ? value.alertlevel.toLowerCase() : "";
-  if (row.category === "disaster" && (alertlevel === "orange" || alertlevel === "red")) result.push({
-    category: "disaster", source: safeString(row.source, 160), kind: "disaster",
-    level: alertlevel === "red" ? "critical" : "advisory", observedAt: iso(row.observed_at), value: alertlevel.toUpperCase(),
-  });
+  if (row.category === "atmosphere") {
+    add("pm25", "atmosphere", number("pm2_5"), Number(process.env.WM_PM25_ADVISORY ?? 55), Number(process.env.WM_PM25_CRITICAL ?? 150), " µg/m³");
+  } else if (row.category === "space-weather") {
+    add("geomagnetic", "space-weather", number("kp"), Number(process.env.WM_KP_ADVISORY ?? 5), Number(process.env.WM_KP_CRITICAL ?? 7), " Kp");
+  } else if (row.category === "earthquake") {
+    add("earthquake", "earthquake", number("mag"), Number(process.env.WM_QUAKE_ADVISORY ?? 5), Number(process.env.WM_QUAKE_CRITICAL ?? 7), " Mw");
+  } else if (row.category === "disaster") {
+    const alertlevel = typeof value.alertlevel === "string" ? value.alertlevel.toLowerCase() : "";
+    if (alertlevel === "orange" || alertlevel === "red") result.push({
+      category: "disaster", source: safeString(row.source, 160), kind: "disaster",
+      level: alertlevel === "red" ? "critical" : "advisory", observedAt: iso(row.observed_at), value: alertlevel.toUpperCase(),
+    });
+  }
   return result;
 }
 

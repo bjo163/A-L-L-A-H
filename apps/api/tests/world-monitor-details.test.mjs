@@ -110,7 +110,7 @@ test("observation pages use deterministic cursors and return only allowlisted DT
 
 test("alerts derive only bounded severity data and history pages aggregate hourly", async () => {
   const rows = [
-    observation("quake-a", dates[0], { mag: 7.2, location: "private location", apiKey: "private" }),
+    observation("quake-a", dates[0], { mag: 7.2, pm2_5: 220, kp: 8.2, alertlevel: "red", location: "private location", apiKey: "private" }),
     observation("quake-b", dates[1], { mag: 4.1 }),
   ];
   const { routeDefs } = createRoutes(rows);
@@ -118,6 +118,7 @@ test("alerts derive only bounded severity data and history pages aggregate hourl
   const alerts = await routeDefs.get("/v1/world-monitor/alerts").handler({ query: { limit: 1 } }, reply());
   assert.equal(alerts.items.length, 1);
   assert.equal(alerts.items[0].level, "critical");
+  assert.equal(alerts.items[0].kind, "earthquake");
   assert.equal(JSON.stringify(alerts).includes("private"), false);
   const history = await routeDefs.get("/v1/world-monitor/history").handler({ query: { limit: 1 } }, reply());
   assert.equal(history.items.length, 1);
