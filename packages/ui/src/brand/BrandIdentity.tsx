@@ -5,6 +5,10 @@ import { OrbitMarkSmall } from "./OrbitMarkSmall.generated";
 
 export type BrandConcept = "aperture" | "orbit" | "monogram";
 
+export function MoonwitnessCrown({ className = "" }: { className?: string }) {
+  return <svg className={className} viewBox="0 0 64 48" fill="none" aria-hidden="true" focusable="false"><path d="m5 12 13 12L31 4l13 20 15-12-6 27H11L5 12Z" stroke="currentColor" strokeWidth="5" strokeLinejoin="miter"/><path d="M12 44h41" stroke="currentColor" strokeWidth="4"/></svg>;
+}
+
 /**
  * Shared working mark for product shells. Orbit is provisional: the brand
  * concept and final logo system remain subject to the C02 review gate.

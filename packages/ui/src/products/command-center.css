@@ -1,5 +1,59 @@
 .eol-workspace-shell, .eol-auth-layout { --eol-layout-anchor-offset: calc(68px + var(--eol-space-4)); --eol-layout-anchor-offset-large: calc(68px + var(--eol-space-6)); }
 .eol-workspace-shell, .eol-auth-layout { min-width: min(320px, 100%); background-color: var(--eol-color-background); background-image: radial-gradient(color-mix(in srgb, var(--eol-manga-secondary) 15%, transparent) .8px, transparent .8px); background-size: 9px 9px; }
+.eol-workspace-shell { --eol-color-accent: var(--eol-manga-rose); --eol-color-accent-strong: var(--eol-manga-rose); --eol-color-accent-border: var(--eol-manga-rose); --eol-color-accent-subtle: color-mix(in srgb, var(--eol-manga-rose) 18%, transparent); --eol-manga-secondary: var(--eol-palette-manga-cyan); }
+.eol-workspace-shell::before { content: "SHADOW // LIVE SIGNAL"; position: fixed; z-index: 8; top: 0; right: 0; padding: 5px 10px; color: var(--eol-manga-ink); background: var(--eol-manga-highlight); font: 800 9px var(--eol-font-mono); letter-spacing: .14em; transform: translateY(-1px); pointer-events: none; }
+.eol-workspace-shell { background-color: #050505; background-image: linear-gradient(120deg, transparent 0 78%, #ff14931c 78%), radial-gradient(#f7f1e722 1px, transparent 1px); background-size: auto, 11px 11px; }
+.eol-workspace-shell .sidebar { background: #070707; border-right: 3px solid #f7f1e7; }
+.eol-workspace-shell .sidebar .brand { color: #f7f1e7; }
+.eol-workspace-shell .nav-item { border-bottom: 1px solid #f7f1e733; color: #f7f1e7; }
+.eol-workspace-shell .nav-item.is-active { color: #050505; background: #ff1493; border-color: #f7f1e7; box-shadow: 4px 4px 0 #ffe500; }
+.eol-workspace-shell .page-heading { margin-top: 22px; min-height: 150px; border: 3px solid #f7f1e7; background: linear-gradient(110deg, #ff1493 0 30%, #050505 30% 72%, #087cff 72%); box-shadow: 7px 7px 0 #ffe500; }
+.eol-workspace-shell .page-heading h1 { color: #f7f1e7; font-size: clamp(34px, 5vw, 72px); font-weight: 900; text-transform: uppercase; text-shadow: 4px 4px 0 #050505; }
+.eol-workspace-shell #active-view > section > .eol-panel, .eol-workspace-shell .workspace-card, .eol-workspace-shell .module-list article, .eol-workspace-shell .table-wrap { border: 3px solid #f7f1e7; border-radius: 0; box-shadow: 4px 4px 0 #087cff; background: #0a0a0b; }
+.eol-workspace-shell .workspace-card:nth-child(3n+2), .eol-workspace-shell .module-list article:nth-child(3n+2) { box-shadow: 4px 4px 0 #ff1493; }
+.eol-workspace-shell .workspace-icon { border-color: #ffe500; border-radius: 0; background: #ff1493; color: #050505; }
+.eol-workspace-shell .shadow-telemetry { position: relative; overflow: hidden; border: 3px solid #f7f1e7; background: linear-gradient(115deg, #111 0 57%, #087cff 57% 74%, #ff1493 74%); box-shadow: 7px 7px 0 #ffe500; }
+.eol-workspace-shell .shadow-telemetry::after { content: "FIELD REPORT / 001"; position: absolute; right: 18px; top: 16px; color: #050505; background: #ffe500; padding: 5px 9px; font: 800 9px var(--eol-font-mono); letter-spacing: .12em; transform: rotate(3deg); }
+.eol-workspace-shell .shadow-telemetry h2, .eol-workspace-shell .shadow-telemetry h3 { max-width: 680px; color: #f7f1e7; font-size: clamp(28px, 4vw, 52px); line-height: .98; font-weight: 900; text-transform: uppercase; text-shadow: 4px 4px 0 #ff1493; }
+.eol-workspace-shell .shadow-telemetry p, .eol-workspace-shell .shadow-telemetry [class*="description"] { color: #f7f1e7; }
+.eol-workspace-shell .shadow-metrics, .eol-workspace-shell .shadow-feature-grid, .eol-workspace-shell .shadow-ops-grid { margin-block: 24px; }
+.eol-workspace-shell .shadow-metrics { padding: 12px 14px 16px; border: 2px solid #f7f1e7; background: #0a0a0b; box-shadow: 5px 5px 0 #087cff; }
+.eol-workspace-shell .shadow-metrics .eol-metric-grid { gap: 10px; }
+.eol-workspace-shell .shadow-metrics .eol-metric-card { border: 1px solid #f7f1e766; border-left: 5px solid #ff1493; border-radius: 0; background: #101012; }
+.eol-workspace-shell .shadow-metrics .eol-metric-card:nth-child(even) { border-left-color: #087cff; }
+.eol-workspace-shell .shadow-feature-grid { display: grid; grid-template-columns: 1.1fr 1fr .9fr; gap: 14px; }
+.eol-workspace-shell .shadow-feature { position: relative; min-height: 230px; padding: 20px; overflow: hidden; }
+.eol-workspace-shell .shadow-feature--story { background: linear-gradient(145deg, #ff1493 0 9px, #0a0a0b 9px); }
+.eol-workspace-shell .shadow-feature--workflow { background: linear-gradient(145deg, #087cff 0 9px, #0a0a0b 9px); }
+.eol-workspace-shell .shadow-feature--poster { background: linear-gradient(145deg, #ffe500 0 9px, #0a0a0b 9px); }
+.eol-workspace-shell .shadow-index { color: #ffe500; font: 700 9px var(--eol-font-mono); letter-spacing: .13em; }
+.eol-workspace-shell .shadow-feature h2 { margin: 18px 0 8px; color: #f7f1e7; font-size: clamp(20px, 2vw, 29px); font-weight: 900; text-transform: uppercase; }
+.eol-workspace-shell .shadow-feature p, .eol-workspace-shell .shadow-copy { max-width: 34ch; color: #c8c3bc; font-size: var(--eol-font-size-sm); line-height: 1.55; }
+.eol-workspace-shell .shadow-feature-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; color: #f7f1e7; font: 700 9px var(--eol-font-mono); letter-spacing: .08em; }
+.eol-workspace-shell .shadow-feature-meta span { padding: 5px 7px; border: 1px solid #f7f1e755; }
+.eol-workspace-shell .shadow-link { margin-top: 16px; padding: 0; border: 0; color: #ff64bd; background: transparent; font: 800 11px var(--eol-font-mono); text-transform: uppercase; cursor: pointer; }
+.eol-workspace-shell .shadow-link:hover { color: #ffe500; }
+.eol-workspace-shell .shadow-steps { display: grid; gap: 9px; margin: 18px 0 0; padding: 0; list-style: none; color: #f7f1e7; font-size: var(--eol-font-size-xs); }
+.eol-workspace-shell .shadow-steps li { display: flex; gap: 10px; align-items: center; padding-bottom: 8px; border-bottom: 1px dashed #f7f1e755; }
+.eol-workspace-shell .shadow-steps li span { color: #4b9eff; font: 800 10px var(--eol-font-mono); }
+.eol-workspace-shell .shadow-poster-stamp { position: absolute; right: 12px; bottom: 48px; padding: 10px 13px; border: 3px solid #ffe500; color: #ffe500; font-size: 24px; font-weight: 1000; line-height: .85; transform: rotate(-9deg); }
+.eol-workspace-shell .shadow-ops-grid { display: grid; grid-template-columns: .9fr 1.1fr 1.2fr; gap: 14px; }
+.eol-workspace-shell .shadow-list-panel { min-width: 0; padding: 16px; border: 3px solid #f7f1e7; background: #0a0a0b; box-shadow: 4px 4px 0 #087cff; }
+.eol-workspace-shell .shadow-list-panel:nth-child(2) { box-shadow: 4px 4px 0 #ff1493; }
+.eol-workspace-shell .shadow-list-panel .eol-section-heading { border-bottom: 2px dashed #f7f1e766; padding-bottom: 10px; }
+.eol-workspace-shell .shadow-crew-art { display: grid; min-height: 112px; margin-top: 14px; place-items: center; position: relative; overflow: hidden; background: repeating-linear-gradient(-45deg, #ff1493 0 10px, #101012 10px 20px); }
+.eol-workspace-shell .shadow-crew-art span { padding: 8px 12px; color: #050505; background: #f7f1e7; font-size: 21px; font-weight: 1000; line-height: .9; text-align: center; transform: rotate(-4deg); }
+.eol-workspace-shell .shadow-crew-art i { position: absolute; right: 12px; top: 3px; color: #ffe500; font-size: 35px; font-style: normal; }
+.eol-workspace-shell .shadow-list-foot { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin-top: 14px; padding-top: 10px; border-top: 1px dashed #f7f1e755; color: #f7f1e7; font: 700 9px var(--eol-font-mono); letter-spacing: .09em; }
+.eol-workspace-shell .shadow-queue-row { display: grid; grid-template-columns: 42px minmax(0,1fr) auto; align-items: center; gap: 10px; padding: 14px 0; border-bottom: 1px dashed #f7f1e755; color: #f7f1e7; }
+.eol-workspace-shell .shadow-queue-number { color: #ffe500; font: 900 23px var(--eol-font-mono); }
+.eol-workspace-shell .shadow-queue-row strong, .eol-workspace-shell .shadow-queue-row small { display: block; }
+.eol-workspace-shell .shadow-queue-row strong { font-size: var(--eol-font-size-xs); }
+.eol-workspace-shell .shadow-queue-row small { margin-top: 4px; color: #aaa49d; font-size: var(--eol-font-size-2xs); }
+.eol-workspace-shell .shadow-queue-arrow { color: #ff1493; font-size: 20px; }
+.eol-workspace-shell .shadow-alerts .event-list { max-height: 300px; overflow: auto; }
+@media (max-width: 1050px) { .eol-workspace-shell .shadow-feature-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } .eol-workspace-shell .shadow-feature--poster { grid-column: span 2; } .eol-workspace-shell .shadow-ops-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } .eol-workspace-shell .shadow-alerts { grid-column: span 2; } }
+@media (max-width: 650px) { .eol-workspace-shell .shadow-feature-grid, .eol-workspace-shell .shadow-ops-grid { grid-template-columns: 1fr; } .eol-workspace-shell .shadow-feature--poster, .eol-workspace-shell .shadow-alerts { grid-column: auto; } .eol-workspace-shell .shadow-telemetry::after { display: none; } }
 .eol-workspace-shell a, .eol-auth-layout a { color: var(--eol-color-accent); }
 .eol-workspace-shell a:hover, .eol-workspace-shell .text-button:hover, .eol-auth-layout a:hover, .eol-auth-layout .text-button:hover { color: var(--eol-color-accent-strong); }
 
@@ -7,6 +61,7 @@
 :where(.eol-workspace-shell) .eol-workspace-shell__navigation { display: contents; }
 .eol-workspace-shell .eol-workspace-shell__toggle { display: none; }
 .eol-workspace-shell .sidebar { position: sticky; top: 0; display: flex; flex-direction: column; height: 100vh; padding: 25px 16px 18px; border-right: 1px solid var(--eol-color-border); background: linear-gradient(180deg, var(--eol-color-surface-inset) 0%, var(--eol-color-background) 100%); }
+.eol-workspace-shell .sidebar .brand { filter: drop-shadow(3px 3px 0 var(--eol-manga-rose)); }
 .eol-workspace-shell .brand { padding: 2px 12px 28px; }
 .eol-workspace-shell .operator-meta strong, .eol-workspace-shell .operator-meta small { display: block; }
 .eol-workspace-shell .operator-card { display: flex; align-items: center; gap: 10px; padding: 12px; border: 2px solid var(--eol-manga-ink); border-radius: var(--eol-radius-none); background: var(--eol-color-surface); box-shadow: 3px 3px 0 var(--eol-manga-ink); }
@@ -57,6 +112,7 @@
 .eol-workspace-shell .top-actions .eol-button { min-height: 34px; padding: 6px 11px; border-color: var(--eol-color-border-strong); border-radius: var(--eol-radius-lg); font-size: var(--eol-font-size-2xs); }
 .eol-workspace-shell .api-link { display: grid; width: 34px; height: 34px; place-items: center; border: 1px solid var(--eol-color-border-strong); border-radius: var(--eol-radius-lg); color: var(--eol-color-accent); background: var(--eol-color-surface); }
 .eol-workspace-shell .page-heading { display: grid; grid-template-columns: minmax(0, 1fr) auto; align-items: end; gap: 10px 20px; margin-top: 16px; padding: 16px 22px; }
+.eol-workspace-shell .page-heading { border: 2px solid var(--eol-manga-ink); border-radius: 0; box-shadow: 5px 5px 0 var(--eol-manga-ink); background: linear-gradient(110deg, color-mix(in srgb, var(--eol-manga-rose) 14%, transparent), transparent 48%); }
 .eol-workspace-shell .eyebrow { color: var(--eol-color-text-muted); font: var(--eol-font-size-3xs) var(--eol-font-mono); letter-spacing: .15em; }
 .eol-workspace-shell h1, :where(.eol-auth-layout) .eol-auth-card h1 { margin: 8px 0 6px; color: var(--eol-color-text); font-size: clamp(27px, 3vw, 37px); font-weight: 500; letter-spacing: -.04em; }
 .eol-workspace-shell .page-heading .eol-page-intro__eyebrow { color: var(--eol-color-accent-strong); }

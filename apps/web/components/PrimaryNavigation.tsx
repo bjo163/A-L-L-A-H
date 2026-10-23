@@ -4,21 +4,21 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useEffect, useState, useTransition } from "react";
 import { PageNavigationFocus, ResponsiveNavigation, ThemeControl } from "@empire/ui/client";
-import { ExternalLinkIcon, SunIcon, MoonIcon } from "@empire/ui";
+import { SunIcon, MoonIcon } from "@empire/ui";
 import type { WebLanguage } from "../lib/i18n";
 
 const labels = {
-  id: { home: "Beranda", ecosystem: "Ekosistem", systems: "Atlas Sistem", roadmap: "Peta Jalan", workspace: "Ruang Operator", github: "GitHub", navigation: "Navigasi utama", open: "Buka menu", close: "Tutup menu", language: "Pilih bahasa", loading: "Mengganti bahasa", theme: "Tema tampilan", light: "Terang", dark: "Gelap" },
-  en: { home: "Home", ecosystem: "Ecosystem", systems: "System Atlas", roadmap: "Roadmap", workspace: "Operator Workspace", github: "GitHub", navigation: "Primary navigation", open: "Open menu", close: "Close menu", language: "Choose language", loading: "Changing language", theme: "Appearance theme", light: "Light", dark: "Dark" },
+  id: { home: "Cerita", ecosystem: "Kru", systems: "Semesta", roadmap: "Sinyal", workspace: "Arsip", github: "Tentang", navigation: "Navigasi utama Moonwitness", open: "Buka menu", close: "Tutup menu", language: "Pilih bahasa", loading: "Mengganti bahasa", theme: "Tema tampilan", light: "Terang", dark: "Gelap" },
+  en: { home: "Stories", ecosystem: "Crew", systems: "Universe", roadmap: "Signal", workspace: "Archive", github: "About", navigation: "Moonwitness navigation", open: "Open menu", close: "Close menu", language: "Choose language", loading: "Changing language", theme: "Appearance theme", light: "Light", dark: "Dark" },
 } as const;
 
 const links = [
-  { key: "home", href: "/", path: "/" },
-  { key: "ecosystem", href: "/#ekosistem", path: "/" },
-  { key: "systems", href: "/systems", path: "/systems" },
-  { key: "roadmap", href: "/roadmap", path: "/roadmap" },
-  { key: "workspace", href: "/workspace", path: "/workspace" },
-  { key: "github", href: "https://github.com/bjo163/empire-of-the-light", external: true },
+  { key: "home", href: "/#stories", path: "/" },
+  { key: "ecosystem", href: "/#crew", path: "/" },
+  { key: "roadmap", href: "/#signal", path: "/" },
+  { key: "workspace", href: "/#archive", path: "/" },
+  { key: "systems", href: "/#universe", path: "/" },
+  { key: "github", href: "/systems", path: "/systems" },
 ] as const;
 
 export function PrimaryNavigation({ language }: { language: WebLanguage }) {
@@ -52,14 +52,14 @@ export function PrimaryNavigation({ language }: { language: WebLanguage }) {
       <PageNavigationFocus navigationKey={pathname} />
       <ResponsiveNavigation label={copy.navigation} openLabel={copy.open} closeLabel={copy.close} resetKey={pathname}>
         {links.map((link) => {
-          const current = "external" in link ? false : link.key === "ecosystem"
-            ? pathname === "/" && (hash === "#ekosistem" || hash === "#arsy")
-            : link.key === "home" ? pathname === "/" && !hash : pathname === link.path;
+          const current = link.href.startsWith("/#")
+            ? pathname === "/" && hash === link.href.slice(1)
+            : pathname === link.path;
           const label = "key" in link ? copy[link.key] : copy.github;
           const active = "key" in link && current;
           return (
-            <Link href={link.href} key={link.key} aria-current={active ? "page" : undefined} aria-label={label} {...("external" in link ? { target: "_blank", rel: "noopener noreferrer" } : {})}>
-              {label}{"external" in link && <ExternalLinkIcon size={13} />}
+            <Link href={link.href} key={link.key} aria-current={active ? "page" : undefined} aria-label={label}>
+              {label}
             </Link>
           );
         })}

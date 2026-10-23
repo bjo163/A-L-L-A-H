@@ -3,6 +3,7 @@ export type { BadgeProps, BadgeTone } from "./primitives/Badge";
 export { LogoMark } from "./brand/BrandIdentity";
 export type { LogoMarkProps } from "./brand/BrandIdentity";
 export { BrandLockup } from "./brand/BrandIdentity";
+export { MoonwitnessCrown } from "./brand/BrandIdentity";
 export type { BrandLockupProps } from "./brand/BrandIdentity";
 export {
   ActivityIcon, AgentIcon, ApprovalIcon, ArrowDownRightIcon, ArrowLeftIcon, ArrowRightIcon, ArrowUpIcon, ArrowUpRightIcon,

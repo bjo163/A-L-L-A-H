@@ -10,13 +10,13 @@ import "@empire/ui/ui.css";
 export async function generateMetadata(): Promise<Metadata> {
   const language = await getWebLanguage();
   const description = text(language,
-    "Kenali A-L-L-A-H dan ARSY (Agent Reality System Yard & Orchestration): rancangan agency dan orkestrasi agen, alat, lingkungan eksekusi, serta sistem kerja dengan AI sebagai kemampuan dasar.",
-    "Explore A-L-L-A-H and ARSY (Agent Reality System Yard & Orchestration): a proposed agency and orchestration system for agents, tools, runtime environments, and workflows, with AI as a foundational capability.");
+    "Moonwitness: orang berbeda, langit yang sama. Cerita manusia dari berbagai tempat, ide, suara, dan gerakan yang menembus batas.",
+    "Moonwitness: different people, same sky. Human stories from places around the world, ideas, voices, and movements beyond borders.");
   return {
-    title: { default: "A-L-L-A-H — Empire of the Light", template: "%s | A-L-L-A-H" },
+    title: { default: "MOONWITNESS — Empire of the Light", template: "%s | MOONWITNESS" },
     description,
     icons: { icon: "/brand/icon.svg" },
-    openGraph: { title: "A-L-L-A-H • Empire of the Light", description, type: "website" },
+    openGraph: { title: "MOONWITNESS • Empire of the Light", description, type: "website" },
     robots: { index: true, follow: true },
   };
 }
@@ -27,10 +27,10 @@ export default async function CommandCenterLayout({ children }: { children: Reac
     <PublicShell
       skipLabel={text(language,"Lewati ke konten utama","Skip to main content")}
       footerLabel={text(language,"Navigasi footer","Footer navigation")}
-      brand={<Link className="brand" href="/" aria-label={text(language,"Beranda A-L-L-A-H","A-L-L-A-H home")}><BrandLockup name="A-L-L-A-H" descriptor={text(language,"HUB TERPADU","UNIFIED HUB")} /></Link>}
+      brand={<Link className="brand" href="/" aria-label={text(language,"Beranda Moonwitness","Moonwitness home")}><BrandLockup name="MOONWITNESS" descriptor="REAL PEOPLE · SAME SKY" /></Link>}
       navigation={<PrimaryNavigation language={language} />}
-      action={<Link className="header-cta" href="/systems"><IconText icon={<ArrowUpRightIcon />}>{text(language,"Jelajahi sistem","Explore systems")}</IconText></Link>}
-      footerBrand={<BrandLockup size="compact" tone="subtle" name="A-L-L-A-H · EMPIRE OF THE LIGHT" descriptor={text(language,"Belajar dengan terang. Bertindak dengan bukti.","Learn with clarity. Act with evidence.")} />}
+      action={<Link className="header-cta" href="/workspace"><IconText icon={<ArrowUpRightIcon />}>{text(language,"GABUNG BERSAMA KAMI","JOIN THE CREW")}</IconText></Link>}
+      footerBrand={<BrandLockup size="compact" tone="subtle" name="MOONWITNESS · EMPIRE OF THE LIGHT" descriptor={text(language,"Orang berbeda. Langit yang sama.","Different people. Same sky.")} />}
       footerContent={<><span>GENESIS v5.0 · {text(language,"HUB RISET & OPERASI","RESEARCH & OPERATIONS HUB")}</span><span>{text(language,"Diawasi manusia · Sumber jelas","Human-governed · Source-grounded")}</span><Link href="/#identitas">A-L-L-A-H</Link><Link href="/#ekosistem">{text(language,"Ekosistem","Ecosystem")}</Link><Link href="/systems">{text(language,"Atlas sistem","System atlas")}</Link><Link href="/roadmap">{text(language,"Peta jalan & kesiapan","Roadmap & readiness")}</Link><Link href="/">100CENTER</Link><a href="https://github.com/bjo163/empire-of-the-light" target="_blank" rel="noopener noreferrer"><IconText icon={<ExternalLinkIcon />}>GitHub</IconText></a></>}
     >{children}</PublicShell>
   </body></html>;
