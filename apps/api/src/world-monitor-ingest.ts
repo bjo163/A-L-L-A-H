@@ -84,7 +84,10 @@ export const parseQuakes = (body: any) => {
   return body.features.slice(0, 100).map((item: any) => {
     const time = Number(item?.properties?.time);
     if (!Number.isFinite(time) || typeof item?.id !== "string" || !item.id || !Array.isArray(item?.geometry?.coordinates)) throw new Error("USGS event has an invalid ID, timestamp, or coordinates");
-    return { externalId: item.id, observedAt: new Date(time).toISOString(), normalized: { ...item.properties, coordinates: item.geometry.coordinates } };
+    // Apply the same future-clock-skew policy to numeric USGS epoch timestamps
+    // as to ISO timestamps from other providers.
+    const observedAt = parseObservedAt(new Date(time).toISOString());
+    return { externalId: item.id, observedAt, normalized: { ...item.properties, coordinates: item.geometry.coordinates } };
   });
 };
 export const parseKp = (body: any) => {

@@ -64,6 +64,9 @@ test("provider timestamps reject future observations beyond a five-minute clock-
   const excessiveFuture = new Date(Date.now() + 6 * 60 * 1000).toISOString();
   assert.equal(parsers.parseObservedAt(allowedSkew), allowedSkew);
   assert.throws(() => parsers.parseObservedAt(excessiveFuture), /timestamp is in the future/);
+  const quake = (time) => ({ features: [{ id: "usgs-future", properties: { time }, geometry: { coordinates: [0, 0, 1] } }] });
+  assert.equal(parsers.parseQuakes(quake(Date.now() + 4 * 60 * 1000))[0].externalId, "usgs-future");
+  assert.throws(() => parsers.parseQuakes(quake(Date.now() + 6 * 60 * 1000)), /timestamp is in the future/);
 });
 
 test("Open-Meteo validates coordinates and category measurement ranges", async () => {
