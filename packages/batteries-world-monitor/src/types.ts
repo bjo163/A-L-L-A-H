@@ -55,7 +55,15 @@ export interface WorldMonitoringSnapshot {
   regions: WorldRegion[];
   dnaSensors: DnaSensorMapping[];
   telemetryFeeds: TelemetryFeedItem[];
-  sources: Array<{ source: string; category: string; tier: string; status: string; lastFetchedAt: string | null; records: number; durationMs: number | null; errorRate: number; failureStreak: number }>;
+  sources: Array<{
+    source: string; category: string; tier: string;
+    status: string; lastAttemptAt: string | null; lastSuccessAt: string | null;
+    lastFetchedAt: string | null; records: number | null; fetchedPoints: number | null;
+    durationMs: number | null; errorRate: number | null; failureStreak: number | null;
+    parseErrors: number | null; fallbackActivated: boolean | null;
+    freshnessSlaSeconds: number | null; freshnessSeconds: number | null;
+    coverageStatus: WorldMonitorDataState; coverage: number | null;
+  }>;
   observations: Array<{ id: string; source: string; category: string; sourceTier: string; observedAt: string; fetchedAt: string; freshnessSeconds: number | null; confidence: number | null; status: string; normalized: Record<string, unknown> | null }>;
   alerts: Array<{ id: string; level: "normal" | "advisory" | "critical"; category: string; title: string; detail: string; observedAt: string; source: string }>;
   history: Array<{ bucket: string; count: number; categories: Record<string, number> }>;

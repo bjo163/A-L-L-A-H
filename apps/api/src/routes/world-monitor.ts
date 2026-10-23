@@ -65,7 +65,45 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
         let failureStreak = 0;
         for (const run of history) { if (run.status === "failed") failureStreak += 1; else break; }
         const configured = activeSourceDetails.find((item) => item.source === source);
-        return { source, category: latest?.category ?? configured?.category ?? "unknown", tier: latest?.tier ?? configured?.tier ?? "unknown", status: latest?.status ?? "unknown", lastFetchedAt: latest?.completedAt ?? null, records: latest?.recordCount ?? 0, durationMs: latest?.durationMs ?? null, errorRate: recentHistory.length ? recentHistory.filter((run) => run.status === "failed").length / recentHistory.length : 0, failureStreak };
+        const observationHistory = observations.filter((item) => item.source === source);
+        const latestObservation = observationHistory[0];
+        const latestSuccess = history.find((run) => run.status === "success" || run.status === "stale");
+        const counterpart = source.startsWith("open-meteo-gfs-weather-")
+          ? source.replace("open-meteo-gfs-weather-", "open-meteo-weather-")
+          : source === "usgs-fdsn-earthquakes" ? "usgs-earthquakes"
+            : source === "noaa-swpc-kp-final-fallback" ? "noaa-swpc-kp-1m" : null;
+        const primaryHistory = counterpart ? sourceGroups.get(counterpart) ?? [] : [];
+        const primaryLatest = primaryHistory[0];
+        const freshnessSlaSeconds = latest?.metadata?.maxAgeSeconds ?? (configured?.category === "weather" ? 3600 : configured?.category === "atmosphere" ? 10800 : configured?.category === "space-weather" ? 1800 : configured?.category === "disaster" ? 86400 : null);
+        const observedAge = latestObservation ? Math.max(0, Math.floor((Date.now() - Date.parse(latestObservation.observedAt)) / 1000)) : null;
+        const freshnessSeconds = observedAge !== null && Number.isFinite(observedAge) ? observedAge : null;
+        const hasHistory = history.length > 0;
+        const fresh = freshnessSeconds !== null && (freshnessSlaSeconds === null || freshnessSeconds <= freshnessSlaSeconds);
+        const fallbackActivated = configured?.tier !== "fallback" ? false : !primaryLatest ? null :
+          (primaryLatest.status === "failed" || primaryLatest.status === "stale") &&
+          (latest?.status === "success" || latest?.status === "stale") &&
+          Date.parse(latest?.completedAt ?? "") >= Date.parse(primaryLatest.completedAt ?? "");
+        return {
+          source,
+          category: latest?.category ?? configured?.category ?? "unknown",
+          tier: latest?.tier ?? configured?.tier ?? "unknown",
+          status: latest?.status ?? "unknown",
+          lastAttemptAt: latest?.startedAt ?? null,
+          lastSuccessAt: latestSuccess?.completedAt ?? null,
+          lastFetchedAt: latest?.completedAt ?? null,
+          records: hasHistory ? Number(latest?.recordCount ?? 0) : null,
+          fetchedPoints: hasHistory ? Number(latest?.recordCount ?? 0) : null,
+          durationMs: latest?.durationMs ?? null,
+          errorRate: recentHistory.length ? recentHistory.filter((run) => run.status === "failed").length / recentHistory.length : hasHistory ? 0 : null,
+          failureStreak: hasHistory ? failureStreak : null,
+          parseErrors: hasHistory ? history.filter((run) => run.metadata?.failureKind === "parse").length : null,
+          fallbackActivated,
+          freshnessSlaSeconds,
+          freshnessSeconds,
+          coverageStatus: (databaseStatus !== "available" || !hasHistory ? "unknown" : latestObservation && fresh ? "healthy" : "degraded") as WorldMonitoringSnapshot["coverageStatus"],
+          // No expected-point denominator exists in the source contract; keep quantitative coverage unknown.
+          coverage: null,
+        };
       });
       observations = observations.map((item) => {
         const freshnessSeconds = Math.max(0, Math.floor((Date.now() - Date.parse(item.observedAt)) / 1000));
@@ -103,7 +141,7 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
       const hazardAlertLevel: WorldMonitoringSnapshot["hazardAlertLevel"] = uniqueAlerts.some((alert) => alert.level === "critical")
         ? "red"
         : uniqueAlerts.some((alert) => alert.level === "advisory") ? "yellow" : observations.length ? "green" : "unknown";
-      const sourceCoverage = sources.length ? sources.filter((source) => source.status === "success" && source.records > 0).length / sources.length : 0;
+      const sourceCoverage = sources.length ? sources.filter((source) => source.status === "success" && source.records !== null && source.records > 0).length / sources.length : 0;
       const coverageStatus: WorldMonitoringSnapshot["coverageStatus"] = sources.length === 0
         ? "unknown"
         : sourceCoverage === 1 ? "healthy" : sourceCoverage > 0 ? "degraded" : "unavailable";

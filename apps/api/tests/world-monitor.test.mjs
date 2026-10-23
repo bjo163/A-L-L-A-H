@@ -9,7 +9,7 @@ const compiledRoute = ts.transpileModule(
   { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } },
 ).outputText;
 
-function createRoute(checkDatabaseHealth, baseSnapshot, observations = []) {
+function createRoute(checkDatabaseHealth, baseSnapshot, observations = [], runs = [], sourceDetails = []) {
   const load = new Function(
     "exports",
     "checkDatabaseHealth",
@@ -34,10 +34,10 @@ function createRoute(checkDatabaseHealth, baseSnapshot, observations = []) {
     { getItems: () => [], getSummary: () => ({}), updateWorkflowStatus: () => null },
     async () => ({ scannedCount: 0, newItemsCount: 0, items: [], summary: {} }),
     () => "",
-    { query: () => ({ orderBy: () => ({ limit: async () => [] }) }) },
+    { query: () => ({ orderBy: () => ({ limit: async () => runs }) }) },
     { query: () => ({ where: ({ category }) => ({ orderBy: () => ({ limit: async () => observations.filter((item) => item.category === category) }) }) }) },
-    () => [],
-    () => [],
+    () => sourceDetails,
+    () => sourceDetails.map(({ source }) => source),
     async () => {},
     () => async () => {},
     async () => {},
@@ -64,10 +64,10 @@ function createSnapshot() {
   };
 }
 
-async function invoke(checkDatabaseHealth, observations = []) {
+async function invoke(checkDatabaseHealth, observations = [], runs = [], sourceDetails = []) {
   let options;
   let handler;
-  await createRoute(checkDatabaseHealth, createSnapshot(), observations)({
+  await createRoute(checkDatabaseHealth, createSnapshot(), observations, runs, sourceDetails)({
     get(path, routeOptions, routeHandler) {
       if (path === "/v1/world-monitor") {
         options = routeOptions;
@@ -102,7 +102,7 @@ test("configured sources with no ingestion history are exposed as unknown covera
     `${compiledRoute}; return worldMonitorRoutes;`,
   );
   let handler;
-  await load({}, async () => ({ ok: true }), createSnapshot, { getItems: () => [], getSummary: () => ({}), updateWorkflowStatus: () => null }, async () => ({ scannedCount: 0, newItemsCount: 0, items: [], summary: {} }), () => "", { query: () => ({ orderBy: () => ({ limit: async () => [] }) }) }, { query: () => ({ where: () => ({ orderBy: () => ({ limit: async () => [] }) }) }) }, () => ["source-a"], () => [{ source: "source-a", category: "weather", tier: "primary" }], async () => {}, () => async () => {}, async () => {}, () => ({ acquire: () => ({ allowed: true, remaining: 4, retryAfterMs: 0, release() {} }) }))({
+  await load({}, async () => ({ ok: true }), createSnapshot, { getItems: () => [], getSummary: () => ({}), updateWorkflowStatus: () => null }, async () => ({ scannedCount: 0, newItemsCount: 0, items: [], summary: {} }), () => "", { query: () => ({ orderBy: () => ({ limit: async () => [] }) }) }, { query: () => ({ where: () => ({ orderBy: () => ({ limit: async () => [] }) }) }) }, () => [{ source: "source-a", category: "weather", tier: "primary" }], () => ["source-a"], async () => {}, () => async () => {}, async () => {}, () => ({ acquire: () => ({ allowed: true, remaining: 4, retryAfterMs: 0, release() {} }) }))({
     get(path, _options, fn) { if (path === "/v1/world-monitor") handler = fn; }, post() {},
   });
   const result = await handler();
@@ -110,6 +110,36 @@ test("configured sources with no ingestion history are exposed as unknown covera
   assert.equal(result.sources[0].status, "unknown");
   assert.equal(result.coverageStatus, "unavailable");
   assert.equal(result.globalAlertLevel, "yellow");
+});
+
+test("source health exposes actual attempt, success, freshness, coverage and fallback states", async () => {
+  const now = new Date().toISOString();
+  const { result } = await invoke(async () => ({ ok: true }), [{
+    id: "weather-1", source: "open-meteo-weather-london", category: "weather", observedAt: now,
+    status: "available", freshnessSeconds: 0,
+  }, {
+    id: "weather-fallback-1", source: "open-meteo-gfs-weather-london", category: "weather", observedAt: now,
+    status: "available", freshnessSeconds: 0,
+  }], [
+    { source: "open-meteo-weather-london", category: "weather", tier: "primary", status: "failed", startedAt: now, completedAt: now, recordCount: 0, durationMs: 40, metadata: { failureKind: "parse" } },
+    { source: "open-meteo-gfs-weather-london", category: "weather", tier: "fallback", status: "success", startedAt: now, completedAt: now, recordCount: 1, durationMs: 60, metadata: { maxAgeSeconds: 3600 } },
+  ], [
+    { source: "open-meteo-weather-london", category: "weather", tier: "primary" },
+    { source: "open-meteo-gfs-weather-london", category: "weather", tier: "fallback" },
+  ]);
+  const primary = result.sources.find((source) => source.source === "open-meteo-weather-london");
+  const fallback = result.sources.find((source) => source.source === "open-meteo-gfs-weather-london");
+  assert.equal(primary.lastAttemptAt, now);
+  assert.equal(primary.lastSuccessAt, null);
+  assert.equal(primary.failureStreak, 1);
+  assert.equal(primary.parseErrors, 1);
+  assert.equal(primary.coverageStatus, "healthy");
+  assert.equal(fallback.lastSuccessAt, now);
+  assert.equal(fallback.fetchedPoints, 1);
+  assert.equal(fallback.fallbackActivated, true);
+  assert.equal(fallback.freshnessSlaSeconds, 3600);
+  assert.equal(fallback.coverageStatus, "healthy");
+  assert.equal(fallback.coverage, null);
 });
 
 test("an unhealthy database degrades status; a failed health check stays unknown", async () => {

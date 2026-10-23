@@ -99,10 +99,18 @@ async function refreshWorldMonitorSourcesUnlocked(): Promise<void> {
     for (const spec of candidates) {
       const startedAt = now();
       const startedMs = Date.now();
+      let failureKind: "parse" | null = null;
       try {
         const body = await json(spec.url);
-        const records = spec.parse(body).filter((record) => record.normalized && Object.keys(record.normalized).length > 0);
-        if (records.length === 0) throw new Error("Source returned no usable records");
+        let parsedRecords;
+        try {
+          parsedRecords = spec.parse(body);
+        } catch (error) {
+          failureKind = "parse";
+          throw error;
+        }
+        const records = parsedRecords.filter((record) => record.normalized && Object.keys(record.normalized).length > 0);
+        if (records.length === 0) { failureKind = "parse"; throw new Error("Source returned no usable records"); }
         const maxAgeSeconds = spec.category === "weather" ? 3_600 : spec.category === "atmosphere" ? 10_800 : spec.category === "space-weather" ? 1_800 : spec.category === "disaster" ? 86_400 : Number.POSITIVE_INFINITY;
         let freshestAgeSeconds = Number.POSITIVE_INFINITY;
         for (const record of records) freshestAgeSeconds = Math.min(freshestAgeSeconds, Math.max(0, Math.floor((Date.now() - Date.parse(record.observedAt)) / 1000)));
@@ -118,7 +126,7 @@ async function refreshWorldMonitorSourcesUnlocked(): Promise<void> {
         await (WorldMonitorAggregateModel.query() as any).insert({ bucketStart, category: spec.category, source: spec.source, recordCount: records.length, summary: { tier: spec.tier } });
         if (!stale) { succeeded = true; break; }
       } catch (error) {
-        await (WorldMonitorSourceRunModel.query() as any).insert({ source: spec.source, category: spec.category, tier: spec.tier, startedAt, completedAt: now(), status: "failed", recordCount: 0, durationMs: Date.now() - startedMs, error: error instanceof Error ? error.message : String(error), metadata: { url: spec.url } });
+        await (WorldMonitorSourceRunModel.query() as any).insert({ source: spec.source, category: spec.category, tier: spec.tier, startedAt, completedAt: now(), status: "failed", recordCount: 0, durationMs: Date.now() - startedMs, error: error instanceof Error ? error.message : String(error), metadata: { url: spec.url, ...(failureKind ? { failureKind } : {}) } });
       }
     }
     if (!succeeded) continue;
