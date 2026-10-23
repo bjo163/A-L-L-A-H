@@ -51,42 +51,43 @@ function reply() {
 }
 
 before(async () => {
-  await db.raw(`
-    CREATE TABLE users (
+  const tableStatements = [
+    `CREATE TABLE users (
       id uuid PRIMARY KEY, username text NOT NULL, email text NOT NULL,
       password_hash text NOT NULL, display_name text NOT NULL, sovereign boolean NOT NULL DEFAULT false,
       celestial boolean NOT NULL DEFAULT false, tier text NOT NULL DEFAULT 'mortal', status text NOT NULL DEFAULT 'active',
       metadata jsonb, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), deleted_at timestamptz
-    );
-    CREATE TABLE auth_sessions (
+    )`,
+    `CREATE TABLE auth_sessions (
       id uuid PRIMARY KEY, user_id uuid NOT NULL, token_hash text NOT NULL UNIQUE, expires_at timestamptz NOT NULL,
       revoked_at timestamptz, ip_address text, created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), deleted_at timestamptz
-    );
-    CREATE TABLE tenants (
+    )`,
+    `CREATE TABLE tenants (
       id uuid PRIMARY KEY, slug text NOT NULL UNIQUE, display_name text NOT NULL, status text NOT NULL DEFAULT 'active',
       created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), deleted_at timestamptz
-    );
-    CREATE TABLE tenant_memberships (
+    )`,
+    `CREATE TABLE tenant_memberships (
       id uuid PRIMARY KEY, tenant_id uuid NOT NULL, user_id uuid NOT NULL, role text NOT NULL, status text NOT NULL DEFAULT 'active',
       created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), deleted_at timestamptz
-    );
-    CREATE TABLE roles (
+    )`,
+    `CREATE TABLE roles (
       id uuid PRIMARY KEY, name text NOT NULL, slug text NOT NULL UNIQUE, description text,
       created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), deleted_at timestamptz
-    );
-    CREATE TABLE permissions (
+    )`,
+    `CREATE TABLE permissions (
       id uuid PRIMARY KEY, name text NOT NULL, slug text NOT NULL UNIQUE, description text,
       created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), deleted_at timestamptz
-    );
-    CREATE TABLE user_roles (
+    )`,
+    `CREATE TABLE user_roles (
       id uuid PRIMARY KEY, user_id uuid NOT NULL, role_id uuid NOT NULL,
       created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), deleted_at timestamptz
-    );
-    CREATE TABLE role_permissions (
+    )`,
+    `CREATE TABLE role_permissions (
       id uuid PRIMARY KEY, role_id uuid NOT NULL, permission_id uuid NOT NULL,
       created_at timestamptz NOT NULL DEFAULT now(), updated_at timestamptz NOT NULL DEFAULT now(), deleted_at timestamptz
-    );
-  `);
+    )`,
+  ];
+  for (const statement of tableStatements) await db.raw(statement);
 
   await db("users").insert([
     { id: userA, username: "operator-a", email: "operator-a@example.invalid", password_hash: "unused", display_name: "Operator A", status: "active", created_at: now, updated_at: now },
