@@ -43,7 +43,7 @@ test("public routes are anonymous GETs, and guessed draft story slugs receive th
     "@empire/api-contract": dto,
   });
   const registered = [];
-  await routes.moonwitnessPublicApiRoutes({ get(path, options, handler) { registered.push({ path, options, handler }); } });
+  await routes.moonwitnessPublicApiRoutes({ addHook() {}, get(path, options, handler) { registered.push({ path, options, handler }); } });
   assert.ok(registered.length >= 11);
   assert.ok(registered.every((route) => route.options.schema.security.length === 0));
   assert.ok(registered.every((route) => route.path.startsWith("/v1/public/moonwitness/")));

@@ -19,13 +19,14 @@ import {
 import { requirePermission, requireSession } from "./auth.js";
 import { requireTenant } from "./tenant-context.js";
 import { moonwitnessPublicApiRoutes } from "./moonwitness-public.js";
+import { startMoonwitnessPublishingWorker } from "../moonwitness-publishing-worker.js";
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const collectionTransitions: Record<string, string[]> = { draft: ["published", "archived"], published: ["archived"], archived: [] };
 const storyTransitions: Record<string, string[]> = {
   idea: ["draft", "archived"], draft: ["in_review", "archived"],
   in_review: ["changes_requested", "approved"], changes_requested: ["draft", "in_review", "archived"],
-  approved: ["draft", "scheduled", "published", "archived"], scheduled: ["published", "approved", "archived"],
+  approved: ["draft", "scheduled", "published", "archived"], scheduled: ["approved", "archived"],
   published: ["approved", "archived"], archived: ["draft"],
 };
 
@@ -83,6 +84,9 @@ function storyTags(value: unknown): value is string[] {
 }
 
 export async function moonwitnessEditorialRoutes(app: FastifyInstance) {
+  let stopPublishingWorker: (() => void) | undefined;
+  app.addHook("onReady", async () => { stopPublishingWorker = startMoonwitnessPublishingWorker(); });
+  app.addHook("onClose", async () => { stopPublishingWorker?.(); });
   app.addHook("preHandler", requireSession);
   app.addHook("preHandler", requireTenant);
 
@@ -271,14 +275,18 @@ export async function moonwitnessEditorialRoutes(app: FastifyInstance) {
     if (!storyTags(body.tagIds)) return invalid(reply, "Daftar tag cerita tidak valid.");
     if (!stringValue(body.reason, 1, 500)) return invalid(reply, "Alasan perubahan wajib diisi (1–500 karakter).");
     if (body.scheduledAt !== undefined && (typeof body.scheduledAt !== "string" || !Number.isFinite(Date.parse(body.scheduledAt)) || Date.parse(body.scheduledAt) <= Date.now())) return invalid(reply, "Waktu jadwal harus berupa tanggal ISO di masa depan.");
+    if (body.scheduledAt !== undefined && body.editorialState !== "scheduled" || body.editorialState === "scheduled" && body.scheduledAt === undefined) return invalid(reply, "scheduledAt hanya boleh disertakan saat menjadwalkan publikasi.");
     let result;
     try {
     result = await getDatabase().transaction(async (trx) => {
       const story = await MoonwitnessStoryModel.query(trx).where({ id, tenant_id: request.tenantId! }).forUpdate().first();
       if (!story) return { error: "missing" as const };
+      const originalState = story.editorialState;
+      let approvedRevisionForPublish: any;
       const contentChanged = ["title", "synopsis", "body", "classification", "visibility", "tagIds"].some((key) => body[key] !== undefined);
       if (contentChanged && !["draft", "changes_requested"].includes(story.editorialState)) return { error: "locked" as const };
       if (body.editorialState !== undefined) {
+        if (story.editorialState === "scheduled" && body.editorialState === "published") return { error: "scheduled_early" as const };
         if (typeof body.editorialState !== "string" || !isEditorialTransitionAllowed("story", story.editorialState, body.editorialState)) return { error: "transition" as const };
         const isReviewDecision = ["approved", "changes_requested"].includes(body.editorialState) && story.editorialState === "in_review";
         const isUnpublish = body.editorialState === "approved" && story.editorialState === "published";
@@ -288,15 +296,26 @@ export async function moonwitnessEditorialRoutes(app: FastifyInstance) {
         if (["published", "scheduled"].includes(body.editorialState) && !canPublish(request)) return { error: "permission" as const };
         if (["published", "scheduled"].includes(body.editorialState) && story.authorId === request.authUser!.id) return { error: "self_publish" as const };
         if (body.editorialState === "scheduled" && !body.scheduledAt) return { error: "schedule_time" as const };
-        if (body.editorialState === "published") {
+        if (["published", "scheduled"].includes(body.editorialState)) {
           const priorApproval = await AuditLogModel.query(trx).where({ entity: "moonwitness_story", entity_id: id, action: "MOONWITNESS_REVISION_APPROVED" }).whereRaw("payload ->> 'tenantId' = ?", [request.tenantId!]).orderBy("created_at", "desc").first();
+          const approvedRevisionId = priorApproval?.payload?.revisionId;
+          const approvedRevision = approvedRevisionId ? await MoonwitnessContentRevisionModel.query(trx).where({ tenant_id: request.tenantId!, story_id: id, id: approvedRevisionId }).first() : null;
+          const currentTags = (await MoonwitnessStoryTagModel.query(trx).where({ tenant_id: request.tenantId!, story_id: id }).select("tag_id")).map((tag: any) => tag.tagId).sort();
+          const snapshot = approvedRevision?.snapshot as Record<string, any> | undefined;
+          const approvalMatches = Boolean(snapshot && snapshot.storyId === story.id && snapshot.collectionId === story.collectionId && snapshot.slug === story.slug && snapshot.title === story.title && (snapshot.synopsis ?? null) === (story.synopsis ?? null) && snapshot.body === story.body && snapshot.classification === story.classification && snapshot.visibility === story.visibility && Array.isArray(snapshot.tagIds) && JSON.stringify([...snapshot.tagIds].sort()) === JSON.stringify(currentTags));
+          if (!approvalMatches) return { error: "approval" as const };
+          approvedRevisionForPublish = approvedRevision;
           if (priorApproval?.userId === request.authUser!.id) return { error: "self_review" as const };
         }
       }
       const nextClassification = body.classification ?? story.classification;
       const nextVisibility = body.visibility ?? story.visibility;
       const nextState = body.editorialState ?? story.editorialState;
-      if (nextState === "published" && (nextClassification !== "public" || nextVisibility !== "public")) return { error: "publication" as const };
+      if (["published", "scheduled"].includes(nextState) && (nextClassification !== "public" || nextVisibility !== "public")) return { error: "publication" as const };
+      if (["published", "scheduled"].includes(nextState)) {
+        const collection = await MoonwitnessCollectionModel.query(trx).where({ id: story.collectionId, tenant_id: request.tenantId! }).first();
+        if (!collection || collection.status !== "published" || collection.visibility !== "public") return { error: "collection_publication" as const };
+      }
       const tagIds = body.tagIds as string[] | undefined;
       if (tagIds) {
         const found = tagIds.length ? await TagModel.query(trx).where({ tenant_id: request.tenantId! }).whereNull("deleted_at").whereIn("id", tagIds).select("id") : [];
@@ -306,20 +325,28 @@ export async function moonwitnessEditorialRoutes(app: FastifyInstance) {
       }
       const patch: Record<string, unknown> = { revision: story.revision + 1 };
       for (const key of ["title", "synopsis", "body", "editorialState", "classification", "visibility"]) if (body[key] !== undefined) patch[key] = typeof body[key] === "string" ? (body[key] as string).trim() : body[key];
-      if (body.scheduledAt !== undefined) patch.scheduledAt = body.scheduledAt;
+      if (body.editorialState === "scheduled") patch.scheduledAt = new Date(body.scheduledAt as string);
+      else if (body.editorialState !== undefined && story.editorialState === "scheduled") patch.scheduledAt = null;
       // Editing after review invalidates that approval; the new immutable revision must be reviewed again.
       if (contentChanged && story.editorialState === "changes_requested") patch.editorialState = "draft";
       const updated = await story.$query(trx).patchAndFetch(patch);
       const nextTagIds = tagIds ?? (await MoonwitnessStoryTagModel.query(trx).where({ tenant_id: request.tenantId!, story_id: id }).select("tag_id")).map((tag: any) => tag.tagId);
       const revision = await appendStoryRevision(trx, updated, request.authUser!.id, body.reason as string, nextTagIds);
-      if (body.editorialState === "changes_requested" || body.editorialState === "approved" && story.editorialState === "in_review") {
+      if (body.editorialState === "changes_requested" || body.editorialState === "approved" && originalState === "in_review") {
         await (AuditLogModel.query(trx) as any).insert({ userId: request.authUser!.id, action: body.editorialState === "approved" ? "MOONWITNESS_REVISION_APPROVED" : "MOONWITNESS_CHANGES_REQUESTED", entity: "moonwitness_story", entityId: id, payload: { tenantId: request.tenantId, revisionId: revision.id, revision: updated.revision, reason: body.reason }, ipAddress: request.ip });
       }
       if (body.editorialState === "published") {
-        await (MoonwitnessPublicationModel.query(trx) as any).insert({ tenantId: request.tenantId!, storyId: id, revisionId: revision.id, publisherId: request.authUser!.id, snapshot: revision.snapshot, sha256: revision.sha256, publishedAt: new Date() });
-        await (AuditLogModel.query(trx) as any).insert({ userId: request.authUser!.id, action: "MOONWITNESS_REVISION_PUBLISHED", entity: "moonwitness_story", entityId: id, payload: { tenantId: request.tenantId, revisionId: revision.id, revision: updated.revision, reason: body.reason }, ipAddress: request.ip });
+        await (MoonwitnessPublicationModel.query(trx) as any).insert({ tenantId: request.tenantId!, storyId: id, revisionId: approvedRevisionForPublish.id, publisherId: request.authUser!.id, snapshot: approvedRevisionForPublish.snapshot, sha256: approvedRevisionForPublish.sha256, publishedAt: new Date() });
+        await (AuditLogModel.query(trx) as any).insert({ userId: request.authUser!.id, action: "MOONWITNESS_REVISION_PUBLISHED", entity: "moonwitness_story", entityId: id, payload: { tenantId: request.tenantId, revisionId: approvedRevisionForPublish.id, revision: approvedRevisionForPublish.revision, reason: body.reason }, ipAddress: request.ip });
       }
-      if (body.editorialState === "approved" && story.editorialState === "published") {
+      if (body.editorialState === "scheduled") {
+        const approval = await AuditLogModel.query(trx).where({ entity: "moonwitness_story", entity_id: id, action: "MOONWITNESS_REVISION_APPROVED" }).whereRaw("payload ->> 'tenantId' = ?", [request.tenantId!]).orderBy("created_at", "desc").first();
+        await (AuditLogModel.query(trx) as any).insert({ userId: request.authUser!.id, action: "MOONWITNESS_STORY_SCHEDULED", entity: "moonwitness_story", entityId: id, payload: { tenantId: request.tenantId, approvedRevisionId: approval?.payload?.revisionId, scheduledAt: new Date(body.scheduledAt as string).toISOString(), reason: body.reason }, ipAddress: request.ip });
+      }
+      if (["approved", "archived"].includes(body.editorialState as string) && originalState === "scheduled") {
+        await (AuditLogModel.query(trx) as any).insert({ userId: request.authUser!.id, action: "MOONWITNESS_STORY_SCHEDULE_CANCELLED", entity: "moonwitness_story", entityId: id, payload: { tenantId: request.tenantId, cancelledState: body.editorialState, reason: body.reason }, ipAddress: request.ip });
+      }
+      if (body.editorialState === "approved" && originalState === "published") {
         await (AuditLogModel.query(trx) as any).insert({ userId: request.authUser!.id, action: "MOONWITNESS_STORY_UNPUBLISHED", entity: "moonwitness_story", entityId: id, payload: { tenantId: request.tenantId, revision: updated.revision, reason: body.reason }, ipAddress: request.ip });
       }
       return { story: updated };
@@ -334,7 +361,10 @@ export async function moonwitnessEditorialRoutes(app: FastifyInstance) {
     if (result.error === "self_review" || result.error === "self_publish") return reply.code(403).send({ status: "forbidden", message: "Penulis tidak boleh menyetujui atau menerbitkan revisinya sendiri." });
     if (result.error === "locked") return conflict(reply, "Konten terkunci pada status ini; minta perubahan atau kembalikan status ke draft terlebih dahulu.");
     if (result.error === "schedule_time") return invalid(reply, "Jadwal publikasi memerlukan scheduledAt di masa depan.");
+    if (result.error === "approval") return conflict(reply, "Tidak ada revisi publik yang cocok dengan persetujuan editor terbaru.");
+    if (result.error === "scheduled_early") return conflict(reply, "Cerita terjadwal hanya dapat diterbitkan oleh worker saat waktu jadwal tiba.");
     if (result.error === "publication") return invalid(reply, "Cerita harus berklasifikasi public dan memiliki visibilitas public sebelum diterbitkan.");
+    if (result.error === "collection_publication") return conflict(reply, "Koleksi harus berstatus published dan public sebelum cerita diterbitkan atau dijadwalkan.");
     if (result.error === "tags") return invalid(reply, "Semua tag harus aktif dan berada di tenant aktif.");
     return result.story;
   });

@@ -17,7 +17,7 @@ function load(source, dependencies) {
 }
 
 const apiContractSource = await readFile(new URL("../../../packages/api-contract/src/index.ts", import.meta.url), "utf8");
-const contract = load(compile(apiContractSource), { "node:crypto": require("node:crypto") });
+const contract = load(compile(apiContractSource), { "node:crypto": require("node:crypto"), "./moonwitness-public.js": {} });
 const ajv = new Ajv({ strict: false, validateFormats: false });
 const characterCreate = ajv.compile(contract.MOONWITNESS_CHARACTER_CREATE_SCHEMA);
 const signalCreate = ajv.compile(contract.MOONWITNESS_SIGNAL_CREATE_SCHEMA);

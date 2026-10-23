@@ -23,7 +23,7 @@ function loadTs(source, dependencies = {}) {
 }
 
 const apiContractSource = await readFile(new URL("../../../packages/api-contract/src/index.ts", import.meta.url), "utf8");
-const apiContract = loadTs(compileTs(apiContractSource), { "node:crypto": require("node:crypto") });
+const apiContract = loadTs(compileTs(apiContractSource), { "node:crypto": require("node:crypto"), "./moonwitness-public.js": {} });
 const validateCollectionCreate = new Ajv({ strict: false, validateFormats: false }).compile(apiContract.MOONWITNESS_COLLECTION_CREATE_SCHEMA);
 const validateStoryCreate = new Ajv({ strict: false, validateFormats: false }).compile(apiContract.MOONWITNESS_STORY_CREATE_SCHEMA);
 const modelStub = class BatteriesModel {};
@@ -106,6 +106,8 @@ test("editorial state transitions require the reviewed forward path", async () =
   const route = loadTs(compileTs(source), {
     "@empire/batteries-base": {}, "@empire/batteries": {}, "@empire/api-contract": {},
     "./auth.js": {}, "./tenant-context.js": {},
+    "./moonwitness-public.js": { moonwitnessPublicApiRoutes: async () => {} },
+    "../moonwitness-publishing-worker.js": { startMoonwitnessPublishingWorker: () => () => {} },
   });
   assert.equal(route.isEditorialTransitionAllowed("story", "draft", "in_review"), true);
   assert.equal(route.isEditorialTransitionAllowed("story", "draft", "published"), false);
@@ -113,7 +115,7 @@ test("editorial state transitions require the reviewed forward path", async () =
   assert.equal(route.isEditorialTransitionAllowed("story", "in_review", "changes_requested"), true);
   assert.equal(route.isEditorialTransitionAllowed("story", "in_review", "approved"), true);
   assert.equal(route.isEditorialTransitionAllowed("story", "approved", "scheduled"), true);
-  assert.equal(route.isEditorialTransitionAllowed("story", "scheduled", "published"), true);
+  assert.equal(route.isEditorialTransitionAllowed("story", "scheduled", "published"), false);
   assert.equal(route.isEditorialTransitionAllowed("story", "published", "approved"), true);
   assert.equal(route.isEditorialTransitionAllowed("story", "archived", "draft"), true);
   assert.equal(route.isEditorialTransitionAllowed("collection", "draft", "published"), true);
@@ -133,6 +135,8 @@ test("collection creation binds owner and status to server defaults", async () =
     "@empire/api-contract": {},
     "./auth.js": { requirePermission: () => async () => {}, requireSession: async () => {} },
     "./tenant-context.js": { requireTenant: async () => {} },
+    "./moonwitness-public.js": { moonwitnessPublicApiRoutes: async () => {} },
+    "../moonwitness-publishing-worker.js": { startMoonwitnessPublishingWorker: () => () => {} },
   };
   const route = loadTs(compileTs(source), dependencies);
   let handler;
@@ -179,26 +183,11 @@ test("public projection requires published public collection and story states", 
     "@empire/api-contract": {},
     "./auth.js": { requirePermission: () => async () => {}, requireSession: async () => {} },
     "./tenant-context.js": { requireTenant: async () => {} },
+    "./moonwitness-public.js": { moonwitnessPublicApiRoutes: async () => {} },
+    "../moonwitness-publishing-worker.js": { startMoonwitnessPublishingWorker: () => () => {} },
   };
   const route = loadTs(compileTs(routeSource), deps);
-  const handlers = new Map();
-  await route.moonwitnessPublicStoryRoutes({ get(path, ...args) { handlers.set(path, args.at(-1)); } });
-  const handler = handlers.get("/v1/public/moonwitness/stories");
-
-  collections = [];
-  stories = [];
-  assert.deepEqual(await handler({ query: {} }), { items: [] });
-  assert.equal(storyCalls.length, 0, "no visible collections must return an empty public listing");
-
-  collectionCalls.length = 0;
-  storyCalls.length = 0;
-  collections = [{ id: "collection-1", slug: "series", title: "Series", status: "published", visibility: "public" }];
-  stories = [
-    { id: "public-1", collectionId: "collection-1", slug: "public", title: "Public story", body: "Body", editorialState: "published", classification: "public", visibility: "public", tenantId: "private-tenant", authorId: "private-author" },
-    { id: "private-1", collectionId: "collection-1", slug: "private", title: "Private story", body: "Secret", editorialState: "draft", classification: "internal", visibility: "private", tenantId: "private-tenant", authorId: "private-author" },
-  ];
-  const result = await handler({ query: {} });
-  assert.deepEqual(result.items.map(({ id }) => id), ["public-1"]);
-  assert.deepEqual(storyCalls.find(([kind]) => kind === "where"), ["where", { editorial_state: "published", classification: "public", visibility: "public" }]);
-  assert.ok(!("tenantId" in result.items[0]) && !("authorId" in result.items[0]));
+  assert.equal(route.isPublicEditorialProjection({ status: "published", visibility: "public" }, { editorialState: "published", classification: "public", visibility: "public" }), true);
+  assert.equal(route.isPublicEditorialProjection({ status: "draft", visibility: "public" }, { editorialState: "published", classification: "public", visibility: "public" }), false);
+  assert.equal(route.isPublicEditorialProjection({ status: "published", visibility: "public" }, { editorialState: "published", classification: "internal", visibility: "public" }), false);
 });
