@@ -53,10 +53,14 @@ test("Moonwitness schema enforces tenant FKs and seed idempotency in disposable 
     await assert.rejects(db("moonwitness_stories").insert({ id: uuidv7(), tenant_id: tenantA, collection_id: collectionA, author_id: userB, slug: "wrong-author", title: "Invalid", body: "Invalid", editorial_state: "draft", classification: "internal", visibility: "private", revision: 1 }), (error) => error.code === "23503");
     await assert.rejects(db("moonwitness_collections").insert({ id: uuidv7(), tenant_id: tenantA, owner_id: userA, slug: "tenant-a-series", title: "Duplicate", theme: "moonwitness", language: "id", status: "draft", visibility: "private" }), (error) => error.code === "23505");
 
+    const legacyZillId = uuidv7();
+    await db("moonwitness_collections").insert({ id: legacyZillId, tenant_id: tenantA, owner_id: userA, slug: "ziil", title: "ZILL", theme: "moonwitness", language: "id", status: "draft", visibility: "private" });
     await seedMoonwitnessCollections(db, tenantA, userA);
     await seedMoonwitnessCollections(db, tenantA, userA);
-    const seeds = await db("moonwitness_collections").where({ tenant_id: tenantA }).whereIn("slug", ["moonwitness", "the-batteries", "npd-team", "allah-promise", "moonridley", "ziil", "pendeta-online", "sinterclass"]);
+    const seeds = await db("moonwitness_collections").where({ tenant_id: tenantA }).whereIn("slug", ["moonwitness", "the-batteries", "npd-team", "allah-promise", "moonridley", "zill", "pendeta-online", "sinterclass"]);
     assert.equal(seeds.length, 8);
+    assert.equal(seeds.filter((row) => row.slug === "zill").length, 1);
+    assert.equal(seeds.find((row) => row.slug === "zill").id, legacyZillId);
     assert.ok(seeds.every((row) => row.status === "draft" && row.visibility === "private"));
     assert.equal(await db("moonwitness_stories").where({ tenant_id: tenantA, editorial_state: "published", classification: "public", visibility: "public" }).count("id as count").first().then((row) => Number(row.count)), 0);
   } finally {

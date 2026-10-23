@@ -48,6 +48,51 @@ export const API_PATHS = {
   moonwitnessScenes: "/v1/moonwitness/episodes/{episodeId}/scenes",
   moonwitnessComicPages: "/v1/moonwitness/scenes/{sceneId}/pages",
   moonwitnessPublicStories: "/v1/public/moonwitness/stories",
+  moonwitnessCharacters: "/v1/moonwitness/characters",
+  moonwitnessSignals: "/v1/moonwitness/signals",
+} as const;
+
+export type MoonwitnessContentCategory = "fiction" | "user_testimony" | "scriptural_quotation" | "historical_assertion" | "interpretation" | "empirical_claim" | "project_concept";
+export type MoonwitnessEditorialClassification = "public" | "internal" | "confidential" | "restricted";
+export const MOONWITNESS_CHARACTER_CREATE_SCHEMA = {
+  type: "object", additionalProperties: false, required: ["slug", "displayName", "kind"], properties: {
+    slug: { type: "string", minLength: 1, maxLength: 80, pattern: "^[a-z0-9]+(?:-[a-z0-9]+)*$" },
+    displayName: { type: "string", minLength: 1, maxLength: 160 }, aliases: { type: "array", maxItems: 30, uniqueItems: true, items: { type: "string", minLength: 1, maxLength: 160 } },
+    kind: { type: "string", enum: ["fictional", "real_contributor"] }, collectionId: { type: "string", format: "uuid" }, storyId: { type: "string", format: "uuid" },
+    editorialClassification: { type: "string", enum: ["public", "internal", "confidential", "restricted"] },
+    consentStatus: { type: "string", enum: ["granted"] }, consentScope: { type: "string", minLength: 1, maxLength: 2000 }, consentCapturedAt: { type: "string", format: "date-time" },
+  },
+} as const;
+export const MOONWITNESS_CHARACTER_PATCH_SCHEMA = {
+  type: "object", additionalProperties: false, minProperties: 1,
+  allOf: [
+    { if: { properties: { consentStatus: { const: "granted" } }, required: ["consentStatus"] }, then: { required: ["consentScope", "consentCapturedAt"] } },
+    { if: { properties: { consentStatus: { const: "revoked" } }, required: ["consentStatus"] }, then: { required: ["consentRevokedAt"] } },
+  ], properties: {
+    displayName: { type: "string", minLength: 1, maxLength: 160 }, aliases: { type: "array", maxItems: 30, uniqueItems: true, items: { type: "string", minLength: 1, maxLength: 160 } },
+    editorialClassification: { type: "string", enum: ["public", "internal", "confidential", "restricted"] },
+    consentStatus: { type: "string", enum: ["granted", "revoked"] }, consentScope: { type: "string", minLength: 1, maxLength: 2000 }, consentCapturedAt: { type: "string", format: "date-time" }, consentRevokedAt: { type: "string", format: "date-time" },
+  },
+} as const;
+export const MOONWITNESS_SIGNAL_CREATE_SCHEMA = {
+  type: "object", additionalProperties: false, required: ["title", "body", "contentCategory"], allOf: [{ if: { properties: { sensitiveLocation: { const: true } }, required: ["sensitiveLocation"] }, then: { properties: { locationDisclosure: { const: "none" } }, required: ["locationDisclosure"], not: { required: ["locationLabel"] } } }], properties: {
+    title: { type: "string", minLength: 1, maxLength: 200 }, body: { type: "string", minLength: 1, maxLength: 30000 }, characterId: { type: "string", format: "uuid" },
+    contentCategory: { type: "string", enum: ["fiction", "user_testimony", "scriptural_quotation", "historical_assertion", "interpretation", "empirical_claim", "project_concept"] },
+    editorialClassification: { type: "string", enum: ["public", "internal", "confidential", "restricted"] }, claimedAt: { type: "string", format: "date-time" }, observedAt: { type: "string", format: "date-time" },
+    sourceMetadata: { type: "object", additionalProperties: false, properties: { sourceName: { type: "string", maxLength: 200 }, sourceUrl: { type: "string", maxLength: 2048 }, sourcePublishedAt: { type: "string", format: "date-time" }, notes: { type: "string", maxLength: 2000 } } },
+    evidenceLinks: { type: "array", maxItems: 50, items: { type: "object", additionalProperties: false, required: ["label", "url"], properties: { label: { type: "string", minLength: 1, maxLength: 160 }, url: { type: "string", minLength: 1, maxLength: 2048 } } } },
+    sensitiveLocation: { type: "boolean" }, locationDisclosure: { type: "string", enum: ["none", "generalized"] }, locationLabel: { type: "string", maxLength: 120 },
+  },
+} as const;
+export const MOONWITNESS_SIGNAL_PATCH_SCHEMA = {
+  type: "object", additionalProperties: false, minProperties: 1, allOf: [{ if: { properties: { sensitiveLocation: { const: true } }, required: ["sensitiveLocation"] }, then: { properties: { locationDisclosure: { const: "none" } }, required: ["locationDisclosure"], not: { required: ["locationLabel"] } } }], properties: {
+    title: { type: "string", minLength: 1, maxLength: 200 }, body: { type: "string", minLength: 1, maxLength: 30000 }, contentCategory: { type: "string", enum: ["fiction", "user_testimony", "scriptural_quotation", "historical_assertion", "interpretation", "empirical_claim", "project_concept"] },
+    editorialClassification: { type: "string", enum: ["public", "internal", "confidential", "restricted"] }, claimedAt: { type: "string", format: "date-time" }, observedAt: { type: "string", format: "date-time" },
+    sourceMetadata: { type: "object", additionalProperties: false, properties: { sourceName: { type: "string", maxLength: 200 }, sourceUrl: { type: "string", maxLength: 2048 }, sourcePublishedAt: { type: "string", format: "date-time" }, notes: { type: "string", maxLength: 2000 } } },
+    evidenceLinks: { type: "array", maxItems: 50, items: { type: "object", additionalProperties: false, required: ["label", "url"], properties: { label: { type: "string", minLength: 1, maxLength: 160 }, url: { type: "string", minLength: 1, maxLength: 2048 } } } },
+    sensitiveLocation: { type: "boolean" }, locationDisclosure: { type: "string", enum: ["none", "generalized"] }, locationLabel: { type: "string", maxLength: 120 },
+    testimonyConsentStatus: { type: "string", enum: ["granted", "revoked"] }, testimonyConsentScope: { type: "string", minLength: 1, maxLength: 2000 }, testimonyConsentCapturedAt: { type: "string", format: "date-time" }, testimonyConsentRevokedAt: { type: "string", format: "date-time" },
+  },
 } as const;
 
 export type EditorialClassification = "public" | "internal" | "confidential" | "restricted";

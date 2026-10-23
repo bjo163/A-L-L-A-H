@@ -24,6 +24,7 @@ import { collaborationRoutes } from "./routes/collaboration.js";
 import { documentStorageRoutes } from "./routes/document-storage.js";
 import { tenantMembershipRoutes } from "./routes/tenant-memberships.js";
 import { moonwitnessEditorialRoutes, moonwitnessPublicStoryRoutes } from "./routes/moonwitness-editorial.js";
+import { moonwitnessSignalLedgerRoutes } from "./routes/moonwitness-signal-ledger.js";
 import { worldMonitorRoutes } from "./routes/world-monitor.js";
 import { startWorldMonitorScheduler } from "./world-monitor-scheduler.js";
 import { startYoutubeSentinelScheduler } from "./youtube-sentinel-scheduler.js";
@@ -199,6 +200,7 @@ export async function buildServer() {
     if (enabledIds.has("moonwitness-editorial")) {
       await app.register(moonwitnessEditorialRoutes);
       await app.register(moonwitnessPublicStoryRoutes);
+      await app.register(moonwitnessSignalLedgerRoutes);
     }
     await app.register(worldMonitorRoutes);
     await app.ready();

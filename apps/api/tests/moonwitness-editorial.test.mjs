@@ -67,6 +67,9 @@ test("the eight universe collection seeds stay private drafts and use a tenant-s
   });
   const calls = [];
   const fakeKnex = (table) => ({
+    where() { return this; },
+    async first() { return null; },
+    async update() { return 0; },
     insert(rows) {
       const call = { table, rows, conflictColumns: null, ignored: false };
       calls.push(call);

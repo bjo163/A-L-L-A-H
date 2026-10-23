@@ -51,4 +51,6 @@ export * from "./moonwitness-story-tag.model.js";
 export * from "./moonwitness-episode.model.js";
 export * from "./moonwitness-scene.model.js";
 export * from "./moonwitness-comic-page.model.js";
+export * from "./moonwitness-character.model.js";
+export * from "./moonwitness-signal.model.js";
 
