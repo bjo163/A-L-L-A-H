@@ -7,16 +7,21 @@ are not implemented as authoritative services yet.
 
 | Overview card or panel | Authoritative source | Scope and meaning | Empty, loading, or unavailable behavior |
 | --- | --- | --- | --- |
-| Research runs | `GET /v1/research-runs`, `meta.total` (falls back to returned page length only when total is absent) | Active tenant; caller must have `research:read`. Total run records, not stories or published episodes. | `0` is a valid total; loading uses an ellipsis; missing data or refresh error is unavailable; missing permission is Access needed. |
-| System-wide CAB items | `GET /continuum/cab/summary`, `active` | Current implementation is system-wide operational change control: CAB requests/reviews are not editorial content, and the summary query has no tenant filter. The route requires an authenticated session and `cab:read`; it does not establish or select a tenant. The dashboard says “system-wide” to expose the implementation's observed scope; whether this is the intended product policy has not been confirmed by the API/maintainer owner. | `0` is a valid total; loading uses an ellipsis; missing summary or refresh error is unavailable. |
+| Research runs | `GET /v1/research-runs`, `meta.total` | Active tenant; caller must have `research:read`. Total run records, not stories or published episodes. The returned page length is never treated as a total. | `0` is a valid total; loading uses an ellipsis; missing total/data or refresh error is unavailable; missing permission is Access needed. |
+| System-wide active CAB items | `GET /continuum/cab/summary`, `active` | Current implementation is system-wide operational change control: CAB requests/reviews are not editorial content, and the summary query has no tenant filter. The route requires an authenticated session and `cab:read`; it does not establish or select a tenant. The dashboard says “system-wide” to expose the implementation's observed scope; whether this is the intended product policy has not been confirmed by the API/maintainer owner. | `0` is a valid count; loading uses an ellipsis; missing summary or refresh error is unavailable. |
 | Enabled modules | `GET /v1/modules`, each item’s `enabled` flag | System module inventory. The numerator is enabled modules; the denominator is the full returned inventory, unaffected by current text search. | `0/0` is valid when the API returns an empty inventory; loading uses an ellipsis; refresh error suppresses the prior count and reports unavailable. |
 | API health | `GET /health`, `status` | API process health only. Database readiness is separately represented by readiness status; neither is user activity or publication health. | Loading uses the current checking state; refresh error reports unavailable because the combined refresh did not produce a new snapshot. |
 | Continuum API status | `GET /continuum`, `status` | Status exposed by the Continuum API for callers with `continuum:read`; it does not mean Story Studio or Poster Forge is available. | Access needed without permission; loading while fetching; unavailable if missing or refresh fails. |
 | API capabilities | `GET /v1/capabilities`, `capabilities` | Capability names advertised by the API; these are not counts of stories or audiences. | Empty array is explicitly “No capabilities available”; loading/error have separate labels and errors suppress stale capability names. |
 | Recent signals | `GET /continuum/chronicles`, returned `data` page | Recent Continuum audit/chronicle events for callers with `continuum:read`; only the first five returned events are previewed. This is not audience telemetry. | Empty page is “No recent signals”; loading, permission denial, and refresh error have distinct states. |
 
-The dashboard refresh currently collects several endpoints together. While it
-is in progress, health and Continuum cards show checking/loading, metric cards
+The dashboard refresh currently collects several endpoints together. Continuum
+status and chronicles are independently settled: if either endpoint fails, its
+own status/feed is cleared and rendered unavailable, while a successful sibling
+may still render. This avoids showing an old Continuum status as current or an
+empty activity page as if it were a successful no-results response.
+
+While refresh is in progress, health and Continuum cards show checking/loading, metric cards
 show loading, and activity/module lists show loading states. If that refresh
 fails, values from the previous snapshot must not be presented as current:
 count cards switch to unavailable, capability/event previews suppress stale

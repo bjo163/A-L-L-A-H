@@ -74,6 +74,8 @@ export function App() {
   const [agents, setAgents] = useState<ContinuumAgent[]>([]);
   const [lexicon, setLexicon] = useState<KnowledgeEntry[]>([]);
   const [chronicles, setChronicles] = useState<Chronicle[]>([]);
+  const [continuumStatusError, setContinuumStatusError] = useState(false);
+  const [chronicleError, setChronicleError] = useState(false);
   const [directory, setDirectory] = useState<DirectoryUser[]>([]);
   const [search, setSearch] = useState("");
   const [auditPage, setAuditPage] = useState(1);
@@ -132,7 +134,7 @@ export function App() {
     sessionStorage.removeItem("empire.tenant"); sessionStorage.removeItem("empire.tenants");
     setToken(""); setCookieSession(false); setEntity(null); setSummary(null); setRfcs([]); setSelected(null); setRuns([]); setResearchRunTotal(null);
     setSelectedTenantId(""); setTenants([]);
-    setContinuum(null); setAgents([]); setLexicon([]); setChronicles([]); setDirectory([]);
+    setContinuum(null); setAgents([]); setLexicon([]); setChronicles([]); setContinuumStatusError(false); setChronicleError(false); setDirectory([]);
   }
 
   async function refresh() {
@@ -156,7 +158,7 @@ export function App() {
         if (token) sessionStorage.setItem("empire.entity", JSON.stringify(session.entity));
         if (!can(session.entity, "cab:read")) { setSummary(null); setRfcs([]); setSelected(null); }
         if (!can(session.entity, "research:read")) { setRuns([]); setResearchRunTotal(null); }
-        if (!can(session.entity, "continuum:read")) { setContinuum(null); setAgents([]); setLexicon([]); setChronicles([]); }
+        if (!can(session.entity, "continuum:read")) { setContinuum(null); setAgents([]); setLexicon([]); setChronicles([]); setContinuumStatusError(false); setChronicleError(false); }
         if (!can(session.entity, "users:manage")) setDirectory([]);
         if (can(session.entity, "cab:read")) {
           const [cabSummary, cabList] = await Promise.all([client.request<CabSummary>(API_PATHS.cabSummary), client.request<{ items: CabRfc[] }>(API_PATHS.cabRfcs)]);
@@ -167,9 +169,11 @@ export function App() {
           const research = await client.request<{ data?: ResearchRun[]; items?: ResearchRun[]; meta?: { total?: number } }>(API_PATHS.researchRuns);
           const researchItems = research.items ?? research.data ?? [];
           setRuns(researchItems);
-          setResearchRunTotal(typeof research.meta?.total === "number" ? research.meta.total : researchItems.length);
+          setResearchRunTotal(typeof research.meta?.total === "number" ? research.meta.total : null);
         }
         if (can(session.entity, "continuum:read")) {
+          setContinuumStatusError(false);
+          setChronicleError(false);
           const results = await Promise.allSettled([
             client.request<Record<string, unknown>>(API_PATHS.continuum),
             client.request<{ agents: ContinuumAgent[] }>(API_PATHS.continuumAgents),
@@ -177,9 +181,11 @@ export function App() {
             client.request<{ data: Chronicle[]; meta: { page: number; total: number; totalPages: number } }>(`${API_PATHS.continuumChronicles}?page=${auditPage}&limit=25`),
           ]);
           if (results[0].status === "fulfilled") setContinuum(results[0].value);
+          else { setContinuum(null); setContinuumStatusError(true); }
           if (results[1].status === "fulfilled") setAgents(results[1].value.agents ?? []);
           if (results[2].status === "fulfilled") setLexicon(results[2].value.lexicons ?? []);
           if (results[3].status === "fulfilled") setChronicles(results[3].value.data ?? []);
+          else { setChronicles([]); setChronicleError(true); }
         }
         if (can(session.entity, "users:manage")) {
           const users = await client.request<{ data: DirectoryUser[] }>(`${API_PATHS.users}?page=1&limit=100`);
@@ -351,6 +357,8 @@ export function App() {
         readiness={snapshot.readiness}
         checkedAt={snapshot.checkedAt}
         continuumStatus={can(entity, "continuum:read") ? String(continuum?.status ?? (loading ? "loading" : "unavailable")) : "access needed"}
+        continuumStatusUnavailable={continuumStatusError}
+        chronicleUnavailable={chronicleError}
         capabilities={snapshot.capabilities}
         summary={summary}
         researchRunCount={researchRunTotal}
