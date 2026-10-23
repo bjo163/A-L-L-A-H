@@ -17,6 +17,8 @@ test("overview metrics retain truthful sources, zero values, and permission stat
   assert.match(overview, /projectMetricState\(\{ value: researchRunCount, loading, error, permitted: canReadResearch \}\)/);
   assert.match(overview, /projectMetricState\(\{ value: summary\?\.active, loading, error, permitted: canReadCab \}\)/);
   assert.match(overview, /summary\?\.active/);
+  assert.match(overview, /System-wide CAB items/);
+  assert.match(overview, /global summary/);
   assert.match(app, /canReadCab=\{can\(entity, "cab:read"\)\}/);
   assert.match(overview, /permitted: canReadResearch/);
   assert.match(overview, /permitted: canReadCab/);

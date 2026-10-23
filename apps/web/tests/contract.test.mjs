@@ -12,7 +12,7 @@ test("100CENTER renders API health, module data, and World Monitor without demo 
  assert.match(overview,/activeModules/);
  assert.match(overview,/API health/);
  assert.match(overview,/Research runs/);
- assert.match(overview,/Open CAB items/);
+ assert.match(overview,/System-wide CAB items/);
  assert.match(overview,/Continuum API status/);
  assert.match(overview,/API capabilities/);
  assert.match(overview,/Research run totals come from the API/);
