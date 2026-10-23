@@ -15,6 +15,34 @@
 - [ ] Confirm scheduler logs show a successful ingest and that source runs have latency and record counts.
 - [ ] Confirm `world_monitor_observations`, `world_monitor_source_runs`, and `world_monitor_aggregates` contain recent rows.
 
+## YouTube Sentinel scan contract
+
+The public browser-automation snippet has been retired. Operators use the
+server-side scan endpoint instead; it searches YouTube and stages results for
+review. It does not accept browser-scraped `{ query, items }` submissions or
+treat submitted metadata as verified evidence.
+
+- `POST /v1/world-monitor/youtube/scan` requires an authenticated session and
+  the `sentinel:scan` permission. The web UI sends the session token through
+  the shared API client; do not put credentials in scripts, query strings, or
+  downloaded examples.
+- The JSON body accepts `query` (required), `limit`, `forceLive`, `engine`
+  (`innertube`, `playwright`, or `auto`), `sortBy` (`upload_date` or
+  `relevance`), `onlyNew`, and `useBrowserAutomation`. The server performs the
+  search; clients must not submit scraped items.
+- The current in-process gate allows at most five scans per operator per ten
+  minutes and three simultaneous scans per API process. These limits are
+  process-local; deployments with multiple API replicas must use a shared gate
+  before relying on them as a deployment-wide quota.
+- Search results and deterministic risk classifications are unverified leads,
+  not findings of platform policy violations. A reviewer must verify source
+  metadata and evidence before recording a conclusion or external action.
+- Operators must comply with YouTube's current Terms of Service, applicable
+  access restrictions, privacy requirements, and local law. Stop scans if
+  provider controls or terms disallow the selected retrieval method. Browser
+  automation, when explicitly selected, runs server-side and is not a license
+  to bypass access controls.
+
 ## Failure and rollback
 
 - [ ] Simulate a source timeout and verify the fallback source and failed source run are recorded.
