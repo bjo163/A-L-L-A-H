@@ -18,19 +18,33 @@ const operator = {
 function createAuth(envOverrides = {}, { user = operator, session = null } = {}) {
   const env = { NODE_ENV: "test", CORS_ORIGIN: "http://localhost", ...envOverrides };
   let insertedSession;
-  const query = (value) => ({
-    where() { return this; }, whereIn() { return this; }, whereNull() { return this; }, select() { return this; },
+  if (session && !session.$query) session.$query = () => ({ patch: async (fields) => Object.assign(session, fields) });
+  const query = (value, sessionQuery = false) => ({
+    where(column, operator, expected) {
+      if (!sessionQuery) return this;
+      if (typeof column === "object") {
+        for (const [key, target] of Object.entries(column)) {
+          const field = ({ token_hash: "tokenHash", revoked_at: "revokedAt" })[key] ?? key;
+          if (value?.[field] !== target) value = null;
+        }
+      } else {
+        const field = ({ expires_at: "expiresAt" })[column] ?? column;
+        if (operator === ">" && !(Date.parse(value?.[field] ?? "") > Date.parse(expected))) value = null;
+      }
+      return this;
+    }, whereIn() { return this; },
+    whereNull(column) { if (sessionQuery && value?.[({ revoked_at: "revokedAt" })[column] ?? column] != null) value = null; return this; }, select() { return this; },
     withGraphFetched() { return this; }, findById() { return this; },
     first: async () => value,
     insert: async (row) => { if (row.tokenHash) insertedSession = { id: "test-session", ...row }; return insertedSession ?? row; },
     then(resolve, reject) { return Promise.resolve(value ?? []).then(resolve, reject); },
-    patch: async () => 1,
+    patch: async (fields) => { if (sessionQuery && value) Object.assign(value, fields); return 1; },
   });
   const dependencies = {
     "node:crypto": { createHash, randomBytes },
     "@empire/batteries-base": {
       AuditLogModel: { query: () => query([]) },
-      AuthSessionModel: { query: () => query(session) },
+      AuthSessionModel: { query: () => query(session, true) },
       TenantMembershipModel: { query: () => query([]) },
       TenantModel: { query: () => query([]) },
       UserModel: { query: () => query(user) },
@@ -95,4 +109,36 @@ test("expired remember cookie clearing also includes Secure in production", asyn
   await authExports.requireSession({ method: "GET", headers: { cookie: "empire_remember=expired-token" } }, reply);
   assert.equal(reply.statusCode, 401);
   assert.equal(reply.headers["set-cookie"], "empire_remember=; Path=/; HttpOnly; SameSite=Strict; Max-Age=0; Secure");
+});
+
+test("expired and revoked sessions fail closed, and logout revokes the active session", async () => {
+  const token = "valid-session-token";
+  const baseSession = {
+    id: "session-1", userId: operator.id, tokenHash: createHash("sha256").update(token).digest("hex"),
+    expiresAt: new Date(Date.now() + 60_000).toISOString(), revokedAt: null,
+  };
+  for (const invalidSession of [
+    { ...baseSession, expiresAt: new Date(Date.now() - 60_000).toISOString() },
+    { ...baseSession, revokedAt: new Date().toISOString() },
+  ]) {
+    const { authExports } = createAuth({}, { session: invalidSession });
+    const denied = {
+      statusCode: 200,
+      code(statusCode) { this.statusCode = statusCode; return this; },
+      send(body) { this.body = body; return this; },
+      header() { return this; },
+    };
+    await authExports.requireSession({ method: "GET", headers: { authorization: `Bearer ${token}` } }, denied);
+    assert.equal(denied.statusCode, 401);
+  }
+
+  const activeSession = { ...baseSession };
+  const { app } = await createApp({}, { session: activeSession });
+  try {
+    const logout = await app.inject({ method: "POST", url: "/auth/logout", headers: { authorization: `Bearer ${token}` } });
+    assert.equal(logout.statusCode, 200);
+    assert.ok(activeSession.revokedAt);
+    const refresh = await app.inject({ method: "GET", url: "/auth/session", headers: { authorization: `Bearer ${token}` } });
+    assert.equal(refresh.statusCode, 401);
+  } finally { await app.close(); }
 });
