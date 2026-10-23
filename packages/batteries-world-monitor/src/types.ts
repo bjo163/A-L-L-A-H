@@ -1,6 +1,31 @@
 export type RegionStatus = "nominal" | "advisory" | "alert" | "critical" | "unavailable";
 export type AlertLevel = "green" | "yellow" | "orange" | "red" | "unknown";
 export type WorldMonitorDataState = "healthy" | "degraded" | "unavailable" | "unknown";
+export type WorldMonitorSourceRunStatus = "success" | "stale" | "empty" | "failed";
+
+/** Numeric provider measurements are range-checked before persistence. */
+export interface WorldMonitorMeasurements {
+  latitude?: number;
+  longitude?: number;
+  temperature_2m?: number;
+  apparent_temperature?: number;
+  relative_humidity_2m?: number;
+  precipitation?: number;
+  weather_code?: number;
+  cloud_cover?: number;
+  pressure_msl?: number;
+  wind_speed_10m?: number;
+  wind_direction_10m?: number;
+  pm10?: number;
+  pm2_5?: number;
+  carbon_monoxide?: number;
+  nitrogen_dioxide?: number;
+  ozone?: number;
+  aerosol_optical_depth?: number;
+  dust?: number;
+  kp?: number;
+  kpKind?: "near-real-time estimate" | "reported";
+}
 
 export interface WorldRegion {
   id: string;

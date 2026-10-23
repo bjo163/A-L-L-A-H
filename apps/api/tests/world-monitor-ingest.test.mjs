@@ -45,7 +45,7 @@ test("sanitized malformed primary and fallback provider fixtures fail parser val
   const malformedKpFallback = await fixture("noaa-kp-final-malformed");
   const malformedDisasters = await fixture("gdacs-malformed");
   assert.throws(() => parsers.parseOpenMeteo(malformedWeather), /timestamp is invalid/);
-  assert.throws(() => parsers.parseOpenMeteo(malformedWeatherFallback), /missing coordinates or current values/);
+  assert.throws(() => parsers.parseOpenMeteo(malformedWeatherFallback), /missing valid coordinates or current values/);
   assert.throws(() => parsers.parseQuakes(malformedQuakes), /invalid ID, timestamp, or coordinates/);
   assert.throws(() => parsers.parseQuakes(malformedFdsnFallback), /no feature list/);
   assert.throws(() => parsers.parseKp(malformedKp), /Kp value is invalid/);
@@ -56,6 +56,22 @@ test("sanitized malformed primary and fallback provider fixtures fail parser val
 test("timestamps without offsets normalize as UTC and NOAA estimated Kp retains its source kind", () => {
   assert.equal(parsers.parseObservedAt("2026-10-22T04:46:00"), "2026-10-22T04:46:00.000Z");
   assert.equal(parsers.parseObservedAt("2026-10-22T06:46:00+02:00"), "2026-10-22T04:46:00.000Z");
+  for (const value of ["yesterday", "2026-02-30T04:00:00", "2026-10-22 04:00:00", "2026-10-22T25:00:00"]) assert.throws(() => parsers.parseObservedAt(value), /timestamp is invalid/);
+});
+
+test("Open-Meteo validates coordinates and category measurement ranges", async () => {
+  const sample = await fixture("open-meteo-weather");
+  assert.throws(() => parsers.parseOpenMeteo({ ...sample, latitude: 91 }), /valid coordinates/);
+  assert.throws(() => parsers.parseOpenMeteo({ ...sample, current: { ...sample.current, relative_humidity_2m: 120 } }), /outside its valid range/);
+  assert.throws(() => parsers.parseOpenMeteo({ ...sample, current: { time: sample.current.time, provider_debug: "ignored" } }), /no recognized numeric measurements/);
+});
+
+test("NOAA legacy tabular fallback parses named columns and rejects malformed rows", () => {
+  const parsed = parsers.parseKp([["time_tag", "Kp", "a_running", "station_count"], ["2026-10-22 04:00:00", "3.67", "12", "8"]])[0];
+  assert.equal(parsed.observedAt, "2026-10-22T04:00:00.000Z");
+  assert.equal(parsed.normalized.kp, 3.67);
+  assert.equal(parsed.normalized.kpKind, "reported");
+  assert.throws(() => parsers.parseKp([["date", "value"], ["2026-10-22", "2"]]), /tabular payload/);
 });
 
 test("valid empty provider feeds remain an empty result, not a parse error", () => {

@@ -13,14 +13,33 @@ const json = async (url: string): Promise<any> => {
 const now = () => new Date().toISOString();
 export const parseObservedAt = (value: unknown) => {
   if (typeof value !== "string" || !value.trim()) throw new Error("Source observation timestamp is missing");
-  const timestamp = /[zZ]|[+-]\d\d:\d\d$/.test(value) ? value : `${value}Z`;
+  const input = value.trim();
+  // Provider timestamps without an offset are UTC, but only accept an ISO date/time;
+  // Date.parse alone accepts ambiguous strings and silently normalizes impossible dates.
+  if (!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2}(?:\.\d{1,9})?)?(?:Z|[+-]\d{2}:\d{2})?$/i.test(input)) throw new Error("Source observation timestamp is invalid");
+  const timestamp = /(?:Z|[+-]\d\d:\d\d)$/i.test(input) ? input : `${input}Z`;
   const parsed = Date.parse(timestamp);
   if (!Number.isFinite(parsed)) throw new Error("Source observation timestamp is invalid");
-  return new Date(parsed).toISOString();
+  const result = new Date(parsed).toISOString();
+  const datePrefix = input.slice(0, 10);
+  if (new Date(`${datePrefix}T00:00:00Z`).toISOString().slice(0, 10) !== datePrefix) throw new Error("Source observation timestamp is invalid");
+  return result;
 };
+const finiteInRange = (value: unknown, min: number, max: number) => typeof value === "number" && Number.isFinite(value) && value >= min && value <= max;
 export const parseOpenMeteo = (body: any) => {
-  if (!body?.current || !Number.isFinite(Number(body.latitude)) || !Number.isFinite(Number(body.longitude))) throw new Error("Open-Meteo payload is missing coordinates or current values");
-  return [{ observedAt: parseObservedAt(body.current.time), normalized: { latitude: Number(body.latitude), longitude: Number(body.longitude), ...body.current } }];
+  if (!body?.current || !finiteInRange(body.latitude, -90, 90) || !finiteInRange(body.longitude, -180, 180)) throw new Error("Open-Meteo payload is missing valid coordinates or current values");
+  const current = body.current;
+  const observedAt = parseObservedAt(current.time);
+  const measurementRanges: Record<string, [number, number]> = { temperature_2m: [-100, 70], apparent_temperature: [-120, 80], relative_humidity_2m: [0, 100], precipitation: [0, 5000], weather_code: [0, 99], cloud_cover: [0, 100], pressure_msl: [800, 1200], wind_speed_10m: [0, 500], wind_direction_10m: [0, 360], pm10: [0, 5000], pm2_5: [0, 2000], carbon_monoxide: [0, 100000], nitrogen_dioxide: [0, 10000], ozone: [0, 10000], aerosol_optical_depth: [0, 10], dust: [0, 100000] };
+  const measurements: Record<string, unknown> = {};
+  for (const [key, range] of Object.entries(measurementRanges)) {
+    if (current[key] !== undefined) {
+      if (!finiteInRange(current[key], ...range)) throw new Error(`Open-Meteo measurement ${key} is outside its valid range`);
+      measurements[key] = current[key];
+    }
+  }
+  if (!Object.keys(measurements).length) throw new Error("Open-Meteo payload has no recognized numeric measurements");
+  return [{ observedAt, normalized: { latitude: body.latitude, longitude: body.longitude, ...measurements } }];
 };
 export const parseQuakes = (body: any) => {
   if (!Array.isArray(body?.features)) throw new Error("USGS payload has no feature list");
@@ -31,12 +50,23 @@ export const parseQuakes = (body: any) => {
   });
 };
 export const parseKp = (body: any) => {
-  const row = Array.isArray(body) ? body.at(-1) : body;
+  let row = Array.isArray(body) ? body.at(-1) : body;
+  // NOAA's legacy product is tabular JSON: [header[], ...rows[]]. Select the
+  // latest valid data row by its named columns rather than treating arrays as objects.
+  if (Array.isArray(body) && Array.isArray(body[0])) {
+    const headers = body[0].map((value: unknown) => String(value).trim().toLowerCase());
+    const timeIndex = headers.indexOf("time_tag");
+    const kpIndex = headers.indexOf("kp");
+    const candidates = body.slice(1).filter((candidate: unknown) => Array.isArray(candidate) && candidate.length > Math.max(timeIndex, kpIndex));
+    const latest = candidates.at(-1);
+    if (timeIndex < 0 || kpIndex < 0 || !latest) throw new Error("NOAA Kp tabular payload has no valid latest row");
+    row = { time_tag: String(latest[timeIndex]).replace(" ", "T"), kp: latest[kpIndex] };
+  }
   if (!row || typeof row !== "object") throw new Error("NOAA Kp payload has no latest row");
   const rawKp = row.kp_index ?? row.estimated_kp ?? row.Kp ?? (typeof row.kp === "string" ? Number.parseFloat(row.kp) : row.kp);
   const kp = Number(rawKp);
   if (!Number.isFinite(kp) || kp < 0 || kp > 9) throw new Error("NOAA Kp value is invalid");
-  return [{ observedAt: parseObservedAt(row.time_tag ?? row.timeTag), normalized: { kp, kpKind: row.kp_index !== undefined || row.estimated_kp !== undefined ? "near-real-time estimate" : "reported", raw: row } }];
+  return [{ observedAt: parseObservedAt(row.time_tag ?? row.timeTag), normalized: { kp, kpKind: row.kp_index !== undefined || row.estimated_kp !== undefined ? "near-real-time estimate" : "reported" } }];
 };
 
 export const parseDisasters = (body: any) => {
