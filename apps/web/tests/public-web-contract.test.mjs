@@ -74,3 +74,16 @@ test("public routes retain language, shared navigation, page chrome, and loading
   assert.match(sharedLoading, /role="status"/);
   assert.match(explorer, /getWebSystems\(language\)/);
 });
+
+test("primary navigation translates Indonesian labels and preserves public routes in both languages", async () => {
+  const nav = await source("../components/PrimaryNavigation.tsx");
+
+  assert.match(nav, /id: \{ home: "Cerita", ecosystem: "Kru", systems: "Semesta", roadmap: "Sinyal", workspace: "Arsip", github: "Tentang", navigation: "Navigasi Moonwitness", open: "Buka menu", close: "Tutup menu", language: "Pilih bahasa", loading: "Mengganti bahasa", theme: "Tema tampilan", light: "Terang", dark: "Gelap" \}/);
+  assert.match(nav, /en: \{ home: "Stories", ecosystem: "Crew", systems: "Universe", roadmap: "Signal", workspace: "Archive", github: "About", navigation: "Moonwitness navigation", open: "Open menu", close: "Close menu", language: "Choose language", loading: "Changing language", theme: "Appearance theme", light: "Light", dark: "Dark" \}/);
+  assert.match(nav, /\{ key: "home", href: "\/#stories", path: "\/" \}/);
+  assert.match(nav, /\{ key: "ecosystem", href: "\/#crew", path: "\/" \}/);
+  assert.match(nav, /\{ key: "roadmap", href: "\/#signal", path: "\/" \}/);
+  assert.match(nav, /\{ key: "workspace", href: "\/#archive", path: "\/" \}/);
+  assert.match(nav, /\{ key: "systems", href: "\/#universe", path: "\/" \}/);
+  assert.match(nav, /\{ key: "github", href: "\/systems", path: "\/systems" \}/);
+});
