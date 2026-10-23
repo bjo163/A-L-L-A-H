@@ -25,7 +25,7 @@ docker compose --project-directory . --env-file .env -f infra/compose.yaml up -d
 docker compose --project-directory . --env-file .env -f infra/compose.yaml ps
 ```
 
-Default host URLs are `http://localhost:3300` (web app) and `http://localhost:4000` (API). PostgreSQL has no published host port. The API is bound to `0.0.0.0` inside its container and published on loopback by default. The web app uses `/api` on its own origin and forwards requests from its server to `INTERNAL_API_ORIGIN`:
+This Compose file exposes the web app and API only on the internal Compose network; it does not publish host ports. To open the site at `http://localhost:3300`, add an explicit local `ports` mapping for the web service or route it through a local proxy. Do not publish the API unless direct host access is needed; the web app uses `/api` on its own origin and forwards requests from its server to `INTERNAL_API_ORIGIN`. PostgreSQL has no published host port:
 
 ```sh
 docker compose --project-directory . --env-file .env -f infra/compose.yaml build --no-cache web
