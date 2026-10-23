@@ -1,0 +1,14 @@
+{
+  "latitude": 51.5,
+  "longitude": -0.1,
+  "current": {
+    "time": "2026-10-22T04:45",
+    "pm10": 11.2,
+    "pm2_5": 6.4,
+    "carbon_monoxide": 180.1,
+    "nitrogen_dioxide": 14.5,
+    "ozone": 55.3,
+    "aerosol_optical_depth": 0.08,
+    "dust": 0.02
+  }
+}

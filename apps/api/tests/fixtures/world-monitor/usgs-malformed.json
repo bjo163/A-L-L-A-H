@@ -1,0 +1,6 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    { "type": "Feature", "id": "fixture-invalid", "properties": {}, "geometry": { "type": "Point", "coordinates": [] } }
+  ]
+}

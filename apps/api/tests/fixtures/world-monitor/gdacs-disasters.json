@@ -1,0 +1,14 @@
+{
+  "features": [
+    {
+      "id": "fixture-gdacs-001",
+      "properties": {
+        "eventid": "fixture-gdacs-001",
+        "eventtype": "TC",
+        "name": "Fixture tropical cyclone",
+        "fromdate": "2026-10-22T04:30:00Z",
+        "alertlevel": "Green"
+      }
+    }
+  ]
+}

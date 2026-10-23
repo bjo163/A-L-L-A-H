@@ -1,0 +1,5 @@
+{
+  "features": [
+    { "id": "fixture-invalid", "properties": { "eventid": "fixture-invalid", "name": "Missing date" } }
+  ]
+}

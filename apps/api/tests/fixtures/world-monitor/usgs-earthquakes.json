@@ -1,0 +1,11 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "id": "fixture-usgs-001",
+      "properties": { "time": 1792644360000, "mag": 4.2, "place": "fixture region", "status": "reviewed" },
+      "geometry": { "type": "Point", "coordinates": [106.8, -6.2, 10] }
+    }
+  ]
+}
