@@ -10,7 +10,12 @@ const compiled = ts.transpileModule(contractSource, {
   compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS },
 }).outputText;
 const contractModule = { exports: {} };
-new Function("exports", "require", "module", compiled)(contractModule.exports, createRequire(import.meta.url), contractModule);
+const localRequire = createRequire(import.meta.url);
+new Function("exports", "require", "module", compiled)(
+  contractModule.exports,
+  (specifier) => specifier === "./moonwitness-public.js" ? {} : localRequire(specifier),
+  contractModule,
+);
 const { RESEARCH_EVIDENCE_REQUEST_SCHEMA } = contractModule.exports;
 const validateEvidence = new Ajv({ strict: false, validateFormats: false }).compile(RESEARCH_EVIDENCE_REQUEST_SCHEMA);
 
