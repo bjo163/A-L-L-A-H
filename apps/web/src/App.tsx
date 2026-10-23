@@ -58,6 +58,7 @@ export function App() {
   });
   const [snapshot, setSnapshot] = useState(initialSnapshot);
   const [worldSnapshot, setWorldSnapshot] = useState<WorldMonitoringSnapshot | null>(null);
+  const worldSnapshotRef = useRef<WorldMonitoringSnapshot | null>(null);
   const [worldLoading, setWorldLoading] = useState(false);
   const [worldError, setWorldError] = useState("");
   const [worldNextRefreshIn, setWorldNextRefreshIn] = useState(30);
@@ -101,7 +102,11 @@ export function App() {
     try {
       const nextSnapshot = await api.request<WorldMonitoringSnapshot>(API_PATHS.worldMonitor);
       if (worldRequestRef.current === requestId) {
-        if (worldSnapshot && typeof Notification !== "undefined") notifyNewWorldMonitorAlerts(worldSnapshot.alerts, nextSnapshot.alerts, Notification.permission, (title, body) => { new Notification(title, { body }); });
+        const previousSnapshot = worldSnapshotRef.current;
+        if (previousSnapshot && typeof Notification !== "undefined") {
+          notifyNewWorldMonitorAlerts(previousSnapshot.alerts, nextSnapshot.alerts, Notification.permission, (title, body) => { new Notification(title, { body }); }, previousSnapshot.timestamp);
+        }
+        worldSnapshotRef.current = nextSnapshot;
         setWorldSnapshot(nextSnapshot);
         setWorldError("");
       }

@@ -38,3 +38,23 @@ test("notification preference never sends without browser permission", () => {
   assert.equal(count, 0);
   assert.equal(sent, 0);
 });
+
+test("old or timestamp-less observations do not notify during a later refresh", () => {
+  const sent = [];
+  const previous = [{ id: "known", level: "advisory", title: "Known", detail: "old", observedAt: "2026-10-23T10:00:00Z" }];
+  const current = [
+    { id: "historic", level: "critical", title: "Historic", detail: "old event", observedAt: "2026-10-23T09:00:00Z" },
+    { id: "missing-time", level: "critical", title: "Unknown time", detail: "no timestamp" },
+    { id: "new", level: "critical", title: "New", detail: "fresh event", observedAt: "2026-10-23T10:01:00Z" },
+  ];
+  assert.equal(notifyAlerts(previous, current, "granted", (title, body) => sent.push({ title, body }), "2026-10-23T10:00:00Z"), 1);
+  assert.equal(sent.length, 1);
+  assert.match(sent[0].body, /New/);
+});
+
+test("an invalid baseline timestamp fails closed", () => {
+  let sent = 0;
+  const current = [{ id: "new", level: "critical", title: "New", detail: "fresh", observedAt: "2026-10-23T10:01:00Z" }];
+  assert.equal(notifyAlerts([], current, "granted", () => { sent += 1; }, "not-a-date"), 0);
+  assert.equal(sent, 0);
+});
