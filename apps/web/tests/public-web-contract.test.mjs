@@ -87,3 +87,10 @@ test("primary navigation translates Indonesian labels and preserves public route
   assert.match(nav, /\{ key: "systems", href: "\/#universe", path: "\/" \}/);
   assert.match(nav, /\{ key: "github", href: "\/systems", path: "\/systems" \}/);
 });
+
+test("Moonwitness keeps language and appearance controls available in its header navigation", async () => {
+  const styles = await source("../../../packages/ui/src/products/portal-manga.css");
+
+  assert.doesNotMatch(styles, /\.language-switch\s*,\s*\.eol-public-shell__appearance[^\n]*display\s*:\s*none/i);
+  assert.doesNotMatch(styles, /\.theme-toggle[^\n]*display\s*:\s*none/i);
+});
