@@ -48,9 +48,21 @@ export const API_PATHS = {
   moonwitnessScenes: "/v1/moonwitness/episodes/{episodeId}/scenes",
   moonwitnessComicPages: "/v1/moonwitness/scenes/{sceneId}/pages",
   moonwitnessPublicStories: "/v1/public/moonwitness/stories",
+  moonwitnessPublicCollections: "/v1/public/moonwitness/collections",
+  moonwitnessPublicCollection: "/v1/public/moonwitness/collections/{collectionSlug}",
+  moonwitnessPublicCollectionStories: "/v1/public/moonwitness/collections/{collectionSlug}/stories",
+  moonwitnessPublicStory: "/v1/public/moonwitness/collections/{collectionSlug}/stories/{storySlug}",
+  moonwitnessPublicEpisodes: "/v1/public/moonwitness/collections/{collectionSlug}/stories/{storySlug}/episodes",
+  moonwitnessPublicEpisode: "/v1/public/moonwitness/collections/{collectionSlug}/stories/{storySlug}/episodes/{episodeSlug}",
+  moonwitnessPublicPages: "/v1/public/moonwitness/collections/{collectionSlug}/stories/{storySlug}/episodes/{episodeSlug}/pages",
+  moonwitnessPublicPage: "/v1/public/moonwitness/collections/{collectionSlug}/stories/{storySlug}/episodes/{episodeSlug}/pages/{sceneSlug}/{sequence}",
+  moonwitnessPublicSignals: "/v1/public/moonwitness/signals",
+  moonwitnessPublicSignal: "/v1/public/moonwitness/signals/{signalId}",
   moonwitnessCharacters: "/v1/moonwitness/characters",
   moonwitnessSignals: "/v1/moonwitness/signals",
 } as const;
+
+export * from "./moonwitness-public.js";
 
 export type MoonwitnessContentCategory = "fiction" | "user_testimony" | "scriptural_quotation" | "historical_assertion" | "interpretation" | "empirical_claim" | "project_concept";
 export type MoonwitnessEditorialClassification = "public" | "internal" | "confidential" | "restricted";

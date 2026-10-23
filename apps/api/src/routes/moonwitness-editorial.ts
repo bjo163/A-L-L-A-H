@@ -18,6 +18,7 @@ import {
 } from "@empire/api-contract";
 import { requirePermission, requireSession } from "./auth.js";
 import { requireTenant } from "./tenant-context.js";
+import { moonwitnessPublicApiRoutes } from "./moonwitness-public.js";
 
 const uuidPattern = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 const collectionTransitions: Record<string, string[]> = { draft: ["published", "archived"], published: ["archived"], archived: [] };
@@ -381,26 +382,5 @@ export async function moonwitnessEditorialRoutes(app: FastifyInstance) {
 }
 
 export async function moonwitnessPublicStoryRoutes(app: FastifyInstance) {
-  app.get("/v1/public/moonwitness/stories", async (request) => {
-    const query = request.query as { collectionSlug?: string; limit?: string };
-    const limit = Math.min(100, Math.max(1, Number(query.limit) || 20));
-    let collections = MoonwitnessCollectionModel.query()
-      .where({ status: "published", visibility: "public" })
-      .select("id", "title", "slug");
-    if (query.collectionSlug) collections = collections.where({ slug: query.collectionSlug });
-    const visibleCollections = await collections;
-    if (!visibleCollections.length) return { items: [] };
-    const stories = await MoonwitnessStoryModel.query()
-      .whereIn("collection_id", visibleCollections.map((collection) => collection.id))
-      .where({ editorial_state: "published", classification: "public", visibility: "public" })
-      .select("id", "collection_id", "slug", "title", "synopsis", "body", "editorial_state", "classification", "visibility", "created_at", "updated_at")
-      .orderBy("created_at", "desc")
-      .limit(limit);
-    const collectionById = new Map(visibleCollections.map((collection) => [collection.id, collection]));
-    return { items: stories.filter((story) => isPublicEditorialProjection(collectionById.get(story.collectionId)!, story)).map((story) => ({
-      id: story.id, collectionId: story.collectionId, slug: story.slug, title: story.title, synopsis: story.synopsis, body: story.body,
-      createdAt: story.createdAt, updatedAt: story.updatedAt,
-      collection: { id: collectionById.get(story.collectionId)!.id, slug: collectionById.get(story.collectionId)!.slug, title: collectionById.get(story.collectionId)!.title },
-    })) };
-  });
+  await moonwitnessPublicApiRoutes(app);
 }
