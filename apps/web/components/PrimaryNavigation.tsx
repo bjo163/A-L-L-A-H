@@ -18,7 +18,7 @@ const links = [
   { key: "roadmap", href: "/#signal", path: "/" },
   { key: "workspace", href: "/#archive", path: "/" },
   { key: "systems", href: "/#universe", path: "/" },
-  { key: "github", href: "/systems", path: "/systems" },
+  { key: "github", href: "/#manifesto", path: "/" },
 ] as const;
 
 export function PrimaryNavigation({ language }: { language: WebLanguage }) {

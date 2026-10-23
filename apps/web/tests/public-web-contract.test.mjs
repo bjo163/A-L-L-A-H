@@ -88,7 +88,7 @@ test("public routes retain language, shared navigation, page chrome, and loading
 
   assert.match(nav, /eol-language=\$\{nextLanguage\}/);
   assert.match(nav, /href: "\/#crew"/);
-  assert.match(nav, /href: "\/systems"/);
+  assert.match(nav, /href: "\/#manifesto"/);
   assert.match(nav, /href: "\/#signal"/);
   assert.match(nav, /href: "\/#archive"/);
   assert.match(layout, /lang=\{language\}/);
@@ -101,6 +101,7 @@ test("public routes retain language, shared navigation, page chrome, and loading
 
 test("primary navigation translates Indonesian labels and preserves public routes in both languages", async () => {
   const nav = await source("../components/PrimaryNavigation.tsx");
+  const home = await source("../app/MoonwitnessExperience.tsx");
 
   assert.match(nav, /id: \{ home: "Cerita", ecosystem: "Kru", systems: "Semesta", roadmap: "Sinyal", workspace: "Arsip", github: "Tentang", navigation: "Navigasi Moonwitness", open: "Buka menu", close: "Tutup menu", language: "Pilih bahasa", loading: "Mengganti bahasa", theme: "Tema tampilan", light: "Terang", dark: "Gelap" \}/);
   assert.match(nav, /en: \{ home: "Stories", ecosystem: "Crew", systems: "Universe", roadmap: "Signal", workspace: "Archive", github: "About", navigation: "Moonwitness navigation", open: "Open menu", close: "Close menu", language: "Choose language", loading: "Changing language", theme: "Appearance theme", light: "Light", dark: "Dark" \}/);
@@ -109,7 +110,8 @@ test("primary navigation translates Indonesian labels and preserves public route
   assert.match(nav, /\{ key: "roadmap", href: "\/#signal", path: "\/" \}/);
   assert.match(nav, /\{ key: "workspace", href: "\/#archive", path: "\/" \}/);
   assert.match(nav, /\{ key: "systems", href: "\/#universe", path: "\/" \}/);
-  assert.match(nav, /\{ key: "github", href: "\/systems", path: "\/systems" \}/);
+  assert.match(nav, /\{ key: "github", href: "\/#manifesto", path: "\/" \}/);
+  assert.match(home, /id="manifesto"/);
 });
 
 test("Moonwitness keeps language and appearance controls available in its header navigation", async () => {
