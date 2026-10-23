@@ -1,6 +1,6 @@
-# ADR-0006 PROPOSAL — MOONWITNESS BRAND, ROUTE OWNERSHIP & GEN2 BOUNDARY
+# ADR-0006 — MOONWITNESS BRAND, ROUTE OWNERSHIP & GEN2 BOUNDARY
 
-**Status:** Proposed; maintainer and relevant MoonWitness Gen2 owner approval pending. No cutover authorized.
+**Status:** Accepted for this repository's brand, route, and local ownership decisions. External Gen2 integration and cutover remain unapproved.
 **Date:** 2026-10-23
 **Scope:** This repository's public web routes and a future, separately approved Gen2 integration.
 **Decision owners:** Repository maintainer, MoonWitness Gen2 API owner, security/tenant owner (names to be recorded on approval).
@@ -59,9 +59,11 @@ For an approved pilot, rollback means stop new adapter traffic, restore routing 
 
 ## Approval and consequences
 
-**Pending:** named maintainer approval; MoonWitness Gen2 API/capability owner approval; security/privacy and tenant owner review; confirmation of model owners and public content publication owner. Record reviewers, date, and any accepted amendments here before changing status to Accepted.
+**Repository-scope approval:** Maintainer `bjo163` approved this ADR on 2026-10-23. The approval covers the brand hierarchy, canonical routes, local application ownership boundaries, and the stated exclusion of any Gen2 cutover.
 
-Until then, this is a reviewable proposal only. Existing route behavior and approved API contracts remain in force. No `/shadow` alias, parallel authentication/API, Gen2 ownership transfer, schema migration, production traffic shift, or public cutover is approved here.
+**Still required before external integration or a pilot:** named MoonWitness Gen2 API/capability owner approval; security/privacy and tenant owner review; confirmation of model owners and public content publication owner. Record each reviewer, date, and any amendments before enabling cross-system integration.
+
+Existing route behavior and approved API contracts remain in force. No `/shadow` alias, parallel authentication/API, Gen2 ownership transfer, production traffic shift, or public cutover is approved here. New local models may proceed only with a named owner, versioned contract, and explicit tenant/privacy classification recorded in the implementing change.
 
 Expected benefit: route/content ownership and security responsibilities are reviewable before schema/API work. Cost: cross-system work waits for named owners, versioned contracts, and operational evidence. Revisit if the Gen2 contract or product route map changes.
 
@@ -74,5 +76,6 @@ Expected benefit: route/content ownership and security responsibilities are revi
 - [x] Crew/persona fiction explicitly excluded from authentication and API authorization.
 - [x] Versioning, migration, pilot, and rollback conditions documented.
 - [x] Unapproved cutover explicitly excluded.
-- [ ] Maintainer and relevant Gen2/security owners approve and sign this ADR.
+- [x] Maintainer approves and signs the repository-scope route, brand, and ownership decision.
+- [ ] Relevant Gen2/security/tenant owners approve before any cross-system integration or pilot.
 - [ ] Schema/API implementation changes cite the accepted ADR and pass contract/security review.
