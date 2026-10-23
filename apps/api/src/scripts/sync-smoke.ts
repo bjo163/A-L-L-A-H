@@ -162,7 +162,7 @@ async function main() {
       { id: newerId, ...duplicateIdentity, fetched_at: "2026-10-23T00:02:00Z", value: "newer" },
     ]);
     const duplicatePreflight = await preflightModels(scoped, [WorldMonitorDuplicateProbeModel]);
-    assert.equal(duplicatePreflight.ok, true, "explicit deterministic policy makes duplicate repair visible and preflight-safe");
+    assert.deepEqual(duplicatePreflight.models[0].blockers, [], "explicit deterministic policy makes duplicate repair preflight-safe");
     assert.ok(duplicatePreflight.models[0].operations.some((operation) => operation.startsWith("resolve_duplicates:")));
     assert.equal(await scoped(WorldMonitorDuplicateProbeModel.tableName).count<{ count: string }[]>("id as count").first().then((row) => Number(row?.count)), 2, "preflight must not delete legacy rows");
     const duplicateSync = await syncModelsSafely(scoped, [WorldMonitorDuplicateProbeModel]);
