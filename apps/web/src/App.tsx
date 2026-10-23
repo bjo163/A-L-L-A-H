@@ -349,6 +349,7 @@ export function App() {
         capabilities={snapshot.capabilities}
         summary={summary}
         researchRunCount={researchRunTotal}
+        canReadCab={can(entity, "cab:read")}
         canReadResearch={can(entity, "research:read")}
         canReadContinuum={can(entity, "continuum:read")}
         modules={visibleModules}
