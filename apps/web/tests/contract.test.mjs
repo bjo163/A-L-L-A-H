@@ -35,3 +35,16 @@ test("World Monitor shows public source aggregates faithfully and labels referen
  assert.match(monitor,/Reference locations only; no live regional nodes connected/);
  assert.doesNotMatch(monitor,/Verified regional nodes/);
 });
+
+test("YouTube Sentinel requires human evidence inputs and exposes corrective transitions neutrally",async()=>{
+ const sentinel=await readFile(new URL("../src/YoutubeSentinelView.tsx",import.meta.url),"utf8");
+ assert.match(sentinel,/reviewReference/);
+ assert.match(sentinel,/attestsExternalAction/);
+ assert.match(sentinel,/expectedReviewRevision/);
+ assert.match(sentinel,/window\.confirm\("Saya menyatakan sendiri bahwa tindakan eksternal ini benar-benar telah dilakukan/);
+ assert.match(sentinel,/REPORT_RETRACTED/);
+ assert.match(sentinel,/REVIEW_RETRACTED/);
+ assert.match(sentinel,/Catatan laporan eksternal ditarik/);
+ assert.match(sentinel,/Telaah manusia tercatat \(bukan putusan platform\)/);
+ assert.doesNotMatch(sentinel,/Laporan YouTube Terkirim|Telah Diamplifikasi|<option value="FALSE_POSITIVE_DISMISSED">Bukan Pelanggaran<\/option>/);
+});

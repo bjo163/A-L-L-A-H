@@ -249,7 +249,7 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
     notes?: string,
   ) {
     if (!permissions.review) return;
-    const requiresRationale = ["VERIFIED_SYIRIK", "REPORT_FILED", "SHARED_VIA_DAKWAH", "FALSE_POSITIVE_DISMISSED"].includes(action);
+    const requiresRationale = ["VERIFIED_SYIRIK", "REPORT_FILED", "REPORT_RETRACTED", "REVIEW_RETRACTED", "SHARED_VIA_DAKWAH", "FALSE_POSITIVE_DISMISSED"].includes(action);
     const rationale = requiresRationale
       ? window.prompt("Catat konteks dan alasan telaah (minimal 20 karakter). Ini adalah penilaian reviewer, bukan putusan platform:")?.trim()
       : undefined;
@@ -257,10 +257,22 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
       notify("Tindakan dibatalkan: alasan telaah minimal 20 karakter diperlukan.");
       return;
     }
-    const actionReference = ["REPORT_FILED", "SHARED_VIA_DAKWAH"].includes(action)
-      ? window.prompt("Masukkan tautan atau referensi tindakan eksternal:")?.trim()
+    const reviewReference = action === "VERIFIED_SYIRIK"
+      ? window.prompt("Tautan HTTPS bukti publik yang ditelaah (jangan masukkan data sensitif):")?.trim()
       : undefined;
-    if (["REPORT_FILED", "SHARED_VIA_DAKWAH"].includes(action) && !actionReference) return;
+    if (action === "VERIFIED_SYIRIK" && !reviewReference) {
+      notify("Tindakan dibatalkan: tautan bukti publik diperlukan untuk mencatat telaah manusia.");
+      return;
+    }
+    const actionReference = ["REPORT_FILED", "REPORT_RETRACTED", "SHARED_VIA_DAKWAH"].includes(action)
+      ? window.prompt("Masukkan tautan HTTPS yang dapat ditelusuri untuk tindakan eksternal yang sudah dilakukan:")?.trim()
+      : undefined;
+    if (["REPORT_FILED", "REPORT_RETRACTED", "SHARED_VIA_DAKWAH"].includes(action) && !actionReference) return;
+    const attestsExternalAction = ["REPORT_FILED", "REPORT_RETRACTED", "SHARED_VIA_DAKWAH"].includes(action)
+      ? window.confirm("Saya menyatakan sendiri bahwa tindakan eksternal ini benar-benar telah dilakukan dan tautan di atas mendukung catatan tersebut. Sentinel tidak memverifikasi tindakan platform. Lanjutkan?")
+      : undefined;
+    if (["REPORT_FILED", "REPORT_RETRACTED", "SHARED_VIA_DAKWAH"].includes(action) && !attestsExternalAction) return;
+    const currentItem = items.find((item) => item.id === id);
     try {
       const res = await request<{
         ok: boolean;
@@ -268,13 +280,13 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
         summary: YoutubeScanSummary;
       }>(API_PATHS.worldMonitorYoutubeAction, {
         method: "POST",
-        body: { id, action, notes, rationale, actionReference },
+        body: { id, action, notes, rationale, reviewReference, actionReference, attestsExternalAction, expectedReviewRevision: currentItem?.reviewRevision ?? 0 },
       });
 
       if (res.ok) {
         setItems((prev) => prev.map((item) => (item.id === id ? res.item : item)));
         setSummary(res.summary);
-        notify(`Status video diperbarui: ${action}`);
+        notify(`Catatan alur kerja diperbarui: ${workflowStatusLabel(action)}.`);
         if (activeModal) setActiveModal(null);
       }
     } catch (err) {
@@ -298,13 +310,13 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
     }
 
     // Markdown Report
-    let md = `# LAPORAN BUKTI SENTINEL YOUTUBE — ANTI-SYIRIK & KHURAFAT\n`;
+    let md = `# EKSPOR CATATAN SENTINEL YOUTUBE\n`;
     md += `Tanggal Audit: ${new Date().toLocaleString()}\n`;
     md += `Total Bukti Dipantau: ${visibleItems.length} video\n\n`;
     md += `| Judul Video | Kanal | Kategori | Skor Risiko | Status Tindakan |\n`;
     md += `|---|---|---|---|---|\n`;
     for (const item of visibleItems) {
-      md += `| [${item.title.replace(/\|/g, "-")}](${item.url}) | ${item.channelTitle} | ${item.category} | ${item.riskScore}/100 (${item.riskLevel}) | ${item.workflowStatus} |\n`;
+      md += `| [${item.title.replace(/\|/g, "-")}](${item.url}) | ${item.channelTitle} | ${item.category} | ${item.riskScore}/100 (${item.riskLevel}) | ${workflowStatusLabel(item.workflowStatus)} |\n`;
     }
     md += `\n## Rincian Dalil Tauhid & Rekomendasi\n`;
     for (const item of visibleItems.filter((i) => i.riskScore >= 40)) {
@@ -384,9 +396,36 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
     }
   };
 
-  const workflowStatusLabel = (status: YoutubeWorkflowStatus) => status === "VERIFIED_SYIRIK"
-    ? "Kesimpulan teologis reviewer"
-    : status.replace(/_/g, " ");
+  const workflowStatusLabel = (status: YoutubeWorkflowStatus) => ({
+    PENDING_REVIEW: "Menunggu telaah manusia",
+    VERIFIED_SYIRIK: "Telaah manusia tercatat (bukan putusan platform)",
+    COUNTER_DAKWAH_QUEUED: "Disposisi edukasi tercatat",
+    REPORT_FILED: "Reviewer mencatat laporan eksternal telah dilakukan",
+    REPORT_RETRACTED: "Catatan laporan eksternal ditarik",
+    FALSE_POSITIVE_DISMISSED: "Reviewer menilai perlu konteks; bukan putusan platform",
+    REVIEW_RETRACTED: "Catatan telaah ditarik",
+    WISDOM_QUEUED: "Antrean hikmah",
+    AMPLIFY_RECOMMENDED: "Rekomendasi berbagi",
+    SHARED_VIA_DAKWAH: "Reviewer mencatat berbagi eksternal telah dilakukan",
+    ARCHIVED_REFERENCE: "Arsip referensi",
+  })[status];
+  const workflowActionOptions = (item: YoutubeMonitoredItem): YoutubeWorkflowStatus[] => {
+    const next: Record<YoutubeWorkflowStatus, YoutubeWorkflowStatus[]> = {
+      PENDING_REVIEW: ["VERIFIED_SYIRIK", "COUNTER_DAKWAH_QUEUED", "FALSE_POSITIVE_DISMISSED", "WISDOM_QUEUED", "AMPLIFY_RECOMMENDED", "ARCHIVED_REFERENCE"],
+      VERIFIED_SYIRIK: ["REPORT_FILED", "REVIEW_RETRACTED", "COUNTER_DAKWAH_QUEUED", "ARCHIVED_REFERENCE"],
+      COUNTER_DAKWAH_QUEUED: ["ARCHIVED_REFERENCE"],
+      REPORT_FILED: ["REPORT_RETRACTED", "ARCHIVED_REFERENCE"],
+      REPORT_RETRACTED: ["PENDING_REVIEW"],
+      FALSE_POSITIVE_DISMISSED: ["REVIEW_RETRACTED", "ARCHIVED_REFERENCE"],
+      REVIEW_RETRACTED: ["PENDING_REVIEW"],
+      WISDOM_QUEUED: ["AMPLIFY_RECOMMENDED", "SHARED_VIA_DAKWAH", "ARCHIVED_REFERENCE"],
+      AMPLIFY_RECOMMENDED: ["SHARED_VIA_DAKWAH", "ARCHIVED_REFERENCE"],
+      SHARED_VIA_DAKWAH: ["ARCHIVED_REFERENCE"],
+      ARCHIVED_REFERENCE: [],
+    };
+    const isPositiveStatus = (status: YoutubeWorkflowStatus) => ["WISDOM_QUEUED", "AMPLIFY_RECOMMENDED", "SHARED_VIA_DAKWAH", "ARCHIVED_REFERENCE"].includes(status);
+    return [item.workflowStatus, ...next[item.workflowStatus].filter((status) => status === "ARCHIVED_REFERENCE" || isPositiveStatus(status) === (item.direction === "POSITIVE"))];
+  };
 
   const riskLevelLabel = (level: YoutubeRiskLevel) => ({
     CRITICAL_SYIRIK: "Banyak kecocokan heuristik",
@@ -578,22 +617,9 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
             disabled={!permissions.review}
             onChange={(e) => void handleAction(item.id, e.target.value as YoutubeWorkflowStatus)}
           >
-            {item.direction === "POSITIVE" ? (
-              <>
-                <option value="WISDOM_QUEUED">Antrean Hikmah</option>
-                <option value="AMPLIFY_RECOMMENDED">Rekomendasi Amplifikasi</option>
-                <option value="SHARED_VIA_DAKWAH">Telah Diamplifikasi</option>
-                <option value="ARCHIVED_REFERENCE">Arsip Referensi Luhur</option>
-              </>
-            ) : (
-              <>
-                <option value="PENDING_REVIEW">Menunggu Telaah</option>
-                <option value="VERIFIED_SYIRIK">Kesimpulan teologis reviewer</option>
-                <option value="COUNTER_DAKWAH_QUEUED">Bantahan Tauhid</option>
-                <option value="REPORT_FILED">Laporan Terkirim</option>
-                <option value="FALSE_POSITIVE_DISMISSED">Bukan Pelanggaran</option>
-              </>
-            )}
+            {workflowActionOptions(item).map((status) => (
+              <option key={status} value={status}>{workflowStatusLabel(status)}</option>
+            ))}
           </select>
         ),
       },
@@ -1063,13 +1089,13 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
           >
             <option value="ALL">Semua Status</option>
             <option value="PENDING_REVIEW">Menunggu Telaah</option>
-            <option value="VERIFIED_SYIRIK">Kesimpulan teologis reviewer</option>
+            <option value="VERIFIED_SYIRIK">Telaah manusia tercatat (bukan putusan platform)</option>
             <option value="COUNTER_DAKWAH_QUEUED">Disposisi Bantahan Tauhid</option>
-            <option value="REPORT_FILED">Laporan YouTube Terkirim</option>
-            <option value="FALSE_POSITIVE_DISMISSED">Bukan Pelanggaran</option>
+            <option value="REPORT_FILED">Reviewer mencatat laporan eksternal dilakukan</option>
+            <option value="FALSE_POSITIVE_DISMISSED">Reviewer menilai perlu konteks (bukan putusan platform)</option>
             <option value="WISDOM_QUEUED">Antrean Hikmah</option>
             <option value="AMPLIFY_RECOMMENDED">Rekomendasi Amplifikasi</option>
-            <option value="SHARED_VIA_DAKWAH">Telah Diamplifikasi</option>
+            <option value="SHARED_VIA_DAKWAH">Reviewer mencatat berbagi eksternal dilakukan</option>
             <option value="ARCHIVED_REFERENCE">Arsip Referensi Luhur</option>
           </select>
 
