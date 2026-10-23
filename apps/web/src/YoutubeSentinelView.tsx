@@ -20,19 +20,12 @@ interface YoutubeSentinelViewProps {
   permissions: { read: boolean; scan: boolean; review: boolean; schedule: boolean };
 }
 
-const AUTO_SCAN_QUERIES = [
-  "pesugihan uang gaib",
-  "kajian tauhid sunnah",
-  "dukun santet online",
-  "khotbah kristen kasih",
-  "cek khodam gratis",
-];
-
 export function YoutubeSentinelView({ searchQuery = "", token, permissions }: YoutubeSentinelViewProps) {
   const request = <T,>(path: string, options: ApiRequestOptions = {}) => api.request<T>(path, { ...options, token });
   const [items, setItems] = useState<YoutubeMonitoredItem[]>([]);
   const [summary, setSummary] = useState<YoutubeScanSummary | null>(null);
   const [loading, setLoading] = useState(true);
+  const [catalogError, setCatalogError] = useState<string | null>(null);
   const [scanning, setScanning] = useState(false);
   const [scanProgress, setScanProgress] = useState<string | null>(null);
   const [queryInput, setQueryInput] = useState("pesugihan uang gaib");
@@ -121,7 +114,7 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
       });
       if (res.ok) {
         notify(res.message || "Pemindaian background selesai!");
-        void fetchCatalogAndAutoScan();
+        void fetchCatalog();
         void fetchSchedulerStatus();
       }
     } catch (err) {
@@ -158,9 +151,11 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
     }
   }
 
-  // Load initial catalog, then auto-scan if empty
-  async function fetchCatalogAndAutoScan() {
+  // Catalog reads are side-effect-free; crawls require an explicit operator action.
+  async function fetchCatalog() {
+    if (!permissions.read) return;
     setLoading(true);
+    setCatalogError(null);
     try {
       const res = await request<{
         ok: boolean;
@@ -170,66 +165,19 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
       if (res.ok) {
         setItems(res.items);
         setSummary(res.summary);
-        // Auto-scan if catalog is empty (first run / fresh server restart)
-        if (res.items.length === 0 && permissions.scan) {
-          setLoading(false);
-          await runAutoScan();
-          return;
-        }
+      } else {
+        setCatalogError("Katalog Sentinel tidak tersedia. Coba muat ulang.");
       }
-    } catch {
-      // In case of network error, proceed to auto-scan directly
-      await runAutoScan();
-      return;
+    } catch (error) {
+      setCatalogError(error instanceof Error ? error.message : "Katalog Sentinel tidak tersedia.");
     } finally {
       setLoading(false);
     }
   }
 
-  // Run a multi-query automatic scan through default anti-syirik keywords
-  async function runAutoScan() {
-    if (!permissions.scan) return;
-    setScanning(true);
-    let totalScanned = 0;
-    let crawlerModeUsed = "";
-    for (let i = 0; i < AUTO_SCAN_QUERIES.length; i++) {
-      const q = AUTO_SCAN_QUERIES[i];
-      setScanProgress(`Memindai kata kunci ${i + 1}/${AUTO_SCAN_QUERIES.length}: "${q}"…`);
-      try {
-        const res = await request<{
-          ok: boolean;
-          scannedCount: number;
-          crawlerMode?: string;
-          items: YoutubeMonitoredItem[];
-          summary: YoutubeScanSummary;
-        }>(API_PATHS.worldMonitorYoutubeScan, {
-          method: "POST",
-          body: { query: q, limit: 8, forceLive: true, engine: "auto", sortBy: "upload_date" },
-        });
-        if (res.ok) {
-          setItems(res.items);
-          setSummary(res.summary);
-          totalScanned += res.scannedCount;
-          if (res.crawlerMode) crawlerModeUsed = res.crawlerMode;
-        }
-      } catch {
-        // Continue to next query
-      }
-    }
-    setScanProgress(null);
-    setScanning(false);
-    const modeLabel =
-      crawlerModeUsed === "youtubei_innertube"
-        ? "YouTube.js InnerTube"
-        : crawlerModeUsed === "playwright_headless_browser"
-          ? "Playwright Chromium"
-          : "Live Fetch";
-    notify(`Auto-pemindaian selesai via ${modeLabel}: ${totalScanned} video dievaluasi dari ${AUTO_SCAN_QUERIES.length} kata kunci.`);
-  }
-
   useEffect(() => {
     if (!permissions.read) return;
-    void fetchCatalogAndAutoScan();
+    void fetchCatalog();
     void fetchSchedulerStatus();
   }, []);
 
@@ -281,7 +229,11 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
             : res.crawlerMode === "no_results"
               ? "Tidak ada hasil live"
               : "Heuristic";
-        notify(`Pemindaian selesai via ${mode}: ${res.scannedCount} video dievaluasi.${res.diagnosticMessage ? " Info: " + res.diagnosticMessage : ""}`);
+        if (res.scannedCount === 0 || res.crawlerMode === "no_results") {
+          notify(`Tidak ada hasil pemindaian dari ${mode}.${res.diagnosticMessage ? " Info: " + res.diagnosticMessage : ""}`);
+        } else {
+          notify(`Pemindaian selesai via ${mode}: ${res.scannedCount} video dievaluasi.${res.diagnosticMessage ? " Info: " + res.diagnosticMessage : ""}`);
+        }
       }
     } catch (err) {
       notify(`Gagal memindai: ${err instanceof Error ? err.message : "Error tidak diketahui"}`);
@@ -911,7 +863,7 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
             onKeyDown={(e) => e.key === "Enter" && void handleScan()}
           />
           <Button variant="primary" onClick={() => void handleScan()} disabled={scanning}>
-            {scanning ? "Sedang Memindai..." : <IconText icon={<SparkIcon />}>Jalankan Pemindaian Otomatis</IconText>}
+            {scanning ? "Sedang Memindai..." : <IconText icon={<SparkIcon />}>Jalankan Pemindaian</IconText>}
           </Button>
         </div>}
 
@@ -1169,10 +1121,18 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
       </div>
 
       {/* ── Monitored Items View ─────────────────────────────────────────────── */}
-      {visibleItems.length === 0 ? (
+      {catalogError ? (
         <EmptyState
-          title="Tidak ada konten yang cocok"
-          description="Ubah kata kunci pencarian atau sesuaikan filter kategori dan risiko."
+          title="Katalog YouTube Sentinel tidak tersedia"
+          description={catalogError}
+          action={<Button variant="secondary" onClick={() => void fetchCatalog()} disabled={loading}>{loading ? "Memuat…" : "Coba lagi"}</Button>}
+        />
+      ) : loading ? (
+        <EmptyState title="Memuat katalog YouTube Sentinel" description="Data tersimpan sedang dimuat. Pemindaian tidak dimulai otomatis." />
+      ) : visibleItems.length === 0 ? (
+        <EmptyState
+          title={items.length === 0 ? "Katalog Sentinel kosong" : "Tidak ada konten yang cocok"}
+          description={items.length === 0 ? "Tidak ada hasil tersimpan. Gunakan kontrol pemindaian manual jika Anda memiliki izin." : "Ubah kata kunci pencarian atau sesuaikan filter kategori dan risiko."}
         />
       ) : viewMode === "table" ? (
         <div className="sentinel-table-wrapper">
@@ -1700,7 +1660,7 @@ export function YoutubeSentinelView({ searchQuery = "", token, permissions }: Yo
                     if (res.ok) {
                       notify(res.message || "Berhasil menautkan channel ke data Partner!");
                       setActiveModal(null);
-                      void fetchCatalogAndAutoScan();
+                      void fetchCatalog();
                     }
                   } catch (err) {
                     notify(`Gagal menautkan Partner: ${err instanceof Error ? err.message : "Error"}`);
