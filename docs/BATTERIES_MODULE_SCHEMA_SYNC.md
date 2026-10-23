@@ -16,7 +16,9 @@ The sync engine may:
 - add missing declared indexes and unique constraints after checking existing data for conflicts;
 - report the exact schema changes it applied.
 
-It must not silently drop tables or columns, infer renames, rewrite existing types, tighten nullability on existing data, or replace user-edited seed content. Preflight checks primary keys, field types/nullability, duplicate values before unique indexes, and orphan/conflicting foreign keys. Unsafe drift stops startup and reports the table/column and the needed reviewed upgrade rule. No DDL or seed operation may partially commit.
+By default, sync adds compatible schema only; it does not drop tables or columns, infer renames, rewrite existing types, tighten nullability on existing data, or replace user-edited seed content. Preflight checks primary keys, field types/nullability, duplicate values before unique indexes, and orphan/conflicting foreign keys. Unsafe drift stops startup and reports the table/column and the needed reviewed upgrade rule. No DDL or data repair may partially commit.
+
+Models may explicitly declare a deterministic `uniqueConflictResolutions` policy for a unique constraint when legacy duplicate rows represent one logical record. Preflight reports this repair without writing. During the serialized sync transaction, Batteries keeps the row selected by the model's `keepBy` fields (descending, then `id`), removes superseded duplicates, and creates the unique index. Models without such a policy continue to block on duplicates. This mechanism is for idempotent, model-defined reconciliation; it does not infer a merge policy for arbitrary tables.
 
 PostgreSQL advisory transaction locks serialize concurrent API replicas. The complete module installation and its seed operation run inside one transaction. Seeds use stable natural keys and insert-if-absent behavior; credentials are required only when creating the privileged local accounts and are never reset by restart.
 

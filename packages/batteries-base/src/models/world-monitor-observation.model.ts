@@ -3,6 +3,10 @@ import { BatteriesModel, type FieldDefinition } from "@empire/batteries";
 export class WorldMonitorObservationModel extends BatteriesModel {
   static override tableName = "world_monitor_observations";
   static override uniqueConstraints = [["source", "externalId", "observedAt"]];
+  static override uniqueConflictResolutions = [{
+    columns: ["source", "externalId", "observedAt"],
+    keepBy: ["fetchedAt", "updatedAt"],
+  }];
   static override fields: Record<string, FieldDefinition> = {
     source: { type: "string", required: true, index: true },
     sourceTier: { type: "string", required: true, defaultTo: "primary" },

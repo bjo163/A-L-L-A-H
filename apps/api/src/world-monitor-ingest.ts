@@ -57,6 +57,7 @@ export const parseObservedAt = (value: unknown) => {
   const timestamp = /(?:Z|[+-]\d\d:\d\d)$/i.test(input) ? input : `${input}Z`;
   const parsed = Date.parse(timestamp);
   if (!Number.isFinite(parsed)) throw new Error("Source observation timestamp is invalid");
+  if (parsed > Date.now() + 5 * 60 * 1000) throw new Error("Source observation timestamp is in the future");
   const result = new Date(parsed).toISOString();
   const datePrefix = input.slice(0, 10);
   if (new Date(`${datePrefix}T00:00:00Z`).toISOString().slice(0, 10) !== datePrefix) throw new Error("Source observation timestamp is invalid");

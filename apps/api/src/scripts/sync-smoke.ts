@@ -37,6 +37,22 @@ class SyncProbeModel extends BatteriesModel {
   };
 }
 
+class WorldMonitorDuplicateProbeModel extends BatteriesModel {
+  static override tableName = "world_monitor_duplicate_probe";
+  static override uniqueConstraints = [["source", "externalId", "observedAt"]];
+  static override uniqueConflictResolutions = [{
+    columns: ["source", "externalId", "observedAt"],
+    keepBy: ["fetchedAt", "updatedAt"],
+  }];
+  static override fields: Record<string, FieldDefinition> = {
+    source: { type: "string", required: true },
+    externalId: { type: "string", required: true },
+    observedAt: { type: "timestamp", required: true },
+    fetchedAt: { type: "timestamp", required: true },
+    value: { type: "string", required: true },
+  };
+}
+
 async function main() {
   assertDisposableSyncDatabase();
   const { env } = await import("../env.js");
@@ -127,6 +143,33 @@ async function main() {
     await scoped(SyncProbeModel.tableName).where({ id: duplicateProbeId }).delete();
     const uniqueSync = await syncModelsSafely(scoped, [SyncProbeModel]);
     assert.ok(uniqueSync.createdIndexes.some((item) => item.unique && item.columns.join(",") === "name,optional_note"));
+
+    await scoped.schema.createTable(WorldMonitorDuplicateProbeModel.tableName, (table) => {
+      table.uuid("id").primary();
+      table.string("source").notNullable();
+      table.string("external_id").notNullable();
+      table.timestamp("observed_at", { useTz: true }).notNullable();
+      table.timestamp("fetched_at", { useTz: true }).notNullable();
+      table.string("value").notNullable();
+      table.timestamp("created_at", { useTz: true }).nullable();
+      table.timestamp("updated_at", { useTz: true }).nullable();
+    });
+    const duplicateIdentity = { source: "USGS", external_id: "event-1", observed_at: "2026-10-23T00:00:00Z" };
+    const olderId = randomUUID();
+    const newerId = randomUUID();
+    await scoped(WorldMonitorDuplicateProbeModel.tableName).insert([
+      { id: olderId, ...duplicateIdentity, fetched_at: "2026-10-23T00:01:00Z", value: "older" },
+      { id: newerId, ...duplicateIdentity, fetched_at: "2026-10-23T00:02:00Z", value: "newer" },
+    ]);
+    const duplicatePreflight = await preflightModels(scoped, [WorldMonitorDuplicateProbeModel]);
+    assert.equal(duplicatePreflight.ok, true, "explicit deterministic policy makes duplicate repair visible and preflight-safe");
+    assert.ok(duplicatePreflight.models[0].operations.some((operation) => operation.startsWith("resolve_duplicates:")));
+    assert.equal(await scoped(WorldMonitorDuplicateProbeModel.tableName).count<{ count: string }[]>("id as count").first().then((row) => Number(row?.count)), 2, "preflight must not delete legacy rows");
+    const duplicateSync = await syncModelsSafely(scoped, [WorldMonitorDuplicateProbeModel]);
+    assert.ok(duplicateSync.createdIndexes.some((item) => item.unique && item.columns.join(",") === "source,external_id,observed_at"));
+    const keptDuplicate = await scoped(WorldMonitorDuplicateProbeModel.tableName).where({ id: newerId }).first();
+    assert.equal(keptDuplicate?.value, "newer", "repair keeps the most recently fetched row");
+    assert.equal(await scoped(WorldMonitorDuplicateProbeModel.tableName).where({ id: olderId }).first(), undefined, "repair removes the superseded duplicate");
     SyncProbeModel.fields = {
       ...SyncProbeModel.fields,
       unsafeRequired: { type: "string", required: true },
@@ -181,7 +224,7 @@ async function main() {
     assert.equal((await scoped(SyncProbeModel.tableName).where({ id: firstProbeId }).first())?.name, "upgraded", "failed upgrade must roll back data");
     assert.deepEqual((await getModuleSchemaStatus(scoped, [upgradedKernel])).map((item) => item.state), ["current"]);
 
-    console.log("PASS: dry-run, atomic install rollback, module allowlist, journal, additive column, blocked drift, versioned upgrade/rollback, concurrent/idempotent seeds, and edit preservation.");
+    console.log("PASS: dry-run, atomic install rollback, module allowlist, journal, additive column, blocked drift, deterministic legacy duplicate resolution, versioned upgrade/rollback, concurrent/idempotent seeds, and edit preservation.");
   } finally {
     try {
       await scoped?.destroy();

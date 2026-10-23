@@ -109,7 +109,7 @@ export function declaredForeignKeys(model: typeof BatteriesModel) {
   const singleColumn = Object.entries(model.fields).flatMap(([fieldName, field]) => field.references ? [{
     columns: [camelToSnake(fieldName)],
     referencedTable: field.references.table,
-    referencedColumns: [field.references.column],
+    referencedColumns: [camelToSnake(field.references.column)],
     onDelete: field.references.onDelete,
   }] : []);
   const composite = model.foreignConstraints.map((constraint) => ({
@@ -195,6 +195,12 @@ export async function preflightModels(
         entry.blockers.push("model declares an invalid composite unique constraint");
       }
     }
+    for (const resolution of model.uniqueConflictResolutions) {
+      if (!model.uniqueConstraints.some((fields) => fields.length === resolution.columns.length && fields.every((field, index) => field === resolution.columns[index])) ||
+        !resolution.keepBy.length || resolution.keepBy.some((field) => !["id", "createdAt", "updatedAt", "deletedAt"].includes(field) && !(field in model.fields))) {
+        entry.blockers.push("model declares an invalid unique conflict resolution policy");
+      }
+    }
     for (const constraint of model.foreignConstraints) {
       if (!constraint.columns.length || constraint.columns.length !== constraint.references.columns.length ||
         new Set(constraint.columns).size !== constraint.columns.length ||
@@ -272,11 +278,17 @@ export async function preflightModels(
         for (const column of requirement.columns) duplicateQuery.whereNotNull(column);
         const duplicate = await duplicateQuery.first();
         if (duplicate) {
-          entry.blockers.push(`unique index on (${requirement.columns.join(", ")}) would fail because duplicate values exist`);
-          continue;
+          const resolution = model.uniqueConflictResolutions.find((item) => item.columns.length === requirement.columns.length && item.columns.map(camelToSnake).every((column, index) => column === requirement.columns[index]));
+          if (!resolution) {
+            entry.blockers.push(`unique index on (${requirement.columns.join(", ")}) would fail because duplicate values exist`);
+            continue;
+          }
+          entry.operations.push(`resolve_duplicates:${requirement.columns.join(",")}`);
         }
       }
-      entry.operations.push(`${requirement.unique ? "create_unique_index" : "create_index"}:${requirement.columns.join(",")}`);
+      if (!entry.operations.includes(`create_unique_index:${requirement.columns.join(",")}`)) {
+        entry.operations.push(`${requirement.unique ? "create_unique_index" : "create_index"}:${requirement.columns.join(",")}`);
+      }
     }
     const foreignKeys = await getForeignKeys(knex, schemaName, table);
     for (const reference of declaredForeignKeys(model)) {
@@ -344,6 +356,13 @@ async function syncModelsUnlocked(
   knex: Knex | Knex.Transaction,
   models: Array<typeof BatteriesModel>,
 ): Promise<SchemaSyncResult> {
+  const beforeRepair = await preflightModels(knex, models);
+  const initialBlockers = beforeRepair.models.flatMap((model) =>
+    model.blockers.map((blocker) => `${model.table}: ${blocker}`),
+  );
+  if (initialBlockers.length) throw new Error(`Batteries schema preflight blocked sync: ${initialBlockers.join("; ")}`);
+
+  await resolveDeclaredUniqueConflicts(knex, models);
   const preflight = await preflightModels(knex, models);
   const blockers = preflight.models.flatMap((model) =>
     model.blockers.map((blocker) => `${model.table}: ${blocker}`),
@@ -451,9 +470,15 @@ async function syncModelsUnlocked(
       await knex.schema.alterTable(tableName, (table) => {
         if (missingCoreColumns.includes("created_at")) table.timestamp("created_at", { useTz: true }).notNullable().defaultTo(knex.fn.now());
         if (missingCoreColumns.includes("updated_at")) table.timestamp("updated_at", { useTz: true }).notNullable().defaultTo(knex.fn.now());
-        if (missingCoreColumns.includes("deleted_at")) table.timestamp("deleted_at", { useTz: true }).nullable();
+        if (missingCoreColumns.includes("deleted_at")) {
+          table.timestamp("deleted_at", { useTz: true }).nullable();
+          table.index(["deleted_at"]);
+        }
       });
       for (const column of missingCoreColumns) result.addedColumns.push({ table: tableName, column });
+      if (missingCoreColumns.includes("deleted_at")) {
+        result.createdIndexes.push({ table: tableName, columns: ["deleted_at"], unique: false });
+      }
     }
 
     const indexes = await getIndexes(knex, schemaName!, tableName);
@@ -487,6 +512,53 @@ async function syncModelsUnlocked(
     if (changeCount === changeMarker) result.unchangedTables.push(tableName);
   }
   return result;
+}
+
+async function resolveDeclaredUniqueConflicts(
+  knex: Knex | Knex.Transaction,
+  models: Array<typeof BatteriesModel>,
+): Promise<void> {
+  for (const model of models) {
+    const tableName = model.tableName;
+    if (!tableName || !(await knex.schema.hasTable(tableName))) continue;
+    for (const resolution of model.uniqueConflictResolutions) {
+      const columns = resolution.columns.map(camelToSnake);
+      const existingIndexes = await getIndexes(knex, (await knex.raw("SELECT current_schema() AS schema_name")).rows[0].schema_name, tableName);
+      if (existingIndexes.some((index) => index.unique && index.columns.length === columns.length && index.columns.every((column, index) => column === columns[index]))) continue;
+
+      const duplicateQuery = knex(tableName)
+        .select(columns)
+        .groupBy(columns)
+        .havingRaw("count(*) > 1");
+      for (const column of columns) duplicateQuery.whereNotNull(column);
+      const duplicate = await duplicateQuery.first();
+      if (!duplicate) continue;
+
+      const quote = (identifier: string) => knex.ref(identifier).toQuery();
+      const tableSql = quote(tableName);
+      const columnSql = columns.map(quote).join(", ");
+      const orderColumns = [...resolution.keepBy, "id"].filter((column, index, all) => all.indexOf(column) === index);
+      const orderSql = orderColumns.map((field) => `${quote(camelToSnake(field))} DESC NULLS LAST`).join(", ");
+      const nonNullSql = columns.map((column) => `${quote(column)} IS NOT NULL`).join(" AND ");
+      const result = await knex.raw(
+        `WITH ranked AS (
+           SELECT id, row_number() OVER (PARTITION BY ${columnSql} ORDER BY ${orderSql}) AS duplicate_rank
+           FROM ${tableSql}
+           WHERE ${nonNullSql}
+         ), deleted AS (
+           DELETE FROM ${tableSql} AS duplicate
+           USING ranked
+           WHERE ranked.id = duplicate.id AND ranked.duplicate_rank > 1
+           RETURNING duplicate.id
+         )
+         SELECT count(*)::int AS removed_rows FROM deleted`,
+      );
+      const removedRows = Number(result.rows[0]?.removed_rows ?? 0);
+      if (removedRows > 0) {
+        console.warn(`[Batteries Schema Sync] ${tableName}: removed ${removedRows} superseded rows for unique key (${columns.join(", ")}); newest rows were retained.`);
+      }
+    }
+  }
 }
 
 /**

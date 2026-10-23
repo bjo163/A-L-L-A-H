@@ -59,6 +59,13 @@ test("timestamps without offsets normalize as UTC and NOAA estimated Kp retains 
   for (const value of ["yesterday", "2026-02-30T04:00:00", "2026-10-22 04:00:00", "2026-10-22T25:00:00"]) assert.throws(() => parsers.parseObservedAt(value), /timestamp is invalid/);
 });
 
+test("provider timestamps reject future observations beyond a five-minute clock-skew allowance", () => {
+  const allowedSkew = new Date(Date.now() + 4 * 60 * 1000).toISOString();
+  const excessiveFuture = new Date(Date.now() + 6 * 60 * 1000).toISOString();
+  assert.equal(parsers.parseObservedAt(allowedSkew), allowedSkew);
+  assert.throws(() => parsers.parseObservedAt(excessiveFuture), /timestamp is in the future/);
+});
+
 test("Open-Meteo validates coordinates and category measurement ranges", async () => {
   const sample = await fixture("open-meteo-weather");
   assert.throws(() => parsers.parseOpenMeteo({ ...sample, latitude: 91 }), /valid coordinates/);

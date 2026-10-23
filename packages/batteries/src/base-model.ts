@@ -25,6 +25,9 @@ export abstract class BatteriesModel extends Model {
   /** Declarative multi-column uniqueness; fields use camelCase model names. */
   static uniqueConstraints: string[][] = [];
 
+  /** Optional deterministic repair for legacy rows that conflict with a declared unique constraint. */
+  static uniqueConflictResolutions: Array<{ columns: string[]; keepBy: string[] }> = [];
+
   /** Declarative multi-column foreign keys; both sides use model field names in camelCase. */
   static foreignConstraints: Array<{
     columns: string[];
