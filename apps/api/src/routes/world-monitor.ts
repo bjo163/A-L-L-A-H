@@ -2,7 +2,7 @@ import type { FastifyInstance } from "fastify";
 import { generateBrowserAutomationSnippet, getWorldMonitoringSnapshot, scanYoutube, youtubeSentinelRepo } from "@empire/batteries-world-monitor";
 import type { SentinelDirection, SentinelTradition, WorldMonitoringSnapshot, YoutubeMonitoredItem, YoutubeWorkflowStatus } from "@empire/batteries-world-monitor";
 import { checkDatabaseHealth } from "../db.js";
-import { getActiveWorldMonitorSources, refreshWorldMonitorSources } from "../world-monitor-ingest.js";
+import { getActiveWorldMonitorSourceDetails, getActiveWorldMonitorSources, refreshWorldMonitorSources } from "../world-monitor-ingest.js";
 import { PartnerModel, WorldMonitorObservationModel, WorldMonitorSourceRunModel, YoutubeSentinelItemModel, YoutubeSentinelScanModel, YoutubeSentinelPartnerLinkModel } from "@empire/batteries-base";
 import { dbAvailable, rowToItem, persistItemsToDB } from "../youtube-sentinel-storage.js";
 import { getYoutubeSentinelSchedulerStatus, triggerManualYoutubeSweep, updateYoutubeSentinelSchedulerInterval } from "../youtube-sentinel-scheduler.js";
@@ -45,7 +45,8 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
       let runs: any[] = [];
       let observations: any[] = [];
       try { runs = databaseStatus === "available" ? await WorldMonitorSourceRunModel.query().orderBy("completed_at", "desc").limit(1000) : []; } catch { runs = []; }
-      const activeSourceIds = new Set(getActiveWorldMonitorSources());
+      const activeSourceDetails = getActiveWorldMonitorSourceDetails();
+      const activeSourceIds = new Set(activeSourceDetails.map(({ source }) => source));
       runs = runs.filter((run) => activeSourceIds.has(run.source));
       if (databaseStatus === "available") {
         const categories = ["weather", "atmosphere", "earthquake", "space-weather", "disaster"];
@@ -58,12 +59,14 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
       }
       const sourceGroups = new Map<string, any[]>();
       for (const run of runs) sourceGroups.set(run.source, [...(sourceGroups.get(run.source) ?? []), run]);
-      const sources = [...sourceGroups.entries()].map(([source, history]) => {
+      const sources = [...activeSourceIds].map((source) => {
+        const history = sourceGroups.get(source) ?? [];
         const latest = history[0];
         const recentHistory = history.slice(0, 20);
         let failureStreak = 0;
         for (const run of history) { if (run.status === "failed") failureStreak += 1; else break; }
-        return { source, category: latest.category, tier: latest.tier, status: latest.status, lastFetchedAt: latest.completedAt ?? null, records: latest.recordCount, durationMs: latest.durationMs ?? null, errorRate: recentHistory.filter((run) => run.status === "failed").length / recentHistory.length, failureStreak };
+        const configured = activeSourceDetails.find((item) => item.source === source);
+        return { source, category: latest?.category ?? configured?.category ?? "unknown", tier: latest?.tier ?? configured?.tier ?? "unknown", status: latest?.status ?? "unknown", lastFetchedAt: latest?.completedAt ?? null, records: latest?.recordCount ?? 0, durationMs: latest?.durationMs ?? null, errorRate: recentHistory.length ? recentHistory.filter((run) => run.status === "failed").length / recentHistory.length : 0, failureStreak };
       });
       observations = observations.map((item) => {
         const freshnessSeconds = Math.max(0, Math.floor((Date.now() - Date.parse(item.observedAt)) / 1000));
@@ -98,13 +101,31 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
       }
       const uniqueAlerts = [...new Map(alerts.map((alert) => [alert.id, alert])).values()];
       // Keep source health separate: unknown stays unknown, critical wins, and service/data degradation stays yellow.
+      const hazardAlertLevel: WorldMonitoringSnapshot["hazardAlertLevel"] = uniqueAlerts.some((alert) => alert.level === "critical")
+        ? "red"
+        : uniqueAlerts.some((alert) => alert.level === "advisory") ? "yellow" : observations.length ? "green" : "unknown";
+      const sourceCoverage = sources.length ? sources.filter((source) => source.status === "success" && source.records > 0).length / sources.length : 0;
+      const coverageStatus: WorldMonitoringSnapshot["coverageStatus"] = sources.length === 0
+        ? "unknown"
+        : sourceCoverage === 1 ? "healthy" : sourceCoverage > 0 ? "degraded" : "unavailable";
+      const freshnessStatus: WorldMonitoringSnapshot["freshnessStatus"] = observations.length === 0
+        ? "unknown"
+        : observations.some((item) => item.status === "available") ? "healthy" : "degraded";
+      const ingestionStatus: WorldMonitoringSnapshot["ingestionStatus"] = sources.length === 0
+        ? "unknown"
+        : sources.every((source) => source.status === "unknown")
+          ? "unknown"
+          : sources.some((source) => source.status === "success")
+            ? sources.some((source) => source.status === "failed") ? "degraded" : "healthy"
+            : sources.some((source) => source.status === "failed") ? "unavailable" : "unknown";
       const globalAlertLevel = databaseStatus === "unknown"
         ? "unknown"
-        : uniqueAlerts.some((alert) => alert.level === "critical")
-          ? "red"
-          : databaseStatus === "unavailable" || uniqueAlerts.some((alert) => alert.level === "advisory")
+        : hazardAlertLevel === "red" ? "red"
+          : hazardAlertLevel === "yellow" || databaseStatus === "unavailable" || ingestionStatus === "degraded" || ingestionStatus === "unavailable" || freshnessStatus === "degraded" || coverageStatus === "degraded" || coverageStatus === "unavailable"
             ? "yellow"
-            : "green";
+            : hazardAlertLevel === "unknown" || ingestionStatus === "unknown" || freshnessStatus === "unknown" || coverageStatus === "unknown"
+              ? "unknown"
+              : "green";
 
       return {
         ...snapshot,
@@ -113,6 +134,10 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
         globalAlertLevel,
         apiUptimeSeconds: Number(process.uptime().toFixed(3)),
         databaseStatus,
+        ingestionStatus,
+        freshnessStatus,
+        coverageStatus,
+        hazardAlertLevel,
         sources,
         observations,
         alerts: uniqueAlerts,

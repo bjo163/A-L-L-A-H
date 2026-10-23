@@ -20,6 +20,7 @@ function createRoute(checkDatabaseHealth, baseSnapshot, observations = []) {
     "refreshWorldMonitorSources",
     "WorldMonitorSourceRunModel",
     "WorldMonitorObservationModel",
+    "getActiveWorldMonitorSourceDetails",
     "getActiveWorldMonitorSources",
     "requireSession",
     "requirePermission",
@@ -38,6 +39,7 @@ function createRoute(checkDatabaseHealth, baseSnapshot, observations = []) {
     { query: () => ({ orderBy: () => ({ limit: async () => [] }) }) },
     { query: () => ({ where: ({ category }) => ({ orderBy: () => ({ limit: async () => observations.filter((item) => item.category === category) }) }) }) },
     () => [],
+    () => [],
     async () => {},
     () => async () => {},
     async () => {},
@@ -54,6 +56,10 @@ function createSnapshot() {
     totalMonitoredNodes: 0,
     apiUptimeSeconds: null,
     databaseStatus: "unknown",
+    ingestionStatus: "unknown",
+    freshnessStatus: "unknown",
+    coverageStatus: "unknown",
+    hazardAlertLevel: "unknown",
     regions: [],
     dnaSensors: [],
     telemetryFeeds: [],
@@ -76,16 +82,35 @@ async function invoke(checkDatabaseHealth, observations = []) {
 }
 
 
-test("public World Monitor only returns aggregate service health, without audit records", async () => {
+test("healthy database with no observations reports unknown data coverage, not green", async () => {
   const { options, result } = await invoke(async () => ({ ok: true }));
   assert.deepEqual(options.schema.security, []);
   assert.equal(result.status, "operational");
   assert.equal(result.databaseStatus, "available");
-  assert.equal(result.globalAlertLevel, "green");
+  assert.equal(result.globalAlertLevel, "unknown");
+  assert.equal(result.ingestionStatus, "unknown");
+  assert.equal(result.freshnessStatus, "unknown");
+  assert.equal(result.coverageStatus, "unknown");
+  assert.equal(result.hazardAlertLevel, "unknown");
   assert.equal(result.totalMonitoredNodes, 0);
   assert.deepEqual(result.telemetryFeeds, []);
   assert.equal(typeof result.apiUptimeSeconds, "number");
   assert.equal("auditLogs" in result, false);
+});
+
+test("configured sources with no ingestion history are exposed as unknown coverage", async () => {
+  const load = new Function(
+    "exports", "checkDatabaseHealth", "getWorldMonitoringSnapshot", "youtubeSentinelRepo", "scanYoutube", "generateBrowserAutomationSnippet", "refreshWorldMonitorSources", "WorldMonitorSourceRunModel", "WorldMonitorObservationModel", "getActiveWorldMonitorSourceDetails", "getActiveWorldMonitorSources", "requireSession", "requirePermission", "requireTenant", "createYoutubeScanGate",
+    `${compiledRoute}; return worldMonitorRoutes;`,
+  );
+  let handler;
+  await load({}, async () => ({ ok: true }), createSnapshot, { getItems: () => [], getSummary: () => ({}), updateWorkflowStatus: () => null }, async () => ({ scannedCount: 0, newItemsCount: 0, items: [], summary: {} }), () => "", async () => {}, { query: () => ({ orderBy: () => ({ limit: async () => [] }) }) }, { query: () => ({ where: () => ({ orderBy: () => ({ limit: async () => [] }) }) }) }, () => ["source-a"], () => [{ source: "source-a", category: "weather", tier: "primary" }], async () => {}, () => async () => {}, async () => {}, () => ({ acquire: () => ({ allowed: true, remaining: 4, retryAfterMs: 0, release() {} }) }))({
+    get(path, _options, fn) { if (path === "/v1/world-monitor") handler = fn; }, post() {},
+  });
+  const result = await handler();
+  assert.equal(result.sources[0].status, "unknown");
+  assert.equal(result.coverageStatus, "unavailable");
+  assert.equal(result.globalAlertLevel, "yellow");
 });
 
 test("an unhealthy database degrades status; a failed health check stays unknown", async () => {

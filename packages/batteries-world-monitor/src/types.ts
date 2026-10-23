@@ -1,5 +1,6 @@
 export type RegionStatus = "nominal" | "advisory" | "alert" | "critical" | "unavailable";
 export type AlertLevel = "green" | "yellow" | "orange" | "red" | "unknown";
+export type WorldMonitorDataState = "healthy" | "degraded" | "unavailable" | "unknown";
 
 export interface WorldRegion {
   id: string;
@@ -47,6 +48,10 @@ export interface WorldMonitoringSnapshot {
   totalMonitoredNodes: number;
   apiUptimeSeconds: number | null;
   databaseStatus: "available" | "unavailable" | "unknown";
+  ingestionStatus: WorldMonitorDataState;
+  freshnessStatus: WorldMonitorDataState;
+  coverageStatus: WorldMonitorDataState;
+  hazardAlertLevel: AlertLevel;
   regions: WorldRegion[];
   dnaSensors: DnaSensorMapping[];
   telemetryFeeds: TelemetryFeedItem[];

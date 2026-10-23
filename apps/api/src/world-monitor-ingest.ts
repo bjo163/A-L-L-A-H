@@ -32,7 +32,8 @@ const specs = (): SourceSpec[] => [
   { source: "gdacs-global-disasters", tier: "primary", category: "disaster", url: "https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH", parse: (body: any) => (body?.features ?? body?.events ?? []).slice(0, 100).map((item: any) => ({ externalId: item.id ?? item.properties?.eventid ?? item.eventid, observedAt: parseObservedAt(item.properties?.datemodified ?? item.properties?.fromdate ?? item.datemodified ?? item.fromdate), normalized: item.properties ?? item })) },
 ];
 
-export const getActiveWorldMonitorSources = () => specs().map(({ source }) => source);
+export const getActiveWorldMonitorSourceDetails = () => specs().map(({ source, category, tier }) => ({ source, category, tier }));
+export const getActiveWorldMonitorSources = () => getActiveWorldMonitorSourceDetails().map(({ source }) => source);
 
 export async function refreshWorldMonitorSources(): Promise<void> {
   const grouped = new Map<string, SourceSpec[]>();
