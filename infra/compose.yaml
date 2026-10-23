@@ -25,7 +25,7 @@ services:
       DATABASE_URL: postgres://${POSTGRES_USER:-empire}:${POSTGRES_PASSWORD}@postgres:5432/${POSTGRES_DB:-empire}
       FILE_STORAGE_DIR: /workspace/var/private-files
       FILE_STORAGE_SIGNING_SECRET: ${FILE_STORAGE_SIGNING_SECRET}
-      PUBLIC_API_ORIGIN: ${PUBLIC_API_ORIGIN:-https://api.moonwitness.biz.id}
+      PUBLIC_API_ORIGIN: ${PUBLIC_API_ORIGIN:-}
       CORS_ORIGINS: ${CORS_ORIGINS:-https://moonwitness.biz.id,http://localhost:3300}
       EMPIRE_OWNER_PASSWORD: ${EMPIRE_OWNER_PASSWORD:-}
       EMPIRE_ARCHITECT_PASSWORD: ${EMPIRE_ARCHITECT_PASSWORD:-}
