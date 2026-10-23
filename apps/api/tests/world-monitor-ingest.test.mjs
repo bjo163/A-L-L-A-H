@@ -1,12 +1,13 @@
 import assert from "node:assert/strict";
+import { createHash } from "node:crypto";
 import { readFile } from "node:fs/promises";
 import { test } from "node:test";
 import ts from "typescript";
 
 const source = await readFile(new URL("../src/world-monitor-ingest.ts", import.meta.url), "utf8");
 const compiled = ts.transpileModule(source.replace(/^import .*;\r?\n/gm, ""), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText;
-const loadParsers = new Function("exports", `${compiled}; return { parseOpenMeteo, parseQuakes, parseKp, parseDisasters, parseObservedAt };`);
-const parsers = loadParsers({});
+const loadParsers = new Function("exports", "require", `const createHash = require("node:crypto").createHash;\n${compiled}; return { parseOpenMeteo, parseQuakes, parseKp, parseDisasters, parseObservedAt, worldMonitorObservationIdentity };`);
+const parsers = loadParsers({}, () => ({ createHash }));
 
 test("ingest parsers reject empty and malformed payloads without creating records", () => {
   assert.match(source, /Array\.isArray\(body\?\.features\)/);
@@ -42,6 +43,16 @@ test("provider contracts reject missing timestamps and malformed values", () => 
   assert.throws(() => parsers.parseQuakes({ features: [{ id: "quake-1", properties: {}, geometry: { coordinates: [] } }] }), /invalid ID, timestamp, or coordinates/);
   assert.throws(() => parsers.parseDisasters({ events: [{ id: "alert-1", properties: {} }] }), /timestamp is missing/);
   assert.equal(parsers.parseQuakes({ features: [{ id: "quake-1", properties: { time: 1792644360000, mag: 4.2 }, geometry: { coordinates: [106.8, -6.2, 10] } }] })[0].observedAt, "2026-10-22T04:46:00.000Z");
+});
+
+test("observation identities are stable across repeated provider polls", () => {
+  const first = parsers.worldMonitorObservationIdentity("usgs-earthquakes", { externalId: "usgs-1", observedAt: "2026-10-22T04:46:00.000Z", normalized: { mag: 4.2 } });
+  const repeated = parsers.worldMonitorObservationIdentity("usgs-earthquakes", { externalId: "usgs-1", observedAt: "2026-10-22T04:46:00.000Z", normalized: { mag: 4.2 } });
+  const anonymousA = parsers.worldMonitorObservationIdentity("open-meteo-weather-london", { observedAt: "2026-10-22T04:46:00.000Z", normalized: { temperature_2m: 14 } });
+  const anonymousB = parsers.worldMonitorObservationIdentity("open-meteo-weather-london", { observedAt: "2026-10-22T04:46:00.000Z", normalized: { temperature_2m: 14 } });
+  assert.deepEqual(first, repeated);
+  assert.deepEqual(anonymousA, anonymousB);
+  assert.equal(anonymousA.externalId.length, 64);
 });
 
 test("retention removes old observations, runs, and aggregates", () => {

@@ -1,4 +1,5 @@
 import { WorldMonitorAggregateModel, WorldMonitorObservationModel, WorldMonitorSourceRunModel } from "@empire/batteries-base";
+import { createHash } from "node:crypto";
 
 type SourceSpec = { source: string; tier: "primary" | "fallback"; category: string; url: string; parse: (body: any) => Array<{ externalId?: string; observedAt: string; normalized: Record<string, unknown> }> };
 
@@ -47,6 +48,12 @@ export const parseDisasters = (body: any) => {
   })).filter((item: any) => item.externalId && item.normalized && typeof item.normalized === "object");
 };
 
+export const worldMonitorObservationIdentity = (source: string, record: { externalId?: string; observedAt: string; normalized: Record<string, unknown> }) => ({
+  source,
+  externalId: record.externalId ?? createHash("sha256").update(JSON.stringify(record.normalized)).digest("hex"),
+  observedAt: record.observedAt,
+});
+
 const globalPoints = [[51.5,-0.1,"london"],[40.7,-74,"new-york"],[35.7,139.7,"tokyo"],[-1.3,36.8,"nairobi"],[-23.5,-46.6,"sao-paulo"],[28.6,77.2,"delhi"],[-33.9,151.2,"sydney"],[64.1,-21.9,"reykjavik"]] as const;
 const specs = (): SourceSpec[] => [
   ...globalPoints.map(([latitude, longitude, point]) => ({ source: `open-meteo-weather-${point}`, tier: "primary" as const, category: "weather", url: `https://api.open-meteo.com/v1/forecast?latitude=${latitude}&longitude=${longitude}&timezone=GMT&current=temperature_2m,relative_humidity_2m,apparent_temperature,precipitation,weather_code,cloud_cover,pressure_msl,wind_speed_10m,wind_direction_10m`, parse: parseOpenMeteo })),
@@ -84,7 +91,11 @@ export async function refreshWorldMonitorSources(): Promise<void> {
         const stale = freshestAgeSeconds > maxAgeSeconds;
         for (const record of records) {
           const age = Math.max(0, Math.floor((Date.now() - Date.parse(record.observedAt)) / 1000));
-          await (WorldMonitorObservationModel.query() as any).insert({ source: spec.source, sourceTier: spec.tier, category: spec.category, externalId: record.externalId ?? null, observedAt: record.observedAt, fetchedAt: now(), freshnessSeconds: age, confidence: spec.tier === "primary" ? 0.95 : 0.7, status: age > maxAgeSeconds ? "stale" : "available", normalized: record.normalized, payload: JSON.stringify(body) });
+          const identity = worldMonitorObservationIdentity(spec.source, record);
+          const existing = await (WorldMonitorObservationModel.query() as any).where(identity).first();
+          const observation = { source: spec.source, sourceTier: spec.tier, category: spec.category, externalId: identity.externalId, observedAt: record.observedAt, fetchedAt: now(), freshnessSeconds: age, confidence: spec.tier === "primary" ? 0.95 : 0.7, status: age > maxAgeSeconds ? "stale" : "available", normalized: record.normalized, payload: body };
+          if (existing) await (WorldMonitorObservationModel.query() as any).patch(observation).where({ id: existing.id });
+          else await (WorldMonitorObservationModel.query() as any).insert(observation);
         }
         await (WorldMonitorSourceRunModel.query() as any).insert({ source: spec.source, category: spec.category, tier: spec.tier, startedAt, completedAt: now(), status: stale ? "stale" : "success", recordCount: records.length, durationMs: Date.now() - startedMs, metadata: { url: spec.url, maxAgeSeconds, freshestAgeSeconds } });
         const bucketStart = new Date(Math.floor(Date.now() / 3_600_000) * 3_600_000).toISOString();
