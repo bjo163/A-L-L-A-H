@@ -77,11 +77,11 @@ export default async function RoadmapPage() {
       sfx={en ? "CHECK!" : "CEK!"}
       links={[
         { href: "/systems", label: en ? "Architecture atlas" : "Peta arsitektur", icon: <ArrowLeftIcon />, iconPosition: "start" },
-        { href: "/#ekosistem", label: en ? "Technology domains" : "Domain teknologi" },
-        { href: "https://github.com/bjo163/empire-of-the-light", label: en ? "Repository" : "Repositori", external: true, icon: <ExternalLinkIcon /> },
+        { href: "/#universe", label: en ? "Technology domains" : "Domain teknologi" },
+        { href: "https://github.com/bjo163/A-L-L-A-H", label: en ? "Repository" : "Repositori", external: true, icon: <ExternalLinkIcon /> },
       ]}
     />
-    <section className="roadmap-page-grid">
+    <section className="roadmap-page-grid" id="roadmap-overview">
       <div>
         <SectionHeading
           className="roadmap-section-heading"
@@ -105,11 +105,11 @@ export default async function RoadmapPage() {
       eyebrow={en ? "OPEN WORK" : "KERJA TERBUKA"}
       title={en ? "CHANGES CAN BE TRACED." : "PERUBAHAN DAPAT DITELUSURI."}
       description={en ? "Review engineering and research proposals, then follow changes on GitHub. Deployments and scientific results each require their own evidence." : "Tinjau proposal rekayasa dan riset, lalu ikuti perubahannya melalui GitHub. Deployment dan hasil ilmiah membutuhkan bukti masing-masing."}
-      action={<a className={buttonClassName("primary", "eol-button--lg")} href="https://github.com/bjo163/empire-of-the-light" target="_blank" rel="noopener noreferrer"><IconText icon={<ExternalLinkIcon />}>{en ? "Explore GitHub" : "Jelajahi GitHub"}</IconText></a>}
+      action={<a className={buttonClassName("primary", "eol-button--lg")} href="https://github.com/bjo163/A-L-L-A-H" target="_blank" rel="noopener noreferrer"><IconText icon={<ExternalLinkIcon />}>{en ? "Explore GitHub" : "Jelajahi GitHub"}</IconText></a>}
     />
     <PageCrosslinks label={en ? "Related pages" : "Halaman terkait"} links={[
       { href: "/systems", label: en ? "Back to system atlas" : "Kembali ke atlas sistem", icon: <ArrowLeftIcon />, iconPosition: "start" },
-      { href: "/#peta-jalan", label: en ? "Back to roadmap overview" : "Kembali ke ringkasan peta jalan", icon: <ArrowUpIcon /> },
+      { href: "/roadmap#roadmap-overview", label: en ? "Back to roadmap overview" : "Kembali ke ringkasan peta jalan", icon: <ArrowUpIcon /> },
     ]}/>
   </Container>;
 }

@@ -45,6 +45,30 @@ test("public content links stay on public routes; SHADOW remains the private ent
   assert.match(stories, /not available yet|belum tersedia/i);
 });
 
+test("public page fragment links resolve and repository links use this project", async () => {
+  const home = await source("../app/MoonwitnessExperience.tsx");
+  const roadmap = await source("../app/roadmap/page.tsx");
+  const systems = await source("../app/systems/page.tsx");
+  const homeAnchors = new Set([...home.matchAll(/id=\"([^\"]+)\"/g)].map((match) => match[1]));
+  const routeAnchors = new Map([
+    ["/", homeAnchors],
+    ["/systems", new Set(["system-atlas"])],
+    ["/roadmap", new Set(["roadmap-overview"])],
+  ]);
+
+  for (const page of [roadmap, systems]) {
+    for (const [, href] of page.matchAll(/href(?:=|:\s*)\"([^\"]+)\"/g)) {
+      if (!href.startsWith("/") || !href.includes("#")) continue;
+      const [pathname, anchor] = href.split("#");
+      assert.ok(routeAnchors.get(pathname)?.has(anchor), `Missing public fragment target: ${href}`);
+    }
+  }
+
+  assert.match(roadmap, /github\.com\/bjo163\/A-L-L-A-H/);
+  assert.match(systems, /github\.com\/bjo163\/A-L-L-A-H\/blob\/main\/docs\/BLUEPRINT_V5_QUANTUM_PROTON_BEYOND_AI\.md/);
+  assert.doesNotMatch(`${roadmap}\n${systems}`, /github\.com\/bjo163\/empire-of-the-light|\/#(?:ekosistem|peta-jalan|penjelajah)/);
+});
+
 test("world traditions preserve their distinct status from empirical claims", async () => {
   const systemsData = await source("../lib/web-systems.ts");
   const explorer = await source("../components/Explorer.tsx");

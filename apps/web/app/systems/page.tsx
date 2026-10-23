@@ -46,12 +46,12 @@ export default async function SystemsPage() {
       description={en ? "Seven layers connect human needs, scientific work, energy infrastructure, and evidence-based decisions. This is a proposed architecture, not a list of installed equipment." : "Tujuh lapisan menghubungkan kebutuhan manusia, pekerjaan ilmiah, infrastruktur energi, dan keputusan berbasis bukti. Ini adalah arsitektur usulan, bukan daftar perangkat yang sudah terpasang."}
       sfx={en ? "POW!" : "DOR!"}
       links={[
-        { href: "/#ekosistem", label: en ? "Technology domains" : "Domain teknologi", icon: <ChevronDownIcon /> },
-        { href: "/#penjelajah", label: en ? "System explorer" : "Penjelajah sistem", icon: <ChevronDownIcon /> },
+        { href: "/#universe", label: en ? "Technology domains" : "Domain teknologi", icon: <ChevronDownIcon /> },
+        { href: "/systems#system-atlas", label: en ? "System explorer" : "Penjelajah sistem", icon: <ChevronDownIcon /> },
         { href: "/roadmap", label: en ? "Implementation status" : "Status implementasi", icon: <ArrowUpRightIcon /> },
       ]}
     />
-    <SystemAtlas items={planeContent.map((item, index) => ({
+    <div id="system-atlas"><SystemAtlas items={planeContent.map((item, index) => ({
       id: `plane-${index + 1}`,
       number: String(index + 1).padStart(2, "0"),
       category: item.category,
@@ -59,7 +59,7 @@ export default async function SystemsPage() {
       titleId: index < systemsId.length ? systemsId[index] : undefined,
       description: item.description,
       system: item.system,
-    }))}/>
+    }))}/></div>
     <RepositoryOverview
       eyebrow={en ? "IMPLEMENTATION IN REPOSITORY" : "IMPLEMENTASI DI REPOSITORI"}
       title={en ? <>ONE <em>MODULAR MONOREPO.</em></> : <>SATU <em>MONOREPO MODULAR.</em></>}
@@ -69,9 +69,9 @@ export default async function SystemsPage() {
       modulesLabel={en ? "Repository modules" : "Modul repositori"}
     />
     <PageCrosslinks label={en ? "Related pages" : "Halaman terkait"} links={[
-      { href: "/#ekosistem", label: en ? "Back to technology domains" : "Kembali ke domain teknologi", icon: <ArrowLeftIcon />, iconPosition: "start" },
+      { href: "/#universe", label: en ? "Back to technology domains" : "Kembali ke domain teknologi", icon: <ArrowLeftIcon />, iconPosition: "start" },
       { href: "/roadmap", label: en ? "Continue to roadmap & readiness" : "Lanjut ke peta jalan & kesiapan", icon: <ArrowRightIcon /> },
     ]}/>
-    <p className="source-line">{en ? "Read the architecture blueprint: " : "Baca blueprint arsitektur: "}<a href="https://github.com/bjo163/empire-of-the-light/blob/main/docs/BLUEPRINT_V5_QUANTUM_PROTON_BEYOND_AI.md" target="_blank" rel="noopener noreferrer"><IconText icon={<ExternalLinkIcon />}>GENESIS v5 Master Blueprint</IconText></a></p>
+    <p className="source-line">{en ? "Read the architecture blueprint: " : "Baca blueprint arsitektur: "}<a href="https://github.com/bjo163/A-L-L-A-H/blob/main/docs/BLUEPRINT_V5_QUANTUM_PROTON_BEYOND_AI.md" target="_blank" rel="noopener noreferrer"><IconText icon={<ExternalLinkIcon />}>GENESIS v5 Master Blueprint</IconText></a></p>
   </Container>;
 }
