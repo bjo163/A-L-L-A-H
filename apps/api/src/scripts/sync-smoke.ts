@@ -151,8 +151,8 @@ async function main() {
       table.timestamp("observed_at", { useTz: true }).notNullable();
       table.timestamp("fetched_at", { useTz: true }).notNullable();
       table.string("value").notNullable();
-      table.timestamp("created_at", { useTz: true }).nullable();
-      table.timestamp("updated_at", { useTz: true }).nullable();
+      table.timestamp("created_at", { useTz: true }).notNullable().defaultTo(scoped.fn.now());
+      table.timestamp("updated_at", { useTz: true }).notNullable().defaultTo(scoped.fn.now());
     });
     const duplicateIdentity = { source: "USGS", external_id: "event-1", observed_at: "2026-10-23T00:00:00Z" };
     const olderId = randomUUID();
