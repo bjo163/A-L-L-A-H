@@ -24,7 +24,7 @@ const hazardTtlMs = (category: string) => {
   return 6 * 3_600_000;
 };
 const YOUTUBE_WORKFLOW_ACTIONS: readonly YoutubeWorkflowStatus[] = [
-  "PENDING_REVIEW", "VERIFIED_SYIRIK", "COUNTER_DAKWAH_QUEUED", "REPORT_FILED", "FALSE_POSITIVE_DISMISSED",
+  "PENDING_REVIEW", "VERIFIED_SYIRIK", "COUNTER_DAKWAH_QUEUED", "REPORT_FILED", "REPORT_RETRACTED", "FALSE_POSITIVE_DISMISSED", "REVIEW_RETRACTED",
   "WISDOM_QUEUED", "AMPLIFY_RECOMMENDED", "SHARED_VIA_DAKWAH", "ARCHIVED_REFERENCE",
 ];
 
@@ -569,7 +569,9 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
                 "VERIFIED_SYIRIK",
                 "COUNTER_DAKWAH_QUEUED",
                 "REPORT_FILED",
+                "REPORT_RETRACTED",
                 "FALSE_POSITIVE_DISMISSED",
+                "REVIEW_RETRACTED",
                 "WISDOM_QUEUED",
                 "AMPLIFY_RECOMMENDED",
                 "SHARED_VIA_DAKWAH",
@@ -579,6 +581,8 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
             notes: { type: "string" },
             rationale: { type: "string", minLength: 20, maxLength: 2000 },
             actionReference: { type: "string", minLength: 1, maxLength: 500 },
+            reviewReference: { type: "string", minLength: 8, maxLength: 1000 },
+            attestsExternalAction: { type: "boolean" },
             expectedReviewRevision: { type: "integer", minimum: 0 },
           },
         },
@@ -592,19 +596,37 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
         notes?: string;
         rationale?: string;
         actionReference?: string;
+        reviewReference?: string;
+        attestsExternalAction?: boolean;
         expectedReviewRevision?: number;
       };
 
       if (!YOUTUBE_WORKFLOW_ACTIONS.includes(body.action)) {
         return reply.status(400).send({ ok: false, message: "Unsupported workflow action" });
       }
-      const requiresReviewEvidence = ["VERIFIED_SYIRIK", "REPORT_FILED", "SHARED_VIA_DAKWAH", "FALSE_POSITIVE_DISMISSED"].includes(body.action);
-      const requiresActionEvidence = ["REPORT_FILED", "SHARED_VIA_DAKWAH"].includes(body.action);
+      const requiresReviewEvidence = ["VERIFIED_SYIRIK", "REPORT_FILED", "REPORT_RETRACTED", "SHARED_VIA_DAKWAH", "FALSE_POSITIVE_DISMISSED", "REVIEW_RETRACTED"].includes(body.action);
+      const requiresActionEvidence = ["REPORT_FILED", "REPORT_RETRACTED", "SHARED_VIA_DAKWAH"].includes(body.action);
       if (requiresReviewEvidence && (!body.rationale || body.rationale.trim().length < 20)) {
         return reply.status(400).send({ ok: false, message: "A contextual review rationale of at least 20 characters is required" });
       }
       if (requiresActionEvidence && !body.actionReference?.trim()) {
         return reply.status(400).send({ ok: false, message: "A traceable external action reference is required" });
+      }
+      if (body.action === "VERIFIED_SYIRIK" && !body.reviewReference?.trim()) {
+        return reply.status(400).send({ ok: false, message: "A traceable public evidence reference is required for human review" });
+      }
+      if (requiresActionEvidence && body.attestsExternalAction !== true) {
+        return reply.status(400).send({ ok: false, message: "Explicit human attestation of the completed external action is required" });
+      }
+      const isTraceableHttpsUrl = (value?: string) => {
+        if (!value || value.length > 1000) return false;
+        try { return new URL(value).protocol === "https:"; } catch { return false; }
+      };
+      if (body.reviewReference && !isTraceableHttpsUrl(body.reviewReference.trim())) {
+        return reply.status(400).send({ ok: false, message: "Review evidence reference must be a traceable HTTPS URL" });
+      }
+      if (requiresActionEvidence && !isTraceableHttpsUrl(body.actionReference?.trim())) {
+        return reply.status(400).send({ ok: false, message: "External action reference must be a traceable HTTPS URL" });
       }
 
       const isDbUp = await dbAvailable();
@@ -627,21 +649,60 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
       }
       const actorId = String((request as any).authUser?.id ?? "");
       if (!actorId) return reply.status(401).send({ ok: false, message: "Reviewer identity is unavailable" });
+      const priorActionEvidence: NonNullable<YoutubeMonitoredItem["actionEvidence"]> = row.actionEvidence && typeof row.actionEvidence === "object" ? row.actionEvidence : {};
+      const history = Array.isArray(priorActionEvidence.history) ? priorActionEvidence.history : [];
+      const previousStatus = row.workflowStatus as YoutubeWorkflowStatus;
+      const lastEvent = history.at(-1);
+      if (previousStatus === body.action && lastEvent?.actorId === actorId && lastEvent?.externalActionReference === body.actionReference?.trim()) {
+        return { ok: true, item: rowToItem(row), persistenceMode: "database", summary: youtubeSentinelRepo.getSummary() };
+      }
+      if (body.action === "REPORT_FILED" && (row.workflowStatus !== "VERIFIED_SYIRIK" || row.reviewEvidence?.reviewerId === actorId)) {
+        return reply.status(409).send({ ok: false, message: "A report requires a prior human review and a different reporting reviewer" });
+      }
+      if (body.action === "REPORT_RETRACTED" && row.workflowStatus !== "REPORT_FILED") {
+        return reply.status(409).send({ ok: false, message: "Only a previously attested report can be retracted" });
+      }
+      if (body.action === "REVIEW_RETRACTED" && !["VERIFIED_SYIRIK", "FALSE_POSITIVE_DISMISSED"].includes(row.workflowStatus)) {
+        return reply.status(409).send({ ok: false, message: "Only an existing human review can be retracted" });
+      }
+      if (body.action === "REPORT_FILED" && row.direction === "POSITIVE") {
+        return reply.status(409).send({ ok: false, message: "A positive-direction item cannot be submitted as a platform report" });
+      }
+      if (["VERIFIED_SYIRIK", "FALSE_POSITIVE_DISMISSED", "COUNTER_DAKWAH_QUEUED"].includes(body.action) && row.direction === "POSITIVE") {
+        return reply.status(409).send({ ok: false, message: "A positive-direction item cannot receive a negative-direction review action" });
+      }
+      if (body.action === "SHARED_VIA_DAKWAH" && row.direction !== "POSITIVE") {
+        return reply.status(409).send({ ok: false, message: "Only a positive-direction item can be marked as shared" });
+      }
       const now = new Date().toISOString();
+      const effectiveStatus: YoutubeWorkflowStatus = body.action === "REVIEW_RETRACTED" || body.action === "REPORT_RETRACTED" ? "PENDING_REVIEW" : body.action;
+      const event = {
+        action: body.action, previousStatus, actorId, occurredAt: now,
+        ...(body.rationale?.trim() ? { rationale: body.rationale.trim() } : {}),
+        ...(body.reviewReference?.trim() ? { reviewReference: body.reviewReference.trim() } : {}),
+        ...(requiresActionEvidence ? { externalActionReference: body.actionReference!.trim(), externalActionAttested: true } : {}),
+      };
       const reviewEvidence = requiresReviewEvidence
-        ? { reviewerId: actorId, rationale: body.rationale!.trim(), reviewedAt: now, secondReviewerId: row.reviewEvidence?.reviewerId && row.reviewEvidence.reviewerId !== actorId ? row.reviewEvidence.reviewerId : null }
-        : null;
-      const actionEvidence = requiresActionEvidence
-        ? { reference: body.actionReference!.trim(), attestedBy: actorId, attestedAt: now }
-        : null;
+        ? body.action === "REVIEW_RETRACTED" || body.action === "REPORT_RETRACTED" ? null : { reviewerId: actorId, rationale: body.rationale!.trim(), reviewedAt: now, ...(body.reviewReference?.trim() ? { reference: body.reviewReference.trim() } : {}) }
+        : row.reviewEvidence ?? null;
+      const actionEvidence = {
+        ...priorActionEvidence,
+        ...(requiresActionEvidence ? { reference: body.actionReference!.trim(), attestedBy: actorId, attestedAt: now } : {}),
+        history: [...history, event],
+      };
       let updated;
       try {
         const updatedRows = await YoutubeSentinelItemModel.query()
-          .patch({ workflowStatus: body.action, operatorNotes: body.notes ?? row.operatorNotes ?? null, lastActionAt: now, reviewEvidence, actionEvidence, reviewRevision: currentRevision + 1 } as any)
+          .patch({ workflowStatus: effectiveStatus, operatorNotes: body.notes ?? row.operatorNotes ?? null, lastActionAt: now, reviewEvidence, actionEvidence, reviewRevision: currentRevision + 1 } as any)
           .where({ id: row.id, review_revision: currentRevision });
         if (updatedRows !== 1) return reply.status(409).send({ ok: false, message: "Review changed concurrently; reload the item before applying this action" });
-        updated = youtubeSentinelRepo.updateWorkflowStatus(body.id, body.action, body.notes);
+        updated = youtubeSentinelRepo.updateWorkflowStatus(body.id, effectiveStatus, body.notes);
         if (!updated) return reply.status(404).send({ ok: false, message: "Item not found" });
+        updated.workflowStatus = effectiveStatus;
+        updated.reviewEvidence = reviewEvidence;
+        updated.actionEvidence = actionEvidence;
+        updated.reviewRevision = currentRevision + 1;
+        updated.lastActionAt = now;
       } catch {
         return reply.status(503).send({ ok: false, message: "Sentinel review action could not be saved; action was not applied" });
       }

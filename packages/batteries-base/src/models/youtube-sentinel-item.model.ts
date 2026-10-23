@@ -81,6 +81,8 @@ export class YoutubeSentinelItemModel extends BatteriesModel {
       "amplifyPacket",
       "counterDakwahBrief",
       "wisdomBrief",
+      "reviewEvidence",
+      "actionEvidence",
     ];
   }
 
@@ -113,8 +115,9 @@ export class YoutubeSentinelItemModel extends BatteriesModel {
   wisdomBrief?: unknown | null;
 
   workflowStatus!: string;
-  reviewEvidence?: { reviewerId: string; rationale: string; reviewedAt: string; secondReviewerId?: string | null } | null;
-  actionEvidence?: { reference: string; attestedBy: string; attestedAt: string } | null;
+  reviewEvidence?: { reviewerId: string; rationale: string; reviewedAt: string; reference?: string; secondReviewerId?: string | null } | null;
+  /** The append-only correction/retraction trail is embedded here to preserve existing DB schemas. */
+  actionEvidence?: { reference?: string; attestedBy?: string; attestedAt?: string; history?: Array<Record<string, unknown>> } | null;
   reviewRevision!: number;
   operatorNotes?: string | null;
   lastActionAt?: string | null;

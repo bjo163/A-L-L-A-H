@@ -26,6 +26,17 @@ test("YouTube Tauhid Sentinel routes are registered with correct contracts", asy
   assert.match(worldMonitorSource, /preHandler: \[requireSession, requirePermission\("sentinel:review"\)\]/);
   assert.match(worldMonitorSource, /contextual review rationale of at least 20 characters is required/);
   assert.match(worldMonitorSource, /traceable external action reference is required/);
+  assert.match(worldMonitorSource, /Explicit human attestation of the completed external action is required/);
+  assert.match(worldMonitorSource, /traceable public evidence reference is required for human review/);
+  assert.match(worldMonitorSource, /A report requires a prior human review and a different reporting reviewer/);
+  assert.match(worldMonitorSource, /Only a previously attested report can be retracted/);
+  assert.match(worldMonitorSource, /Only an existing human review can be retracted/);
+  assert.match(worldMonitorSource, /history: \[\.\.\.history, event\]/);
+  assert.match(worldMonitorSource, /previousStatus === body\.action && lastEvent\?\.actorId === actorId/);
+  assert.match(worldMonitorSource, /externalActionAttested: true/);
+  assert.match(worldMonitorSource, /body\.action === "REVIEW_RETRACTED" \|\| body\.action === "REPORT_RETRACTED" \? "PENDING_REVIEW"/);
+  assert.match(worldMonitorSource, /body\.action === "REPORT_FILED" && row\.direction === "POSITIVE"/);
+  assert.match(worldMonitorSource, /body\.action === "SHARED_VIA_DAKWAH" && row\.direction !== "POSITIVE"/);
   assert.match(worldMonitorSource, /where\(\{ id: row\.id, review_revision: currentRevision \}\)/);
   assert.match(worldMonitorSource, /reviewEvidence, actionEvidence, reviewRevision: currentRevision \+ 1/);
   assert.match(worldMonitorSource, /preHandler: \[requireSession, requirePermission\("sentinel:schedule"\)\]/);

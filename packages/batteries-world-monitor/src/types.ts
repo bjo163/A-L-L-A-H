@@ -158,7 +158,20 @@ export type YoutubeNegativeWorkflowStatus =
   | "VERIFIED_SYIRIK"
   | "COUNTER_DAKWAH_QUEUED"
   | "REPORT_FILED"
-  | "FALSE_POSITIVE_DISMISSED";
+  | "REPORT_RETRACTED"
+  | "FALSE_POSITIVE_DISMISSED"
+  | "REVIEW_RETRACTED";
+
+export interface YoutubeWorkflowEvidenceEvent {
+  action: YoutubeWorkflowStatus;
+  previousStatus: YoutubeWorkflowStatus;
+  actorId: string;
+  occurredAt: string;
+  rationale?: string;
+  reviewReference?: string;
+  externalActionReference?: string;
+  externalActionAttested?: boolean;
+}
 
 /** Status alur kerja untuk konten arah POSITIVE (tindakan amplifikasi & referensi) */
 export type YoutubePositiveWorkflowStatus =
@@ -295,8 +308,8 @@ export interface YoutubeMonitoredItem {
   wisdomBrief?: WisdomBrief;
 
   workflowStatus: YoutubeWorkflowStatus;
-  reviewEvidence?: { reviewerId: string; rationale: string; reviewedAt: string; secondReviewerId?: string | null } | null;
-  actionEvidence?: { reference: string; attestedBy: string; attestedAt: string } | null;
+  reviewEvidence?: { reviewerId: string; rationale: string; reviewedAt: string; reference?: string; secondReviewerId?: string | null } | null;
+  actionEvidence?: { reference?: string; attestedBy?: string; attestedAt?: string; history?: YoutubeWorkflowEvidenceEvent[] } | null;
   reviewRevision?: number;
   operatorNotes?: string;
   scannedAt: string;
