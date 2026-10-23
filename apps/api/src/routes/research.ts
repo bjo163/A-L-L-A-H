@@ -11,6 +11,7 @@ import {
 import { getDatabase } from "@empire/batteries";
 import { requirePermission, requireSession } from "./auth.js";
 import { requireTenant, resolveRequestTenant } from "./tenant-context.js";
+import { researchEvidenceAuditPayload } from "./research-audit.js";
 import { RESEARCH_CLASSIFICATIONS, RESEARCH_EVIDENCE_REQUEST_SCHEMA, RESEARCH_REQUEST_SCHEMAS, RESEARCH_SOURCE_FAMILIES } from "@empire/api-contract";
 
 type ApprovalDecision = "approved" | "rejected";
@@ -250,7 +251,7 @@ export async function researchRoutes(app: FastifyInstance) {
           action: "RESEARCH_EVIDENCE_ATTACHED",
           entity: "research_evidence",
           entityId: evidence.id,
-          payload: auditPayload({ researchRunId: run.id, sourceUri, sourceFamily, classification, contentHash, tenantId }),
+          payload: researchEvidenceAuditPayload({ researchRunId: run.id, sourceFamily, classification, contentHash, tenantId }),
           ipAddress: request.ip,
         });
         return evidence;
