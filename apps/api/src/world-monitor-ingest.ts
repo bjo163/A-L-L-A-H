@@ -1,6 +1,7 @@
 import { WorldMonitorAggregateModel, WorldMonitorObservationModel, WorldMonitorSourceRunModel } from "@empire/batteries-base";
 import { getDatabase } from "./db.js";
 import { createHash } from "node:crypto";
+import { randomUUID } from "node:crypto";
 
 type SourceSpec = { source: string; tier: "primary" | "fallback"; category: string; url: string; parse: (body: any) => Array<{ externalId?: string; observedAt: string; normalized: Record<string, unknown> }> };
 
@@ -100,24 +101,46 @@ const specs = (): SourceSpec[] => [
 export const getActiveWorldMonitorSourceDetails = () => specs().map(({ source, category, tier }) => ({ source, category, tier }));
 export const getActiveWorldMonitorSources = () => getActiveWorldMonitorSourceDetails().map(({ source }) => source);
 
-export async function refreshWorldMonitorSources(): Promise<void> {
+export type WorldMonitorRefreshResult = { jobId: string; status: "completed" | "skipped"; reason?: "lease_held"; startedAt: string; finishedAt: string };
+
+export async function tryAcquireWorldMonitorIngestionLease(database: any, connection: any): Promise<boolean> {
+  const query = database.raw("SELECT pg_try_advisory_lock(hashtext(?)) AS acquired", ["empire:world-monitor:ingestion"]).connection(connection);
+  const result = await database.client.runner(query).run();
+  const value = result?.rows?.[0]?.acquired ?? result?.[0]?.acquired;
+  return value === true || value === "t" || value === 1;
+}
+
+export async function releaseWorldMonitorIngestionLease(database: any, connection: any): Promise<void> {
+  const query = database.raw("SELECT pg_advisory_unlock(hashtext(?))", ["empire:world-monitor:ingestion"]).connection(connection);
+  await database.client.runner(query).run();
+}
+
+export async function refreshWorldMonitorSources(): Promise<WorldMonitorRefreshResult> {
+  const jobId = randomUUID();
+  const startedAt = now();
   const database = getDatabase();
   const connection = await database.client.acquireConnection();
+  let acquired = false;
   try {
-    const lockQuery = database.raw("SELECT pg_advisory_lock(hashtext(?))", ["empire:world-monitor:ingestion"]).connection(connection);
-    await database.client.runner(lockQuery).run();
-    await refreshWorldMonitorSourcesUnlocked();
+    // Session-scoped PostgreSQL try-lock coordinates all API replicas and releases
+    // automatically if the owning process/connection dies. Contenders skip instead
+    // of queueing a duplicate full provider poll behind the active worker.
+    acquired = await tryAcquireWorldMonitorIngestionLease(database, connection);
+    if (!acquired) return { jobId, status: "skipped", reason: "lease_held", startedAt, finishedAt: now() };
+    await refreshWorldMonitorSourcesUnlocked(jobId);
+    return { jobId, status: "completed", startedAt, finishedAt: now() };
   } finally {
     try {
-      const unlockQuery = database.raw("SELECT pg_advisory_unlock(hashtext(?))", ["empire:world-monitor:ingestion"]).connection(connection);
-      await database.client.runner(unlockQuery).run();
+      if (acquired) {
+        await releaseWorldMonitorIngestionLease(database, connection);
+      }
     } finally {
       await database.client.releaseConnection(connection);
     }
   }
 }
 
-async function refreshWorldMonitorSourcesUnlocked(): Promise<void> {
+async function refreshWorldMonitorSourcesUnlocked(jobId: string): Promise<void> {
   const grouped = new Map<string, SourceSpec[]>();
   for (const spec of specs()) {
     const point = spec.source.match(/-(london|new-york|tokyo|nairobi|sao-paulo|delhi|sydney|reykjavik)$/)?.[1] ?? "global";
@@ -151,12 +174,12 @@ async function refreshWorldMonitorSourcesUnlocked(): Promise<void> {
           // Knex conflict targets are physical PostgreSQL column names; model attribute names are camelCase.
           await (WorldMonitorObservationModel.query() as any).insert(observation).onConflict(["source", "external_id", "observed_at"]).merge(observation);
         }
-        await (WorldMonitorSourceRunModel.query() as any).insert({ source: spec.source, category: spec.category, tier: spec.tier, startedAt, completedAt: now(), status: records.length === 0 ? "empty" : stale ? "stale" : "success", recordCount: records.length, durationMs: Date.now() - startedMs, metadata: { url: spec.url, maxAgeSeconds, freshestAgeSeconds: records.length > 0 ? freshestAgeSeconds : null } });
+        await (WorldMonitorSourceRunModel.query() as any).insert({ source: spec.source, category: spec.category, tier: spec.tier, startedAt, completedAt: now(), status: records.length === 0 ? "empty" : stale ? "stale" : "success", recordCount: records.length, durationMs: Date.now() - startedMs, metadata: { jobId, url: spec.url, maxAgeSeconds, freshestAgeSeconds: records.length > 0 ? freshestAgeSeconds : null } });
         const bucketStart = new Date(Math.floor(Date.now() / 3_600_000) * 3_600_000).toISOString();
         await (WorldMonitorAggregateModel.query() as any).insert({ bucketStart, category: spec.category, source: spec.source, recordCount: records.length, summary: { tier: spec.tier } });
         if (!stale) { succeeded = true; break; }
       } catch (error) {
-        await (WorldMonitorSourceRunModel.query() as any).insert({ source: spec.source, category: spec.category, tier: spec.tier, startedAt, completedAt: now(), status: "failed", recordCount: 0, durationMs: Date.now() - startedMs, error: error instanceof Error ? error.message : String(error), metadata: { url: spec.url, ...(failureKind ? { failureKind } : {}) } });
+        await (WorldMonitorSourceRunModel.query() as any).insert({ source: spec.source, category: spec.category, tier: spec.tier, startedAt, completedAt: now(), status: "failed", recordCount: 0, durationMs: Date.now() - startedMs, error: error instanceof Error ? error.message : String(error), metadata: { jobId, url: spec.url, ...(failureKind ? { failureKind } : {}) } });
       }
     }
     if (!succeeded) continue;

@@ -6,6 +6,7 @@ import { getActiveWorldMonitorSourceDetails, getActiveWorldMonitorSources } from
 import { PartnerModel, WorldMonitorObservationModel, WorldMonitorSourceRunModel, YoutubeSentinelItemModel, YoutubeSentinelScanModel, YoutubeSentinelPartnerLinkModel } from "@empire/batteries-base";
 import { dbAvailable, rowToItem, persistItemsToDB } from "../youtube-sentinel-storage.js";
 import { getYoutubeSentinelSchedulerStatus, triggerManualYoutubeSweep, updateYoutubeSentinelSchedulerInterval } from "../youtube-sentinel-scheduler.js";
+import { triggerManualWorldMonitorRefresh } from "../world-monitor-scheduler.js";
 import { requirePermission, requireSession } from "./auth.js";
 import { requireTenant } from "./tenant-context.js";
 import { createYoutubeScanGate } from "../youtube-scan-gate.js";
@@ -63,6 +64,28 @@ function latestTimestamp(values: Array<string | null | undefined>) {
 
 
 export async function worldMonitorRoutes(app: FastifyInstance) {
+  app.post(
+    "/v1/world-monitor/refresh",
+    {
+      schema: {
+        tags: ["System"],
+        summary: "Request a bounded World Monitor source refresh",
+        security: [{ bearerAuth: [] }],
+        body: { type: "object", additionalProperties: false },
+      },
+      preHandler: [requireSession, requirePermission("sentinel:schedule")],
+    },
+    async (request, reply) => {
+      try {
+        const result = await triggerManualWorldMonitorRefresh();
+        return reply.code(result.status === "skipped" ? 409 : 202).send({ ok: result.status === "completed", ...result });
+      } catch (error) {
+        request.log.error({ err: error }, "World Monitor manual refresh failed");
+        return reply.code(503).send({ ok: false, status: "failed", message: "World Monitor refresh could not complete" });
+      }
+    },
+  );
+
   // This endpoint stays public for the pre-login HUD. It returns aggregate health only;
   // audit events and user data are intentionally excluded.
   app.get(

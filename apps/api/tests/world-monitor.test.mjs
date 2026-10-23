@@ -87,6 +87,10 @@ async function invoke(checkDatabaseHealth, observations = [], runs = [], sourceD
 
 test("healthy database with no observations reports unknown data coverage, not green", async () => {
   const { options, result } = await invoke(async () => ({ ok: true }));
+  assert.match(routeSource, /app\.post\(\s*"\/v1\/world-monitor\/refresh"/);
+  assert.match(routeSource, /preHandler: \[requireSession, requirePermission\("sentinel:schedule"\)\]/);
+  const publicGetRoute = routeSource.slice(routeSource.indexOf('"/v1/world-monitor"'), routeSource.indexOf('"/v1/world-monitor/youtube"'));
+  assert.doesNotMatch(publicGetRoute, /triggerManualWorldMonitorRefresh|refreshWorldMonitorSources/);
   assert.deepEqual(options.schema.security, []);
   assert.equal(result.status, "operational");
   assert.equal(result.databaseStatus, "available");

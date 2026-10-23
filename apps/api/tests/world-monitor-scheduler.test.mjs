@@ -16,8 +16,9 @@ test("scheduler clamps interval to 5-15 minutes and prevents overlapping runs", 
   globalThis.setInterval = (callback, ms) => { assert.equal(ms, 900_000); tick = callback; return { unref() {} }; };
   globalThis.clearInterval = () => { cleared = true; };
   try {
-    const load = new Function("exports", "refreshWorldMonitorSources", `${compiled}; return startWorldMonitorScheduler;`);
-    const start = load({}, () => { calls += 1; return new Promise((resolve) => { release = resolve; }); });
+    const load = new Function("exports", "refreshWorldMonitorSources", `${compiled}; return { startWorldMonitorScheduler, triggerManualWorldMonitorRefresh };`);
+    const scheduler = load({}, () => { calls += 1; return new Promise((resolve) => { release = resolve; }); });
+    const start = scheduler.startWorldMonitorScheduler;
     const stop = start(undefined, "99999999");
     await Promise.resolve();
     assert.equal(calls, 1);
@@ -33,4 +34,13 @@ test("scheduler clamps interval to 5-15 minutes and prevents overlapping runs", 
     globalThis.setInterval = originalSetInterval;
     globalThis.clearInterval = originalClearInterval;
   }
+});
+
+test("manual refresh uses the same distributed ingestion entrypoint and returns its job outcome", async () => {
+  const load = new Function("exports", "refreshWorldMonitorSources", `${compiled}; return triggerManualWorldMonitorRefresh;`);
+  const result = { jobId: "job-test", status: "skipped", reason: "lease_held", startedAt: "start", finishedAt: "finish" };
+  let calls = 0;
+  const refresh = load({}, async () => { calls += 1; return result; });
+  assert.equal(await refresh(), result);
+  assert.equal(calls, 1);
 });

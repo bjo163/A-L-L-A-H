@@ -7,7 +7,7 @@ import { WorldMonitorObservationModel } from "@empire/batteries-base";
 
 const source = await readFile(new URL("../src/world-monitor-ingest.ts", import.meta.url), "utf8");
 const compiled = ts.transpileModule(source.replace(/^import .*;\r?\n/gm, ""), { compilerOptions: { target: ts.ScriptTarget.ES2022, module: ts.ModuleKind.CommonJS } }).outputText;
-const loadParsers = new Function("exports", "require", "getDatabase", `const createHash = require("node:crypto").createHash;\n${compiled}; return { parseOpenMeteo, parseQuakes, parseKp, parseDisasters, parseObservedAt, worldMonitorObservationIdentity };`);
+const loadParsers = new Function("exports", "require", "getDatabase", `const createHash = require("node:crypto").createHash;\n${compiled}; return { parseOpenMeteo, parseQuakes, parseKp, parseDisasters, parseObservedAt, worldMonitorObservationIdentity, tryAcquireWorldMonitorIngestionLease, releaseWorldMonitorIngestionLease };`);
 const parsers = loadParsers({}, (name) => name === "node:crypto" ? { createHash } : {}, () => ({ transaction: (callback) => callback({ raw: async () => {} }) }));
 const fixture = async (name) => JSON.parse(await readFile(new URL(`./fixtures/world-monitor/${name}.json`, import.meta.url), "utf8"));
 
@@ -91,4 +91,39 @@ test("observation identities are stable across repeated provider polls", () => {
 
 test("observation model declares the database identity used by repeated provider polls", () => {
   assert.deepEqual(WorldMonitorObservationModel.uniqueConstraints, [["source", "externalId", "observedAt"]]);
+});
+
+test("distributed ingestion lease is non-blocking across workers and reacquires after release", async () => {
+  let held = false;
+  let releases = 0;
+  const connection = {};
+  const database = {
+    raw(sql, bindings) {
+      assert.match(sql, /pg_(try_advisory_lock|advisory_unlock)/);
+      assert.deepEqual(bindings, ["empire:world-monitor:ingestion"]);
+      return { connection: (received) => { assert.equal(received, connection); return { sql }; } };
+    },
+    client: {
+      runner(query) {
+        return { run: async () => {
+          if (query.sql.includes("pg_try_advisory_lock")) {
+            if (held) return { rows: [{ acquired: false }] };
+            held = true;
+            return { rows: [{ acquired: true }] };
+          }
+          releases += 1;
+          held = false;
+          return { rows: [] };
+        } };
+      },
+    },
+  };
+  assert.equal(await parsers.tryAcquireWorldMonitorIngestionLease(database, connection), true);
+  assert.equal(await parsers.tryAcquireWorldMonitorIngestionLease(database, connection), false);
+  // Simulate PostgreSQL releasing its session lock and verify another replica
+  // can become the sole owner.
+  held = false;
+  assert.equal(await parsers.tryAcquireWorldMonitorIngestionLease(database, connection), true);
+  await parsers.releaseWorldMonitorIngestionLease(database, connection);
+  assert.equal(releases, 1);
 });
