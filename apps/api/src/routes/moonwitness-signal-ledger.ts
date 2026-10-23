@@ -57,7 +57,7 @@ export async function moonwitnessSignalLedgerRoutes(app: FastifyInstance) {
     const query = request.query as Record<string, unknown>;
     const term = queryText(query.q);
     let builder = MoonwitnessCharacterModel.query().where({ tenant_id: request.tenantId! }).orderBy("display_name", "asc").limit(queryLimit(query.limit));
-    if (term) builder = builder.where((nested: any) => nested.whereILike("display_name", `%${term}%`).orWhereILike("slug", `%${term}%`));
+    if (term) builder = builder.where((nested: any) => nested.whereILike("display_name", `%${term}%`).orWhereILike("slug", `%${term}%`).orWhereRaw("aliases::text ILIKE ?", [`%${term}%`]));
     return builder;
   });
 
