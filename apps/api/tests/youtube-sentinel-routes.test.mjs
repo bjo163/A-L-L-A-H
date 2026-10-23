@@ -31,7 +31,7 @@ test("YouTube Tauhid Sentinel routes are registered with correct contracts", asy
   assert.match(worldMonitorSource, /A report requires a prior human review and a different reporting reviewer/);
   assert.match(worldMonitorSource, /Only a previously attested report can be retracted/);
   assert.match(worldMonitorSource, /Only an existing human review can be retracted/);
-  assert.match(worldMonitorSource, /history: \[\.\.\.history, event\]/);
+  assert.match(worldMonitorSource, /history: \[\.\.\.history, event as unknown as Record<string, unknown>\]/);
   assert.match(worldMonitorSource, /previousStatus === body\.action && lastEvent\?\.actorId === actorId/);
   assert.match(worldMonitorSource, /externalActionAttested: true/);
   assert.match(worldMonitorSource, /body\.action === "REVIEW_RETRACTED" \|\| body\.action === "REPORT_RETRACTED" \? "PENDING_REVIEW"/);
@@ -39,6 +39,14 @@ test("YouTube Tauhid Sentinel routes are registered with correct contracts", asy
   assert.match(worldMonitorSource, /body\.action === "SHARED_VIA_DAKWAH" && row\.direction !== "POSITIVE"/);
   assert.match(worldMonitorSource, /where\(\{ id: row\.id, review_revision: currentRevision \}\)/);
   assert.match(worldMonitorSource, /reviewEvidence, actionEvidence, reviewRevision: currentRevision \+ 1/);
+  assert.match(worldMonitorSource, /where\(\{ id: body\.id \}\)\.first\(\)/);
+  assert.doesNotMatch(worldMonitorSource, /where\(\{ id: body\.id \}\)\.orWhere\(\{ video_id: body\.id \}\)/);
+  assert.match(worldMonitorSource, /ALLOWED_YOUTUBE_WORKFLOW_ACTIONS\[previousStatus\]\?\.includes\(body\.action\)/);
+  assert.match(worldMonitorSource, /Workflow transition .* is not allowed/);
+  assert.match(worldMonitorSource, /youtubeSentinelRepo\.upsertItem\(updated\)/);
+  assert.match(worldMonitorSource, /Sentinel review storage is unavailable; action was not applied/);
+  assert.match(worldMonitorSource, /Sentinel review action could not be saved; action was not applied/);
+  assert.ok(worldMonitorSource.indexOf(".patch({ workflowStatus: effectiveStatus") < worldMonitorSource.indexOf("youtubeSentinelRepo.updateWorkflowStatus(row.id"));
   assert.match(worldMonitorSource, /preHandler: \[requireSession, requirePermission\("sentinel:schedule"\)\]/);
 
   // Verify non-AI and Tauhid taxonomy presence

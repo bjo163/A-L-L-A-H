@@ -27,6 +27,19 @@ const YOUTUBE_WORKFLOW_ACTIONS: readonly YoutubeWorkflowStatus[] = [
   "PENDING_REVIEW", "VERIFIED_SYIRIK", "COUNTER_DAKWAH_QUEUED", "REPORT_FILED", "REPORT_RETRACTED", "FALSE_POSITIVE_DISMISSED", "REVIEW_RETRACTED",
   "WISDOM_QUEUED", "AMPLIFY_RECOMMENDED", "SHARED_VIA_DAKWAH", "ARCHIVED_REFERENCE",
 ];
+const ALLOWED_YOUTUBE_WORKFLOW_ACTIONS: Readonly<Record<YoutubeWorkflowStatus, readonly YoutubeWorkflowStatus[]>> = {
+  PENDING_REVIEW: ["VERIFIED_SYIRIK", "COUNTER_DAKWAH_QUEUED", "FALSE_POSITIVE_DISMISSED", "WISDOM_QUEUED", "AMPLIFY_RECOMMENDED", "ARCHIVED_REFERENCE"],
+  VERIFIED_SYIRIK: ["REPORT_FILED", "REVIEW_RETRACTED", "COUNTER_DAKWAH_QUEUED", "ARCHIVED_REFERENCE"],
+  COUNTER_DAKWAH_QUEUED: ["ARCHIVED_REFERENCE"],
+  REPORT_FILED: ["REPORT_RETRACTED", "ARCHIVED_REFERENCE"],
+  REPORT_RETRACTED: ["PENDING_REVIEW"],
+  FALSE_POSITIVE_DISMISSED: ["REVIEW_RETRACTED", "ARCHIVED_REFERENCE"],
+  REVIEW_RETRACTED: ["PENDING_REVIEW"],
+  WISDOM_QUEUED: ["AMPLIFY_RECOMMENDED", "SHARED_VIA_DAKWAH", "ARCHIVED_REFERENCE"],
+  AMPLIFY_RECOMMENDED: ["SHARED_VIA_DAKWAH", "ARCHIVED_REFERENCE"],
+  SHARED_VIA_DAKWAH: ["ARCHIVED_REFERENCE"],
+  ARCHIVED_REFERENCE: [],
+};
 
 const PUBLIC_MAX_OBSERVATIONS = 200;
 const PUBLIC_MAX_SOURCE_RUNS = 2000;
@@ -685,7 +698,7 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
       let row;
       try {
         row = isUUID
-          ? await YoutubeSentinelItemModel.query().where({ id: body.id }).orWhere({ video_id: body.id }).first()
+          ? await YoutubeSentinelItemModel.query().where({ id: body.id }).first()
           : await YoutubeSentinelItemModel.query().where({ video_id: body.id }).first();
       } catch {
         return reply.status(503).send({ ok: false, message: "Sentinel review storage could not be read; action was not applied" });
@@ -697,12 +710,15 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
       }
       const actorId = String((request as any).authUser?.id ?? "");
       if (!actorId) return reply.status(401).send({ ok: false, message: "Reviewer identity is unavailable" });
-      const priorActionEvidence: NonNullable<YoutubeMonitoredItem["actionEvidence"]> = normalizeWorkflowActionEvidence(row.actionEvidence) ?? { history: [] };
+      const priorActionEvidence = (normalizeWorkflowActionEvidence(row.actionEvidence) as unknown as NonNullable<YoutubeSentinelItemModel["actionEvidence"]> | null) ?? { history: [] };
       const history = Array.isArray(priorActionEvidence.history) ? priorActionEvidence.history : [];
       const previousStatus = row.workflowStatus as YoutubeWorkflowStatus;
       const lastEvent = history.at(-1);
       if (previousStatus === body.action && lastEvent?.actorId === actorId && lastEvent?.externalActionReference === body.actionReference?.trim()) {
         return { ok: true, item: rowToItem(row), persistenceMode: "database", summary: youtubeSentinelRepo.getSummary() };
+      }
+      if (!ALLOWED_YOUTUBE_WORKFLOW_ACTIONS[previousStatus]?.includes(body.action)) {
+        return reply.status(409).send({ ok: false, message: `Workflow transition ${previousStatus} → ${body.action} is not allowed` });
       }
       if (body.action === "REPORT_FILED" && (row.workflowStatus !== "VERIFIED_SYIRIK" || row.reviewEvidence?.reviewerId === actorId)) {
         return reply.status(409).send({ ok: false, message: "A report requires a prior human review and a different reporting reviewer" });
@@ -733,26 +749,41 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
       const reviewEvidence = requiresReviewEvidence
         ? body.action === "REVIEW_RETRACTED" || body.action === "REPORT_RETRACTED" ? null : { reviewerId: actorId, rationale: body.rationale!.trim(), reviewedAt: now, ...(body.reviewReference?.trim() ? { reference: body.reviewReference.trim() } : {}) }
         : row.reviewEvidence ?? null;
-      const actionEvidence = {
+      const actionEvidence: NonNullable<YoutubeSentinelItemModel["actionEvidence"]> = {
         ...priorActionEvidence,
         ...(requiresActionEvidence ? { reference: body.actionReference!.trim(), attestedBy: actorId, attestedAt: now } : {}),
-        history: [...history, event],
+        history: [...history, event as unknown as Record<string, unknown>],
       };
-      let updated;
+      let updatedRows: number;
       try {
-        const updatedRows = await YoutubeSentinelItemModel.query()
+        updatedRows = await YoutubeSentinelItemModel.query()
           .patch({ workflowStatus: effectiveStatus, operatorNotes: body.notes ?? row.operatorNotes ?? null, lastActionAt: now, reviewEvidence, actionEvidence, reviewRevision: currentRevision + 1 } as any)
           .where({ id: row.id, review_revision: currentRevision });
-        if (updatedRows !== 1) return reply.status(409).send({ ok: false, message: "Review changed concurrently; reload the item before applying this action" });
-        updated = youtubeSentinelRepo.updateWorkflowStatus(body.id, effectiveStatus, body.notes);
-        if (!updated) return reply.status(404).send({ ok: false, message: "Item not found" });
-        updated.workflowStatus = effectiveStatus;
-        updated.reviewEvidence = reviewEvidence;
-        updated.actionEvidence = actionEvidence;
-        updated.reviewRevision = currentRevision + 1;
-        updated.lastActionAt = now;
       } catch {
         return reply.status(503).send({ ok: false, message: "Sentinel review action could not be saved; action was not applied" });
+      }
+      if (updatedRows !== 1) return reply.status(409).send({ ok: false, message: "Review changed concurrently; reload the item before applying this action" });
+      Object.assign(row, {
+        workflowStatus: effectiveStatus,
+        operatorNotes: body.notes ?? row.operatorNotes ?? null,
+        reviewEvidence,
+        actionEvidence,
+        reviewRevision: currentRevision + 1,
+        lastActionAt: now,
+      });
+      const updated = rowToItem(row);
+      try {
+        const cached = youtubeSentinelRepo.updateWorkflowStatus(row.id, effectiveStatus, body.notes);
+        if (cached) {
+          cached.reviewEvidence = reviewEvidence;
+          cached.actionEvidence = updated.actionEvidence;
+          cached.reviewRevision = currentRevision + 1;
+          cached.lastActionAt = now;
+        } else {
+          youtubeSentinelRepo.upsertItem(updated);
+        }
+      } catch {
+        request.log.warn({ itemId: row.id }, "Sentinel durable review action succeeded but local cache refresh failed");
       }
       return {
         ok: true,
