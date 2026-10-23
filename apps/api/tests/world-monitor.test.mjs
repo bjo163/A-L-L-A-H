@@ -76,7 +76,7 @@ async function invoke(checkDatabaseHealth, observations = [], runs = [], sourceD
     },
     post() {},
   });
-  return { options, result: await handler() };
+  return { options, result: await handler(), handler };
 }
 
 
@@ -189,6 +189,73 @@ test("a critical observation sets red global alert even when the database is hea
   assert.equal(result.databaseStatus, "available");
   assert.equal(result.alerts.some((alert) => alert.level === "critical"), true);
   assert.equal(result.globalAlertLevel, "red");
+});
+
+test("repeated samples share one time-bounded event and keep critical hazard through DB degradation", async () => {
+  const now = new Date().toISOString();
+  let databaseAvailable = true;
+  const observations = ["sample-a", "sample-b"].map((id) => ({
+    id, externalId: "quake-event-42", source: "test-seismic-feed", category: "earthquake",
+    observedAt: now, fetchedAt: now, status: "available", normalized: { mag: 8.1 },
+  }));
+  const { result, handler } = await invoke(async () => ({ ok: databaseAvailable }), observations);
+  assert.equal(result.alerts.filter((alert) => alert.eventId === "quake-event-42-quake").length, 1);
+  const initialEvent = result.alerts.find((alert) => alert.eventId === "quake-event-42-quake");
+  assert.equal(initialEvent.lifecycle, "initial");
+  assert.equal(initialEvent.level, "critical");
+  assert.equal(initialEvent.fetchedAt, now);
+  assert.ok(Date.parse(initialEvent.expiresAt) > Date.now());
+
+  const repeated = await handler();
+  assert.equal(repeated.alerts.filter((alert) => alert.eventId === initialEvent.eventId).length, 1);
+  assert.equal(repeated.alerts.find((alert) => alert.eventId === initialEvent.eventId).lifecycle, "active");
+
+  databaseAvailable = false;
+  const degraded = await handler();
+  assert.equal(degraded.databaseStatus, "unavailable");
+  assert.equal(degraded.alerts.find((alert) => alert.eventId === initialEvent.eventId).level, "critical");
+  assert.equal(degraded.globalAlertLevel, "red");
+});
+
+test("a severity escalation updates the same event identity", async () => {
+  const now = new Date().toISOString();
+  const observation = {
+    id: "quake-sample", externalId: "quake-event-99", source: "test-seismic-feed", category: "earthquake",
+    observedAt: now, fetchedAt: now, status: "available", normalized: { mag: 5.5 },
+  };
+  const { result, handler } = await invoke(async () => ({ ok: true }), [observation]);
+  const first = result.alerts.find((alert) => alert.eventId === "quake-event-99-quake");
+  assert.equal(first.level, "advisory");
+  observation.normalized.mag = 7.2;
+  const escalated = await handler();
+  const update = escalated.alerts.find((alert) => alert.eventId === first.eventId);
+  assert.equal(update.id, first.id);
+  assert.equal(update.level, "critical");
+  assert.equal(update.lifecycle, "updated");
+});
+
+test("hazards emit a resolved lifecycle after their observation-based TTL", async () => {
+  const previousTtl = process.env.WM_HAZARD_TTL_EARTHQUAKE_SECONDS;
+  process.env.WM_HAZARD_TTL_EARTHQUAKE_SECONDS = "0.03";
+  try {
+    const now = new Date().toISOString();
+    const observation = {
+      id: "expiring-quake", externalId: "quake-expiring", source: "test-seismic-feed", category: "earthquake",
+      observedAt: now, fetchedAt: now, status: "available", normalized: { mag: 7.2 },
+    };
+    const { result, handler } = await invoke(async () => ({ ok: true }), [observation]);
+    const eventId = "quake-expiring-quake";
+    assert.equal(result.alerts.find((alert) => alert.eventId === eventId).lifecycle, "initial");
+    await new Promise((resolve) => setTimeout(resolve, 60));
+    const expired = await handler();
+    const event = expired.alerts.find((alert) => alert.eventId === eventId);
+    assert.equal(event.lifecycle, "resolved");
+    assert.equal(typeof event.resolvedAt, "string");
+    assert.equal(expired.hazardAlertLevel, "green");
+  } finally {
+    if (previousTtl === undefined) delete process.env.WM_HAZARD_TTL_EARTHQUAKE_SECONDS;
+    else process.env.WM_HAZARD_TTL_EARTHQUAKE_SECONDS = previousTtl;
+  }
 });
 
 test("region, sensor, and activity values are not presented as live data without sources", async () => {

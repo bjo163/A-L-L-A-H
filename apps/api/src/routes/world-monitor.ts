@@ -11,6 +11,17 @@ import { requireTenant } from "./tenant-context.js";
 import { createYoutubeScanGate } from "../youtube-scan-gate.js";
 
 const youtubeScanGate = createYoutubeScanGate();
+// Keep the last known hazard events briefly in-process so a transient database or
+// ingestion outage does not erase a credible critical alert from the public HUD.
+const worldMonitorHazardEvents = new Map<string, any>();
+const hazardSeverity = (level: string) => level === "critical" ? 2 : level === "advisory" ? 1 : 0;
+const hazardTtlMs = (category: string) => {
+  const configuredSeconds = Number(process.env[`WM_HAZARD_TTL_${category.toUpperCase().replace(/-/g, "_")}_SECONDS`]);
+  if (Number.isFinite(configuredSeconds) && configuredSeconds > 0) return configuredSeconds * 1000;
+  if (category === "disaster") return 7 * 86_400_000;
+  if (category === "earthquake") return 86_400_000;
+  return 6 * 3_600_000;
+};
 const YOUTUBE_WORKFLOW_ACTIONS: readonly YoutubeWorkflowStatus[] = [
   "PENDING_REVIEW", "VERIFIED_SYIRIK", "COUNTER_DAKWAH_QUEUED", "REPORT_FILED", "FALSE_POSITIVE_DISMISSED",
   "WISDOM_QUEUED", "AMPLIFY_RECOMMENDED", "SHARED_VIA_DAKWAH", "ARCHIVED_REFERENCE",
@@ -136,11 +147,53 @@ export async function worldMonitorRoutes(app: FastifyInstance) {
         const current = buckets.get(bucket) ?? { count: 0, categories: {} };
         current.count += 1; current.categories[item.category] = (current.categories[item.category] ?? 0) + 1; buckets.set(bucket, current);
       }
-      const uniqueAlerts = [...new Map(alerts.map((alert) => [alert.id, alert])).values()];
+      const nowMs = Date.now();
+      const seenEventIds = new Set<string>();
+      const deduplicatedAlerts = [...new Map(alerts.map((alert) => [alert.id, alert])).values()];
+      for (const alert of deduplicatedAlerts) {
+        // Provider event IDs (externalId) form the stable identity across sampled
+        // refreshes. Aggregate readings are keyed by their source/region feed.
+        const eventId = alert.id;
+        seenEventIds.add(eventId);
+        const fetchedAt = observations.find((item) => item.source === alert.source && item.observedAt === alert.observedAt)?.fetchedAt ?? null;
+        const previous = worldMonitorHazardEvents.get(eventId);
+        const observedAt = previous?.observedAt && Date.parse(previous.observedAt) > Date.parse(alert.observedAt) ? previous.observedAt : alert.observedAt;
+        const expiresAt = new Date(Date.parse(observedAt) + hazardTtlMs(alert.category)).toISOString();
+        if (Date.parse(expiresAt) <= nowMs) continue;
+        const level = previous && hazardSeverity(previous.level) > hazardSeverity(alert.level) ? previous.level : alert.level;
+        const lifecycle = !previous || previous.lifecycle === "resolved" ? "initial" : previous.level !== level ? "updated" : "active";
+        worldMonitorHazardEvents.set(eventId, {
+          ...alert,
+          id: eventId,
+          eventId,
+          level,
+          lifecycle,
+          observedAt,
+          fetchedAt: fetchedAt ?? previous?.fetchedAt ?? null,
+          expiresAt,
+          resolvedAt: null,
+          removeAt: null,
+        });
+      }
+      for (const [eventId, event] of worldMonitorHazardEvents) {
+        if (event.lifecycle === "resolved" && Date.parse(event.removeAt) <= nowMs) worldMonitorHazardEvents.delete(eventId);
+        else if (event.lifecycle !== "resolved" && Date.parse(event.expiresAt) <= nowMs) {
+          event.lifecycle = "resolved";
+          event.resolvedAt = new Date(nowMs).toISOString();
+          event.removeAt = new Date(nowMs + 3_600_000).toISOString();
+        }
+        else if (event.lifecycle !== "resolved" && databaseStatus === "available" && !seenEventIds.has(eventId)) {
+          // Absence from a bounded sample is not proof of resolution; retain the
+          // event until its observation-based TTL expires.
+          event.lifecycle = "active";
+        }
+      }
+      const uniqueAlerts = [...worldMonitorHazardEvents.values()];
       // Keep source health separate: unknown stays unknown, critical wins, and service/data degradation stays yellow.
-      const hazardAlertLevel: WorldMonitoringSnapshot["hazardAlertLevel"] = uniqueAlerts.some((alert) => alert.level === "critical")
+      const activeAlerts = uniqueAlerts.filter((alert) => alert.lifecycle !== "resolved");
+      const hazardAlertLevel: WorldMonitoringSnapshot["hazardAlertLevel"] = activeAlerts.some((alert) => alert.level === "critical")
         ? "red"
-        : uniqueAlerts.some((alert) => alert.level === "advisory") ? "yellow" : observations.length ? "green" : "unknown";
+        : activeAlerts.some((alert) => alert.level === "advisory") ? "yellow" : observations.length ? "green" : "unknown";
       const sourceCoverage = sources.length ? sources.filter((source) => source.status === "success" && source.records !== null && source.records > 0).length / sources.length : 0;
       const coverageStatus: WorldMonitoringSnapshot["coverageStatus"] = sources.length === 0 || sources.every((source) => source.status === "unknown" || source.status === "empty")
         ? "unknown"
