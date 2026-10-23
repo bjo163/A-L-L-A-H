@@ -117,4 +117,5 @@ test("Moonwitness keeps language and appearance controls available in its header
 
   assert.doesNotMatch(styles, /\.language-switch\s*,\s*\.eol-public-shell__appearance[^\n]*display\s*:\s*none/i);
   assert.doesNotMatch(styles, /\.theme-toggle[^\n]*display\s*:\s*none/i);
+  assert.match(styles, /:where\(\.eol-public-shell\) \.nav-toggle\s*\{\s*color:\s*var\(--eol-color-text-inverse\) !important;\s*\}/);
 });
