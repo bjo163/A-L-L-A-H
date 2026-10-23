@@ -168,10 +168,6 @@ function applyColumnType(
   if (field.defaultTo !== undefined) builder.defaultTo(field.defaultTo);
   if (field.unique) builder.unique();
   if (field.index) builder.index();
-  if (field.references) {
-    const foreign = builder.references(field.references.column).inTable(field.references.table);
-    if (field.references.onDelete) foreign.onDelete(field.references.onDelete);
-  }
   return builder;
 }
 
