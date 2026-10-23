@@ -7,7 +7,7 @@ const root = resolve(dirname(fileURLToPath(import.meta.url)), "..");
 const uiRoot = resolve(root, "packages/ui");
 const manifest = JSON.parse(await readFile(resolve(uiRoot, "assets/asset-manifest.json"), "utf8"));
 const errors = [];
-const read = (path) => readFile(resolve(uiRoot, path), "utf8");
+const read = async (path) => (await readFile(resolve(uiRoot, path), "utf8")).replace(/\r\n/g, "\n");
 function svgSafetyErrors(markup, label) {
   const findings = [];
   if (/<\s*(script|foreignObject|image|feImage|use|iframe|object|embed)\b/i.test(markup)) findings.push(`${label}: disallowed active, embedded, or reference-based SVG element`);
@@ -116,7 +116,8 @@ async function walkGenerated(directory) {
     if (entry.isDirectory()) await walkGenerated(absolute);
     else if (entry.isFile()) {
       const path = relative(uiRoot, absolute).split(sep).join("/");
-      const digest = createHash("sha256").update(await readFile(absolute)).digest("hex");
+      const contents = (await readFile(absolute, "utf8")).replace(/\r\n/g, "\n");
+      const digest = createHash("sha256").update(contents).digest("hex");
       actualGenerated.set(path, digest);
     }
   }
