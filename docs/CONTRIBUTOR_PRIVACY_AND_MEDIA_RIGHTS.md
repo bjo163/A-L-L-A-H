@@ -1,11 +1,10 @@
 # Contributor privacy, consent, and media rights
 
-**Status: minimum editorial checklist; not legal advice or a deployed workflow.**
-The repository currently has no story/media publication model or publication
-endpoint. A checklist entry is not evidence that a person consented, that rights
-were granted, or that a legal review occurred. Keep publication disabled until
-the responsible humans have recorded the required evidence in the eventual
-editorial system.
+**Status: editorial checklist; not legal advice.** The repository now has
+tenant-scoped Moonwitness editorial models and a publication workflow, but this
+checklist is not itself evidence that a person consented, that rights were
+granted, or that a legal review occurred. The editorial workflow does not yet
+persist the complete contributor/media-rights evidence described below.
 
 ## Before accepting testimony or identifiable material
 
@@ -69,8 +68,13 @@ The responsible editor must confirm all applicable items before release:
    identifiers. No checklist completion or AI output substitutes for approval.
 
 If any required item is missing or unknown, the decision is **blocked** and the
-revision stays unpublished. This is an editorial control specification only:
-there is currently no runtime guard, persistent consent ledger, withdrawal
-endpoint, or automated unpublish/cache invalidation in this repository. Those
-require an approved content model, access policy, and implementation owner
-before they can be claimed as enforced.
+revision stays unpublished. Current publication guards enforce editorial
+state, tenant boundaries, reviewer/publisher permissions, and immutable
+publication snapshots. The separate Signal ledger records contributor and
+testimony consent state and rejects sensitive-location disclosure. However,
+there is not yet a persistent per-asset rights/attribution record or a publish
+guard that requires rights clearance; the editorial publishing flow does not
+yet consult Signal consent/revocation or this checklist. Unpublishing prevents
+the current public projection from serving the story, but automated cache and
+third-party copy invalidation are not guaranteed. Do not describe those rights
+and withdrawal controls as runtime-enforced until implemented and verified.
