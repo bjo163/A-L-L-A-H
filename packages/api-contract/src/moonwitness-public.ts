@@ -1,3 +1,4 @@
+/** Public page metadata deliberately withholds storage URLs until a reviewed delivery layer exists. */
 export interface PublicPageDto { sceneSlug: string; sequence: number; altText: string; assetUrl: null }
 export interface PublicSceneDto { slug: string; title: string; sequence: number; pages: PublicPageDto[] }
 export interface PublicEpisodeDto { slug: string; title: string; synopsis: string | null; sequence: number; scenes: PublicSceneDto[] }
@@ -22,6 +23,19 @@ export const PUBLIC_MOONWITNESS_LIST_RESPONSE_SCHEMA = {
   },
 } as const;
 
+export const PUBLIC_MOONWITNESS_PAGE_SCHEMA = {
+  type: "object", additionalProperties: false, required: ["sceneSlug", "sequence", "altText", "assetUrl"], properties: {
+    sceneSlug: { type: "string" }, sequence: { type: "integer", minimum: 1 }, altText: { type: "string" }, assetUrl: { type: "null" },
+  },
+} as const;
+
+export const PUBLIC_MOONWITNESS_SCENE_SCHEMA = {
+  type: "object", additionalProperties: false, required: ["slug", "title", "sequence", "pages"], properties: {
+    slug: { type: "string" }, title: { type: "string" }, sequence: { type: "integer", minimum: 1 },
+    pages: { type: "array", items: PUBLIC_MOONWITNESS_PAGE_SCHEMA },
+  },
+} as const;
+
 export const PUBLIC_MOONWITNESS_COLLECTION_SCHEMA = {
   type: "object", additionalProperties: false, required: ["slug", "title", "language"], properties: {
     slug: { type: "string" }, title: { type: "string" }, language: { type: "string", enum: ["id", "en", "ar"] },
@@ -37,9 +51,7 @@ export const PUBLIC_MOONWITNESS_STORY_SCHEMA = {
 export const PUBLIC_MOONWITNESS_EPISODE_SCHEMA = {
   type: "object", additionalProperties: false, required: ["slug", "title", "synopsis", "sequence", "scenes"], properties: {
     slug: { type: "string" }, title: { type: "string" }, synopsis: { anyOf: [{ type: "string" }, { type: "null" }] }, sequence: { type: "integer" },
-    scenes: { type: "array", items: { type: "object", additionalProperties: false, required: ["slug", "title", "sequence", "pages"], properties: {
-      slug: { type: "string" }, title: { type: "string" }, sequence: { type: "integer" }, pages: { type: "array", items: { type: "object", additionalProperties: false, required: ["sequence", "altText", "assetUrl"], properties: { sequence: { type: "integer" }, altText: { type: "string" }, assetUrl: { type: "null" } } } },
-    } } },
+    scenes: { type: "array", items: PUBLIC_MOONWITNESS_SCENE_SCHEMA },
   },
 } as const;
 

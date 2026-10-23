@@ -3,7 +3,7 @@ import { getDatabase } from "@empire/batteries";
 import {
   PUBLIC_MOONWITNESS_COLLECTION_SCHEMA, PUBLIC_MOONWITNESS_EPISODE_SCHEMA,
   PUBLIC_MOONWITNESS_ERROR_SCHEMA, PUBLIC_MOONWITNESS_LIST_RESPONSE_SCHEMA,
-  PUBLIC_MOONWITNESS_PAGE_QUERY_SCHEMA, PUBLIC_MOONWITNESS_SIGNAL_UNAVAILABLE_SCHEMA,
+  PUBLIC_MOONWITNESS_PAGE_QUERY_SCHEMA, PUBLIC_MOONWITNESS_PAGE_SCHEMA, PUBLIC_MOONWITNESS_SIGNAL_UNAVAILABLE_SCHEMA,
   PUBLIC_MOONWITNESS_STORY_SCHEMA,
 } from "@empire/api-contract";
 
@@ -12,7 +12,7 @@ const collectionParams = { type: "object", additionalProperties: false, required
 const storyParams = { type: "object", additionalProperties: false, required: ["collectionSlug", "storySlug"], properties: { collectionSlug: { type: "string", pattern: slugPattern }, storySlug: { type: "string", pattern: slugPattern } } } as const;
 const episodeParams = { type: "object", additionalProperties: false, required: ["collectionSlug", "storySlug", "episodeSlug"], properties: { collectionSlug: { type: "string", pattern: slugPattern }, storySlug: { type: "string", pattern: slugPattern }, episodeSlug: { type: "string", pattern: slugPattern } } } as const;
 const pageParams = { type: "object", additionalProperties: false, required: ["collectionSlug", "storySlug", "episodeSlug", "sceneSlug", "sequence"], properties: { collectionSlug: { type: "string", pattern: slugPattern }, storySlug: { type: "string", pattern: slugPattern }, episodeSlug: { type: "string", pattern: slugPattern }, sceneSlug: { type: "string", pattern: slugPattern }, sequence: { type: "integer", minimum: 1 } } } as const;
-const pageDtoSchema = { type: "object", additionalProperties: false, required: ["sceneSlug", "sequence", "altText", "assetUrl"], properties: { sceneSlug: { type: "string" }, sequence: { type: "integer" }, altText: { type: "string" }, assetUrl: { type: "null" } } } as const;
+const pageDtoSchema = PUBLIC_MOONWITNESS_PAGE_SCHEMA;
 const pageListResponse = { ...PUBLIC_MOONWITNESS_LIST_RESPONSE_SCHEMA, properties: { ...PUBLIC_MOONWITNESS_LIST_RESPONSE_SCHEMA.properties, items: { type: "array", items: pageDtoSchema } } } as const;
 const collectionListResponse = { ...PUBLIC_MOONWITNESS_LIST_RESPONSE_SCHEMA, properties: { ...PUBLIC_MOONWITNESS_LIST_RESPONSE_SCHEMA.properties, items: { type: "array", items: PUBLIC_MOONWITNESS_COLLECTION_SCHEMA } } } as const;
 const storyListResponse = { ...PUBLIC_MOONWITNESS_LIST_RESPONSE_SCHEMA, properties: { ...PUBLIC_MOONWITNESS_LIST_RESPONSE_SCHEMA.properties, items: { type: "array", items: PUBLIC_MOONWITNESS_STORY_SCHEMA } } } as const;

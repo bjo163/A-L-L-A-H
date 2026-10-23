@@ -36,6 +36,17 @@ test("public projections use allowlisted fields and require public publication s
   assert.equal(routes.projectPublicStory({ snapshot: { classification: "public", visibility: "unlisted", title: "Hidden", body: "Draft" }, publishedAt: "2026-10-20T12:00:00.000Z" }), null);
 });
 
+test("public comic DTO schemas expose no stored asset URL or internal identity fields", () => {
+  const page = dto.PUBLIC_MOONWITNESS_PAGE_SCHEMA;
+  assert.deepEqual(page.required, ["sceneSlug", "sequence", "altText", "assetUrl"]);
+  assert.equal(page.additionalProperties, false);
+  assert.deepEqual(page.properties.assetUrl, { type: "null" });
+  assert.equal(page.properties.sequence.minimum, 1);
+  assert.equal(dto.PUBLIC_MOONWITNESS_SCENE_SCHEMA.additionalProperties, false);
+  assert.equal(dto.PUBLIC_MOONWITNESS_SCENE_SCHEMA.properties.pages.items, page);
+  assert.equal(dto.PUBLIC_MOONWITNESS_EPISODE_SCHEMA.properties.scenes.items, dto.PUBLIC_MOONWITNESS_SCENE_SCHEMA);
+});
+
 test("public routes are anonymous GETs, and guessed draft story slugs receive the same 404", async () => {
   const routes = loadTs(compileTs(routeSource), {
     fastify: {},
