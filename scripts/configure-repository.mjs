@@ -21,7 +21,7 @@ const changes = [
   ['PUT', `repos/${repository}/branches/main/protection`, {
     ...common,
     required_status_checks: { strict: false, contexts: ['Branch policy', 'Quality checks'] },
-    required_pull_request_reviews: { required_approving_review_count: 0, dismiss_stale_reviews: true },
+    required_pull_request_reviews: { required_approving_review_count: 1, dismiss_stale_reviews: true },
   }],
   ['PUT', `repos/${repository}/branches/dev/protection`, {
     ...common, required_status_checks: null, required_pull_request_reviews: null,
@@ -40,10 +40,22 @@ if (process.argv.includes('--dry-run')) {
     console.log(`${method} ${endpoint}: configured`);
   }
   // Verify persisted settings, not just HTTP success.
+  const settings = JSON.parse(execFileSync('gh', ['api', `repos/${repository}`], { encoding: 'utf8' }));
+  if (settings.default_branch !== 'main' || !settings.allow_merge_commit || settings.allow_squash_merge || settings.allow_rebase_merge) {
+    throw new Error('Unexpected repository default branch or merge strategy.');
+  }
   for (const branch of ['main', 'dev']) {
     const protection = JSON.parse(execFileSync('gh', ['api', `repos/${repository}/branches/${branch}/protection`], { encoding: 'utf8' }));
-    if (!protection.enforce_admins.enabled || protection.allow_force_pushes.enabled || protection.allow_deletions.enabled) {
+    const needsReview = branch === 'main'
+      && (protection.required_pull_request_reviews?.required_approving_review_count ?? 0) < 1;
+    if (!protection.enforce_admins.enabled || protection.allow_force_pushes.enabled || protection.allow_deletions.enabled || needsReview) {
       throw new Error(`Unexpected protection state on ${branch}`);
+    }
+    if (branch === 'main') {
+      const required = protection.required_status_checks?.contexts ?? [];
+      if (!['Branch policy', 'Quality checks'].every((name) => required.includes(name))) {
+        throw new Error('Required main checks are missing.');
+      }
     }
   }
   console.log('Repository settings applied and verified.');

@@ -18,7 +18,7 @@ The current catalog compares three provisional concepts:
 - **Orbit**: connected systems and coordination. It is the current working mark and generated asset source, but orbital marks are common and the thin ellipses may merge at small sizes.
 - **Monogram**: compact reference to the A-L-L-A-H identity. Check that it is not mistaken for a generic letter A or a product-specific initial.
 
-No concept is final. The catalog simulates Portal, operator workspace, dialog, and 32px favicon contexts so reviewers can compare the same candidate in the same surfaces. Score concepts with the weighted rubric in `docs/BLUEPRINT_UI_CENTRALIZATION.md`; record the reviewer, date, rationale, and any rejected trade-off before selecting a master.
+No concept is final. The catalog simulates Portal, operator workspace, dialog, and 32px favicon contexts so reviewers can compare the same candidate in the same surfaces. Record the reviewer, date, rationale, and any rejected trade-off in `docs/UI_REVIEW_MATRIX.md` before selecting a master; concept selection remains pending.
 
 ## Lockup composition
 

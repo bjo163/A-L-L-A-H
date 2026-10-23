@@ -18,6 +18,10 @@ Current status: local PostgreSQL module schema sync, API session/RBAC, OpenAPI, 
 
 ## Per-SHA release evidence
 
+Use this table as the canonical release-candidate evidence ledger for this
+repository. The delivery roadmap describes program outcomes; this file records
+candidate-specific validation evidence and must not duplicate roadmap status.
+
 Create one record for each release candidate and do not mark a gate complete from
 a different commit. Keep deployment, backup, and rollback evidence redacted.
 
@@ -41,3 +45,12 @@ A release candidate is not ready while any required check is red, missing, or
 based on another SHA. For Blocked, record the concrete dependency and owner;
 blocked is not a pass. Never claim production readiness without deployment and
 recovery evidence. Use the merge-commit promotion flow in AUTOMATION.md.
+
+## Recovery decision record
+
+Record the failure phase, exact candidate SHA, observed tag/release/artifact state,
+data impact, decision owner, and recovery evidence. If publication stopped after tag
+creation, retry only the missing release publication for the same verified tag.
+Never move or delete a published tag to conceal partial failure. Prefer a corrective
+release for bad published code. Application rollback does not imply database
+rollback; verify migration compatibility and restore rehearsal evidence separately.

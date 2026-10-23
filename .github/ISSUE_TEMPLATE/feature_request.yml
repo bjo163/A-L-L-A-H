@@ -1,0 +1,23 @@
+name: Feature request
+description: Propose a scoped improvement with a clear outcome.
+title: "feat: "
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem and intended users
+      description: What need is unmet, and who experiences it?
+    validations:
+      required: true
+  - type: textarea
+    id: outcome
+    attributes:
+      label: Intended outcome and acceptance criteria
+      description: State observable conditions that would demonstrate success.
+    validations:
+      required: true
+  - type: textarea
+    id: scope
+    attributes:
+      label: Scope, dependencies, and risks
+      description: Include privacy, security, compatibility, licensing, or migration implications.

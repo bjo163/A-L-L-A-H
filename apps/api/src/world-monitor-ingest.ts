@@ -119,7 +119,8 @@ async function refreshWorldMonitorSourcesUnlocked(): Promise<void> {
           const age = Math.max(0, Math.floor((Date.now() - Date.parse(record.observedAt)) / 1000));
           const identity = worldMonitorObservationIdentity(spec.source, record);
           const observation = { source: spec.source, sourceTier: spec.tier, category: spec.category, externalId: identity.externalId, observedAt: record.observedAt, fetchedAt: now(), freshnessSeconds: age, confidence: spec.tier === "primary" ? 0.95 : 0.7, status: age > maxAgeSeconds ? "stale" : "available", normalized: record.normalized, payload: body };
-          await (WorldMonitorObservationModel.query() as any).insert(observation).onConflict(["source", "externalId", "observedAt"]).merge(observation);
+          // Knex conflict targets are physical PostgreSQL column names; model attribute names are camelCase.
+          await (WorldMonitorObservationModel.query() as any).insert(observation).onConflict(["source", "external_id", "observed_at"]).merge(observation);
         }
         await (WorldMonitorSourceRunModel.query() as any).insert({ source: spec.source, category: spec.category, tier: spec.tier, startedAt, completedAt: now(), status: stale ? "stale" : "success", recordCount: records.length, durationMs: Date.now() - startedMs, metadata: { url: spec.url, maxAgeSeconds, freshestAgeSeconds } });
         const bucketStart = new Date(Math.floor(Date.now() / 3_600_000) * 3_600_000).toISOString();

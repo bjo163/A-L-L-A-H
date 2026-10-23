@@ -39,7 +39,7 @@ The repository already contains `packages/ui`, shared CSS/token entry points, sh
 
 ## Enforcement and evidence
 
-`pnpm audit:ui-boundary` enforces consumer stylesheet entries, product selector scope, shared class ownership, and the absence of app CSS/inline style props. `pnpm audit:ui-css` checks repeated declarations. UI assets are checked against their source/manifest. The required acceptance matrix is maintained in `docs/UI_REVIEW_MATRIX.md`, and the detailed implementation status and remaining gates stay in `docs/BLUEPRINT_UI_CENTRALIZATION.md`.
+`pnpm audit:ui-boundary` enforces consumer stylesheet entries, product selector scope, shared class ownership, and the absence of app CSS/inline style props. `pnpm audit:ui-css` checks repeated declarations. UI assets are checked against their source/manifest. The required acceptance matrix and remaining visual evidence are maintained in `docs/UI_REVIEW_MATRIX.md`.
 
 ## Revisit when
 

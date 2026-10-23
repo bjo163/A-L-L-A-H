@@ -18,6 +18,8 @@
     "validate:ui-assets": "node scripts/validate-ui-assets.mjs",
     "world-monitor:runtime-smoke": "pnpm --filter @empire/api exec tsx src/scripts/world-monitor-runtime-smoke.ts",
     "module:test": "node --test packages/module-kit/test/*.test.mjs",
+    "release:plan": "node scripts/release-planner.mjs --dry-run",
+    "release:prepare": "node scripts/prepare-release.mjs",
     "dna:generate": "node scripts/generate-batteries-dna.mjs",
     "dna:validate": "node scripts/validate-batteries-dna.mjs",
     "dev": "turbo run dev --filter=@empire/api --filter=@empire/web",

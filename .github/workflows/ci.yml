@@ -139,4 +139,6 @@ jobs:
       - run: pnpm run validate
       - run: pnpm run typecheck
       - run: pnpm exec turbo run test
+      - name: Test release planner
+        run: pnpm exec node --test scripts/release-planner.test.mjs
       - run: pnpm run build

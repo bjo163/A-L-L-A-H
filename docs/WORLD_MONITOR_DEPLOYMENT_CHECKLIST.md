@@ -22,3 +22,25 @@
 - [ ] Stop the database and verify readiness becomes unavailable without exposing stale data as fresh.
 - [ ] Roll back the application image/source revision, restore the last known-good database backup if schema changes require it, and re-run health checks.
 - [ ] Keep the previous deployment available until scheduler and source health remain stable for one ingest interval.
+
+## Drill evidence record
+
+Run this checklist against an isolated disposable stack. Do not run destructive
+restore or failure-injection steps against production. Keep credentials, private
+source URLs, and raw private-file contents out of the evidence.
+
+| Field | Record |
+| --- | --- |
+| Environment and date | Pending |
+| Application source SHA / image digest | Pending |
+| Backup identifier and checksum | Pending (redacted) |
+| Restore target and row-count/digest comparison | Pending |
+| Failure injected and expected behavior | Pending |
+| Observed readiness, source-run, and scheduler results | Pending |
+| Correlation ID and redacted error-log reference | Pending |
+| Rollback action and post-rollback health result | Pending |
+| Operator / reviewer | Pending |
+
+Attach the command output or a protected evidence reference for each completed
+step. A checked box without a matching run record is not restore or failure-path
+evidence. Record any skipped step as blocked with its dependency and owner.

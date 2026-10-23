@@ -1,8 +1,8 @@
 # Changelog
 
-Changelog lengkap setiap push yang lolos CI tersedia di
+Ringkasan perubahan untuk tiap rilis stabil tersedia di
 [GitHub Releases](https://github.com/bjo163/A-L-L-A-H/releases).
 
-Setiap rilis menyertakan `CHANGELOG.md`, `release.json`, dan arsip sumber
-dengan versi root `package.json` yang sudah diperbarui.
+Setiap rilis stabil dibuat secara manual dari commit `main` yang telah diverifikasi.
+Tag dan GitHub Releases menjadi ledger versi; lihat prosedur rilis pada dokumentasi.
 Lihat [alur kerja dan versi](docs/AUTOMATION.md).

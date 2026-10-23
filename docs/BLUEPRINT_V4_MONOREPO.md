@@ -29,7 +29,7 @@ data/ schemas/               # existing 71 UNILEX, AGE, G.O.D.99/WINGS10, 4-sour
 
 ## Canonical data and API ownership
 
-For shared UI ownership, design foundations, user journeys and phased delivery, see the [UI Blueprint and long-term checklist](BLUEPRINT_UI.md). UI phases depend on the engineering and authorization gates below.
+For shared UI ownership and design foundations, see [ADR-0004](adr/ADR-0004-ui-package-centralization.md), the [design and accessibility kit](design/responsive-accessibility-kit.md), and the [UI review matrix](UI_REVIEW_MATRIX.md). UI acceptance depends on the engineering and authorization gates below.
 
 One source of truth for domain data. Fastify owns the local Empire API and its persistence boundary. UI never reads PostgreSQL directly. The Next public portal never exposes private tenant data. Modules cannot access each other's private DB tables; use typed contracts and owned services.
 

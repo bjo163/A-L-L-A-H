@@ -59,7 +59,7 @@ test("observation identities are stable across repeated provider polls", () => {
 test("refresh uses a PostgreSQL advisory transaction lock and atomic identity upsert", () => {
   assert.match(source, /pg_advisory_lock\(hashtext\(\?\)\)/);
   assert.match(source, /pg_advisory_unlock\(hashtext\(\?\)\)/);
-  assert.match(source, /onConflict\(\["source", "externalId", "observedAt"\]\)\.merge/);
+  assert.match(source, /onConflict\(\["source", "external_id", "observed_at"\]\)\.merge/);
   assert.match(source, /WorldMonitorObservationModel\.query\(\) as any\)\.insert\(observation\)\.onConflict/);
   assert.deepEqual(WorldMonitorObservationModel.uniqueConstraints, [["source", "externalId", "observedAt"]]);
 });

@@ -1,0 +1,39 @@
+name: Bug report
+description: Report a reproducible defect in this repository.
+title: "bug: "
+body:
+  - type: markdown
+    attributes:
+      value: Share only sanitized logs. Do not include credentials, personal data, or private production records.
+  - type: textarea
+    id: summary
+    attributes:
+      label: What happened?
+      description: Describe the observed behavior and why it is a problem.
+    validations:
+      required: true
+  - type: textarea
+    id: reproduce
+    attributes:
+      label: Steps to reproduce
+      placeholder: "1. ...\n2. ...\n3. ..."
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: input
+    id: environment
+    attributes:
+      label: Environment
+      description: Include commit or version, OS, Node.js, and pnpm versions when relevant.
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized logs or screenshots
+      description: Remove tokens, personal information, and private URLs before attaching.

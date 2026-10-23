@@ -4,9 +4,9 @@ Shared React primitives and visual tokens for the public portal and 100CENTER.
 
 ## Active centralization plan
 
-The [UI centralization blueprint](../../docs/BLUEPRINT_UI_CENTRALIZATION.md) defines the target ownership of all product presentation, including brand SVGs, icons, illustrations, tokens, themes, component variants, page patterns, and layouts in this package. Portal and Command Center retain routing, product content, data, permissions, and workflows. Its `UI-Cxx-yy` checklist covers migration, acceptance evidence, and removal of duplicate visual implementations.
+The [UI centralization ADR](../../docs/adr/ADR-0004-ui-package-centralization.md) defines the ownership boundary for shared product presentation in this package. Portal and Command Center retain routing, product content, data, permissions, and workflows. The [design and accessibility kit](../../docs/design/responsive-accessibility-kit.md) and [UI review matrix](../../docs/UI_REVIEW_MATRIX.md) track visual guidance and acceptance evidence.
 
-The centralization blueprint tracks the remaining migration and acceptance work. Existing contrast measurements are historical and must be rechecked against the final token/theme version before acceptance.
+The ADR defines ownership; remaining visual acceptance evidence belongs in the [UI review matrix](../../docs/UI_REVIEW_MATRIX.md). Existing contrast measurements are historical and must be rechecked against the final token/theme version before acceptance.
 
 The visual catalog uses static local fixtures and does not call product APIs. Its responsive preview offers repeatable theme, density, language, and iframe viewport settings; use those settings when capturing comparison screenshots. The brand concept gallery includes a no-default weighted scorecard worksheet that follows the blueprint rubric, localizes to English/Indonesian, and calculates only after every criterion has a value; it does not save or imply reviewer approval.
 
@@ -206,4 +206,4 @@ Run pnpm --filter @empire/ui catalog from the monorepo root and open http://127.
 
 ## Long-term direction
 
-Use the [long-term UI blueprint](../../docs/BLUEPRINT_UI.md) for product goals, user journeys, and its `UI-Uxx-xx` roadmap. For current ownership, migration, and acceptance of Portal/Command Center presentation, use the [active UI centralization blueprint](../../docs/BLUEPRINT_UI_CENTRALIZATION.md) and its `UI-Cxx-yy` checklist. Baseline observations and theme/contrast evidence in the long-term document are historical; verify them against the active blueprint and current review matrix before treating them as acceptance evidence. This README describes the package currently available.
+Use the [design and accessibility kit](../../docs/design/responsive-accessibility-kit.md), [UI centralization ADR](../../docs/adr/ADR-0004-ui-package-centralization.md), and [UI review matrix](../../docs/UI_REVIEW_MATRIX.md) for visual direction, ownership, and acceptance evidence. Review current evidence before treating any historical observation as current acceptance. This README describes the package currently available.

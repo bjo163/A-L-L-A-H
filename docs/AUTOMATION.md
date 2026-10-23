@@ -30,15 +30,18 @@ git push origin dev
 
 ## Required checks
 
-The `CI` workflow runs one fast path: install the locked dependencies, run repository
-validation, typecheck, run workspace tests, and build the apps. It also rejects pull requests
-unless they come from this repository's `dev` branch into `main`. New runs replace
-older runs for the same branch or pull request.
+The `CI` workflow's Quality checks job installs locked dependencies, runs repository
+validation, typecheck, workspace tests, the release-planner unit tests, and builds the
+apps. It also rejects pull requests unless they come from this repository's `dev`
+branch into `main`. Two separate disposable PostgreSQL integration jobs run in
+parallel with Quality checks. New runs replace older quality runs for the same branch
+or pull request.
 
 CodeQL and dependency auditing stay in the separate `Security` workflow. The
-repository setup script requires only `Branch policy` and `Quality checks`; CodeQL
-reports on pull requests and security scans also run weekly or manually. Rerun the
-setup script as an admin if GitHub still shows CodeQL as a required check.
+repository setup script requires one approving review plus `Branch policy` and
+`Quality checks`; CodeQL reports on pull requests and security scans also run weekly
+or manually. Rerun the setup script as an admin if GitHub shows unexpected required
+checks.
 
 Run the same checks locally with:
 
@@ -46,6 +49,7 @@ Run the same checks locally with:
 pnpm install --frozen-lockfile
 pnpm validate
 pnpm exec turbo run test
+pnpm exec node --test scripts/release-planner.test.mjs
 pnpm build
 ```
 
@@ -58,9 +62,108 @@ the blocker; do not infer success from source inspection or CI.
 
 ## Releases
 
-Releases are manual. After merging to `main`, create a GitHub Release with the next
-stable `vX.Y.Z` tag pointing at the released `main` commit. Tags and GitHub Releases
-are the version ledger. Do not add version-bump commits to `dev` or `main`.
+Releases remain manual. The annotated stable Git tag and its GitHub Release are the
+version ledger; do not add version-bump commits to `dev` or `main`. The root
+`package.json` version (`0.2.0`) is historical package metadata, not the current
+release version. The package is marked private and has no package publication
+workflow; the GitHub repository itself is public.
+
+Before proposing a release, inspect the commits since the latest stable tag and
+prepare release notes from the actual changes. Apply Conventional Commit intent
+conservatively: `fix:` or `perf:` suggests PATCH, `feat:` suggests MINOR, and `!`
+or a `BREAKING CHANGE:` footer suggests MAJOR. For `0.x`, treat breaking changes as
+MINOR because public compatibility has not reached `1.0`; `feat:` is PATCH unless
+the release owner explicitly opts into a minor pre-1.0 release. Documentation,
+tests, chores, refactors, builds and CI changes alone do not require a release.
+Merge commits are containers, not release signals; review the commits and PR title
+inside the promotion. If history is malformed, intent conflicts, or there are no
+eligible changes, stop and ask the release owner rather than guessing.
+
+The current stable baseline is `v0.2.5`; GitHub also has historical development
+prereleases such as `v0.2.6-dev.386`. Stable tags use `vMAJOR.MINOR.PATCH`; prereleases,
+if explicitly approved, use SemVer prerelease identifiers such as `v0.2.6-rc.1`
+and never replace or move a stable tag. Confirm that the proposed version is valid,
+strictly greater than the previous stable tag, and does not already exist. Tag the
+exact verified `main` commit with an annotated tag, then create one GitHub Release
+for that tag. Do not move or delete a published tag. If release publication fails
+after tagging, inspect the tag and release state first; retry publication for the
+same tag only when it still points to the verified commit. For a bad published
+release, prefer a corrective release and document the recovery.
+
+If the repository has no stable tag, do not infer an initial release from root
+`package.json`; have the owner choose and document the initial baseline.
+
+Dry review commands (read-only):
+
+```sh
+git fetch origin --tags
+git log --format='%H %s%n%b' v0.2.5..origin/main
+git tag --list 'v[0-9]*' --sort=-version:refname
+```
+
+After owner approval and required checks, create the annotated tag and publish the
+release using the GitHub UI or authenticated `gh` commands. This repository's local
+workflow does not publish tags or releases. A read-only planner checks the current
+local `main` against `origin/main` and calculates a candidate from commits since the
+latest stable tag:
+
+```sh
+pnpm release:plan
+```
+
+It refuses to run on `dev`, on a stale/different main ref, without a stable baseline,
+or when commit history is ambiguous. It does not query GitHub check results; confirm
+required checks for the exact candidate SHA before manual publication. Planning
+creates no tag or remote release.
+
+After a successful GitHub run for the candidate SHA, an operator may save the
+verified run details as JSON and prepare a local-only bundle:
+
+```sh
+pnpm release:prepare --checks-file .artifacts/verified-run.json
+```
+
+The evidence file must contain the candidate `commit`, numeric `runId`, matching
+GitHub Actions `runUrl`, and successful `Branch policy` and `Quality checks`
+outcomes. Preparation requires `main` to match the locally fetched `origin/main`,
+then writes `release.json`, `CHANGELOG.md`, a versioned source archive, and
+`SHA256SUMS.txt` under `.artifacts/releases/<version>/`. The manifest records the
+same commit and evidence. Existing output directories are never overwritten.
+This command makes no tag, GitHub Release, package publication, or deployment.
+The owner still reviews the bundle and publishes the annotated tag and GitHub
+Release manually after approval. If release history contains prereleases (such as
+`v0.2.6-dev.386`), those are historical outputs; the checked-in workflow does not
+automate prerelease publication.
+Production deployment is not triggered here because this repository has no configured
+production target or deployment credentials. Connect a verified hosting target before
+adding that step; a GitHub Release alone does not claim a production deployment.
+
+## Verification and recovery
+
+Run only after inspecting the relevant manifests and available local services:
+
+```sh
+pnpm install --frozen-lockfile
+pnpm validate
+pnpm typecheck
+pnpm exec turbo run test
+pnpm build
+git diff --check
+```
+
+The CI workflow additionally runs disposable PostgreSQL authentication/tenant
+integration and schema-sync rollback smoke jobs on GitHub-hosted runners. Do not
+claim those remote jobs passed based on a local run. Record commit SHA and workflow
+run URL for every required check.
+
+Recovery: for failed CI, fix the candidate and rerun checks before promotion. For
+an ambiguous version, stop without creating a tag. For failure after tag creation,
+verify the tag object and target commit, then retry creation of the matching release
+only if it is absent. If a release exists with missing or inconsistent artifacts,
+stop publication and document the discrepancy; do not move or delete its tag. Use a
+new corrective release for a published defect. Code rollback and database rollback
+are separate decisions: confirm migration reversibility and restore evidence before
+reverting production data. No production target is configured in this repository.
 
 ## Repository settings
 
@@ -72,8 +175,11 @@ node scripts/configure-repository.mjs --dry-run
 node scripts/configure-repository.mjs
 ```
 
-Keep `main` as the default branch, allow merge commits only, require `Branch policy`
-and `Quality checks` on `main`, and block deletion and force-push on both branches.
+Keep `main` as the default branch, allow merge commits only, require one approving
+review plus `Branch policy` and `Quality checks` on `main`, and block deletion and
+force-push on both branches. The setup script's dry-run prints the proposed settings;
+its write mode changes remote repository configuration and must be run only by an
+authorized administrator. Verify the persisted rules after applying them.
 
 ## Per-SHA release record
 
