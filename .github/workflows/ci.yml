@@ -68,6 +68,44 @@ jobs:
       - name: Run disposable PostgreSQL auth tests
         run: pnpm --filter @empire/api exec tsx --test integration-tests/postgres-auth.test.mjs
 
+  schema-sync-postgres-integration:
+    name: PostgreSQL schema upgrade and rollback integration
+    needs: branch-policy
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:16
+        env:
+          POSTGRES_DB: eol_sync_test
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: postgres
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d eol_sync_test"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+    env:
+      DATABASE_URL: postgresql://postgres:postgres@127.0.0.1:5432/eol_sync_test
+      EOL_SYNC_TEST_DATABASE: '1'
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7.0.1
+        with:
+          persist-credentials: false
+      - uses: pnpm/action-setup@d9184bf108216479bc5a137cc391f4d7b14c870b # v6.1.0
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7.1.0
+        with:
+          node-version-file: .node-version
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm exec turbo run build --filter=@empire/api...
+      - name: Run disposable PostgreSQL schema sync smoke
+        env:
+          GITHUB_ACTIONS: 'true'
+        run: pnpm --filter @empire/api db:sync:smoke
+
   quality:
     name: Quality checks
     needs: branch-policy

@@ -12,6 +12,25 @@ import {
 import { env } from "../env.js";
 import { loadModulePlan } from "../module-runtime.js";
 
+function assertDisposableSyncDatabase() {
+  const inputUrl = process.env.DATABASE_URL;
+  if (process.env.GITHUB_ACTIONS !== "true" || process.env.EOL_SYNC_TEST_DATABASE !== "1" || !inputUrl) {
+    throw new Error("Schema sync smoke tests may run only in the dedicated GitHub Actions service job.");
+  }
+
+  const parsedUrl = new URL(inputUrl);
+  if (
+    !["postgres:", "postgresql:"].includes(parsedUrl.protocol) ||
+    !["127.0.0.1", "localhost"].includes(parsedUrl.hostname) ||
+    parsedUrl.port !== "5432" ||
+    parsedUrl.pathname !== "/eol_sync_test" ||
+    parsedUrl.search ||
+    parsedUrl.hash
+  ) {
+    throw new Error("Refusing schema sync smoke tests outside disposable eol_sync_test on localhost:5432.");
+  }
+}
+
 class SyncProbeModel extends BatteriesModel {
   static override tableName = "batteries_sync_probe";
   static override fields: Record<string, FieldDefinition> = {
@@ -20,6 +39,7 @@ class SyncProbeModel extends BatteriesModel {
 }
 
 async function main() {
+  assertDisposableSyncDatabase();
   const admin = knexFactory({ client: "pg", connection: env.DATABASE_URL, pool: { min: 1, max: 2 } });
   const schema = `batteries_smoke_${randomUUID().replaceAll("-", "")}`;
   let scoped: ReturnType<typeof knexFactory> | undefined;
