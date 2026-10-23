@@ -9,15 +9,42 @@ const json = async (url: string): Promise<any> => {
 };
 
 const now = () => new Date().toISOString();
-const parseObservedAt = (value: unknown) => {
-  if (typeof value !== "string") return now();
-  return new Date(/[zZ]|[+-]\d\d:\d\d$/.test(value) ? value : `${value}Z`).toISOString();
+export const parseObservedAt = (value: unknown) => {
+  if (typeof value !== "string" || !value.trim()) throw new Error("Source observation timestamp is missing");
+  const timestamp = /[zZ]|[+-]\d\d:\d\d$/.test(value) ? value : `${value}Z`;
+  const parsed = Date.parse(timestamp);
+  if (!Number.isFinite(parsed)) throw new Error("Source observation timestamp is invalid");
+  return new Date(parsed).toISOString();
 };
-export const parseOpenMeteo = (body: any) => [{ observedAt: parseObservedAt(body.current?.time), normalized: { latitude: body.latitude, longitude: body.longitude, ...body.current } }];
-export const parseQuakes = (body: any) => (Array.isArray(body?.features) ? body.features : []).slice(0, 100).map((item: any) => ({ externalId: item.id, observedAt: item.properties?.time ? new Date(item.properties.time).toISOString() : now(), normalized: { ...item.properties, coordinates: item.geometry?.coordinates } }));
+export const parseOpenMeteo = (body: any) => {
+  if (!body?.current || !Number.isFinite(Number(body.latitude)) || !Number.isFinite(Number(body.longitude))) throw new Error("Open-Meteo payload is missing coordinates or current values");
+  return [{ observedAt: parseObservedAt(body.current.time), normalized: { latitude: Number(body.latitude), longitude: Number(body.longitude), ...body.current } }];
+};
+export const parseQuakes = (body: any) => {
+  if (!Array.isArray(body?.features)) throw new Error("USGS payload has no feature list");
+  return body.features.slice(0, 100).map((item: any) => {
+    const time = Number(item?.properties?.time);
+    if (!Number.isFinite(time) || typeof item?.id !== "string" || !item.id || !Array.isArray(item?.geometry?.coordinates)) throw new Error("USGS event has an invalid ID, timestamp, or coordinates");
+    return { externalId: item.id, observedAt: new Date(time).toISOString(), normalized: { ...item.properties, coordinates: item.geometry.coordinates } };
+  });
+};
 export const parseKp = (body: any) => {
   const row = Array.isArray(body) ? body.at(-1) : body;
-  return [{ observedAt: parseObservedAt(row?.time_tag ?? row?.timeTag), normalized: { kp: Number(row?.kp_index ?? row?.estimated_kp ?? row?.Kp ?? Number.parseFloat(row?.kp) ?? NaN), kpKind: row?.kp_index !== undefined || row?.estimated_kp !== undefined ? "near-real-time estimate" : "reported", raw: row } }];
+  if (!row || typeof row !== "object") throw new Error("NOAA Kp payload has no latest row");
+  const rawKp = row.kp_index ?? row.estimated_kp ?? row.Kp ?? (typeof row.kp === "string" ? Number.parseFloat(row.kp) : row.kp);
+  const kp = Number(rawKp);
+  if (!Number.isFinite(kp) || kp < 0 || kp > 9) throw new Error("NOAA Kp value is invalid");
+  return [{ observedAt: parseObservedAt(row.time_tag ?? row.timeTag), normalized: { kp, kpKind: row.kp_index !== undefined || row.estimated_kp !== undefined ? "near-real-time estimate" : "reported", raw: row } }];
+};
+
+export const parseDisasters = (body: any) => {
+  const events = body?.features ?? body?.events;
+  if (!Array.isArray(events)) throw new Error("GDACS payload has no event list");
+  return events.slice(0, 100).map((item: any) => ({
+    externalId: String(item.id ?? item.properties?.eventid ?? item.eventid ?? ""),
+    observedAt: parseObservedAt(item.properties?.datemodified ?? item.properties?.fromdate ?? item.datemodified ?? item.fromdate),
+    normalized: item.properties ?? item,
+  })).filter((item: any) => item.externalId && item.normalized && typeof item.normalized === "object");
 };
 
 const globalPoints = [[51.5,-0.1,"london"],[40.7,-74,"new-york"],[35.7,139.7,"tokyo"],[-1.3,36.8,"nairobi"],[-23.5,-46.6,"sao-paulo"],[28.6,77.2,"delhi"],[-33.9,151.2,"sydney"],[64.1,-21.9,"reykjavik"]] as const;
@@ -29,7 +56,7 @@ const specs = (): SourceSpec[] => [
   { source: "usgs-fdsn-earthquakes", tier: "fallback", category: "earthquake", url: `https://earthquake.usgs.gov/fdsnws/event/1/query?format=geojson&limit=100&orderby=time&starttime=${new Date(Date.now() - 86_400_000).toISOString()}`, parse: parseQuakes },
   { source: "noaa-swpc-kp-1m", tier: "primary", category: "space-weather", url: "https://services.swpc.noaa.gov/json/planetary_k_index_1m.json", parse: parseKp },
   { source: "noaa-swpc-kp-final-fallback", tier: "fallback", category: "space-weather", url: "https://services.swpc.noaa.gov/products/noaa-planetary-k-index.json", parse: parseKp },
-  { source: "gdacs-global-disasters", tier: "primary", category: "disaster", url: "https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH", parse: (body: any) => (body?.features ?? body?.events ?? []).slice(0, 100).map((item: any) => ({ externalId: item.id ?? item.properties?.eventid ?? item.eventid, observedAt: parseObservedAt(item.properties?.datemodified ?? item.properties?.fromdate ?? item.datemodified ?? item.fromdate), normalized: item.properties ?? item })) },
+  { source: "gdacs-global-disasters", tier: "primary", category: "disaster", url: "https://www.gdacs.org/gdacsapi/api/events/geteventlist/SEARCH", parse: parseDisasters },
 ];
 
 export const getActiveWorldMonitorSourceDetails = () => specs().map(({ source, category, tier }) => ({ source, category, tier }));
